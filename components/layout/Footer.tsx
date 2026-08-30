@@ -150,7 +150,15 @@ export function Footer() {
         <div className="flex flex-col sm:flex-row items-center justify-between text-xs text-white/40 text-center sm:text-left gap-4">
           <p>© {currentYear} Hotel Reliance. All rights reserved.</p>
           <p>
-            Designed with premium standards in Bokaro Steel City, Jharkhand, India.
+            Designed with premium standards in Bokaro Steel City. Made by{" "}
+            <a
+              href="https://hypekimedia.myquro.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-gold transition-colors text-white/60 font-semibold"
+            >
+              hypekimedia.myquro.com
+            </a>
           </p>
         </div>
       </Container>
