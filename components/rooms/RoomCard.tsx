@@ -15,7 +15,7 @@ export function RoomCard({ room }: RoomCardProps) {
   const displayPrice = room.price ? `${formatPrice(room.price)} / Night` : "Price on request";
 
   return (
-    <div className="bg-white border border-border-custom shadow-md flex flex-col group h-full">
+    <div className="bg-white border border-border-custom shadow-md flex flex-col group h-full transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
       {/* Room Thumbnail Image */}
       <div className="relative h-64 w-full overflow-hidden bg-dark">
         {/* Featured Badge */}
@@ -81,7 +81,7 @@ export function RoomCard({ room }: RoomCardProps) {
           <Link href={`/rooms/${room.slug}`}>
             <Button variant="outline" size="sm" className="px-3">
               Explore
-              <ArrowRight className="w-3 h-3 ml-2" />
+              <ArrowRight className="w-3 h-3 ml-2 transition-transform duration-200 group-hover:translate-x-1" />
             </Button>
           </Link>
         </div>

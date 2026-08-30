@@ -3,6 +3,7 @@
 import React, { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, ArrowRight, Check, AlertCircle, Calendar } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { BookingProgress } from "@/components/booking/BookingProgress";
@@ -164,81 +165,92 @@ function BookingContent() {
           {/* Main form steps */}
           <div className="lg:col-span-8 space-y-6">
             
-            {/* Step 1: Dates & Guests */}
-            {step === 1 && (
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-xl font-serif text-dark border-b border-border-custom pb-2">
-                    Enter Stay Details
-                  </h3>
-                </div>
-                <BookingDateSelector
-                  checkIn={bookingState.checkIn}
-                  checkOut={bookingState.checkOut}
-                  onChange={handleDateChange}
-                  errors={errors}
-                />
-                <GuestSelector
-                  adults={bookingState.adults}
-                  children={bookingState.children}
-                  onChange={handleGuestCountChange}
-                  errors={errors}
-                />
-              </div>
-            )}
-
-            {/* Step 2: Choose Room */}
-            {step === 2 && (
-              <AvailableRooms
-                rooms={roomsData}
-                selectedRoomId={bookingState.selectedRoomId}
-                onSelect={handleRoomSelect}
-                errors={errors}
-              />
-            )}
-
-            {/* Step 3: Guest Details Form */}
-            {step === 3 && (
-              <BookingGuestForm
-                guest={bookingState.guest}
-                onChange={handleGuestDetailsChange}
-                errors={errors}
-              />
-            )}
-
-            {/* Step 4: Final Summary Review before confirm */}
-            {step === 4 && (
-              <div className="space-y-6 animate-fade-in">
-                <h3 className="text-xl font-serif text-dark border-b border-border-custom pb-2">
-                  Review & Confirm Stay
-                </h3>
-
-                <div className="bg-white border border-border-custom p-6 shadow-sm space-y-6 text-xs sm:text-sm">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={step}
+                initial={{ opacity: 0, x: 15 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -15 }}
+                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                className="space-y-6"
+              >
+                {/* Step 1: Dates & Guests */}
+                {step === 1 && (
+                  <>
                     <div>
-                      <h4 className="text-[10px] uppercase font-bold tracking-widest text-gold mb-2">Guest Details</h4>
-                      <p className="font-semibold text-dark">{bookingState.guest?.name}</p>
-                      <p className="text-muted mt-1">{bookingState.guest?.email}</p>
-                      <p className="text-muted mt-0.5">{bookingState.guest?.phone}</p>
+                      <h3 className="text-xl font-serif text-dark border-b border-border-custom pb-2">
+                        Enter Stay Details
+                      </h3>
                     </div>
+                    <BookingDateSelector
+                      checkIn={bookingState.checkIn}
+                      checkOut={bookingState.checkOut}
+                      onChange={handleDateChange}
+                      errors={errors}
+                    />
+                    <GuestSelector
+                      adults={bookingState.adults}
+                      children={bookingState.children}
+                      onChange={handleGuestCountChange}
+                      errors={errors}
+                    />
+                  </>
+                )}
 
-                    {bookingState.guest?.specialRequests && (
-                      <div>
-                        <h4 className="text-[10px] uppercase font-bold tracking-widest text-gold mb-2">Special Requests</h4>
-                        <p className="text-muted leading-relaxed italic">"{bookingState.guest.specialRequests}"</p>
+                {/* Step 2: Choose Room */}
+                {step === 2 && (
+                  <AvailableRooms
+                    rooms={roomsData}
+                    selectedRoomId={bookingState.selectedRoomId}
+                    onSelect={handleRoomSelect}
+                    errors={errors}
+                  />
+                )}
+
+                {/* Step 3: Guest Details Form */}
+                {step === 3 && (
+                  <BookingGuestForm
+                    guest={bookingState.guest}
+                    onChange={handleGuestDetailsChange}
+                    errors={errors}
+                  />
+                )}
+
+                {/* Step 4: Final Summary Review before confirm */}
+                {step === 4 && (
+                  <div className="space-y-6">
+                    <h3 className="text-xl font-serif text-dark border-b border-border-custom pb-2">
+                      Review & Confirm Stay
+                    </h3>
+
+                    <div className="bg-white border border-border-custom p-6 shadow-sm space-y-6 text-xs sm:text-sm">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div>
+                          <h4 className="text-[10px] uppercase font-bold tracking-widest text-gold mb-2">Guest Details</h4>
+                          <p className="font-semibold text-dark">{bookingState.guest?.name}</p>
+                          <p className="text-muted mt-1">{bookingState.guest?.email}</p>
+                          <p className="text-muted mt-0.5">{bookingState.guest?.phone}</p>
+                        </div>
+
+                        {bookingState.guest?.specialRequests && (
+                          <div>
+                            <h4 className="text-[10px] uppercase font-bold tracking-widest text-gold mb-2">Special Requests</h4>
+                            <p className="text-muted leading-relaxed italic">"{bookingState.guest.specialRequests}"</p>
+                          </div>
+                        )}
                       </div>
-                    )}
+                      
+                      <div className="bg-cream p-4 border border-border-custom text-[10px] text-muted flex items-start space-x-2">
+                        <AlertCircle className="w-4 h-4 text-primary flex-shrink-0" />
+                        <p className="leading-relaxed">
+                          By confirming, you agree to Hotel Reliance policies. Room check-in is at 12:00 PM, check-out at 11:00 AM. Payment is due at the lobby desk on arrival.
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                  
-                  <div className="bg-cream p-4 border border-border-custom text-[10px] text-muted flex items-start space-x-2">
-                    <AlertCircle className="w-4 h-4 text-primary flex-shrink-0" />
-                    <p className="leading-relaxed">
-                      By confirming, you agree to Hotel Reliance policies. Room check-in is at 12:00 PM, check-out at 11:00 AM. Payment is due at the lobby desk on arrival.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
+                )}
+              </motion.div>
+            </AnimatePresence>
 
             {/* Step Buttons bar */}
             <div className="flex items-center justify-between pt-6 border-t border-border-custom">

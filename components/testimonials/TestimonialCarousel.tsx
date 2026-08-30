@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight, Star, Quote } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { testimonialsData } from "@/data/testimonials";
 import { IconButton } from "@/components/ui/IconButton";
 
@@ -19,7 +20,7 @@ export function TestimonialCarousel() {
   useEffect(() => {
     const timer = setInterval(() => {
       handleNext();
-    }, 8000);
+    }, 8500);
     return () => clearInterval(timer);
   }, [handleNext]);
 
@@ -32,34 +33,43 @@ export function TestimonialCarousel() {
         <Quote className="w-36 h-36 rotate-180" />
       </div>
 
-      <div className="relative z-10 text-center space-y-6 animate-fade-in">
-        {/* Rating Stars */}
-        <div className="flex justify-center space-x-1.5">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <Star
-              key={i}
-              className={`w-5 h-5 ${
-                i < activeReview.rating ? "text-gold fill-gold" : "text-border-custom"
-              }`}
-            />
-          ))}
-        </div>
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={current}
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -15 }}
+          transition={{ duration: 0.35, ease: "easeInOut" }}
+          className="relative z-10 text-center space-y-6"
+        >
+          {/* Rating Stars */}
+          <div className="flex justify-center space-x-1.5">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Star
+                key={i}
+                className={`w-5 h-5 ${
+                  i < activeReview.rating ? "text-gold fill-gold" : "text-border-custom"
+                }`}
+              />
+            ))}
+          </div>
 
-        {/* Comment Text */}
-        <p className="text-lg sm:text-xl md:text-2xl font-serif font-light text-dark leading-relaxed italic px-4 md:px-12">
-          "{activeReview.comment}"
-        </p>
+          {/* Comment Text */}
+          <p className="text-lg sm:text-xl md:text-2xl font-serif font-light text-dark leading-relaxed italic px-4 md:px-12">
+            "{activeReview.comment}"
+          </p>
 
-        {/* User profile */}
-        <div className="pt-4 flex flex-col items-center">
-          <span className="text-sm font-bold tracking-widest uppercase text-primary">
-            {activeReview.name}
-          </span>
-          <span className="text-xs text-muted font-light mt-1 uppercase tracking-wider">
-            {activeReview.role} — {activeReview.location}
-          </span>
-        </div>
-      </div>
+          {/* User profile */}
+          <div className="pt-4 flex flex-col items-center">
+            <span className="text-sm font-bold tracking-widest uppercase text-primary">
+              {activeReview.name}
+            </span>
+            <span className="text-xs text-muted font-light mt-1 uppercase tracking-wider">
+              {activeReview.role} — {activeReview.location}
+            </span>
+          </div>
+        </motion.div>
+      </AnimatePresence>
 
       {/* Navigation Controls */}
       <div className="flex justify-center space-x-4 mt-8">

@@ -4,6 +4,7 @@ import React, { useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { X, Phone, Mail, Calendar } from "lucide-react";
+import { motion } from "framer-motion";
 import { NavigationItem } from "@/types";
 import { HOTEL_INFO } from "@/lib/constants";
 import { Button } from "@/components/ui/Button";
@@ -68,23 +69,42 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
         </div>
 
         {/* Links List */}
-        <nav className="flex flex-col space-y-4 py-8 flex-1 overflow-y-auto">
+        <motion.nav 
+          initial="hidden"
+          animate={isOpen ? "show" : "hidden"}
+          variants={{
+            hidden: {},
+            show: {
+              transition: {
+                staggerChildren: 0.06
+              }
+            }
+          }}
+          className="flex flex-col space-y-4 py-8 flex-1 overflow-y-auto"
+        >
           {navigation.map((item) => {
             const isActive = pathname === item.path;
             return (
-              <Link
+              <motion.div
                 key={item.name}
-                href={item.path}
-                className={`text-sm font-bold tracking-[0.15em] transition-colors py-2 border-b border-cream hover:text-gold ${
-                  isActive ? "text-gold pl-2 border-l-2 border-l-gold" : "text-dark"
-                }`}
-                onClick={onClose}
+                variants={{
+                  hidden: { opacity: 0, x: 20 },
+                  show: { opacity: 1, x: 0, transition: { ease: [0.16, 1, 0.3, 1] } }
+                }}
               >
-                {item.name}
-              </Link>
+                <Link
+                  href={item.path}
+                  className={`text-sm font-bold tracking-[0.15em] transition-colors py-2 border-b border-cream hover:text-gold block ${
+                    isActive ? "text-gold pl-2 border-l-2 border-l-gold" : "text-dark"
+                  }`}
+                  onClick={onClose}
+                >
+                  {item.name}
+                </Link>
+              </motion.div>
             );
           })}
-        </nav>
+        </motion.nav>
 
         {/* Bottom Drawer Actions */}
         <div className="pt-6 border-t border-border-custom space-y-4 bg-cream -mx-6 -mb-6 p-6">

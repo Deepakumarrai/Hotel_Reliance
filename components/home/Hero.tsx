@@ -3,8 +3,10 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, ArrowDown } from "lucide-react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
+import { HeroParticles } from "@/components/animation/HeroParticles";
 
 const slides = [
   {
@@ -30,7 +32,7 @@ export function Hero() {
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrent((prev) => (prev + 1) % slides.length);
-    }, 6000);
+    }, 8000); // 8 seconds slides loop
     return () => clearInterval(timer);
   }, []);
 
@@ -51,6 +53,9 @@ export function Hero() {
 
   return (
     <section className="relative h-[calc(100vh-72px)] min-h-[550px] overflow-hidden bg-black text-white">
+      {/* Ambient Gold Particles */}
+      <HeroParticles />
+
       {/* Slides */}
       {slides.map((slide, index) => (
         <div
@@ -62,29 +67,79 @@ export function Hero() {
           {/* Overlay Grid */}
           <div className="absolute inset-0 bg-black/55 z-10" />
           
-          {/* Background Image Placeholder */}
-          <div
-            className="absolute inset-0 bg-cover bg-center transition-transform duration-[6000ms] scale-105"
+          {/* Background Image Placeholder with slow Ken Burns scaling */}
+          <motion.div
+            className="absolute inset-0 bg-cover bg-center"
+            initial={{ scale: 1 }}
+            animate={index === current ? { scale: 1.08 } : { scale: 1 }}
+            transition={{ duration: 12, ease: "easeOut" }}
             style={{
               backgroundImage: `url('${slide.image}')`,
-              transform: index === current ? "scale(1)" : "scale(1.05)"
             }}
           />
 
           {/* Slide Text Content */}
           <div className="absolute inset-0 flex items-center z-20 pt-16 sm:pt-0">
             <Container className="relative">
-              <div className="max-w-3xl space-y-4 sm:space-y-6">
-                <span className="text-xs sm:text-sm font-bold tracking-[0.3em] text-gold uppercase block animate-fade-in">
+              <motion.div 
+                initial="hidden"
+                animate={index === current ? "show" : "hidden"}
+                variants={{
+                  hidden: {},
+                  show: {
+                    transition: {
+                      staggerChildren: 0.15
+                    }
+                  }
+                }}
+                className="max-w-3xl space-y-4 sm:space-y-6"
+              >
+                <motion.span 
+                  variants={{
+                    hidden: { opacity: 0, y: 15 },
+                    show: { opacity: 1, y: 0, transition: { duration: 0.5 } }
+                  }}
+                  className="text-xs sm:text-sm font-bold tracking-[0.3em] text-gold uppercase block"
+                >
                   {slide.subtitle}
-                </span>
-                <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-normal leading-tight font-serif tracking-tight drop-shadow-md">
+                </motion.span>
+                
+                {/* Thin gold decorative drawing line */}
+                <motion.div 
+                  variants={{
+                    hidden: { width: 0 },
+                    show: { width: 80, transition: { duration: 0.8, ease: "easeOut" } }
+                  }}
+                  className="h-[1.5px] bg-gold" 
+                />
+
+                <motion.h1 
+                  variants={{
+                    hidden: { opacity: 0, y: 30 },
+                    show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } }
+                  }}
+                  className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-normal leading-tight font-serif tracking-tight drop-shadow-md"
+                >
                   {slide.title}
-                </h1>
-                <p className="text-sm sm:text-base md:text-lg text-white/80 max-w-xl font-light tracking-wide leading-relaxed">
+                </motion.h1>
+
+                <motion.p 
+                  variants={{
+                    hidden: { opacity: 0, y: 20 },
+                    show: { opacity: 1, y: 0, transition: { duration: 0.8 } }
+                  }}
+                  className="text-sm sm:text-base md:text-lg text-white/80 max-w-xl font-light tracking-wide leading-relaxed"
+                >
                   Enjoy outstanding hospitality, quality multi-cuisine dining, and spacious event setups in Jharkhand's steel city.
-                </p>
-                <div className="flex flex-wrap gap-4 pt-4">
+                </motion.p>
+
+                <motion.div 
+                  variants={{
+                    hidden: { opacity: 0, y: 15 },
+                    show: { opacity: 1, y: 0, transition: { duration: 0.6 } }
+                  }}
+                  className="flex flex-wrap gap-4 pt-4"
+                >
                   <Link href="/booking">
                     <Button variant="primary" size="lg">
                       Book Your Stay
@@ -95,8 +150,8 @@ export function Hero() {
                       Explore Rooms
                     </Button>
                   </Link>
-                </div>
-              </div>
+                </motion.div>
+              </motion.div>
             </Container>
           </div>
         </div>

@@ -5,6 +5,8 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { FloatingWhatsApp } from "@/components/layout/FloatingWhatsApp";
 import { BackToTop } from "@/components/layout/BackToTop";
+import { PageTransition } from "@/components/animation/PageTransition";
+import { CustomCursor } from "@/components/animation/CustomCursor";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -43,10 +45,13 @@ export default function RootLayout({
     <html lang="en" className={`${cormorant.variable} ${inter.variable}`}>
       <body className="flex flex-col min-h-screen">
         <Navbar />
-        <main className="flex-grow pt-[72px] lg:pt-[76px]">{children}</main>
+        <main className="flex-grow pt-[72px] lg:pt-[76px]">
+          <PageTransition>{children}</PageTransition>
+        </main>
         <Footer />
         <FloatingWhatsApp />
         <BackToTop />
+        <CustomCursor />
       </body>
     </html>
   );

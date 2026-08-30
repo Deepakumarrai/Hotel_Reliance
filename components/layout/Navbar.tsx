@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, Phone, Calendar } from "lucide-react";
+import { motion, useScroll, useSpring } from "framer-motion";
 import { headerNavigation } from "@/data/navigation";
 import { HOTEL_INFO } from "@/lib/constants";
 import { Button } from "@/components/ui/Button";
@@ -14,6 +15,13 @@ export function Navbar() {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  });
 
   useEffect(() => {
     const handleScroll = () => {
@@ -39,6 +47,10 @@ export function Navbar() {
 
   return (
     <>
+      <motion.div
+        className="fixed top-0 left-0 right-0 h-[2.5px] bg-gold z-[50] origin-left"
+        style={{ scaleX }}
+      />
       <header
         className={`fixed top-0 left-0 w-full z-40 transition-all duration-300 ${
           isScrolled

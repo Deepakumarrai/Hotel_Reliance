@@ -5,6 +5,7 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Button } from "@/components/ui/Button";
 import { RoomCard } from "@/components/rooms/RoomCard";
 import { roomsData } from "@/data/rooms";
+import { StaggerContainer, StaggerItem } from "@/components/animation/Stagger";
 
 export function FeaturedRooms() {
   // Filter for featured rooms
@@ -29,13 +30,13 @@ export function FeaturedRooms() {
         </div>
 
         {/* Featured Rooms Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {featuredRooms.map((room) => (
-            <div key={room.id} className="animate-fade-in">
+            <StaggerItem key={room.id}>
               <RoomCard room={room} />
-            </div>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
       </Container>
     </section>
   );

@@ -5,6 +5,7 @@ import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { VenueCard, Venue } from "@/components/banquet/VenueCard";
 import { BanquetEnquiry } from "@/components/banquet/BanquetEnquiry";
+import { Banquet3DPlaceholder } from "@/components/banquet/Banquet3DPlaceholder";
 
 export const metadata: Metadata = {
   title: "Banquet & Events | Hotel Reliance",
@@ -113,6 +114,11 @@ export default function BanquetPage() {
                 <VenueCard venue={venue} />
               </div>
             ))}
+          </div>
+
+          {/* Interactive Layout Visualizer */}
+          <div className="pt-6">
+            <Banquet3DPlaceholder />
           </div>
         </Container>
       </section>

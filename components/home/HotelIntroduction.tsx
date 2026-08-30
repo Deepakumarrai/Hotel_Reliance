@@ -5,6 +5,9 @@ import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Button } from "@/components/ui/Button";
 import { hotelData } from "@/data/hotel";
+import { FadeUp } from "@/components/animation/FadeUp";
+import { Counter } from "@/components/animation/Counter";
+import { ParallaxImage } from "@/components/animation/ParallaxImage";
 
 export function HotelIntroduction() {
   return (
@@ -12,7 +15,7 @@ export function HotelIntroduction() {
       <Container>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           {/* Text Content */}
-          <div className="lg:col-span-6 space-y-6">
+          <FadeUp className="lg:col-span-6 space-y-6">
             <SectionHeading
               title="A Sanctuary of Hospitality"
               subtitle="WELCOME TO RELIANCE"
@@ -40,22 +43,24 @@ export function HotelIntroduction() {
                 </Button>
               </Link>
             </div>
-          </div>
+          </FadeUp>
 
           {/* Graphic/Image Layout */}
-          <div className="lg:col-span-6 grid grid-cols-1 sm:grid-cols-12 gap-4 relative mt-8 lg:mt-0">
+          <FadeUp delay={0.2} className="lg:col-span-6 grid grid-cols-1 sm:grid-cols-12 gap-4 relative mt-8 lg:mt-0">
             {/* Background luxury border offset */}
             <div className="absolute -inset-4 border-2 border-gold/15 -z-10 translate-x-2 translate-y-2 hidden sm:block" />
             
-            <div className="col-span-12 sm:col-span-8 image-zoom-hover border border-border-custom shadow-lg">
-              <Image
-                src="/images/gallery/hotel-ext.jpg"
-                alt="Hotel Reliance Exterior Facade"
-                width={400}
-                height={500}
-                className="w-full h-[380px] object-cover"
-                priority
-              />
+            <div className="col-span-12 sm:col-span-8 border border-border-custom shadow-lg">
+              <ParallaxImage offset={20}>
+                <Image
+                  src="/images/gallery/hotel-ext.jpg"
+                  alt="Hotel Reliance Exterior Facade"
+                  width={400}
+                  height={500}
+                  className="w-full h-[380px] object-cover"
+                  priority
+                />
+              </ParallaxImage>
             </div>
             
             <div className="col-span-12 sm:col-span-4 flex flex-col justify-end">
@@ -70,14 +75,14 @@ export function HotelIntroduction() {
               </div>
               <div className="bg-primary text-white p-5 shadow-lg border border-primary-dark">
                 <span className="text-3xl sm:text-4xl font-serif font-bold text-gold block mb-1">
-                  45+
+                  <Counter value="45+" />
                 </span>
                 <span className="text-[10px] uppercase font-bold tracking-widest block text-white/80">
                   Premium Guest Rooms
                 </span>
               </div>
             </div>
-          </div>
+          </FadeUp>
         </div>
       </Container>
     </section>

@@ -12,6 +12,7 @@ import { RoomAmenities } from "@/components/rooms/RoomAmenities";
 import { RoomInfo } from "@/components/rooms/RoomInfo";
 import { RoomPrice } from "@/components/rooms/RoomPrice";
 import { RoomBookingCTA } from "@/components/rooms/RoomBookingCTA";
+import { VRViewerPlaceholder } from "@/components/rooms/VRViewerPlaceholder";
 
 interface RoomPageProps {
   params: Promise<{ roomSlug: string }>;
@@ -68,6 +69,7 @@ export default async function RoomDetailPage({ params }: RoomPageProps) {
             <div className="lg:col-span-8 space-y-10">
               <RoomGallery images={room.images} roomName={room.name} />
               <RoomInfo room={room} />
+              <VRViewerPlaceholder roomName={room.name} />
               <RoomAmenities amenities={room.amenities} />
             </div>
 

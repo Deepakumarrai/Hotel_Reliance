@@ -48,6 +48,7 @@ export function GalleryPreview() {
             <div
               key={img.id}
               onClick={() => handleOpen(index)}
+              data-custom-cursor="view"
               className="relative h-64 border border-border-custom cursor-pointer overflow-hidden group shadow-sm bg-dark"
             >
               {/* Image Container with scale transition */}
