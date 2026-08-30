@@ -33,7 +33,7 @@ export function HotelStats() {
   return (
     <section className="bg-dark text-white py-16 border-y border-white/5">
       <Container>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
           {stats.map((stat) => (
             <div
               key={stat.id}

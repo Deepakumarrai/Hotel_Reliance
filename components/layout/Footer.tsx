@@ -17,9 +17,9 @@ export function Footer() {
         {/* Main Columns Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-12">
           {/* Column 1: Hotel Info */}
-          <div className="lg:col-span-1.5 flex flex-col space-y-4">
+          <div className="lg:col-span-1 flex flex-col space-y-4">
             <Link href="/" className="flex flex-col w-fit">
-              <span className="text-2xl tracking-[0.1em] font-serif font-bold uppercase text-primary">
+              <span className="text-2xl tracking-[0.1em] font-serif font-bold uppercase text-white">
                 Reliance
               </span>
               <span className="text-[8px] tracking-[0.3em] font-sans font-bold uppercase text-gold -mt-1">

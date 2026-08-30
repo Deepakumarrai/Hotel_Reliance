@@ -43,11 +43,11 @@ export function HotelIntroduction() {
           </div>
 
           {/* Graphic/Image Layout */}
-          <div className="lg:col-span-6 grid grid-cols-12 gap-4 relative">
+          <div className="lg:col-span-6 grid grid-cols-1 sm:grid-cols-12 gap-4 relative mt-8 lg:mt-0">
             {/* Background luxury border offset */}
             <div className="absolute -inset-4 border-2 border-gold/15 -z-10 translate-x-2 translate-y-2 hidden sm:block" />
             
-            <div className="col-span-8 image-zoom-hover border border-border-custom shadow-lg">
+            <div className="col-span-12 sm:col-span-8 image-zoom-hover border border-border-custom shadow-lg">
               <Image
                 src="/images/gallery/hotel-ext.jpg"
                 alt="Hotel Reliance Exterior Facade"
@@ -58,7 +58,7 @@ export function HotelIntroduction() {
               />
             </div>
             
-            <div className="col-span-4 flex flex-col justify-end">
+            <div className="col-span-12 sm:col-span-4 flex flex-col justify-end">
               <div className="image-zoom-hover border border-border-custom shadow-md mb-4">
                 <Image
                   src="/images/restaurant/dining-area.jpg"

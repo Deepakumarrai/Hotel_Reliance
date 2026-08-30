@@ -72,13 +72,13 @@ export function Hero() {
           />
 
           {/* Slide Text Content */}
-          <div className="absolute inset-0 flex items-center z-20">
+          <div className="absolute inset-0 flex items-center z-20 pt-16 sm:pt-0">
             <Container className="relative">
-              <div className="max-w-3xl space-y-6">
+              <div className="max-w-3xl space-y-4 sm:space-y-6">
                 <span className="text-xs sm:text-sm font-bold tracking-[0.3em] text-gold uppercase block animate-fade-in">
                   {slide.subtitle}
                 </span>
-                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-normal leading-tight font-serif tracking-tight drop-shadow-md">
+                <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-normal leading-tight font-serif tracking-tight drop-shadow-md">
                   {slide.title}
                 </h1>
                 <p className="text-sm sm:text-base md:text-lg text-white/80 max-w-xl font-light tracking-wide leading-relaxed">

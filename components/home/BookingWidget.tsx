@@ -35,7 +35,7 @@ export function BookingWidget() {
   };
 
   return (
-    <div className="relative z-30 -mt-10 sm:-mt-14 max-w-6xl mx-auto px-4">
+    <div className="relative z-30 mt-6 sm:-mt-14 max-w-6xl mx-auto px-4">
       <form
         onSubmit={handleSubmit}
         className="bg-white text-dark shadow-2xl p-6 md:p-8 border border-border-custom grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 items-end"

@@ -31,7 +31,7 @@ export function OffersSection() {
           {offersData.map((offer) => (
             <div
               key={offer.id}
-              className="bg-white border border-border-custom p-8 shadow-md flex flex-col justify-between space-y-6 relative overflow-hidden group"
+              className="bg-white border border-border-custom p-5 sm:p-8 shadow-md flex flex-col justify-between space-y-6 relative overflow-hidden group"
             >
               {/* Top Accent line */}
               <div className="absolute top-0 left-0 w-full h-[3px] bg-gold" />

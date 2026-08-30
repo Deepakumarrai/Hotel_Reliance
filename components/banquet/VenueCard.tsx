@@ -72,7 +72,7 @@ export function VenueCard({ venue }: VenueCardProps) {
             <span className="text-[9px] uppercase tracking-widest text-muted font-bold block mb-2">
               Venue Features
             </span>
-            <div className="grid grid-cols-2 gap-2 text-xs text-muted font-light">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-muted font-light">
               {venue.amenities.map((amenity, idx) => (
                 <div key={idx} className="flex items-center space-x-2">
                   <Sparkles className="w-3 h-3 text-gold flex-shrink-0" />

@@ -148,7 +148,7 @@ export default function ContactPage() {
       </section>
 
       {/* Google Map Section */}
-      <section className="h-[450px] w-full border-t border-border-custom bg-cream relative">
+      <section className="h-[300px] sm:h-[450px] w-full border-t border-border-custom bg-cream relative">
         <iframe
           src={HOTEL_INFO.googleMapUrl}
           width="100%"

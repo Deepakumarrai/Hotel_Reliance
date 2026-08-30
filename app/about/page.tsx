@@ -129,7 +129,7 @@ export default function AboutPage() {
             title="Premium Conveniences"
             subtitle="HOTEL HIGHLIGHTS"
           />
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-left">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 text-left">
             {[
               "45+ Lodging Units",
               "Kwality Multi-Cuisine Restaurant",
