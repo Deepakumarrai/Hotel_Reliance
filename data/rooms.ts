@@ -5,7 +5,7 @@ export const roomsData: Room[] = [
     id: "deluxe-room",
     slug: "deluxe",
     name: "Deluxe Room",
-    description: "Elegant comfort with modern amenities, designed for a relaxing business or leisure stay.",
+    description: "Elegant comfort with modern amenities, designed for a relaxing business or leisure stay in Bokaro.",
     longDescription: "Our Deluxe Rooms offer a perfect blend of space, comfort, and luxury. Designed with modern aesthetics, these rooms feature premium bedding, a fully equipped workstation, high-speed Wi-Fi, and a well-appointed bathroom. It's an ideal choice for corporate travelers and couples looking for a cozy retreat in Bokaro.",
     images: [
       "/images/rooms/deluxe/main.jpg",
@@ -24,7 +24,7 @@ export const roomsData: Room[] = [
     ],
     occupancy: 2,
     bedType: "King Bed",
-    price: null, // Price on request
+    price: 2499, // Starting from ₹2,499/night
     featured: true,
     size: "280 sq. ft.",
     view: "City View"
@@ -33,7 +33,7 @@ export const roomsData: Room[] = [
     id: "executive-room",
     slug: "executive",
     name: "Executive Room",
-    description: "Spacious layout with enhanced services and luxury amenities for premium guests.",
+    description: "Spacious layout with enhanced services and executive desk for premium business guests.",
     longDescription: "The Executive Room is meticulously designed for business executives who demand extra comfort and utility. Featuring a dedicated seating area, a large executive desk, premier toiletries, and high-speed connectivity, it ensures a seamless blend of work and relaxation during your stay.",
     images: [
       "/images/rooms/executive/main.jpg",
@@ -53,7 +53,7 @@ export const roomsData: Room[] = [
     ],
     occupancy: 2,
     bedType: "King Bed",
-    price: null, // Price on request
+    price: 2999, // Starting from ₹2,999/night
     featured: true,
     size: "350 sq. ft.",
     view: "Co-operative Colony View"
@@ -62,7 +62,7 @@ export const roomsData: Room[] = [
     id: "premium-room",
     slug: "premium",
     name: "Premium Room",
-    description: "An upscale sanctuary offering luxury decor, panoramic views, and personalized service.",
+    description: "An upscale sanctuary offering luxury decor, lounge seating, and panoramic greenery views.",
     longDescription: "Our Premium Rooms represent the pinnacle of sophistication and luxury at Hotel Reliance. Adorned with plush furnishings, art pieces, a private lounge space, and expansive windows offering stunning views of the green colony, these rooms cater to guests seeking an indulgent lodging experience.",
     images: [
       "/images/rooms/premium/main.jpg",
@@ -82,7 +82,7 @@ export const roomsData: Room[] = [
     ],
     occupancy: 2,
     bedType: "Super King Bed",
-    price: null, // Price on request
+    price: 3499, // Starting from ₹3,499/night
     featured: true,
     size: "420 sq. ft.",
     view: "Panoramic Greenery View"
@@ -91,7 +91,7 @@ export const roomsData: Room[] = [
     id: "family-room",
     slug: "family",
     name: "Family Room",
-    description: "Generous multi-bed layout ideal for families and groups traveling together.",
+    description: "Generous multi-bed layout ideal for families and larger groups traveling together.",
     longDescription: "Our Family Rooms are tailored to accommodate families or close groups traveling together without compromising on personal space. Featuring two double beds, a spacious dining table, and a children's play area, it provides a warm, homely environment for a memorable stay.",
     images: [
       "/images/rooms/family/main.jpg",
@@ -111,7 +111,7 @@ export const roomsData: Room[] = [
     ],
     occupancy: 4,
     bedType: "Two Double Beds",
-    price: null, // Price on request
+    price: 3999, // Starting from ₹3,999/night
     featured: false,
     size: "500 sq. ft.",
     view: "City & Colony View"

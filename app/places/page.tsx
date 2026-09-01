@@ -1,11 +1,10 @@
 import React from "react";
 import type { Metadata } from "next";
-import Image from "next/image";
-import { MapPin, Info, Compass } from "lucide-react";
+import { Info, Compass } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { placesData } from "@/data/places";
-import { hotelData } from "@/data/hotel";
+import { PlaceCard } from "@/components/places/PlaceCard";
 
 export const metadata: Metadata = {
   title: "Places Near Hotel Reliance | Local Attractions Bokaro",
@@ -59,43 +58,8 @@ export default function PlacesPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {placesData.map((place) => (
-              <div
-                key={place.id}
-                className="bg-white border border-border-custom shadow-md flex flex-col justify-between group overflow-hidden"
-              >
-                {/* Image */}
-                <div className="relative h-56 bg-dark">
-                  <div className="absolute inset-0 image-zoom-hover">
-                    <Image
-                      src={place.image}
-                      alt={place.name}
-                      fill
-                      sizes="(max-w-768px) 100vw, 30vw"
-                      className="object-cover"
-                      loading="lazy"
-                    />
-                  </div>
-                  <div className="absolute top-4 left-4 z-20 bg-white border border-border-custom px-3 py-1 text-[10px] uppercase font-bold tracking-widest text-gold flex items-center">
-                    <MapPin className="w-3.5 h-3.5 mr-1.5 text-primary" />
-                    {place.category}
-                  </div>
-                </div>
-
-                {/* Details */}
-                <div className="p-6 flex-grow flex flex-col justify-between space-y-4">
-                  <div className="space-y-2">
-                    <h3 className="text-xl font-normal font-serif text-dark group-hover:text-primary transition-colors">
-                      {place.name}
-                    </h3>
-                    <p className="text-xs text-muted leading-relaxed font-light line-clamp-3">
-                      {place.description}
-                    </p>
-                  </div>
-
-                  <div className="text-[10px] uppercase font-bold tracking-widest text-muted/70 pt-3 border-t border-border-custom">
-                    {place.distance}
-                  </div>
-                </div>
+              <div key={place.id} className="h-full">
+                <PlaceCard place={place} layout="vertical" />
               </div>
             ))}
           </div>

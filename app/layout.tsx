@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Inter } from "next/font/google";
 import "./globals.css";
+import { AuthProvider } from "@/lib/auth/AuthContext";
+import { AuthModal } from "@/components/auth/AuthModal";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { FloatingWhatsApp } from "@/components/layout/FloatingWhatsApp";
@@ -44,14 +46,17 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${cormorant.variable} ${inter.variable}`}>
       <body className="flex flex-col min-h-screen">
-        <Navbar />
-        <main className="flex-grow pt-[72px] lg:pt-[76px]">
-          <PageTransition>{children}</PageTransition>
-        </main>
-        <Footer />
-        <FloatingWhatsApp />
-        <BackToTop />
-        <CustomCursor />
+        <AuthProvider>
+          <Navbar />
+          <main className="flex-grow pt-[72px] lg:pt-[76px]">
+            <PageTransition>{children}</PageTransition>
+          </main>
+          <Footer />
+          <FloatingWhatsApp />
+          <BackToTop />
+          <CustomCursor />
+          <AuthModal />
+        </AuthProvider>
       </body>
     </html>
   );

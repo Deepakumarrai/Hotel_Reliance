@@ -12,7 +12,7 @@ interface RoomCardProps {
 }
 
 export function RoomCard({ room }: RoomCardProps) {
-  const displayPrice = room.price ? `${formatPrice(room.price)} / Night` : "Price on request";
+  const displayPrice = room.price ? `${formatPrice(room.price)}` : "Price on request";
 
   return (
     <div className="bg-white border border-border-custom shadow-md flex flex-col group h-full transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
@@ -21,7 +21,7 @@ export function RoomCard({ room }: RoomCardProps) {
         {/* Featured Badge */}
         {room.featured && (
           <div className="absolute top-4 left-4 z-20">
-            <Badge variant="gold">Featured</Badge>
+            <Badge variant="gold">Featured Suite</Badge>
           </div>
         )}
         
@@ -44,7 +44,7 @@ export function RoomCard({ room }: RoomCardProps) {
           <h3 className="text-2xl font-normal font-serif text-dark group-hover:text-primary transition-colors">
             <Link href={`/rooms/${room.slug}`}>{room.name}</Link>
           </h3>
-          <p className="text-xs text-muted line-clamp-2 font-light">
+          <p className="text-xs text-muted line-clamp-2 font-light leading-relaxed">
             {room.description}
           </p>
         </div>
@@ -68,20 +68,26 @@ export function RoomCard({ room }: RoomCardProps) {
         </div>
 
         {/* Price & Actions Row */}
-        <div className="flex items-center justify-between pt-2">
+        <div className="flex items-end justify-between pt-2">
           <div className="flex flex-col">
             <span className="text-[9px] uppercase tracking-widest text-muted font-bold block">
-              Starting From
+              Starting from
             </span>
-            <span className="text-sm font-semibold text-primary font-sans mt-0.5">
-              {displayPrice}
+            <div className="flex items-baseline space-x-1">
+              <span className="text-lg font-bold text-primary font-sans">
+                {displayPrice}
+              </span>
+              <span className="text-[10px] text-muted">/ night</span>
+            </div>
+            <span className="text-[9px] text-muted/80 tracking-tight block">
+              + applicable taxes
             </span>
           </div>
 
           <Link href={`/rooms/${room.slug}`}>
-            <Button variant="outline" size="sm" className="px-3">
+            <Button variant="outline" size="sm" className="px-3.5 uppercase text-xs tracking-wider">
               Explore
-              <ArrowRight className="w-3 h-3 ml-2 transition-transform duration-200 group-hover:translate-x-1" />
+              <ArrowRight className="w-3 h-3 ml-1.5 transition-transform duration-200 group-hover:translate-x-1" />
             </Button>
           </Link>
         </div>

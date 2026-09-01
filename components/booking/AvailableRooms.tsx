@@ -35,7 +35,7 @@ export function AvailableRooms({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {rooms.map((room) => {
           const isSelected = selectedRoomId === room.id;
-          const displayPrice = room.price ? `${formatPrice(room.price)} / Night` : "Price on request";
+          const displayPrice = room.price ? `${formatPrice(room.price)}` : "Price on request";
 
           return (
             <div
@@ -45,7 +45,7 @@ export function AvailableRooms({
                 "bg-white border cursor-pointer flex flex-col justify-between transition-all duration-300 shadow-sm relative group select-none",
                 isSelected
                   ? "border-gold ring-2 ring-gold/25"
-                  : "border-border-custom hover:border-dark"
+                  : "border-border-custom hover:border-gold/50"
               )}
             >
               {/* Selected corner banner */}
@@ -97,14 +97,15 @@ export function AvailableRooms({
                 </div>
 
                 {/* Select button row */}
-                <div className="flex items-center justify-between pt-1">
+                <div className="flex items-end justify-between pt-1">
                   <div className="flex flex-col">
                     <span className="text-[8px] uppercase tracking-widest text-muted font-bold block">
-                      Room Rate
+                      Starting from
                     </span>
-                    <span className="text-xs font-bold text-primary block mt-0.5">
-                      {displayPrice}
+                    <span className="text-sm font-bold text-primary block mt-0.5">
+                      {displayPrice} <span className="text-[10px] font-normal text-muted">/ night</span>
                     </span>
+                    <span className="text-[8px] text-muted/70">+ taxes</span>
                   </div>
                   <button
                     type="button"

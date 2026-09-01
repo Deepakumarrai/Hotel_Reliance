@@ -2,8 +2,9 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Calendar, Users, ArrowRight } from "lucide-react";
+import { ArrowRight, Lock } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { useAuth } from "@/hooks/useAuth";
 
 interface RoomBookingCTAProps {
   roomId: string;
@@ -12,6 +13,7 @@ interface RoomBookingCTAProps {
 
 export function RoomBookingCTA({ roomId, roomSlug }: RoomBookingCTAProps) {
   const router = useRouter();
+  const { isAuthenticated, openAuthModal } = useAuth();
 
   const getTodayString = (daysOffset = 0) => {
     const d = new Date();
@@ -25,6 +27,20 @@ export function RoomBookingCTA({ roomId, roomSlug }: RoomBookingCTAProps) {
 
   const handleBooking = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!isAuthenticated) {
+      // Store intent & open auth modal
+      openAuthModal("signin", {
+        roomId,
+        roomSlug,
+        checkIn,
+        checkOut,
+        adults,
+        children: 0
+      });
+      return;
+    }
+
     const query = new URLSearchParams({
       room: roomSlug,
       checkIn,
@@ -38,9 +54,17 @@ export function RoomBookingCTA({ roomId, roomSlug }: RoomBookingCTAProps) {
 
   return (
     <div className="bg-white border border-border-custom p-6 shadow-md space-y-6">
-      <h3 className="text-xl font-serif text-dark border-b border-border-custom pb-2">
-        Book This Room
-      </h3>
+      <div className="border-b border-border-custom pb-2 flex items-center justify-between">
+        <h3 className="text-xl font-serif text-dark">
+          Book This Room
+        </h3>
+        {!isAuthenticated && (
+          <span className="text-[10px] text-muted flex items-center">
+            <Lock className="w-3 h-3 mr-1 text-gold" />
+            Guest mode
+          </span>
+        )}
+      </div>
 
       <form onSubmit={handleBooking} className="space-y-4">
         {/* Check In */}
@@ -102,8 +126,8 @@ export function RoomBookingCTA({ roomId, roomSlug }: RoomBookingCTAProps) {
           </select>
         </div>
 
-        <Button type="submit" variant="primary" fullWidth className="pt-3 pb-3">
-          Check Rates & Book
+        <Button type="submit" variant="primary" fullWidth className="pt-3 pb-3 uppercase text-xs tracking-widest font-bold">
+          {isAuthenticated ? "Check Rates & Book" : "Book Now (Sign In)"}
           <ArrowRight className="w-4 h-4 ml-2" />
         </Button>
       </form>

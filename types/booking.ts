@@ -17,14 +17,18 @@ export interface BookingState {
 }
 
 export interface Booking {
-  id: string; // Booking reference code
+  id: string; // e.g. HR-849204
+  userId?: string;
   checkIn: string;
   checkOut: string;
+  nights?: number;
   adults: number;
   children: number;
   room: Room;
   guest: GuestDetails;
   totalPrice: number | null;
-  status: "confirmed" | "pending" | "cancelled";
+  estimatedTotal?: string;
+  status: "confirmed" | "pending" | "completed" | "cancelled";
   createdAt: string;
+  paymentMethod?: string;
 }

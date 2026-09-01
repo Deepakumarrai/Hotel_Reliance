@@ -3,6 +3,7 @@ export * from "./booking";
 export * from "./facility";
 export * from "./place";
 export * from "./gallery";
+export * from "./auth";
 
 export interface Offer {
   id: string;

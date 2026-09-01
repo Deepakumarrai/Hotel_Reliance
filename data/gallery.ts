@@ -16,6 +16,55 @@ export const galleryData: GalleryImage[] = [
     title: "Elegantly Designed Lobby"
   },
   {
+    id: "g-dam-1",
+    url: "/images/places/garga-dam-day.png",
+    alt: "Garga Dam Spillway Rapids",
+    category: "places",
+    title: "Garga Dam (Spillway View)"
+  },
+  {
+    id: "g-dam-2",
+    url: "/images/places/garga-dam-sunset.png",
+    alt: "Garga Dam Sunset Panorama",
+    category: "places",
+    title: "Garga Dam (Golden Sunset)"
+  },
+  {
+    id: "g-temple-1",
+    url: "/images/places/jagannath-temple.png",
+    alt: "Jagannath Temple Bokaro Grand Entrance",
+    category: "places",
+    title: "Jagannath Temple (Marble Sanctum)"
+  },
+  {
+    id: "g-temple-2",
+    url: "/images/places/jagannath-temple-hover.png",
+    alt: "Jagannath Temple Carved Courtyard",
+    category: "places",
+    title: "Jagannath Temple (Stone Courtyard)"
+  },
+  {
+    id: "g-temple-3",
+    url: "/images/places/jagannath-temple-spire.png",
+    alt: "Jagannath Temple Hilltop Spire",
+    category: "places",
+    title: "Jagannath Temple Hill Spire"
+  },
+  {
+    id: "g-plant-1",
+    url: "/images/places/steel-plant-night.png",
+    alt: "Bokaro Steel Plant Night Skyline",
+    category: "places",
+    title: "Bokaro Steel Plant (Twilight View)"
+  },
+  {
+    id: "g-plant-2",
+    url: "/images/places/steel-plant-day.png",
+    alt: "Bokaro Steel Plant Sunrise Panorama",
+    category: "places",
+    title: "Steel City Industrial Sunrise"
+  },
+  {
     id: "g-rooms-1",
     url: "/images/rooms/deluxe/main.jpg",
     alt: "Deluxe Room Interior",
