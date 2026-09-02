@@ -70,7 +70,7 @@ export function RestaurantPreview() {
           </div>
 
           {/* Right Subtitle Text customized for Hotel Reliance */}
-          <p className="text-xs sm:text-sm md:text-[15px] font-serif font-light text-[#5C4F46] max-w-md leading-relaxed md:text-right">
+          <p className="text-[15px] sm:text-[17px] md:text-[18px] font-serif italic text-[#4A3E37] max-w-lg leading-relaxed md:text-right font-normal">
             Step into Kwality Restaurant where a symphony of rich North Indian flavours, authentic tandoori delights, oriental specialties, and genuine hospitality leaves you feeling truly indulged.
           </p>
         </FadeUp>

@@ -39,7 +39,7 @@ export function OffersSection() {
           </div>
 
           {/* Right Description Text */}
-          <p className="text-xs sm:text-sm md:text-[15px] font-serif font-light text-[#5C4F46] max-w-md leading-relaxed md:text-right">
+          <p className="text-[15px] sm:text-[17px] md:text-[18px] font-serif italic text-[#4A3E37] max-w-lg leading-relaxed md:text-right font-normal">
             Dive into curated stay experiences, corporate long-stay privileges, and grand wedding celebration packages at Hotel Reliance, Bokaro Steel City.
           </p>
         </FadeUp>

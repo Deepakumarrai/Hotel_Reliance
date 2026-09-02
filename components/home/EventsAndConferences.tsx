@@ -46,7 +46,7 @@ export function EventsAndConferences() {
           </div>
 
           {/* Right Subtitle Text */}
-          <p className="text-xs sm:text-sm md:text-[15px] font-serif font-light text-[#5C4F46] max-w-md leading-relaxed md:text-right">
+          <p className="text-[15px] sm:text-[17px] md:text-[18px] font-serif italic text-[#4A3E37] max-w-lg leading-relaxed md:text-right font-normal">
             Hotel Reliance elevates every occasion into an awe-inspiring, immersive experience to cherish forever.
           </p>
         </FadeUp>
