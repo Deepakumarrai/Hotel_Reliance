@@ -17,21 +17,44 @@ export const metadata: Metadata = {
   description: "Discover the story, leadership team, and hospitality philosophy of Hotel Reliance in Bokaro Steel City.",
 };
 
-const coreValues = [
+const hospitalityStandards = [
   {
-    icon: <Heart className="w-8 h-8 text-gold" />,
+    id: "guests-first",
     title: "Guests First",
-    desc: "To deliver personalized care, anticipating lodging needs with a warm hospitality approach."
+    desc: "To deliver personalized care, anticipating lodging needs with a warm hospitality approach.",
+    image: "/images/standards/guest-first-hq.png",
+    icon: (
+      <svg className="w-6 h-6 text-[#9D783E]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+        <circle cx="12" cy="9.5" r="2" />
+        <path d="M9.5 14c.5-1.5 1.5-2 2.5-2s2 .5 2.5 2" />
+      </svg>
+    )
   },
   {
-    icon: <Award className="w-8 h-8 text-gold" />,
+    id: "premium-quality",
     title: "Premium Quality",
-    desc: "Maintaining strict standards of cleanliness, fresh ingredients, and responsive services."
+    desc: "Maintaining strict standards of cleanliness, fresh ingredients, and responsive services.",
+    image: "/images/standards/premium-quality-hq.png",
+    icon: (
+      <svg className="w-6 h-6 text-[#9D783E]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="8" r="6" />
+        <path d="M12 5.5l.8 1.6 1.8.3-1.3 1.3.3 1.8-1.6-.8-1.6.8.3-1.8-1.3-1.3 1.8-.3z" fill="currentColor" stroke="none" />
+        <path d="M8.21 13.89L7 22l5-3 5 3-1.21-8.11" />
+      </svg>
+    )
   },
   {
-    icon: <ShieldCheck className="w-8 h-8 text-gold" />,
+    id: "safety-security",
     title: "Safety & Security",
-    desc: "Providing round-the-clock security surveillance, monitored parking, and secure room card access."
+    desc: "Providing round-the-clock security surveillance, monitored parking, and secure room card access.",
+    image: "/images/standards/safety-security-hq.png",
+    icon: (
+      <svg className="w-6 h-6 text-[#9D783E]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+        <path d="m9 12 2 2 4-4" />
+      </svg>
+    )
   }
 ];
 
@@ -224,29 +247,99 @@ export default function AboutPage() {
         </Container>
       </section>
 
-      {/* Hospitality Core Values */}
-      <section className="py-20 bg-cream border-t border-border-custom">
-        <Container>
-          <SectionHeading
-            title="Our Hospitality Standards"
-            subtitle="CORE MOTTO"
-          />
+      {/* Our Hospitality Standards - Exact Matching Design */}
+      <section className="py-24 sm:py-28 bg-[#FAF7F2] border-t border-[#E8E1D7] relative overflow-hidden">
+        {/* Subtle Ambient Watermark Motifs */}
+        <div className="absolute -top-12 -left-12 w-64 h-64 bg-gradient-to-br from-[#BA8B32]/10 to-transparent rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-12 -right-12 w-72 h-72 bg-gradient-to-tl from-[#BA8B32]/10 to-transparent rounded-full blur-3xl pointer-events-none" />
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-4">
-            {coreValues.map((val, idx) => (
+        <Container className="max-w-6xl relative z-10 px-4 sm:px-6">
+          {/* Header matching exact layout and typography */}
+          <div className="text-center space-y-3 mb-16 sm:mb-20">
+            {/* Top Badge with Ornamental Line */}
+            <div className="flex items-center justify-center space-x-3 text-[#9D783E]">
+              <div className="w-12 sm:w-20 h-[1px] bg-[#C5A880]/60" />
+              <span className="text-[11px] sm:text-xs uppercase font-bold tracking-[0.28em]">
+                CORE MOTTO
+              </span>
+              <div className="w-12 sm:w-20 h-[1px] bg-[#C5A880]/60" />
+            </div>
+
+            {/* Top Fleuron ornament */}
+            <div className="flex items-center justify-center space-x-2 text-[#C5A880]/80 py-0.5">
+              <div className="w-16 h-[0.75px] bg-[#C5A880]/40" />
+              <svg className="w-4 h-4 fill-current text-[#BA8B32]" viewBox="0 0 24 24">
+                <path d="M12 2C11.5 5 9.5 7 7 8C9.5 9 11.5 11 12 14C12.5 11 14.5 9 17 8C14.5 7 12.5 5 12 2Z" />
+              </svg>
+              <div className="w-16 h-[0.75px] bg-[#C5A880]/40" />
+            </div>
+
+            {/* Main Title */}
+            <h2 className="text-3xl sm:text-4xl md:text-[44px] font-serif font-normal text-[#182333] tracking-tight">
+              Our Hospitality Standards
+            </h2>
+
+            {/* Bottom Fleuron ornament */}
+            <div className="flex items-center justify-center space-x-2 text-[#C5A880]/80 py-0.5">
+              <div className="w-16 h-[0.75px] bg-[#C5A880]/40" />
+              <svg className="w-4 h-4 fill-current text-[#BA8B32]" viewBox="0 0 24 24">
+                <path d="M12 2C11.5 5 9.5 7 7 8C9.5 9 11.5 11 12 14C12.5 11 14.5 9 17 8C14.5 7 12.5 5 12 2Z" />
+              </svg>
+              <div className="w-16 h-[0.75px] bg-[#C5A880]/40" />
+            </div>
+
+            {/* Subtitle */}
+            <p className="text-sm sm:text-[15px] font-serif italic text-[#6B5E55] font-light pt-1">
+              Guided by our values. Delivered with care.
+            </p>
+          </div>
+
+          {/* 3 Standards Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-10">
+            {hospitalityStandards.map((item) => (
               <div
-                key={idx}
-                className="bg-white border border-border-custom p-8 text-center space-y-4 hover:shadow-md transition-shadow"
+                key={item.id}
+                className="bg-[#FDFBF7] border border-[#E8E1D7] border-b-[3.5px] border-b-[#BA8B32] shadow-[0_4px_20px_rgba(0,0,0,0.06)] relative flex flex-col justify-between group transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
               >
-                <div className="w-16 h-16 bg-cream border border-border-custom flex items-center justify-center mx-auto rounded-full shadow-inner">
-                  {val.icon}
+                {/* Top Image Box with Circular Floating Badge */}
+                <div className="relative w-full aspect-[16/8.2] bg-[#181512]">
+                  {/* Circular Badge Overlapping Top Center */}
+                  <div className="absolute -top-7 left-1/2 -translate-x-1/2 z-20 w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-[#FAF7F2] border-2 border-[#D8C7B0] flex items-center justify-center shadow-md">
+                    <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-full border border-[#BA8B32]/40 flex items-center justify-center bg-[#FAF7F2]">
+                      {item.icon}
+                    </div>
+                  </div>
+
+                  <Image
+                    src={item.image}
+                    alt={item.title}
+                    fill
+                    unoptimized
+                    quality={100}
+                    sizes="(max-w-768px) 100vw, 33vw"
+                    className="object-cover object-center"
+                  />
                 </div>
-                <h3 className="text-xl font-serif font-normal text-dark">
-                  {val.title}
-                </h3>
-                <p className="text-xs text-muted leading-relaxed font-light">
-                  {val.desc}
-                </p>
+
+                {/* Card Content */}
+                <div className="px-6 sm:px-8 pt-7 pb-8 text-center flex-grow flex flex-col justify-between space-y-4 bg-[#FDFBF7]">
+                  <div>
+                    <h3 className="text-xl sm:text-[22px] font-serif text-[#182333] font-medium tracking-tight">
+                      {item.title}
+                    </h3>
+                    <div className="w-8 h-[1.5px] bg-[#BA8B32] mx-auto my-3" />
+                    <p className="text-[13px] sm:text-[14px] text-[#6B5E55] leading-relaxed font-light max-w-[260px] mx-auto">
+                      {item.desc}
+                    </p>
+                  </div>
+
+                  {/* Bottom 3 Dots */}
+                  <div className="flex justify-center space-x-1.5 text-[#BA8B32] text-xs pt-4 font-bold tracking-widest">
+                    <span>•</span>
+                    <span>•</span>
+                    <span>•</span>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
