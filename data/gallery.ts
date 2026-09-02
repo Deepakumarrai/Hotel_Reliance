@@ -16,6 +16,20 @@ export const galleryData: GalleryImage[] = [
     title: "Elegantly Designed Lobby"
   },
   {
+    id: "g-zoo-1",
+    url: "/images/places/biological-park.png",
+    alt: "Jawaharlal Nehru Biological Park Entrance Gate",
+    category: "places",
+    title: "Bokaro Biological Park (Main Gate)"
+  },
+  {
+    id: "g-zoo-2",
+    url: "/images/places/biological-park-hover.png",
+    alt: "Bokaro Zoo Deer Safari Enclosure",
+    category: "places",
+    title: "Bokaro Zoo (Deer Safari Habitat)"
+  },
+  {
     id: "g-dam-1",
     url: "/images/places/garga-dam-day.png",
     alt: "Garga Dam Spillway Rapids",
