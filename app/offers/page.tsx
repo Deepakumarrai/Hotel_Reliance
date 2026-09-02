@@ -37,20 +37,20 @@ export default function OffersPage() {
   return (
     <>
       {/* Luxury Hero Banner matching Screenshot */}
-      <section className="relative w-full h-[65vh] min-h-[500px] max-h-[720px] bg-black overflow-hidden flex items-end">
-        {/* Full-Bleed Background Lifestyle Photograph */}
+      <section className="relative w-full aspect-[16/8.5] sm:aspect-[21/9.5] min-h-[440px] max-h-[750px] bg-black overflow-hidden flex items-end">
+        {/* Full-Bleed Background Lifestyle Photograph without Cropping or Compression */}
         <div className="absolute inset-0 z-0">
           <Image
             src="/images/offers/image-copy.png"
             alt="Hotel Reliance Offers & Promotions"
             fill
             priority
-            quality={100}
+            unoptimized
             sizes="100vw"
-            className="object-cover object-[center_30%] brightness-[0.98] contrast-[1.03]"
+            className="object-cover object-[center_35%]"
           />
           {/* Subtle Top and Deep Bottom Vignette Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/15 to-black/40" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-black/30" />
         </div>
 
         {/* Hero Bottom Content matching Taj Typography */}

@@ -12,7 +12,7 @@ const diningExperiences = [
     id: "fine-dining",
     title: "KWALITY FINE DINING",
     subtitle: "Authentic North Indian & Multi-Cuisine Feasts",
-    image: "/images/restaurant/dining-bistro.jpg",
+    image: "/images/restaurant/image.png",
     link: "/restaurant#menu"
   },
   {

@@ -73,11 +73,12 @@ export function OffersSection() {
                 className="group flex flex-col space-y-4 transition-all duration-300 block"
               >
                 {/* Card Image Container */}
-                <div className="relative w-full aspect-[4/3] overflow-hidden bg-[#1E1815] shadow-sm">
+                <div className="relative w-full aspect-[16/10] overflow-hidden bg-[#1E1815] shadow-sm">
                   <Image
                     src={offer.image}
                     alt={offer.title}
                     fill
+                    unoptimized
                     sizes="(max-w-768px) 100vw, (max-w-1200px) 50vw, 33vw"
                     className="object-cover object-center w-full h-full transition-transform duration-700 ease-out group-hover:scale-105"
                   />
