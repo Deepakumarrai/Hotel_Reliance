@@ -40,7 +40,7 @@ export function PlacesPreview() {
           </div>
 
           {/* Right Subtitle Text */}
-          <p className="text-[15px] sm:text-[17px] md:text-[18px] font-serif italic text-[#4A3E37] max-w-lg leading-relaxed md:text-right font-normal">
+          <p className="text-[15.5px] sm:text-[17.5px] md:text-[19px] font-serif italic text-[#4A3E37] max-w-xl leading-[1.7] text-left md:text-right md:self-end font-normal">
             Iconic industrial heritage, tranquil lakeside parks, spiritual sanctums, and wildlife safari habitats are all within reach from Hotel Reliance.
           </p>
         </FadeUp>
