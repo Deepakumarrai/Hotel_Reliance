@@ -229,9 +229,10 @@ export default function RestaurantPage() {
                     src={spec.image}
                     alt={spec.name}
                     fill
+                    unoptimized
                     quality={100}
                     sizes="(max-w-768px) 100vw, 33vw"
-                    className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                    className="object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
                   />
                   <div className="absolute top-3 left-3 z-10 bg-black/80 backdrop-blur-sm px-2.5 py-1 text-[9px] uppercase tracking-widest text-[#D8B875] font-serif border border-white/10">
                     {spec.tag}

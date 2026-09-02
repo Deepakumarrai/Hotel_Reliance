@@ -183,14 +183,16 @@ export default function AboutPage() {
                 key={staff.id}
                 className="bg-cream border border-border-custom shadow-sm flex flex-col justify-between group overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-gold"
               >
-                {/* Staff Portrait Image */}
-                <div className="relative h-64 w-full bg-dark overflow-hidden">
+                {/* Staff Portrait Image with Natural Uncropped Aspect Ratio */}
+                <div className="relative aspect-[4/5] w-full bg-dark overflow-hidden">
                   <Image
                     src={staff.image}
                     alt={staff.name}
                     fill
+                    unoptimized
+                    quality={100}
                     sizes="(max-w-768px) 100vw, 25vw"
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="object-cover object-top group-hover:scale-105 transition-transform duration-500"
                   />
                   {staff.experience && (
                     <div className="absolute bottom-3 left-3 z-10 bg-dark/85 backdrop-blur-sm px-2.5 py-1 text-[9px] uppercase font-bold tracking-widest text-gold border border-gold/30">
