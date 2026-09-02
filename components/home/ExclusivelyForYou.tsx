@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, ChevronRight as ArrowIcon, Pause, Play } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronRight as ArrowIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Container } from "@/components/ui/Container";
 import { FadeUp } from "@/components/animation/FadeUp";
@@ -79,7 +79,7 @@ export function ExclusivelyForYou() {
     setCurrentIndex(nextIndex);
   };
 
-  // Subtle auto-advance every 6 seconds, pauses on hover
+  // Auto-advance every 6 seconds, pauses on hover
   useEffect(() => {
     if (!isAutoPlay || isHovered) return;
     const interval = setInterval(() => {
@@ -107,25 +107,48 @@ export function ExclusivelyForYou() {
     <section
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="py-20 sm:py-28 bg-[#0C0B0A] text-white overflow-hidden select-none border-t border-white/10 relative"
+      className="py-20 sm:py-28 relative text-white overflow-hidden select-none border-t border-white/15 bg-black"
     >
-      {/* Subtle Atmospheric Gold Glow behind cinema stage */}
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-[#BA8B32]/5 blur-[120px] pointer-events-none -z-10" />
+      {/* 100% Full-Bleed Synchronized Dynamic Background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentItem.id}
+            initial={{ opacity: 0, scale: 1.06 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.7, ease: "easeInOut" }}
+            className="absolute inset-0 w-full h-full"
+          >
+            <Image
+              src={currentItem.image}
+              alt={`${currentItem.title} background`}
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover object-center brightness-[0.55] contrast-110"
+            />
+            {/* Cinematic stage lighting & vignette overlays */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-black/80" />
+            <div className="absolute inset-0 bg-black/30 backdrop-blur-[1px]" />
+          </motion.div>
+        </AnimatePresence>
+      </div>
 
-      <Container className="max-w-7xl px-4 sm:px-6">
+      <Container className="max-w-7xl px-4 sm:px-6 relative z-10">
         {/* Top Header Row matching Taj Reference Layout */}
-        <FadeUp className="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6 mb-12 sm:mb-16 pb-6 sm:pb-8 border-b border-white/15">
+        <FadeUp className="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6 mb-12 sm:mb-16 pb-6 sm:pb-8 border-b border-white/20">
           {/* Left Title with Dash */}
           <div className="flex items-start space-x-3 sm:space-x-4">
             <div className="w-8 sm:w-16 h-[1.5px] bg-[#C5A880] mt-3 sm:mt-4 flex-shrink-0" />
-            <h2 className="text-2xl sm:text-4xl md:text-5xl font-serif font-normal tracking-[0.1em] sm:tracking-[0.14em] text-white uppercase leading-tight">
+            <h2 className="text-2xl sm:text-4xl md:text-5xl font-serif font-normal tracking-[0.1em] sm:tracking-[0.14em] text-white uppercase leading-tight drop-shadow-md">
               Exclusively
               <span className="block">For You</span>
             </h2>
           </div>
 
           {/* Right Subtitle Text */}
-          <p className="text-[15.5px] sm:text-[17.5px] md:text-[19px] font-serif italic text-white/85 max-w-xl leading-[1.7] text-left md:text-right md:self-end font-normal">
+          <p className="text-[15.5px] sm:text-[17.5px] md:text-[19px] font-serif italic text-white/90 max-w-xl leading-[1.7] text-left md:text-right md:self-end font-normal drop-shadow-md">
             Refinement and creativity intertwine with dreamlike destinations and soulful moments on each sojourn with Hotel Reliance.
           </p>
         </FadeUp>
@@ -134,23 +157,14 @@ export function ExclusivelyForYou() {
         <div className="relative">
           {/* Main 3-Column Cinema Spread */}
           <div className="grid grid-cols-12 gap-3 sm:gap-6 items-stretch">
-            {/* Left Preview Slide (Previous) with Dimmed Image and Centered Title */}
+            {/* Left Preview Slide (Previous) with Frosted Frame & Centered Title */}
             <div
               onClick={handlePrev}
-              className="hidden md:flex md:col-span-3 relative flex-col justify-center items-center border border-white/20 overflow-hidden cursor-pointer group bg-[#161616] transition-all duration-500 hover:border-white/50"
+              className="hidden md:flex md:col-span-3 relative flex-col justify-center items-center border border-white/40 backdrop-blur-sm bg-black/40 overflow-hidden cursor-pointer group transition-all duration-500 hover:border-white/75 hover:bg-black/20 shadow-xl min-h-[420px]"
             >
-              <Image
-                src={prevItem.image}
-                alt={prevItem.sideLabel}
-                fill
-                sizes="25vw"
-                className="object-cover object-center opacity-25 grayscale brightness-75 group-hover:scale-105 transition-all duration-700"
-              />
-              <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
-
               {/* Centered Side Title in Pure Serif */}
               <div className="relative z-10 px-6 text-center">
-                <span className="font-serif text-xs sm:text-[13px] uppercase tracking-[0.24em] text-white/90 font-light group-hover:text-[#BA8B32] transition-colors leading-relaxed block">
+                <span className="font-serif text-xs sm:text-[13.5px] uppercase tracking-[0.24em] text-white font-light group-hover:text-[#BA8B32] transition-colors leading-relaxed block drop-shadow-lg">
                   {prevItem.sideLabel}
                 </span>
               </div>
@@ -161,7 +175,7 @@ export function ExclusivelyForYou() {
                   e.stopPropagation();
                   handlePrev();
                 }}
-                className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full border border-white/30 bg-black/60 backdrop-blur-sm text-white/90 hover:bg-[#BA8B32] hover:border-[#BA8B32] hover:text-white transition-all duration-300 flex items-center justify-center shadow-2xl cursor-pointer group-hover:scale-105"
+                className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full border border-white/50 bg-black/60 backdrop-blur-md text-white hover:bg-[#BA8B32] hover:border-[#BA8B32] transition-all duration-300 flex items-center justify-center shadow-2xl cursor-pointer group-hover:scale-105"
                 aria-label="Previous slide"
               >
                 <ChevronLeft className="w-5 h-5" />
@@ -169,7 +183,7 @@ export function ExclusivelyForYou() {
             </div>
 
             {/* Center Active Slide (Main Feature with seamlessly attached white box) */}
-            <div className="col-span-12 md:col-span-6 flex flex-col shadow-2xl overflow-hidden bg-white">
+            <div className="col-span-12 md:col-span-6 flex flex-col shadow-2xl overflow-hidden bg-white z-10">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={currentItem.id}
@@ -215,23 +229,14 @@ export function ExclusivelyForYou() {
               </AnimatePresence>
             </div>
 
-            {/* Right Preview Slide (Next) with Dimmed Image and Centered Title */}
+            {/* Right Preview Slide (Next) with Frosted Frame & Centered Title */}
             <div
               onClick={handleNext}
-              className="hidden md:flex md:col-span-3 relative flex-col justify-center items-center border border-white/20 overflow-hidden cursor-pointer group bg-[#161616] transition-all duration-500 hover:border-white/50"
+              className="hidden md:flex md:col-span-3 relative flex-col justify-center items-center border border-white/40 backdrop-blur-sm bg-black/40 overflow-hidden cursor-pointer group transition-all duration-500 hover:border-white/75 hover:bg-black/20 shadow-xl min-h-[420px]"
             >
-              <Image
-                src={nextItem.image}
-                alt={nextItem.sideLabel}
-                fill
-                sizes="25vw"
-                className="object-cover object-center opacity-25 grayscale brightness-75 group-hover:scale-105 transition-all duration-700"
-              />
-              <div className="absolute inset-0 bg-gradient-to-l from-black/80 via-black/50 to-transparent" />
-
               {/* Centered Side Title in Pure Serif */}
               <div className="relative z-10 px-6 text-center">
-                <span className="font-serif text-xs sm:text-[13px] uppercase tracking-[0.24em] text-white/90 font-light group-hover:text-[#BA8B32] transition-colors leading-relaxed block">
+                <span className="font-serif text-xs sm:text-[13.5px] uppercase tracking-[0.24em] text-white font-light group-hover:text-[#BA8B32] transition-colors leading-relaxed block drop-shadow-lg">
                   {nextItem.sideLabel}
                 </span>
               </div>
@@ -242,7 +247,7 @@ export function ExclusivelyForYou() {
                   e.stopPropagation();
                   handleNext();
                 }}
-                className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full border border-white/30 bg-black/60 backdrop-blur-sm text-white/90 hover:bg-[#BA8B32] hover:border-[#BA8B32] hover:text-white transition-all duration-300 flex items-center justify-center shadow-2xl cursor-pointer group-hover:scale-105"
+                className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full border border-white/50 bg-black/60 backdrop-blur-md text-white hover:bg-[#BA8B32] hover:border-[#BA8B32] transition-all duration-300 flex items-center justify-center shadow-2xl cursor-pointer group-hover:scale-105"
                 aria-label="Next slide"
               >
                 <ChevronRight className="w-5 h-5" />
@@ -250,9 +255,9 @@ export function ExclusivelyForYou() {
             </div>
           </div>
 
-          {/* Luxury Timeline Navigation & Progress Bar Bar */}
-          <div className="mt-8 pt-4 flex items-center justify-between max-w-md mx-auto px-4 text-xs font-serif text-white/60">
-            <span className="font-mono text-[11px] tracking-widest text-[#BA8B32]">
+          {/* Luxury Timeline Navigation & Progress Bar */}
+          <div className="mt-8 pt-4 flex items-center justify-between max-w-md mx-auto px-4 text-xs font-serif text-white/80">
+            <span className="font-mono text-[11px] tracking-widest text-[#BA8B32] font-bold">
               0{currentIndex + 1}
             </span>
 
@@ -266,14 +271,14 @@ export function ExclusivelyForYou() {
                     setCurrentIndex(i);
                   }}
                   className={`h-[2px] flex-grow transition-all duration-500 rounded-full cursor-pointer ${
-                    i === currentIndex ? "bg-[#BA8B32] h-[2.5px]" : "bg-white/20 hover:bg-white/40"
+                    i === currentIndex ? "bg-[#BA8B32] h-[2.5px]" : "bg-white/30 hover:bg-white/60"
                   }`}
                   aria-label={`Go to slide ${i + 1}`}
                 />
               ))}
             </div>
 
-            <span className="font-mono text-[11px] tracking-widest text-white/40">
+            <span className="font-mono text-[11px] tracking-widest text-white/50">
               0{exclusivelyData.length}
             </span>
           </div>
@@ -287,7 +292,7 @@ export function ExclusivelyForYou() {
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
-            <span className="text-xs font-serif italic text-white/70">
+            <span className="text-xs font-serif italic text-white font-medium">
               {currentItem.sideLabel}
             </span>
             <button
