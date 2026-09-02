@@ -2,16 +2,17 @@ import React from "react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { Sparkles, Award, ShieldCheck, Heart } from "lucide-react";
+import { Sparkles, Award, ShieldCheck, Heart, Play, Users, CheckCircle2, ArrowRight } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Button } from "@/components/ui/Button";
 import { HomeCTA } from "@/components/home/HomeCTA";
 import { hotelData } from "@/data/hotel";
+import { staffData } from "@/data/staff";
 
 export const metadata: Metadata = {
-  title: "About Hotel Reliance | Bokaro Steel City",
-  description: "Learn about the story, hospitality standards, and facilities of Hotel Reliance. A premier 45+ room property in Bokaro Steel City.",
+  title: "About Hotel Reliance | Our Story & Hospitality Team",
+  description: "Discover the story, leadership team, and hospitality philosophy of Hotel Reliance in Bokaro Steel City.",
 };
 
 const coreValues = [
@@ -32,6 +33,14 @@ const coreValues = [
   }
 ];
 
+const videoStages = [
+  { title: "Grand Facade & Entry", desc: "Co-Operative Colony main entrance and dedicated valet parking." },
+  { title: "Warm Reception Lobby", desc: "Marble check-in counters and 24/7 guest concierge." },
+  { title: "Suites & Accommodations", desc: "Deluxe, Executive, Premium, and Family suite walkthrough." },
+  { title: "Kwality Restaurant", desc: "Multi-cuisine live buffet and fine dining atmosphere." },
+  { title: "Banquets & Open Lawn", desc: "AC banquet hall and 300+ guest celebration lawn." }
+];
+
 export default function AboutPage() {
   return (
     <>
@@ -50,6 +59,9 @@ export default function AboutPage() {
             About Hotel Reliance
           </h1>
           <div className="w-16 h-[2px] bg-gold mx-auto mt-4" />
+          <p className="text-xs sm:text-sm text-white/80 max-w-xl mx-auto font-light leading-relaxed pt-2">
+            A premier hospitality destination in Bokaro Steel City, blending traditional Indian warmth with modern corporate comfort.
+          </p>
         </Container>
       </section>
 
@@ -69,23 +81,23 @@ export default function AboutPage() {
                 {hotelData.description}
               </p>
               <p className="text-sm text-muted leading-relaxed font-light">
-                For years, Hotel Reliance has set a benchmark for business travel lodging and grand events hosting in Bokaro Steel City. We recognize that hospitality is in the details. From our welcoming reception lobby to our room cleanliness routines and signature multi-cuisine recipes at **Kwality Restaurant**, every operational step is tailored for comfort.
+                For years, Hotel Reliance has set a benchmark for business travel lodging and grand events hosting in Bokaro Steel City. We recognize that hospitality is in the details. From our welcoming reception lobby to our room cleanliness routines and signature multi-cuisine recipes at <strong>Kwality Restaurant</strong>, every operational step is tailored for comfort.
               </p>
-              <p className="text-sm text-muted leading-relaxed font-light font-medium italic">
-                “We strive to offer corporate professionals and visiting families a home away from home, ensuring a seamless lodging, dining, and celebrating experience.”
+              <p className="text-sm text-dark font-serif italic border-l-2 border-gold pl-4 py-1">
+                &ldquo;We strive to offer corporate professionals and visiting families a home away from home, ensuring a seamless lodging, dining, and celebrating experience.&rdquo;
               </p>
             </div>
 
             {/* Side Image */}
             <div className="lg:col-span-5 relative">
               <div className="absolute -inset-4 border-2 border-gold/15 -z-10 translate-x-2 translate-y-2 hidden sm:block" />
-              <div className="image-zoom-hover border border-border-custom shadow-xl">
+              <div className="image-zoom-hover border border-border-custom shadow-xl bg-dark">
                 <Image
                   src="/images/gallery/hotel-ext.jpg"
                   alt="Hotel Reliance Facade"
                   width={500}
                   height={400}
-                  className="w-full h-[320px] object-cover"
+                  className="w-full h-[340px] object-cover"
                 />
               </div>
             </div>
@@ -93,8 +105,142 @@ export default function AboutPage() {
         </Container>
       </section>
 
-      {/* Hospitality Core Values */}
+      {/* Cinematic Hotel Tour & Video Section */}
+      <section className="py-20 bg-dark text-white border-t border-border-custom">
+        <Container>
+          <div className="text-center space-y-3 mb-12">
+            <span className="text-xs uppercase tracking-[0.25em] text-gold font-bold">
+              EXPERIENCE RELIANCE
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-serif font-normal">
+              Cinematic Hotel Walkthrough
+            </h2>
+            <div className="w-12 h-[2px] bg-gold mx-auto" />
+            <p className="text-xs sm:text-sm text-white/70 max-w-xl mx-auto font-light">
+              Take an immersive visual journey from our property exterior and welcoming reception to luxury guest suites, dining rooms, and celebration lawns.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            {/* Video Player Display Card */}
+            <div className="lg:col-span-7 relative h-80 sm:h-96 border border-white/10 overflow-hidden group shadow-2xl bg-black">
+              <Image
+                src="/images/gallery/hotel-lobby.jpg"
+                alt="Hotel Reliance Video Tour"
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-700 opacity-75"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent flex flex-col justify-between p-6 z-10">
+                <div className="flex items-center space-x-2 text-gold text-[10px] uppercase font-bold tracking-widest bg-dark/70 backdrop-blur-sm px-3 py-1 w-fit border border-gold/30">
+                  <Sparkles className="w-3 h-3" />
+                  <span>Full Property Walkthrough</span>
+                </div>
+
+                <div className="text-center my-auto">
+                  <div className="w-16 h-16 bg-gold text-dark rounded-full flex items-center justify-center mx-auto shadow-2xl transform group-hover:scale-110 transition-transform duration-300 cursor-pointer">
+                    <Play className="w-7 h-7 fill-dark ml-1" />
+                  </div>
+                  <span className="text-xs font-serif uppercase tracking-widest text-white mt-3 block">
+                    Watch Hotel Experience Video
+                  </span>
+                </div>
+
+                <div className="text-xs text-white/80 font-light flex items-center justify-between">
+                  <span>Outside → Reception → Rooms → Restaurant → Banquets</span>
+                  <span className="text-gold font-mono">4K Ultra HD</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Tour Highlights List */}
+            <div className="lg:col-span-5 space-y-4">
+              <h3 className="text-xl font-serif text-gold">
+                Tour Sequence Highlights
+              </h3>
+              <div className="space-y-3">
+                {videoStages.map((stage, idx) => (
+                  <div
+                    key={idx}
+                    className="p-3.5 bg-white/5 border border-white/10 flex items-start space-x-3 hover:border-gold/40 transition-colors"
+                  >
+                    <span className="w-6 h-6 rounded-full bg-gold/20 text-gold text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
+                      0{idx + 1}
+                    </span>
+                    <div>
+                      <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+                        {stage.title}
+                      </h4>
+                      <p className="text-[11px] text-white/60 font-light mt-0.5">
+                        {stage.desc}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* The People Behind Your Stay / Our Hospitality Team */}
       <section className="py-20 bg-white border-t border-border-custom">
+        <Container>
+          <SectionHeading
+            title="The People Behind Your Stay"
+            subtitle="OUR HOSPITALITY TEAM"
+          />
+
+          <p className="text-xs sm:text-sm text-muted text-center max-w-2xl mx-auto -mt-6 mb-12 font-light leading-relaxed">
+            Meet the seasoned hoteliers, executive chefs, and guest relations managers dedicated to making your visit to Bokaro Steel City effortless and memorable.
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {staffData.map((staff) => (
+              <div
+                key={staff.id}
+                className="bg-cream border border-border-custom shadow-sm flex flex-col justify-between group overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-gold"
+              >
+                {/* Staff Portrait Image */}
+                <div className="relative h-64 w-full bg-dark overflow-hidden">
+                  <Image
+                    src={staff.image}
+                    alt={staff.name}
+                    fill
+                    sizes="(max-w-768px) 100vw, 25vw"
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  {staff.experience && (
+                    <div className="absolute bottom-3 left-3 z-10 bg-dark/85 backdrop-blur-sm px-2.5 py-1 text-[9px] uppercase font-bold tracking-widest text-gold border border-gold/30">
+                      {staff.experience}
+                    </div>
+                  )}
+                </div>
+
+                {/* Staff Details */}
+                <div className="p-6 flex-grow flex flex-col justify-between space-y-3">
+                  <div>
+                    <span className="text-[9px] uppercase font-bold tracking-widest text-gold block">
+                      {staff.department}
+                    </span>
+                    <h3 className="text-lg font-serif text-dark font-medium mt-0.5">
+                      {staff.name}
+                    </h3>
+                    <p className="text-xs text-primary font-semibold mb-2">
+                      {staff.role}
+                    </p>
+                    <p className="text-xs text-muted leading-relaxed font-light line-clamp-3">
+                      {staff.bio}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      {/* Hospitality Core Values */}
+      <section className="py-20 bg-cream border-t border-border-custom">
         <Container>
           <SectionHeading
             title="Our Hospitality Standards"
@@ -105,9 +251,9 @@ export default function AboutPage() {
             {coreValues.map((val, idx) => (
               <div
                 key={idx}
-                className="bg-cream border border-border-custom p-8 text-center space-y-4 hover:shadow-md transition-shadow"
+                className="bg-white border border-border-custom p-8 text-center space-y-4 hover:shadow-md transition-shadow"
               >
-                <div className="w-16 h-16 bg-white border border-border-custom flex items-center justify-center mx-auto rounded-full shadow-inner">
+                <div className="w-16 h-16 bg-cream border border-border-custom flex items-center justify-center mx-auto rounded-full shadow-inner">
                   {val.icon}
                 </div>
                 <h3 className="text-xl font-serif font-normal text-dark">
@@ -116,33 +262,6 @@ export default function AboutPage() {
                 <p className="text-xs text-muted leading-relaxed font-light">
                   {val.desc}
                 </p>
-              </div>
-            ))}
-          </div>
-        </Container>
-      </section>
-
-      {/* highlights grid */}
-      <section className="py-20 bg-cream border-t border-border-custom">
-        <Container className="max-w-4xl text-center space-y-6">
-          <SectionHeading
-            title="Premium Conveniences"
-            subtitle="HOTEL HIGHLIGHTS"
-          />
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 text-left">
-            {[
-              "45+ Lodging Units",
-              "Kwality Multi-Cuisine Restaurant",
-              "Indoor AC Banquet Hall",
-              "Executive Boardrooms",
-              "Monitored Security Parking",
-              "Complimentary High-speed Wi-Fi",
-              "24/7 Room Dining Services",
-              "Close to Transport Hubs"
-            ].map((high, idx) => (
-              <div key={idx} className="flex items-center space-x-2 text-xs font-semibold text-dark p-3 bg-white border border-border-custom">
-                <span className="w-2 h-2 rounded-full bg-gold flex-shrink-0" />
-                <span>{high}</span>
               </div>
             ))}
           </div>

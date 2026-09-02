@@ -135,14 +135,14 @@ export function Navbar() {
           </Link>
 
           {/* Desktop Navigation links */}
-          <nav className="hidden lg:flex items-center space-x-7">
+          <nav className="hidden lg:flex items-center space-x-3.5 xl:space-x-5">
             {headerNavigation.map((item) => {
               const isActive = pathname === item.path;
               return (
                 <Link
                   key={item.name}
                   href={item.path}
-                  className={`text-xs font-bold tracking-[0.15em] transition-all duration-200 hover:text-gold relative py-2 ${
+                  className={`text-[11px] xl:text-xs font-bold tracking-[0.12em] transition-all duration-200 hover:text-gold relative py-2 whitespace-nowrap ${
                     isActive
                       ? "text-gold font-extrabold"
                       : isScrolled

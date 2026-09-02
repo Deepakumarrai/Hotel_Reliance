@@ -10,10 +10,13 @@ export interface Offer {
   title: string;
   description: string;
   discountCode: string;
-  discountValue: string; // e.g., "15% OFF" or "Flat ₹1000 OFF"
+  discountValue: string; // e.g., "15% OFF" or "Complimentary Breakfast"
   expiryDate: string;
   image: string;
   featured?: boolean;
+  category?: "Staycation" | "Corporate" | "Wedding & Banquet" | "Dining" | "Seasonal";
+  inclusions?: string[];
+  terms?: string;
 }
 
 export interface Testimonial {
@@ -30,10 +33,28 @@ export interface FAQ {
   id: string;
   question: string;
   answer: string;
-  category?: string;
+  category?: "General" | "Booking & Tariff" | "Dining & Kwality" | "Banquets & Events" | "Amenities & Services";
 }
 
 export interface NavigationItem {
   name: string;
   path: string;
+}
+
+export interface StaffMember {
+  id: string;
+  name: string;
+  role: string;
+  department: string;
+  bio: string;
+  image: string;
+  experience?: string;
+}
+
+export interface PolicySection {
+  id: string;
+  title: string;
+  iconName: string;
+  summary: string;
+  rules: string[];
 }
