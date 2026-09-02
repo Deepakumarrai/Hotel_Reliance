@@ -123,33 +123,14 @@ export default function AboutPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             {/* Video Player Display Card */}
-            <div className="lg:col-span-7 relative h-80 sm:h-96 border border-white/10 overflow-hidden group shadow-2xl bg-black">
-              <Image
-                src="/images/gallery/hotel-lobby.jpg"
-                alt="Hotel Reliance Video Tour"
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-700 opacity-75"
+            <div className="lg:col-span-7 relative h-80 sm:h-96 border border-white/15 overflow-hidden shadow-2xl bg-black rounded-sm">
+              <video
+                src="/videos/hero.mp4"
+                controls
+                playsInline
+                className="w-full h-full object-cover"
+                poster="/images/gallery/hotel-lobby.jpg"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent flex flex-col justify-between p-6 z-10">
-                <div className="flex items-center space-x-2 text-gold text-[10px] uppercase font-bold tracking-widest bg-dark/70 backdrop-blur-sm px-3 py-1 w-fit border border-gold/30">
-                  <Sparkles className="w-3 h-3" />
-                  <span>Full Property Walkthrough</span>
-                </div>
-
-                <div className="text-center my-auto">
-                  <div className="w-16 h-16 bg-gold text-dark rounded-full flex items-center justify-center mx-auto shadow-2xl transform group-hover:scale-110 transition-transform duration-300 cursor-pointer">
-                    <Play className="w-7 h-7 fill-dark ml-1" />
-                  </div>
-                  <span className="text-xs font-serif uppercase tracking-widest text-white mt-3 block">
-                    Watch Hotel Experience Video
-                  </span>
-                </div>
-
-                <div className="text-xs text-white/80 font-light flex items-center justify-between">
-                  <span>Outside → Reception → Rooms → Restaurant → Banquets</span>
-                  <span className="text-gold font-mono">4K Ultra HD</span>
-                </div>
-              </div>
             </div>
 
             {/* Tour Highlights List */}

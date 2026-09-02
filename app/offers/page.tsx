@@ -46,8 +46,8 @@ export default function OffersPage() {
           <span className="text-xs uppercase tracking-[0.25em] text-gold font-bold">
             SPECIAL PRIVILEGES
           </span>
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif font-normal">
-            Offers & Packages
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif font-normal tracking-[0.08em] uppercase">
+            Exclusive Offers
           </h1>
           <div className="w-16 h-[2px] bg-gold mx-auto mt-4" />
           <p className="text-xs sm:text-sm text-white/80 max-w-xl mx-auto font-light leading-relaxed pt-2">
@@ -57,26 +57,36 @@ export default function OffersPage() {
       </section>
 
       {/* Offers Listing */}
-      <section className="py-20 bg-cream">
+      <section className="py-20 bg-[#FAF8F5]">
         <Container>
-          {/* Category Tabs */}
-          <div className="flex flex-wrap items-center justify-center gap-2 mb-12">
-            {CATEGORIES.map((cat) => {
-              const isActive = activeCategory === cat.id;
-              return (
-                <button
-                  key={cat.id}
-                  onClick={() => setActiveCategory(cat.id)}
-                  className={`px-4 py-2 text-xs uppercase tracking-wider font-semibold rounded-sm border transition-all cursor-pointer ${
-                    isActive
-                      ? "bg-primary text-white border-primary shadow-sm"
-                      : "bg-white text-muted border-border-custom hover:border-gold hover:text-dark"
-                  }`}
-                >
-                  {cat.label}
-                </button>
-              );
-            })}
+          {/* Top Section Header with Dash */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 pb-6 border-b border-[#E8E1D7]">
+            <div className="flex items-center space-x-4">
+              <div className="w-12 h-[1.5px] bg-[#C5A880] flex-shrink-0" />
+              <h2 className="text-2xl sm:text-4xl font-serif tracking-[0.12em] uppercase text-[#2B2320]">
+                Curated Packages
+              </h2>
+            </div>
+
+            {/* Category Tabs */}
+            <div className="flex flex-wrap gap-2">
+              {CATEGORIES.map((cat) => {
+                const isActive = activeCategory === cat.id;
+                return (
+                  <button
+                    key={cat.id}
+                    onClick={() => setActiveCategory(cat.id)}
+                    className={`px-3.5 py-1.5 text-xs uppercase tracking-wider font-semibold rounded-sm border transition-all cursor-pointer ${
+                      isActive
+                        ? "bg-primary text-white border-primary shadow-sm"
+                        : "bg-white text-muted border-border-custom hover:border-gold hover:text-dark"
+                    }`}
+                  >
+                    {cat.label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           {/* Offers Grid */}
@@ -84,10 +94,10 @@ export default function OffersPage() {
             {filteredOffers.map((offer) => (
               <div
                 key={offer.id}
-                className="bg-white border border-border-custom shadow-md flex flex-col justify-between group overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-gold"
+                className="bg-white border border-[#E8E1D7] shadow-sm flex flex-col justify-between group overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-[#C5A880]"
               >
                 {/* Offer Image & Discount Banner */}
-                <div className="relative h-60 w-full overflow-hidden bg-dark">
+                <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#1E1815]">
                   <Image
                     src={offer.image}
                     alt={offer.title}
@@ -96,12 +106,12 @@ export default function OffersPage() {
                     className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                   />
                   <div className="absolute top-3 left-3 z-20">
-                    <Badge variant="gold" className="shadow-md">
+                    <Badge variant="gold" className="shadow-md font-serif text-[10px] tracking-wider">
                       {offer.discountValue}
                     </Badge>
                   </div>
                   {offer.category && (
-                    <div className="absolute bottom-3 left-3 z-20 bg-dark/80 backdrop-blur-sm px-2.5 py-1 text-[9px] uppercase font-bold tracking-widest text-white border border-white/10">
+                    <div className="absolute bottom-3 left-3 z-20 bg-dark/85 backdrop-blur-sm px-2.5 py-1 text-[9px] uppercase font-bold tracking-widest text-white border border-white/10">
                       {offer.category}
                     </div>
                   )}
@@ -110,8 +120,9 @@ export default function OffersPage() {
                 {/* Offer Body */}
                 <div className="p-6 flex-grow flex flex-col justify-between space-y-5">
                   <div className="space-y-3">
-                    <h3 className="text-xl sm:text-2xl font-normal font-serif text-dark group-hover:text-primary transition-colors">
-                      {offer.title}
+                    <h3 className="text-lg sm:text-xl font-normal font-serif text-dark group-hover:text-primary transition-colors flex items-center">
+                      <span className="w-3.5 h-[1px] bg-[#C5A880] mr-2 flex-shrink-0" />
+                      <span className="truncate">{offer.title}</span>
                     </h3>
                     <p className="text-xs text-muted leading-relaxed font-light">
                       {offer.description}
@@ -186,7 +197,7 @@ export default function OffersPage() {
           </div>
 
           {/* Direct Booking Advantage Guarantee */}
-          <div className="mt-16 bg-white border border-border-custom p-8 shadow-sm">
+          <div className="mt-16 bg-white border border-[#E8E1D7] p-8 shadow-sm">
             <div className="flex flex-col md:flex-row items-center justify-between gap-6">
               <div className="space-y-2 text-center md:text-left">
                 <div className="flex items-center justify-center md:justify-start space-x-2 text-gold">

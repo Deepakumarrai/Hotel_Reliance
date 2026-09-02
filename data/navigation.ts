@@ -1,15 +1,25 @@
 import { NavigationItem } from "@/types";
 
-export const headerNavigation: NavigationItem[] = [
+export const mainHeaderNavigation: NavigationItem[] = [
   { name: "HOME", path: "/" },
   { name: "ROOMS", path: "/rooms" },
   { name: "ABOUT US", path: "/about" },
   { name: "BANQUET", path: "/banquet" },
-  { name: "RESTAURANT", path: "/restaurant" },
-  { name: "GALLERY", path: "/gallery" },
-  { name: "OFFERS", path: "/offers" },
-  { name: "PLACES", path: "/places" },
+  { name: "RESTAURANT", path: "/restaurant" }
+];
+
+export const moreHeaderNavigation: NavigationItem[] = [
+  { name: "PHOTO GALLERY", path: "/gallery" },
+  { name: "OFFERS & PACKAGES", path: "/offers" },
+  { name: "LOCAL ATTRACTIONS", path: "/places" },
+  { name: "FAQS", path: "/faq" },
+  { name: "HOTEL POLICIES", path: "/policies" },
   { name: "CONTACT US", path: "/contact" }
+];
+
+export const headerNavigation: NavigationItem[] = [
+  ...mainHeaderNavigation,
+  ...moreHeaderNavigation
 ];
 
 export const footerQuickLinks: NavigationItem[] = [

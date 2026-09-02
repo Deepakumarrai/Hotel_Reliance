@@ -2,7 +2,8 @@
 
 import React from "react";
 import Image from "next/image";
-import { MapPin, Sun, Moon, Sunset, Sparkles } from "lucide-react";
+import Link from "next/link";
+import { MapPin, Sun, Moon, Sunset, Sparkles, ArrowRight } from "lucide-react";
 import { Place } from "@/types/place";
 
 interface PlaceCardProps {
@@ -17,10 +18,11 @@ export function PlaceCard({ place, layout = "vertical" }: PlaceCardProps) {
   const isTemple = hoverLabel.toLowerCase().includes("courtyard") || hoverLabel.toLowerCase().includes("sanctum") || hoverLabel.toLowerCase().includes("darshan");
 
   return (
-    <div
+    <Link
+      href={`/places/${place.slug}`}
       className={`bg-white border border-border-custom shadow-md flex ${
         isHorizontal ? "flex-col sm:flex-row" : "flex-col"
-      } justify-between group overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-gold/60 h-full`}
+      } justify-between group overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-gold/60 h-full block cursor-pointer`}
     >
       {/* Interactive Image Container */}
       <div
@@ -68,7 +70,7 @@ export function PlaceCard({ place, layout = "vertical" }: PlaceCardProps) {
             {/* Away Pill */}
             <div className="flex items-center space-x-1.5 px-2.5 py-1 bg-dark/80 backdrop-blur-sm text-white text-[9px] uppercase font-bold tracking-wider rounded-full border border-white/20 group-hover:opacity-0 transition-opacity duration-300 shadow-md">
               <Sun className="w-3 h-3 text-amber-400 animate-pulse" />
-              <span>Main View (Hover to Explore)</span>
+              <span>Main View</span>
             </div>
             {/* Hover Pill */}
             <div className="absolute inset-0 flex items-center space-x-1.5 px-2.5 py-1 bg-primary/95 backdrop-blur-sm text-gold text-[9px] uppercase font-bold tracking-wider rounded-full border border-gold/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-md whitespace-nowrap">
@@ -96,15 +98,16 @@ export function PlaceCard({ place, layout = "vertical" }: PlaceCardProps) {
           </p>
         </div>
 
-        <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-wider text-muted/80 pt-3 border-t border-border-custom">
-          <span>{place.distance}</span>
-          {place.hoverImage && (
-            <span className="text-gold text-[9px] lowercase font-normal italic">
-              hover over card for {hoverLabel.toLowerCase()}
-            </span>
-          )}
+        <div className="flex items-center justify-between pt-3 border-t border-border-custom">
+          <span className="text-[10px] uppercase font-bold tracking-wider text-muted/80">
+            {place.distance}
+          </span>
+          <div className="flex items-center text-[10px] uppercase tracking-wider font-serif font-bold text-primary group-hover:text-gold transition-colors">
+            <span>Explore History</span>
+            <ArrowRight className="w-3 h-3 ml-1 group-hover:translate-x-1 transition-transform" />
+          </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

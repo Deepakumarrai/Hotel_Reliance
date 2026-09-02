@@ -140,7 +140,7 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
                 >
                   <Link
                     href={item.path}
-                    className={`text-xs font-bold tracking-[0.15em] uppercase transition-colors py-2 border-b border-cream hover:text-gold block ${
+                    className={`text-sm sm:text-[15px] font-bold tracking-[0.14em] uppercase transition-colors py-2.5 border-b border-cream hover:text-gold block ${
                       isActive ? "text-gold pl-2 border-l-2 border-l-gold" : "text-dark"
                     }`}
                     onClick={onClose}
@@ -190,10 +190,10 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
         {/* Bottom Drawer Actions */}
         <div className="pt-4 border-t border-border-custom space-y-3 bg-cream -mx-6 -mb-6 p-6">
           <Link href="/booking" onClick={onClose} className="block w-full">
-            <Button variant="primary" fullWidth size="md" className="uppercase text-xs tracking-widest font-bold">
-              <Calendar className="w-4 h-4 mr-2" />
-              Book Online
-            </Button>
+            <button className="w-full bg-[#BA8B32] hover:bg-[#A67B22] text-white font-bold text-xs tracking-[0.18em] uppercase py-3 rounded-sm shadow-md transition-all duration-300 flex items-center justify-center cursor-pointer border border-[#BA8B32]">
+              <Calendar className="w-4 h-4 mr-2 text-white" />
+              BOOK A STAY
+            </button>
           </Link>
           <div className="text-[11px] text-muted space-y-1">
             <div className="flex items-center">
