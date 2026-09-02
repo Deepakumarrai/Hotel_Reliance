@@ -9,7 +9,6 @@ import { EventsAndConferences } from "@/components/home/EventsAndConferences";
 import { PlacesPreview } from "@/components/home/PlacesPreview";
 import { GalleryPreview } from "@/components/home/GalleryPreview";
 import { OffersSection } from "@/components/home/OffersSection";
-import { TestimonialsSection } from "@/components/home/TestimonialsSection";
 import { HomeCTA } from "@/components/home/HomeCTA";
 
 export default function Home() {
@@ -25,7 +24,6 @@ export default function Home() {
       <PlacesPreview />
       <GalleryPreview />
       <OffersSection />
-      <TestimonialsSection />
       <HomeCTA />
     </>
   );

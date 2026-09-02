@@ -7,6 +7,7 @@ import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Button } from "@/components/ui/Button";
 import { HomeCTA } from "@/components/home/HomeCTA";
+import { TestimonialsSection } from "@/components/home/TestimonialsSection";
 import { hotelData } from "@/data/hotel";
 import { staffData } from "@/data/staff";
 
@@ -248,6 +249,9 @@ export default function AboutPage() {
           </div>
         </Container>
       </section>
+
+      {/* Guest Reviews & Testimonials Section */}
+      <TestimonialsSection />
 
       <HomeCTA />
     </>
