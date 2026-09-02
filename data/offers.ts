@@ -8,7 +8,7 @@ export const offersData: Offer[] = [
     discountCode: "WEEKENDSPL",
     discountValue: "Free Breakfast + Upgrade",
     expiryDate: "Dec 31, 2026",
-    image: "/images/offers/weekend.jpg",
+    image: "/images/offers/image-copy.png",
     featured: true,
     category: "Staycation",
     inclusions: [
