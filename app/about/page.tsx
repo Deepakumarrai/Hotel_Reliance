@@ -8,6 +8,7 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Button } from "@/components/ui/Button";
 import { HomeCTA } from "@/components/home/HomeCTA";
 import { TestimonialsSection } from "@/components/home/TestimonialsSection";
+import { GalleryPreview } from "@/components/home/GalleryPreview";
 import { hotelData } from "@/data/hotel";
 import { staffData } from "@/data/staff";
 
@@ -249,6 +250,9 @@ export default function AboutPage() {
           </div>
         </Container>
       </section>
+
+      {/* Moments of Elegance / Photo Gallery Section */}
+      <GalleryPreview />
 
       {/* Guest Reviews & Testimonials Section */}
       <TestimonialsSection />

@@ -6,7 +6,6 @@ import { AuthModal } from "@/components/auth/AuthModal";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { FloatingWhatsApp } from "@/components/layout/FloatingWhatsApp";
-import { BackToTop } from "@/components/layout/BackToTop";
 import { PageTransition } from "@/components/animation/PageTransition";
 import { CustomCursor } from "@/components/animation/CustomCursor";
 
@@ -53,7 +52,6 @@ export default function RootLayout({
           </main>
           <Footer />
           <FloatingWhatsApp />
-          <BackToTop />
           <CustomCursor />
           <AuthModal />
         </AuthProvider>

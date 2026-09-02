@@ -7,7 +7,7 @@ import { FacilitiesSection } from "@/components/home/FacilitiesSection";
 import { RestaurantPreview } from "@/components/home/RestaurantPreview";
 import { EventsAndConferences } from "@/components/home/EventsAndConferences";
 import { PlacesPreview } from "@/components/home/PlacesPreview";
-import { GalleryPreview } from "@/components/home/GalleryPreview";
+import { ExclusivelyForYou } from "@/components/home/ExclusivelyForYou";
 import { OffersSection } from "@/components/home/OffersSection";
 import { HomeCTA } from "@/components/home/HomeCTA";
 
@@ -22,7 +22,7 @@ export default function Home() {
       <RestaurantPreview />
       <EventsAndConferences />
       <PlacesPreview />
-      <GalleryPreview />
+      <ExclusivelyForYou />
       <OffersSection />
       <HomeCTA />
     </>
