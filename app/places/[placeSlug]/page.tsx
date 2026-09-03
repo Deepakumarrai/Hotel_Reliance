@@ -42,9 +42,34 @@ export async function generateMetadata({ params }: PlacePageProps): Promise<Meta
     };
   }
 
+  const pageUrl = `https://www.hotelreliance.com/places/${place.slug}`;
+
   return {
-    title: `${place.name} - History, Timings & Guide | Hotel Reliance Bokaro`,
-    description: `Explore the history, founder, established year, timings, and visitor guide for ${place.name} in Bokaro Steel City. Stay at Hotel Reliance nearby.`,
+    title: `${place.name} — History, Timings & Visitor Guide`,
+    description: `Complete travel guide to ${place.name} in Bokaro Steel City. Established ${place.establishedYear}. Visiting timings, entry fee, location, and tips. Stay at Hotel Reliance ${place.distance}.`,
+    alternates: {
+      canonical: pageUrl,
+    },
+    openGraph: {
+      title: `${place.name} | Bokaro Travel Guide`,
+      description: place.description,
+      url: pageUrl,
+      type: "article",
+      images: [
+        {
+          url: place.image,
+          width: 1200,
+          height: 800,
+          alt: `${place.name} in Bokaro Steel City`,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${place.name} | Bokaro Travel Guide`,
+      description: place.description,
+      images: [place.image],
+    },
   };
 }
 
@@ -59,8 +84,25 @@ export default async function PlaceDetailPage({ params }: PlacePageProps) {
   // Other attractions to explore
   const otherPlaces = placesData.filter((p) => p.slug !== placeSlug);
 
+  // Schema.org TouristAttraction Structured Data
+  const attractionSchema = {
+    "@context": "https://schema.org",
+    "@type": "TouristAttraction",
+    name: place.name,
+    description: place.description,
+    url: `https://www.hotelreliance.com/places/${place.slug}`,
+    image: `https://www.hotelreliance.com${place.image}`,
+    touristType: place.category,
+    publicAccess: true,
+    isAccessibleForFree: place.entryFee ? place.entryFee.toLowerCase().includes("free") : true,
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(attractionSchema) }}
+      />
       {/* Hero Banner with Heritage Styling */}
       <section
         className="relative bg-dark text-white py-24 sm:py-32 bg-cover bg-center"

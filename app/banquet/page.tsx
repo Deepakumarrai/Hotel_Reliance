@@ -8,8 +8,41 @@ import { BanquetEnquiry } from "@/components/banquet/BanquetEnquiry";
 import { Banquet3DPlaceholder } from "@/components/banquet/Banquet3DPlaceholder";
 
 export const metadata: Metadata = {
-  title: "Banquet & Events | Hotel Reliance",
-  description: "Host grand weddings, engagement ceremonies, and business conferences at Hotel Reliance. Explore our Banquet Hall, Meeting Room, and Celebration Lawn.",
+  title: "AC Banquet Halls & Wedding Lawns — Corporate Events & Grand Celebrations",
+  description:
+    "Host magnificent weddings, corporate conferences, and celebrations at Hotel Reliance, Bokaro Steel City. Featuring an air-conditioned 350+ guest banquet hall, executive boardrooms, and outdoor celebration lawns.",
+  keywords: [
+    "Banquet Hall in Bokaro",
+    "Wedding Venue Bokaro",
+    "Conference Hall Bokaro Steel City",
+    "Marriage Hall Bokaro",
+    "Corporate Meeting Rooms Bokaro",
+    "Hotel Reliance Banquet",
+  ],
+  alternates: {
+    canonical: "https://www.hotelreliance.com/banquet",
+  },
+  openGraph: {
+    title: "AC Banquet Halls & Wedding Lawns | Hotel Reliance Bokaro",
+    description:
+      "Host magnificent weddings, engagement ceremonies, and business summits at Hotel Reliance, Bokaro Steel City.",
+    url: "https://www.hotelreliance.com/banquet",
+    type: "website",
+    images: [
+      {
+        url: "/images/banquet/hall-main.jpg",
+        width: 1200,
+        height: 800,
+        alt: "Grand AC Banquet Hall at Hotel Reliance Bokaro",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "AC Banquet Halls & Wedding Lawns | Hotel Reliance Bokaro",
+    description: "Weddings, receptions, and corporate conferences in Bokaro Steel City.",
+    images: ["/images/banquet/hall-main.jpg"],
+  },
 };
 
 const venuesList: Venue[] = [
@@ -79,8 +112,34 @@ const eventTypes = [
 ];
 
 export default function BanquetPage() {
+  const venueSchema = {
+    "@context": "https://schema.org",
+    "@type": "EventVenue",
+    name: "Hotel Reliance Banquets & Event Lawns",
+    parentOrganization: {
+      "@type": "Hotel",
+      name: "Hotel Reliance",
+      url: "https://www.hotelreliance.com",
+    },
+    url: "https://www.hotelreliance.com/banquet",
+    maximumAttendeeCapacity: 350,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: "Plot No: NIHP-1, West Side of Co-Operative Colony",
+      addressLocality: "Bokaro Steel City",
+      addressRegion: "Jharkhand",
+      postalCode: "827001",
+      addressCountry: "IN",
+    },
+    image: "https://www.hotelreliance.com/images/banquet/hall-main.jpg",
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(venueSchema) }}
+      />
       {/* Banquet Hero */}
       <section
         className="relative bg-dark text-white py-24 bg-cover bg-center"

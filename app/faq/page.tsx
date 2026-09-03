@@ -49,8 +49,26 @@ export default function FAQPage() {
     return matchesCategory && matchesSearch;
   });
 
+  // FAQPage Schema for Google Rich Results
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqsData.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.answer,
+      },
+    })),
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
       {/* FAQ Hero */}
       <section
         className="relative bg-dark text-white py-24 bg-cover bg-center"

@@ -9,8 +9,42 @@ import { Button } from "@/components/ui/Button";
 import { hotelData } from "@/data/hotel";
 
 export const metadata: Metadata = {
-  title: "Kwality Restaurant | Hotel Reliance",
-  description: "Dine at Kwality Restaurant, the signature multi-cuisine restaurant inside Hotel Reliance, Bokaro. Offering Indian, Tandoori, and Chinese cuisines.",
+  title: "Kwality Restaurant & Fine Dining — North Indian, Tandoor & Chinese",
+  description:
+    "Dine at Kwality Restaurant, the signature multi-cuisine fine dining restaurant inside Hotel Reliance, Bokaro Steel City. Savor clay tandoor kebabs, rich butter gravies, authentic dum biryanis, and Chinese delicacies.",
+  keywords: [
+    "Kwality Restaurant Bokaro",
+    "Best Restaurant in Bokaro Steel City",
+    "Fine Dining Bokaro",
+    "North Indian Restaurant Bokaro",
+    "Tandoori Food Bokaro",
+    "Biryani in Bokaro",
+    "Hotel Reliance Restaurant",
+  ],
+  alternates: {
+    canonical: "https://www.hotelreliance.com/restaurant",
+  },
+  openGraph: {
+    title: "Kwality Restaurant & Fine Dining | Hotel Reliance Bokaro",
+    description:
+      "A symphony of rich North Indian flavours, live tandoori specialties, and genuine hospitality in Bokaro Steel City.",
+    url: "https://www.hotelreliance.com/restaurant",
+    type: "website",
+    images: [
+      {
+        url: "/images/restaurant/image.png",
+        width: 1200,
+        height: 800,
+        alt: "Kwality Restaurant Palace Dining Hall at Hotel Reliance Bokaro",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Kwality Restaurant & Fine Dining | Hotel Reliance Bokaro",
+    description: "Authentic North Indian & Multi-Cuisine dining in Bokaro Steel City.",
+    images: ["/images/restaurant/image.png"],
+  },
 };
 
 const diningHours = [
@@ -41,8 +75,51 @@ const chefSpecialties = [
 ];
 
 export default function RestaurantPage() {
+  const restaurantSchema = {
+    "@context": "https://schema.org",
+    "@type": "Restaurant",
+    name: "Kwality Restaurant",
+    parentOrganization: {
+      "@type": "Hotel",
+      name: "Hotel Reliance",
+      url: "https://www.hotelreliance.com",
+    },
+    url: "https://www.hotelreliance.com/restaurant",
+    telephone: hotelData.phones[0],
+    servesCuisine: ["North Indian", "Tandoori", "Mughlai", "Chinese", "Continental"],
+    priceRange: "₹₹",
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: `${hotelData.address.plotNo}, ${hotelData.address.street}`,
+      addressLocality: hotelData.address.city,
+      addressRegion: hotelData.address.state,
+      postalCode: hotelData.address.pincode,
+      addressCountry: "IN",
+    },
+    openingHoursSpecification: [
+      {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+        opens: "07:30",
+        closes: "22:45",
+      },
+    ],
+    menu: "https://www.hotelreliance.com/restaurant#menu",
+    image: [
+      "https://www.hotelreliance.com/images/restaurant/image.png",
+      "https://www.hotelreliance.com/images/restaurant/canopy-lounge.png",
+      "https://www.hotelreliance.com/images/restaurant/murgh-malai-tikka.png",
+      "https://www.hotelreliance.com/images/restaurant/paneer-butter-masala.png",
+      "https://www.hotelreliance.com/images/restaurant/dum-biryani.png",
+    ],
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(restaurantSchema) }}
+      />
       {/* Luxury Full-Bleed Restaurant Hero Banner without Cropping */}
       <section className="relative w-full h-[75vh] min-h-[520px] max-h-[780px] bg-black overflow-hidden flex items-end">
         {/* Uncompressed Full-Fidelity Photograph */}

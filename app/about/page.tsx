@@ -13,8 +13,41 @@ import { hotelData } from "@/data/hotel";
 import { staffData } from "@/data/staff";
 
 export const metadata: Metadata = {
-  title: "About Hotel Reliance | Our Story & Hospitality Team",
-  description: "Discover the story, leadership team, and hospitality philosophy of Hotel Reliance in Bokaro Steel City.",
+  title: "About Us — Luxury Hospitality Philosophy & Leadership Team",
+  description:
+    "Discover the story, leadership team, and hospitality philosophy of Hotel Reliance in Bokaro Steel City. Meet our General Manager, Executive Chef, and Guest Relations team.",
+  keywords: [
+    "About Hotel Reliance",
+    "Hotel Reliance Story",
+    "Hotels in Bokaro Steel City",
+    "Hospitality Standards Bokaro",
+    "Vikramaditya Roy General Manager",
+    "Chef Sanjeev Sengupta",
+  ],
+  alternates: {
+    canonical: "https://www.hotelreliance.com/about",
+  },
+  openGraph: {
+    title: "About Hotel Reliance | Luxury Hospitality in Bokaro Steel City",
+    description:
+      "A premier hospitality destination in Bokaro Steel City, blending traditional Indian warmth with modern corporate comfort.",
+    url: "https://www.hotelreliance.com/about",
+    type: "website",
+    images: [
+      {
+        url: "/images/gallery/hotel-ext.jpg",
+        width: 1200,
+        height: 800,
+        alt: "Hotel Reliance Bokaro Facade",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "About Hotel Reliance | Luxury Hospitality in Bokaro Steel City",
+    description: "Discover our heritage, hospitality standards, and team.",
+    images: ["/images/gallery/hotel-ext.jpg"],
+  },
 };
 
 const hospitalityStandards = [

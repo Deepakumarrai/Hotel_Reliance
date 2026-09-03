@@ -7,8 +7,41 @@ import { placesData } from "@/data/places";
 import { PlaceCard } from "@/components/places/PlaceCard";
 
 export const metadata: Metadata = {
-  title: "Places Near Hotel Reliance | Local Attractions Bokaro",
-  description: "Explore tourist spots and industrial sites in Bokaro Steel City near Hotel Reliance. Visit City Park, Jagannath Temple, and Bokaro Steel Plant.",
+  title: "Bokaro Steel City Travel Guide — Top Attractions & Sightseeing",
+  description:
+    "Explore the top tourist attractions, parks, temples, and industrial marvels in Bokaro Steel City near Hotel Reliance. Visit Jagannath Temple, City Park, Bokaro Steel Plant, and Garga Dam.",
+  keywords: [
+    "Places to visit in Bokaro",
+    "Bokaro Tourist Places",
+    "Bokaro Steel Plant Tour",
+    "Jagannath Temple Bokaro",
+    "City Park Bokaro",
+    "Bokaro Sightseeing Guide",
+  ],
+  alternates: {
+    canonical: "https://www.hotelreliance.com/places",
+  },
+  openGraph: {
+    title: "Bokaro Steel City Travel Guide | Hotel Reliance",
+    description:
+      "Explore tourist spots, parks, and industrial sites in Bokaro Steel City near Hotel Reliance.",
+    url: "https://www.hotelreliance.com/places",
+    type: "website",
+    images: [
+      {
+        url: "/images/places/city-park.jpg",
+        width: 1200,
+        height: 800,
+        alt: "Bokaro Steel City Attractions",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Bokaro Steel City Travel Guide | Hotel Reliance",
+    description: "Discover parks, temples, and steel plant tours in Bokaro.",
+    images: ["/images/places/city-park.jpg"],
+  },
 };
 
 export default function PlacesPage() {

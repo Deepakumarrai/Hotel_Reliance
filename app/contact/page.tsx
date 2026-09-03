@@ -9,13 +9,70 @@ import { hotelData } from "@/data/hotel";
 import { Button } from "@/components/ui/Button";
 
 export const metadata: Metadata = {
-  title: "Contact Hotel Reliance | Bokaro Steel City",
-  description: "Get in touch with Hotel Reliance in Bokaro Steel City, Jharkhand. Find our address, phone numbers (+91 92629 97777, +91 92628 27777), and email.",
+  title: "Contact Us & Location — Co-Operative Colony, Bokaro Steel City",
+  description:
+    "Get in touch with Hotel Reliance in Bokaro Steel City, Jharkhand. Call reservations at +91 92629 97777 / +91 92628 27777. Directions to Plot No: NIHP-1, Co-Operative Colony.",
+  keywords: [
+    "Contact Hotel Reliance",
+    "Hotel Reliance Bokaro Phone Number",
+    "Hotel Reliance Address",
+    "Hotel Reliance Location Co-Operative Colony",
+    "Bokaro Hotel Enquiry",
+  ],
+  alternates: {
+    canonical: "https://www.hotelreliance.com/contact",
+  },
+  openGraph: {
+    title: "Contact Hotel Reliance | Bokaro Steel City",
+    description:
+      "Find address, phone numbers, Google Maps directions, and message enquiry form for Hotel Reliance, Bokaro Steel City.",
+    url: "https://www.hotelreliance.com/contact",
+    type: "website",
+    images: [
+      {
+        url: "/images/gallery/hotel-ext.jpg",
+        width: 1200,
+        height: 800,
+        alt: "Hotel Reliance Bokaro Contact & Reception",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Contact Hotel Reliance | Bokaro Steel City",
+    description: "Reach our 24/7 reception desk and reservations team in Bokaro.",
+    images: ["/images/gallery/hotel-ext.jpg"],
+  },
 };
 
 export default function ContactPage() {
+  const contactSchema = {
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    name: "Contact Hotel Reliance",
+    url: "https://www.hotelreliance.com/contact",
+    mainEntity: {
+      "@type": "Hotel",
+      name: "Hotel Reliance",
+      telephone: hotelData.phones[0],
+      email: hotelData.emails[0],
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: `${hotelData.address.plotNo}, ${hotelData.address.street}`,
+        addressLocality: hotelData.address.city,
+        addressRegion: hotelData.address.state,
+        postalCode: hotelData.address.pincode,
+        addressCountry: "IN",
+      },
+    },
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(contactSchema) }}
+      />
       {/* Contact Hero */}
       <section
         className="relative bg-dark text-white py-24 bg-cover bg-center"
