@@ -18,6 +18,7 @@ import { faqsData } from "@/data/faqs";
 import { HOTEL_INFO } from "@/lib/constants";
 import { hotelData } from "@/data/hotel";
 import { Button } from "@/components/ui/Button";
+import { useHotelSettings } from "@/hooks/useHotelSettings";
 
 type FAQCategory = "All" | "General" | "Booking & Tariff" | "Amenities & Services" | "Dining & Kwality" | "Banquets & Events";
 
@@ -31,6 +32,7 @@ const CATEGORIES: FAQCategory[] = [
 ];
 
 export default function FAQPage() {
+  const settings = useHotelSettings();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<FAQCategory>("All");
   const [openId, setOpenId] = useState<string | null>("faq-1");
@@ -230,10 +232,10 @@ export default function FAQPage() {
                 </p>
                 <div className="pt-2">
                   <a
-                    href={`tel:${hotelData.phones[0].replace(/\s+/g, "")}`}
+                    href={`tel:${settings.primaryPhone.replace(/\s+/g, "")}`}
                     className="text-xs font-bold text-primary hover:text-gold transition-colors block"
                   >
-                    {hotelData.phones[0]}
+                    {settings.primaryPhone}
                   </a>
                 </div>
               </div>
@@ -249,7 +251,7 @@ export default function FAQPage() {
                 </p>
                 <div className="pt-2">
                   <a
-                    href={HOTEL_INFO.whatsapp.link}
+                    href={settings.whatsappLink}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-block"

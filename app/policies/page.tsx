@@ -20,8 +20,10 @@ import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { policiesData } from "@/data/policies";
 import { hotelData } from "@/data/hotel";
+import { useHotelSettings } from "@/hooks/useHotelSettings";
 
 export default function PoliciesPage() {
+  const settings = useHotelSettings();
   const [activeTab, setActiveTab] = useState<string>("checkin-checkout");
 
   const getIcon = (name: string) => {
@@ -181,11 +183,11 @@ export default function PoliciesPage() {
                 </p>
                 <div className="pt-2">
                   <a
-                    href={`tel:${hotelData.phones[0].replace(/\s+/g, "")}`}
+                    href={`tel:${settings.primaryPhone.replace(/\s+/g, "")}`}
                     className="inline-flex items-center text-xs font-bold uppercase tracking-wider text-gold hover:underline"
                   >
                     <Phone className="w-3.5 h-3.5 mr-2" />
-                    Call Reception Desk ({hotelData.phones[0]})
+                    Call Reception Desk ({settings.primaryPhone})
                   </a>
                 </div>
               </div>

@@ -9,8 +9,10 @@ import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { Booking } from "@/types/booking";
 import { HOTEL_INFO } from "@/lib/constants";
+import { useHotelSettings } from "@/hooks/useHotelSettings";
 
 export default function BookingSuccessPage() {
+  const settings = useHotelSettings();
   const [booking, setBooking] = useState<Booking | null>(null);
 
   useEffect(() => {
@@ -103,14 +105,14 @@ export default function BookingSuccessPage() {
                 <span className="font-semibold text-dark text-sm block mt-0.5">
                   {booking?.checkIn || "Upcoming"}
                 </span>
-                <span className="text-[10px] text-muted">From 12:00 PM</span>
+                <span className="text-[10px] text-muted">From {settings.checkInTime}</span>
               </div>
               <div>
                 <span className="text-[10px] uppercase font-bold text-muted block">Check-Out</span>
                 <span className="font-semibold text-dark text-sm block mt-0.5">
                   {booking?.checkOut || "Upcoming"}
                 </span>
-                <span className="text-[10px] text-muted">Until 11:00 AM</span>
+                <span className="text-[10px] text-muted">Until {settings.checkOutTime}</span>
               </div>
               <div>
                 <span className="text-[10px] uppercase font-bold text-muted block">Guests</span>
