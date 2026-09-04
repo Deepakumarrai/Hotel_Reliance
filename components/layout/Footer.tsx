@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { 
   Phone, 
   Mail, 
@@ -15,10 +16,16 @@ import { Container } from "@/components/ui/Container";
 import { hotelData } from "@/data/hotel";
 
 export function Footer() {
+  const pathname = usePathname();
   const currentYear = new Date().getFullYear();
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
   const [destinationsOpen, setDestinationsOpen] = useState(false);
+
+  // Do not render guest footer on admin panel routes
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
 
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();

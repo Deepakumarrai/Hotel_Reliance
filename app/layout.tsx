@@ -2,12 +2,7 @@ import type { Metadata } from "next";
 import { Cormorant_Garamond, Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth/AuthContext";
-import { AuthModal } from "@/components/auth/AuthModal";
-import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
-import { FloatingWhatsApp } from "@/components/layout/FloatingWhatsApp";
-import { PageTransition } from "@/components/animation/PageTransition";
-import { CustomCursor } from "@/components/animation/CustomCursor";
+import { GuestLayoutWrapper } from "@/components/layout/GuestLayoutWrapper";
 import { hotelData } from "@/data/hotel";
 
 const cormorant = Cormorant_Garamond({
@@ -161,14 +156,7 @@ export default function RootLayout({
       </head>
       <body className="flex flex-col min-h-screen">
         <AuthProvider>
-          <Navbar />
-          <main className="flex-grow pt-[72px] lg:pt-[76px]">
-            <PageTransition>{children}</PageTransition>
-          </main>
-          <Footer />
-          <FloatingWhatsApp />
-          <CustomCursor />
-          <AuthModal />
+          <GuestLayoutWrapper>{children}</GuestLayoutWrapper>
         </AuthProvider>
       </body>
     </html>

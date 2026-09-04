@@ -1,9 +1,17 @@
 "use client";
 
 import React from "react";
+import { usePathname } from "next/navigation";
 import { HOTEL_INFO } from "@/lib/constants";
 
 export function FloatingWhatsApp() {
+  const pathname = usePathname();
+
+  // Do not render floating WhatsApp on admin panel routes
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
+
   const message = encodeURIComponent(
     "Hello! I am visiting the Hotel Reliance website and would like to make an enquiry about room bookings or event services."
   );

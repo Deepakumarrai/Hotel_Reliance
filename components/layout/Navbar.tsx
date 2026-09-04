@@ -17,6 +17,11 @@ export function Navbar() {
   const router = useRouter();
   const { user, isAuthenticated, signOut, openAuthModal } = useAuth();
 
+  // Do not render guest navbar on admin panel routes
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
+
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);

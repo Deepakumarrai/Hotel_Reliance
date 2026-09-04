@@ -4,16 +4,14 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   Menu,
-  Search,
   Bell,
   PlusCircle,
   ExternalLink,
-  ShieldCheck,
-  CheckCircle2,
   Calendar,
   Clock,
-  Sparkles,
   X,
+  Globe,
+  Radio,
 } from "lucide-react";
 import { useToast } from "./ToastContext";
 
@@ -27,14 +25,19 @@ export function AdminHeader({
   const { showToast } = useToast();
   const [currentTime, setCurrentTime] = useState<string>("");
   const [currentDate, setCurrentDate] = useState<string>("");
+  const [currentDay, setCurrentDay] = useState<string>("");
   const [notifOpen, setNotifOpen] = useState(false);
 
   useEffect(() => {
     const updateDateTime = () => {
       const now = new Date();
+      setCurrentDay(
+        now.toLocaleDateString("en-IN", {
+          weekday: "long",
+        })
+      );
       setCurrentDate(
         now.toLocaleDateString("en-IN", {
-          weekday: "short",
           day: "numeric",
           month: "short",
           year: "numeric",
@@ -44,12 +47,15 @@ export function AdminHeader({
         now.toLocaleTimeString("en-IN", {
           hour: "2-digit",
           minute: "2-digit",
+          second: "2-digit",
           hour12: true,
         })
       );
     };
+
     updateDateTime();
-    const interval = setInterval(updateDateTime, 30000);
+    // Update every 1 second for live ticking clock
+    const interval = setInterval(updateDateTime, 1000);
     return () => clearInterval(interval);
   }, []);
 
@@ -78,46 +84,61 @@ export function AdminHeader({
   ];
 
   return (
-    <header className="sticky top-0 z-20 bg-[#111E31] border-b border-[#1B2A42] px-4 lg:px-8 py-3.5 flex items-center justify-between text-white shadow-md">
-      {/* Left: Mobile Toggle & Date Display */}
+    <header className="sticky top-0 z-30 bg-[#111E31] border-b border-[#1B2A42] px-4 lg:px-8 py-3 flex items-center justify-between text-white shadow-md">
+      {/* Left: Mobile Toggle & Live Bokaro Date/Time Clock */}
       <div className="flex items-center space-x-4">
         <button
           onClick={() => setMobileOpen(true)}
           className="lg:hidden p-2 text-white/80 hover:text-white rounded-md bg-[#1B2A42] hover:bg-[#1B2A42]/80 transition-colors"
+          aria-label="Open sidebar menu"
         >
           <Menu className="w-5 h-5" />
         </button>
 
-        <div className="hidden sm:flex items-center space-x-2.5 text-xs text-[#E9DFD2]/80 font-medium">
-          <Calendar className="w-3.5 h-3.5 text-[#C4984F]" />
-          <span>{currentDate || "Today"}</span>
-          <span className="text-white/20">•</span>
-          <Clock className="w-3.5 h-3.5 text-[#C4984F]" />
-          <span className="text-[#D8B875] font-semibold">{currentTime}</span>
+        {/* Live Date and Time Display */}
+        <div className="flex items-center space-x-2.5 bg-[#0B1423] border border-[#1B2A42] px-3.5 py-1.5 rounded-lg shadow-inner">
+          <div className="flex items-center space-x-1.5 text-xs text-[#E9DFD2]">
+            <Calendar className="w-3.5 h-3.5 text-[#C4984F]" />
+            <span className="font-semibold text-white">{currentDay || "Today"}</span>
+            <span className="text-white/40">,</span>
+            <span className="text-[#E9DFD2]/80">{currentDate}</span>
+          </div>
+
+          <span className="text-white/20">|</span>
+
+          <div className="flex items-center space-x-1.5 text-xs">
+            <Clock className="w-3.5 h-3.5 text-[#C4984F]" />
+            <span className="text-[#D8B875] font-mono font-bold tracking-wider">
+              {currentTime || "Loading..."}
+            </span>
+          </div>
         </div>
       </div>
 
-      {/* Right: Quick CTA, Notifications & View Live Site */}
-      <div className="flex items-center space-x-3">
+      {/* Right: Quick CTA, View Website Button & Notifications */}
+      <div className="flex items-center space-x-2.5 sm:space-x-3">
+        {/* Quick New Reservation CTA */}
         {onOpenQuickBooking && (
           <button
             onClick={onOpenQuickBooking}
-            className="hidden sm:inline-flex items-center space-x-2 px-3 py-1.5 rounded bg-gradient-to-r from-[#9E712E] to-[#C4984F] hover:from-[#8C6326] hover:to-[#B38740] text-white text-xs font-semibold tracking-wider uppercase shadow-sm transition-all"
+            className="hidden sm:inline-flex items-center space-x-1.5 px-3 py-1.5 rounded bg-gradient-to-r from-[#9E712E] to-[#C4984F] hover:from-[#8C6326] hover:to-[#B38740] text-white text-xs font-semibold tracking-wider uppercase shadow-sm transition-all active:scale-95"
           >
             <PlusCircle className="w-3.5 h-3.5" />
             <span>New Reservation</span>
           </button>
         )}
 
-        {/* View Live Public Site */}
+        {/* View Customer Website Button */}
         <Link
           href="/"
           target="_blank"
-          className="hidden md:inline-flex items-center space-x-1.5 px-3 py-1.5 rounded bg-[#1B2A42] hover:bg-[#253755] text-[#E9DFD2] text-xs font-medium border border-[#9E712E]/30 transition-colors"
-          title="Open Hotel Reliance Public Website in New Tab"
+          rel="noopener noreferrer"
+          className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded bg-[#1B2A42] hover:bg-[#253755] text-[#E9DFD2] hover:text-white text-xs font-semibold border border-[#9E712E]/40 hover:border-[#C4984F] transition-all shadow-sm group"
+          title="Open customer website in a new tab"
         >
+          <Globe className="w-3.5 h-3.5 text-[#C4984F] group-hover:rotate-12 transition-transform" />
           <span>View Website</span>
-          <ExternalLink className="w-3 h-3 text-[#C4984F]" />
+          <ExternalLink className="w-3 h-3 text-[#D8B875]" />
         </Link>
 
         {/* Notifications Dropdown */}
@@ -126,6 +147,7 @@ export function AdminHeader({
             onClick={() => setNotifOpen(!notifOpen)}
             className="relative p-2 rounded bg-[#1B2A42] hover:bg-[#253755] text-white transition-colors border border-[#1B2A42]"
             title="System Notifications"
+            aria-label="View notifications"
           >
             <Bell className="w-4 h-4 text-[#D8B875]" />
             <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-[#C4984F] animate-pulse" />
