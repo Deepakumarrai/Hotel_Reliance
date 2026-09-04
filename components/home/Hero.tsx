@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useEffect } from "react";
-import { ArrowDown } from "lucide-react";
+import { ArrowDown, Sparkles } from "lucide-react";
 
 export function Hero() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -11,15 +11,12 @@ export function Hero() {
     if (videoRef.current) {
       videoRef.current.muted = true;
       videoRef.current.defaultMuted = true;
-      videoRef.current.play().catch(() => {
-        // Fallback retry for mobile battery-saver or strict autoplay settings
-        const playPromise = videoRef.current?.play();
-        if (playPromise !== undefined) {
-          playPromise.catch(() => {
-            // Silently handled, poster image remains visible
-          });
-        }
-      });
+      const playPromise = videoRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          // Silently handled for strict autoplay environments
+        });
+      }
     }
   }, []);
 
@@ -33,43 +30,58 @@ export function Hero() {
   };
 
   return (
-    <section className="relative h-[100svh] min-h-[520px] w-full overflow-hidden bg-black text-white select-none">
-      {/* 100% Continuous Non-Stop Cinematic Video Background with iOS/Android compatibility */}
-      <video
-        ref={videoRef}
-        src="/videos/hero.mp4"
-        poster="/images/hotel/building-dusk.png"
-        autoPlay
-        loop
-        muted
-        playsInline
-        preload="auto"
-        disablePictureInPicture
-        controls={false}
-        className="absolute inset-0 w-full h-full object-cover pointer-events-none"
-      />
+    <section className="relative h-[100svh] min-h-[540px] w-full overflow-hidden bg-[#0A0D14] text-white select-none">
+      {/* Background Ambient Glow Layer for Ultra-Wide / Portrait Aspect Ratios */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-40">
+        <video
+          src="/videos/hero.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="w-full h-full object-cover blur-2xl scale-110"
+        />
+      </div>
 
-      {/* Subtle Top & Bottom Cinematic Vignette Gradients */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/40 pointer-events-none" />
+      {/* Main Crisp High-Definition Video Container (Full Quality, No Compression, 100% Full Uncropped Frame) */}
+      <div className="relative w-full h-full flex items-center justify-center z-10">
+        <video
+          ref={videoRef}
+          src="/videos/hero.mp4"
+          poster="/images/hotel/building-dusk.png"
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          disablePictureInPicture
+          controls={false}
+          className="w-full h-full object-contain pointer-events-none"
+        />
+      </div>
 
-      {/* Bottom Row Elements on Mobile & Desktop */}
-      <div className="absolute bottom-6 sm:bottom-10 left-4 right-4 sm:left-10 sm:right-10 z-20 flex flex-col sm:flex-row items-center justify-between gap-3 pointer-events-none">
-        {/* Brand Watermark Tag */}
-        <div className="pointer-events-auto flex items-center space-x-2 bg-black/50 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/20 shadow-lg">
-          <span className="w-2 h-2 rounded-full bg-[#BA8B32] animate-pulse" />
-          <span className="text-[10px] sm:text-xs uppercase font-bold tracking-[0.2em] text-white/95 font-serif">
-            Hotel Reliance • Bokaro Steel City
-          </span>
+
+      {/* Cinematic Vignette Overlays */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/35 pointer-events-none" />
+
+
+      {/* Bottom Floating Bar with Explore Indicator & Direct Info */}
+      <div className="absolute bottom-6 sm:bottom-10 left-4 right-4 sm:left-10 sm:right-10 z-20 flex items-center justify-between pointer-events-none">
+        {/* Experience Tagline */}
+        <div className="hidden sm:block pointer-events-auto bg-black/50 backdrop-blur-md px-4 py-2 rounded-lg border border-white/15">
+          <p className="text-xs font-serif text-[#E9DFD2]/90 tracking-wider">
+            Modern Luxury • Fine Dining • Grand Banquets
+          </p>
         </div>
 
-        {/* Scroll Down Indicator */}
+        {/* Scroll Down Trigger */}
         <button
           onClick={scrollToContent}
-          className="pointer-events-auto flex items-center space-x-2 text-xs tracking-widest text-white/80 hover:text-white uppercase transition-all cursor-pointer group bg-black/50 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/20 hover:border-[#BA8B32] shadow-lg"
+          className="pointer-events-auto ml-auto sm:ml-0 flex items-center space-x-2 text-xs tracking-widest text-white uppercase transition-all cursor-pointer group bg-black/60 hover:bg-black/80 backdrop-blur-md px-5 py-2.5 rounded-full border border-white/20 hover:border-[#C4984F] shadow-2xl"
           aria-label="Scroll down to explore"
         >
-          <span className="text-[10px] sm:text-xs tracking-[0.2em] font-bold text-[#D8B875]">
-            EXPLORE
+          <span className="text-[10px] sm:text-xs tracking-[0.25em] font-bold text-[#D8B875] font-serif">
+            EXPLORE PROPERTY
           </span>
           <ArrowDown className="w-3.5 h-3.5 animate-bounce text-[#D8B875]" />
         </button>
@@ -77,3 +89,5 @@ export function Hero() {
     </section>
   );
 }
+
+
