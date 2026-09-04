@@ -1,8 +1,11 @@
+"use client";
+
 import React from "react";
-import { Calendar, Users, Home, Moon, Wallet, ShieldCheck } from "lucide-react";
+import { Calendar, Users, Home, Moon, Wallet, ShieldCheck, Sparkles } from "lucide-react";
 import { BookingState } from "@/types/booking";
 import { Room } from "@/types/room";
 import { formatDate, getNightsCount, formatPrice } from "@/lib/utils";
+import { useRoomPricing } from "@/hooks/useRoomPricing";
 
 interface BookingSummaryProps {
   state: BookingState;
@@ -10,10 +13,15 @@ interface BookingSummaryProps {
 }
 
 export function BookingSummary({ state, selectedRoom }: BookingSummaryProps) {
-  const nights = getNightsCount(state.checkIn, state.checkOut);
-  const baseRate = selectedRoom?.price && nights > 0 ? selectedRoom.price * nights : null;
-  const estimatedTaxes = baseRate ? Math.round(baseRate * 0.12) : null; // 12% GST standard
-  const estimatedTotal = baseRate && estimatedTaxes ? baseRate + estimatedTaxes : null;
+  const { calculateStayTotal } = useRoomPricing();
+  const calculation = selectedRoom && state.checkIn && state.checkOut
+    ? calculateStayTotal(selectedRoom.slug, state.checkIn, state.checkOut, state.adults, state.children)
+    : null;
+
+  const nights = calculation?.nights || getNightsCount(state.checkIn, state.checkOut);
+  const baseRate = calculation?.baseAmount || null;
+  const estimatedTaxes = calculation?.taxAmount || null;
+  const estimatedTotal = calculation?.totalAmount || null;
 
   return (
     <div className="bg-white border border-border-custom shadow-md p-6 space-y-6">
@@ -98,19 +106,25 @@ export function BookingSummary({ state, selectedRoom }: BookingSummaryProps) {
             <span className="text-[10px] uppercase tracking-wider text-gold font-bold">Estimated Bill Breakdown</span>
           </div>
 
-          {selectedRoom?.price && nights > 0 ? (
+          {calculation && nights > 0 ? (
             <div className="space-y-1.5 pt-1 text-[11px]">
               <div className="flex justify-between text-muted">
-                <span>Room Tariff ({formatPrice(selectedRoom.price)} × {nights} {nights === 1 ? "night" : "nights"}):</span>
-                <span className="font-medium text-dark">{formatPrice(baseRate!)}</span>
+                <span>Room Tariff ({nights} {nights === 1 ? "night" : "nights"}):</span>
+                <span className="font-medium text-dark">{formatPrice(calculation.baseAmount - calculation.extraGuestAmount)}</span>
               </div>
+              {calculation.extraGuestAmount > 0 && (
+                <div className="flex justify-between text-muted">
+                  <span>Extra Adult Surcharge:</span>
+                  <span className="font-medium text-dark">{formatPrice(calculation.extraGuestAmount)}</span>
+                </div>
+              )}
               <div className="flex justify-between text-muted">
-                <span>Estimated Taxes (GST 12%):</span>
-                <span className="font-medium text-dark">{formatPrice(estimatedTaxes!)}</span>
+                <span>Estimated GST ({calculation.taxRate}%):</span>
+                <span className="font-medium text-dark">{formatPrice(calculation.taxAmount)}</span>
               </div>
               <div className="flex justify-between text-xs font-bold text-dark border-t border-border-custom/80 pt-2 mt-2">
                 <span>Total Payable:</span>
-                <span className="text-sm font-serif text-primary font-bold">{formatPrice(estimatedTotal!)}</span>
+                <span className="text-sm font-serif text-primary font-bold">{formatPrice(calculation.totalAmount)}</span>
               </div>
               <span className="text-[9px] text-muted italic block pt-0.5">
                 Pay upon arrival at front desk.

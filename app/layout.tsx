@@ -3,6 +3,7 @@ import { Cormorant_Garamond, Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth/AuthContext";
 import { HotelSettingsProvider } from "@/hooks/useHotelSettings";
+import { RoomPricingProvider } from "@/hooks/useRoomPricing";
 import { GuestLayoutWrapper } from "@/components/layout/GuestLayoutWrapper";
 import { hotelData } from "@/data/hotel";
 
@@ -158,7 +159,9 @@ export default function RootLayout({
       <body className="flex flex-col min-h-screen">
         <AuthProvider>
           <HotelSettingsProvider>
-            <GuestLayoutWrapper>{children}</GuestLayoutWrapper>
+            <RoomPricingProvider>
+              <GuestLayoutWrapper>{children}</GuestLayoutWrapper>
+            </RoomPricingProvider>
           </HotelSettingsProvider>
         </AuthProvider>
       </body>

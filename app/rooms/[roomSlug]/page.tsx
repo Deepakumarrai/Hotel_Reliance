@@ -164,7 +164,7 @@ export default async function RoomDetailPage({ params }: RoomPageProps) {
                 <div className="bg-white border-2 border-gold/30 p-6 sm:p-8 shadow-xl relative overflow-hidden">
                   <div className="absolute top-0 right-0 w-24 h-24 bg-gold/10 -mr-12 -mt-12 rounded-full pointer-events-none" />
 
-                  <RoomPrice price={room.price} />
+                  <RoomPrice price={room.price} slug={room.slug} />
 
                   <div className="my-6 border-t border-border-custom" />
 

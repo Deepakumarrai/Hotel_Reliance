@@ -70,7 +70,11 @@ export default function AdminPricingPage() {
       });
       const data = await res.json();
       if (data.success) {
-        showToast(`Tariff rules for ${roomType.toUpperCase()} saved successfully!`, "success");
+        showToast(`Tariff rules for ${roomType.toUpperCase()} saved & synced to website!`, "success");
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new Event("room-pricing-updated"));
+          localStorage.setItem("room_pricing_last_sync", Date.now().toString());
+        }
       }
     } catch {
       showToast("Failed to save pricing", "error");

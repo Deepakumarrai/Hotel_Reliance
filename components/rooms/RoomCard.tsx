@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -6,13 +8,16 @@ import { Room } from "@/types";
 import { formatPrice } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
+import { useRoomPricing } from "@/hooks/useRoomPricing";
 
 interface RoomCardProps {
   room: Room;
 }
 
 export function RoomCard({ room }: RoomCardProps) {
-  const displayPrice = room.price ? `${formatPrice(room.price)}` : "Price on request";
+  const { getRoomPrice } = useRoomPricing();
+  const activePrice = getRoomPrice(room.slug) || room.price;
+  const displayPrice = activePrice ? `${formatPrice(activePrice)}` : "Price on request";
 
   return (
     <div className="bg-white border border-border-custom shadow-md flex flex-col group h-full transition-all duration-300 hover:shadow-lg hover:-translate-y-1">

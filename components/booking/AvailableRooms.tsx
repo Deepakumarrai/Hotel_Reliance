@@ -1,9 +1,12 @@
+"use client";
+
 import React from "react";
 import Image from "next/image";
 import { Check, Users, Bed, Expand, AlertCircle } from "lucide-react";
 import { Room } from "@/types";
 import { formatPrice, cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/Badge";
+import { useRoomPricing } from "@/hooks/useRoomPricing";
 
 interface AvailableRoomsProps {
   rooms: Room[];
@@ -18,6 +21,8 @@ export function AvailableRooms({
   onSelect,
   errors
 }: AvailableRoomsProps) {
+  const { getRoomPrice } = useRoomPricing();
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col space-y-2">
@@ -35,7 +40,8 @@ export function AvailableRooms({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {rooms.map((room) => {
           const isSelected = selectedRoomId === room.id;
-          const displayPrice = room.price ? `${formatPrice(room.price)}` : "Price on request";
+          const activePrice = getRoomPrice(room.slug) || room.price;
+          const displayPrice = activePrice ? `${formatPrice(activePrice)}` : "Price on request";
 
           return (
             <div
