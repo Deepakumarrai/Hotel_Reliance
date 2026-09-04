@@ -51,6 +51,18 @@ export function EventsAndConferences() {
           </p>
         </FadeUp>
 
+        {/* Panoramic Banquet Showcase Banner matching Rooms and Offers */}
+        <div className="relative w-full aspect-[1942/809] mb-12 sm:mb-16 overflow-hidden rounded-sm border border-[#C5A880]/40 shadow-xl bg-[#FAF7F2]">
+          <Image
+            src="/images/banquet/image.png"
+            alt="Hotel Reliance Banquet & Events Showcase"
+            fill
+            sizes="(max-w-1200px) 100vw, 1200px"
+            className="object-contain sm:object-cover w-full h-full"
+            priority
+          />
+        </div>
+
         {/* 3 Signature Cards with Overlapping Floating White Title Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 lg:gap-8 pb-4">
           {eventItems.map((item) => (

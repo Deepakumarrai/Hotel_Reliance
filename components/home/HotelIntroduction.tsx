@@ -44,18 +44,24 @@ export function HotelIntroduction() {
           {/* Master 2-Panel Golden Framed Card */}
           <div className="relative border-2 border-[#C5A880] bg-[#FAF7F2] shadow-2xl overflow-hidden rounded-sm">
             <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[460px]">
-              {/* Left Column: Real Building Photograph at Dusk */}
-              <div className="lg:col-span-6 relative min-h-[300px] sm:min-h-[440px] lg:min-h-[540px] overflow-hidden group bg-[#1A1412]">
-                <Image
-                  src="/images/hotel/building-dusk.png"
-                  alt="Hotel Reliance Bokaro Building Facade at Sunset"
-                  fill
-                  sizes="(max-w-1024px) 100vw, 50vw"
-                  className="object-cover object-center w-full h-full transition-transform duration-1000 group-hover:scale-105"
-                  priority
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/10 pointer-events-none" />
+              {/* Left Column: Natural Unstretched Hotel Image with Luxury Inner Framing */}
+              <div className="lg:col-span-6 relative bg-[#FAF7F2] p-4 sm:p-6 lg:p-8 flex items-center justify-center">
+                <div className="relative w-full aspect-[1121/1403] max-h-[580px] overflow-hidden rounded-sm border border-[#C5A880]/50 shadow-md bg-white">
+                  <Image
+                    src="/images/hotel/image.png"
+                    alt="Hotel Reliance Bokaro Building"
+                    fill
+                    sizes="(max-w-1024px) 100vw, 50vw"
+                    className="object-contain w-full h-full"
+                    priority
+                  />
+                </div>
               </div>
+
+
+
+
+
 
               {/* Right Column: Hand-Coded Luxury Credo & Royal Monogram */}
               <div className="lg:col-span-6 lg:border-l-2 border-[#C5A880] bg-[#FAF7F2] p-6 sm:p-12 lg:p-14 flex flex-col items-center justify-center text-center space-y-5 sm:space-y-6">

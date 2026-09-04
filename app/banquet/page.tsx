@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 import type { Metadata } from "next";
 import { Sparkles, Calendar, Heart, Award } from "lucide-react";
 import { Container } from "@/components/ui/Container";
@@ -6,6 +7,7 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { VenueCard, Venue } from "@/components/banquet/VenueCard";
 import { BanquetEnquiry } from "@/components/banquet/BanquetEnquiry";
 import { Banquet3DPlaceholder } from "@/components/banquet/Banquet3DPlaceholder";
+import { HomeCTA } from "@/components/home/HomeCTA";
 
 export const metadata: Metadata = {
   title: "AC Banquet Halls & Wedding Lawns — Corporate Events & Grand Celebrations",
@@ -140,32 +142,59 @@ export default function BanquetPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(venueSchema) }}
       />
-      {/* Banquet Hero */}
-      <section
-        className="relative bg-dark text-white py-24 bg-cover bg-center"
-        style={{
-          backgroundImage: "linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url('/images/banquet/hall-main.jpg')",
-        }}
-      >
-        <Container className="relative z-10 text-center space-y-3">
-          <span className="text-xs uppercase tracking-[0.25em] text-gold font-bold">
-            CELEBRATE WITH US
-          </span>
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif font-normal">
-            Banquets & Celebrations
-          </h1>
-          <div className="w-16 h-[2px] bg-gold mx-auto mt-4" />
+      {/* Luxury Hero Banner matching Offers & Rooms Header */}
+      <section className="relative w-full aspect-[16/8.5] sm:aspect-[21/9.5] min-h-[440px] max-h-[750px] bg-black overflow-hidden flex items-end">
+        {/* Full-Bleed Background Banquet Photograph without Cropping */}
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/images/banquet/image.png"
+            alt="Hotel Reliance Banquets & Event Celebrations"
+            fill
+            priority
+            unoptimized
+            sizes="100vw"
+            className="object-cover object-[center_40%]"
+          />
+          {/* Subtle Top and Deep Bottom Vignette Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-black/30" />
+        </div>
+
+        {/* Hero Bottom Content matching Offers & Rooms Header */}
+        <Container className="relative z-10 w-full pb-10 sm:pb-14 px-4 sm:px-6">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            {/* Title with Gold Line Prefix */}
+            <div className="flex items-start space-x-3 sm:space-x-4">
+              <div className="w-8 sm:w-16 h-[2px] bg-[#C5A880] mt-4 sm:mt-5 flex-shrink-0" />
+              <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-normal tracking-[0.1em] sm:tracking-[0.14em] text-white uppercase leading-tight drop-shadow-lg">
+                Banquets
+                <span className="block">& Events</span>
+              </h1>
+            </div>
+
+            {/* Right Subtitle */}
+            <p className="text-[15px] sm:text-[17px] md:text-[18.5px] font-serif italic text-white/90 max-w-lg leading-[1.6] text-left md:text-right font-normal drop-shadow-md">
+              From magnificent wedding celebrations and grand receptions to executive corporate conferences, Hotel Reliance crafts timeless gatherings with bespoke hospitality.
+            </p>
+          </div>
         </Container>
       </section>
 
-      {/* Venues grid */}
-      <section className="py-20 bg-cream">
-        <Container className="space-y-16">
-          <SectionHeading
-            title="Our Event Venues"
-            subtitle="GRAND SPACES"
-            className="mb-12"
-          />
+      {/* Venues Grid Section */}
+      <section className="py-16 sm:py-24 bg-[#FAF8F5]">
+        <Container className="max-w-7xl px-4 sm:px-6 space-y-16">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-[#E8E1D7]">
+            <div>
+              <span className="text-xs uppercase tracking-[0.2em] font-serif font-bold text-[#B38E5D] block">
+                GRAND SPACES
+              </span>
+              <h2 className="text-xl sm:text-3xl font-serif text-[#2B2320] mt-0.5">
+                Our Signature Event Venues
+              </h2>
+            </div>
+            <p className="text-xs sm:text-sm font-serif text-[#7A6B61] max-w-md">
+              Versatile indoor halls, boardrooms, and expansive celebration lawns equipped with modern AV setups and personalized catering.
+            </p>
+          </div>
           
           <div className="space-y-12">
             {venuesList.map((venue) => (
@@ -183,22 +212,28 @@ export default function BanquetPage() {
       </section>
 
       {/* Event niches */}
-      <section className="py-20 bg-white border-t border-border-custom">
-        <Container>
-          <SectionHeading
-            title="Events We Host"
-            subtitle="CELEBRATION GUIDES"
-          />
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-4">
+      <section className="py-16 sm:py-20 bg-white border-t border-[#E8E1D7]">
+        <Container className="max-w-7xl px-4 sm:px-6">
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            <span className="text-[10px] sm:text-xs uppercase font-bold tracking-[0.22em] text-[#BA8B32] block mb-1">
+              CELEBRATION GUIDES
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-serif tracking-[0.08em] uppercase text-[#2B2320]">
+              Events We Host
+            </h2>
+            <div className="w-12 h-[1.5px] bg-[#C5A880] mx-auto mt-3" />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-2">
             {eventTypes.map((event, index) => (
-              <div key={index} className="bg-cream border border-border-custom p-8 text-center space-y-4">
-                <div className="w-12 h-12 bg-white border border-border-custom flex items-center justify-center mx-auto rounded-full">
+              <div key={index} className="bg-[#FAF8F5] border border-[#E8E1D7] p-8 text-center space-y-4 hover:border-[#BA8B32] hover:shadow-lg transition-all duration-300">
+                <div className="w-12 h-12 bg-white border border-[#E8E1D7] flex items-center justify-center mx-auto rounded-full shadow-sm">
                   {event.icon}
                 </div>
-                <h3 className="text-lg font-serif font-normal text-dark">
+                <h3 className="text-lg font-serif font-normal text-[#2B2320] uppercase tracking-wide">
                   {event.title}
                 </h3>
-                <p className="text-xs text-muted leading-relaxed font-light">
+                <p className="text-xs sm:text-[13px] text-[#5C4F46] leading-relaxed font-light">
                   {event.desc}
                 </p>
               </div>
@@ -208,11 +243,13 @@ export default function BanquetPage() {
       </section>
 
       {/* Enquiry Form */}
-      <section id="enquiry-form-section" className="py-20 bg-cream border-t border-border-custom scroll-mt-20">
-        <Container>
+      <section id="enquiry-form-section" className="py-16 sm:py-20 bg-[#FAF8F5] border-t border-[#E8E1D7] scroll-mt-20">
+        <Container className="max-w-7xl px-4 sm:px-6">
           <BanquetEnquiry />
         </Container>
       </section>
+
+      <HomeCTA />
     </>
   );
 }

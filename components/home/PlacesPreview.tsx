@@ -80,6 +80,7 @@ export function PlacesPreview() {
                     src={place.image}
                     alt={place.name}
                     fill
+                    unoptimized
                     sizes="(max-w-768px) 100vw, (max-w-1200px) 50vw, 33vw"
                     className={`object-cover object-center w-full h-full transition-all duration-700 ease-out group-hover:scale-105 ${
                       place.hoverImage ? "group-hover:opacity-0" : ""
@@ -92,6 +93,7 @@ export function PlacesPreview() {
                       src={place.hoverImage}
                       alt={`${place.name} evening sunset view`}
                       fill
+                      unoptimized
                       sizes="(max-w-768px) 100vw, (max-w-1200px) 50vw, 33vw"
                       className="object-cover object-center w-full h-full absolute inset-0 opacity-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 ease-out"
                     />

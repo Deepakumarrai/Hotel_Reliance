@@ -102,29 +102,45 @@ const videoStages = [
 export default function AboutPage() {
   return (
     <>
-      {/* About Hero */}
-      <section
-        className="relative bg-dark text-white py-24 bg-cover bg-center"
-        style={{
-          backgroundImage: "linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url('/images/gallery/hotel-lobby.jpg')",
-        }}
-      >
-        <Container className="relative z-10 text-center space-y-3">
-          <span className="text-xs uppercase tracking-[0.25em] text-gold font-bold">
-            WHO WE ARE
-          </span>
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif font-normal">
-            About Hotel Reliance
-          </h1>
-          <div className="w-16 h-[2px] bg-gold mx-auto mt-4" />
-          <p className="text-xs sm:text-sm text-white/80 max-w-xl mx-auto font-light leading-relaxed pt-2">
-            A premier hospitality destination in Bokaro Steel City, blending traditional Indian warmth with modern corporate comfort.
-          </p>
+      {/* Luxury Hero Banner matching Offers, Rooms & Banquets Header */}
+      <section className="relative w-full aspect-[16/8.5] sm:aspect-[21/9.5] min-h-[440px] max-h-[750px] bg-black overflow-hidden flex items-end">
+        {/* Full-Bleed Background Lifestyle Photograph without Cropping or Compression */}
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/images/hotel/image copy 2.png"
+            alt="About Hotel Reliance Bokaro"
+            fill
+            priority
+            unoptimized
+            sizes="100vw"
+            className="object-cover object-[center_35%]"
+          />
+          {/* Subtle Top and Deep Bottom Vignette Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-black/30" />
+        </div>
+
+        {/* Hero Bottom Content matching Reference Typography */}
+        <Container className="relative z-10 w-full pb-10 sm:pb-14 px-4 sm:px-6">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            {/* Title with Gold Line Prefix */}
+            <div className="flex items-start space-x-3 sm:space-x-4">
+              <div className="w-8 sm:w-16 h-[2px] bg-[#C5A880] mt-4 sm:mt-5 flex-shrink-0" />
+              <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-normal tracking-[0.1em] sm:tracking-[0.14em] text-white uppercase leading-tight drop-shadow-lg">
+                About
+                <span className="block">Hotel Reliance</span>
+              </h1>
+            </div>
+
+            {/* Right Subtitle */}
+            <p className="text-[15px] sm:text-[17px] md:text-[18.5px] font-serif italic text-white/90 max-w-lg leading-[1.6] text-left md:text-right font-normal drop-shadow-md">
+              A premier hospitality destination in Bokaro Steel City, blending traditional Indian warmth with refined corporate comfort and heartfelt service.
+            </p>
+          </div>
         </Container>
       </section>
 
       {/* Hotel Story Section */}
-      <section className="py-20 bg-cream">
+      <section className="py-16 sm:py-24 bg-[#FAF8F5]">
         <Container>
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             {/* Story Text */}

@@ -3,11 +3,9 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Users, Bed, Expand, ArrowRight, Calendar, Sparkles, UserPlus } from "lucide-react";
+import { Users, Bed, Expand, Sparkles } from "lucide-react";
 import { Room } from "@/types";
 import { formatPrice } from "@/lib/utils";
-import { Button } from "@/components/ui/Button";
-import { Badge } from "@/components/ui/Badge";
 import { useRoomPricing } from "@/hooks/useRoomPricing";
 
 interface RoomCardProps {
@@ -21,105 +19,66 @@ export function RoomCard({ room }: RoomCardProps) {
   const displayPrice = activePrice ? `${formatPrice(activePrice)}` : "Price on request";
 
   return (
-    <div className="bg-white border border-border-custom shadow-md flex flex-col group h-full transition-all duration-300 hover:shadow-xl hover:-translate-y-1 rounded-sm">
-      {/* Room Thumbnail Image */}
-      <div className="relative h-64 w-full overflow-hidden bg-dark">
-        {/* Featured Badge */}
-        {room.featured && (
-          <div className="absolute top-4 left-4 z-20">
-            <Badge variant="gold">Featured Suite</Badge>
-          </div>
-        )}
+    <Link
+      href={`/rooms/${room.slug}`}
+      className="group flex flex-col space-y-4 transition-all duration-300 block"
+    >
+      {/* Room Image Container matching Offers / Dining Card Aspect Ratio */}
+      <div className="relative w-full aspect-[16/10] overflow-hidden bg-[#1E1815] shadow-sm">
+        <Image
+          src={room.images[0]}
+          alt={room.name}
+          fill
+          sizes="(max-w-768px) 100vw, (max-w-1200px) 50vw, 33vw"
+          className="object-cover object-center w-full h-full transition-transform duration-700 ease-out group-hover:scale-105"
+        />
 
-        {/* Live Peak Season Pill */}
-        <div className="absolute bottom-3 right-3 z-20 bg-dark/85 backdrop-blur-md border border-gold/40 px-2.5 py-1 rounded text-[10px] text-[#D8B875] font-semibold flex items-center space-x-1 shadow-lg">
-          <Sparkles className="w-3 h-3 text-[#C4984F]" />
-          <span>Peak Season: {formatPrice(rules.peak)}</span>
+        {/* Top Right Tariff Pill */}
+        <div className="absolute top-3 right-3 bg-black/65 backdrop-blur-md px-2.5 py-1 text-[9px] font-serif uppercase tracking-widest text-[#D8B875] border border-white/15 shadow-md">
+          Starts {displayPrice}
         </div>
-        
-        {/* Image Zoom Hover effect */}
-        <div className="absolute inset-0 image-zoom-hover">
-          <Image
-            src={room.images[0]}
-            alt={room.name}
-            fill
-            sizes="(max-w-768px) 100vw, 33vw"
-            className="object-cover"
-            loading="lazy"
-          />
+
+        {/* Bottom Left Peak Pill */}
+        <div className="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md px-2 py-0.5 text-[8.5px] font-serif tracking-wider text-emerald-400 border border-white/10 flex items-center space-x-1">
+          <Sparkles className="w-2.5 h-2.5 text-[#C4984F]" />
+          <span>Peak: {formatPrice(rules.peak)}</span>
         </div>
       </div>
 
-      {/* Card Details Body */}
-      <div className="p-6 flex-grow flex flex-col justify-between space-y-4">
-        <div className="space-y-2">
-          <h3 className="text-2xl font-normal font-serif text-dark group-hover:text-primary transition-colors">
-            <Link href={`/rooms/${room.slug}`}>{room.name}</Link>
-          </h3>
-          <p className="text-xs text-muted line-clamp-2 font-light leading-relaxed">
-            {room.description}
-          </p>
-        </div>
+      {/* Card Details Body with Gold Dash & Shared Editorial Typography */}
+      <div className="space-y-2.5 pt-1 px-1 sm:px-0">
+        <h3 className="font-serif text-xs sm:text-base tracking-[0.1em] uppercase text-[#2B2320] font-normal group-hover:text-[#9E712E] transition-colors flex items-center">
+          <span className="w-3.5 sm:w-4 h-[1px] bg-[#C5A880] mr-2 flex-shrink-0" />
+          <span className="truncate">{room.name}</span>
+        </h3>
 
-        {/* Room Properties Specs */}
-        <div className="grid grid-cols-3 gap-2 border-y border-border-custom py-3 text-[10px] sm:text-xs font-medium text-muted uppercase tracking-wider">
+        {/* Specs Highlights */}
+        <div className="flex items-center space-x-4 text-[10.5px] font-serif text-[#7A6B61] tracking-wide border-b border-[#E8E1D7]/70 pb-2">
           <span className="flex items-center">
-            <Users className="w-3.5 h-3.5 mr-2 text-gold flex-shrink-0" />
-            Max {room.occupancy}
+            <Users className="w-3 h-3 mr-1 text-[#C5A880]" /> Max {room.occupancy}
           </span>
           <span className="flex items-center">
-            <Bed className="w-3.5 h-3.5 mr-2 text-gold flex-shrink-0" />
-            {room.bedType.split(" ")[0]}
+            <Bed className="w-3 h-3 mr-1 text-[#C5A880]" /> {room.bedType.split(" ")[0]} Bed
           </span>
           {room.size && (
             <span className="flex items-center">
-              <Expand className="w-3.5 h-3.5 mr-2 text-gold flex-shrink-0" />
-              {room.size}
+              <Expand className="w-3 h-3 mr-1 text-[#C5A880]" /> {room.size}
             </span>
           )}
         </div>
 
-        {/* Dynamic Pricing Rates Breakdown Pills */}
-        <div className="bg-cream/60 border border-border-custom p-2.5 rounded-sm space-y-1.5 text-[11px]">
-          <div className="flex items-center justify-between text-muted">
-            <span className="flex items-center">
-              <Calendar className="w-3 h-3 mr-1 text-gold" /> Weekend (Fri-Sun):
-            </span>
-            <span className="font-semibold text-dark font-sans">{formatPrice(rules.weekend)}/nt</span>
-          </div>
-          <div className="flex items-center justify-between text-muted">
-            <span className="flex items-center">
-              <UserPlus className="w-3 h-3 mr-1 text-gold" /> Extra Adult:
-            </span>
-            <span className="font-semibold text-dark font-sans">+{formatPrice(rules.extraAdult)}/nt</span>
-          </div>
-        </div>
+        <p className="text-xs sm:text-sm font-serif font-light text-[#5C4F46] leading-relaxed line-clamp-2">
+          {room.description}
+        </p>
 
-        {/* Price & Actions Row */}
-        <div className="flex items-end justify-between pt-1">
-          <div className="flex flex-col">
-            <span className="text-[9px] uppercase tracking-widest text-muted font-bold block">
-              Weekday Base Rate
-            </span>
-            <div className="flex items-baseline space-x-1">
-              <span className="text-xl font-bold text-primary font-sans">
-                {displayPrice}
-              </span>
-              <span className="text-[10px] text-muted">/ night</span>
-            </div>
-            <span className="text-[9px] text-muted/80 tracking-tight block">
-              + applicable GST (12% standard)
-            </span>
-          </div>
-
-          <Link href={`/rooms/${room.slug}`}>
-            <Button variant="outline" size="sm" className="px-3.5 uppercase text-xs tracking-wider">
-              Explore
-              <ArrowRight className="w-3 h-3 ml-1.5 transition-transform duration-200 group-hover:translate-x-1" />
-            </Button>
-          </Link>
+        {/* Action Link matching Offers & Restaurant */}
+        <div className="pt-1">
+          <span className="inline-flex items-center text-xs font-serif font-semibold text-[#9E712E] group-hover:translate-x-1 transition-transform">
+            Explore Suite & Complete Tariffs <span className="ml-1 text-[#C5A880]">»</span>
+          </span>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
+

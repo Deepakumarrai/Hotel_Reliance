@@ -6,6 +6,7 @@ import { Phone, Clock, UtensilsCrossed, Award, Sparkles, Check, ArrowRight, Flam
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Button } from "@/components/ui/Button";
+import { HomeCTA } from "@/components/home/HomeCTA";
 import { hotelData } from "@/data/hotel";
 
 export const metadata: Metadata = {
@@ -120,24 +121,24 @@ export default function RestaurantPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(restaurantSchema) }}
       />
-      {/* Luxury Full-Bleed Restaurant Hero Banner without Cropping */}
-      <section className="relative w-full h-[75vh] min-h-[520px] max-h-[780px] bg-black overflow-hidden flex items-end">
-        {/* Uncompressed Full-Fidelity Photograph */}
+      {/* Luxury Full-Bleed Restaurant Hero Banner matching Offers & Rooms Header */}
+      <section className="relative w-full aspect-[16/8.5] sm:aspect-[21/9.5] min-h-[440px] max-h-[750px] bg-black overflow-hidden flex items-end">
+        {/* Full-Bleed Background Lifestyle Photograph without Cropping or Compression */}
         <div className="absolute inset-0 z-0">
           <Image
             src="/images/restaurant/image.png"
             alt="Kwality Restaurant Palace Dining Hall"
             fill
             priority
-            quality={100}
+            unoptimized
             sizes="100vw"
-            className="object-cover object-center brightness-95 contrast-[1.02]"
+            className="object-cover object-[center_35%]"
           />
-          {/* Subtle Cinematic Vignette */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-black/40" />
+          {/* Subtle Top and Deep Bottom Vignette Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-black/30" />
         </div>
 
-        {/* Hero Bottom Content */}
+        {/* Hero Bottom Content matching Reference Typography */}
         <Container className="relative z-10 w-full pb-10 sm:pb-14 px-4 sm:px-6">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             {/* Title with Gold Line Prefix */}
@@ -354,6 +355,8 @@ export default function RestaurantPage() {
           </div>
         </Container>
       </section>
+
+      <HomeCTA />
     </>
   );
 }
