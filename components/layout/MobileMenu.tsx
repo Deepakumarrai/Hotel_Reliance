@@ -9,6 +9,7 @@ import { NavigationItem } from "@/types";
 import { HOTEL_INFO } from "@/lib/constants";
 import { Button } from "@/components/ui/Button";
 import { useAuth } from "@/hooks/useAuth";
+import { useHotelSettings } from "@/hooks/useHotelSettings";
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -19,6 +20,7 @@ interface MobileMenuProps {
 export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
   const pathname = usePathname();
   const { user, isAuthenticated, signOut, openAuthModal } = useAuth();
+  const hotelSettings = useHotelSettings();
 
   useEffect(() => {
     if (isOpen) {
@@ -198,14 +200,14 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
           <div className="text-[11px] text-muted space-y-1">
             <div className="flex items-center">
               <Phone className="w-3.5 h-3.5 mr-1.5 text-gold flex-shrink-0" />
-              <a href={`tel:${HOTEL_INFO.phones[0].value}`} className="hover:text-gold transition-colors">
-                {HOTEL_INFO.phones[0].display}
+              <a href={`tel:${hotelSettings.primaryPhone}`} className="hover:text-gold transition-colors">
+                {hotelSettings.primaryPhone}
               </a>
             </div>
             <div className="flex items-center">
               <Mail className="w-3.5 h-3.5 mr-1.5 text-gold flex-shrink-0" />
-              <a href={`mailto:${HOTEL_INFO.emails.reservation}`} className="truncate hover:text-gold transition-colors">
-                {HOTEL_INFO.emails.reservation}
+              <a href={`mailto:${hotelSettings.primaryEmail}`} className="truncate hover:text-gold transition-colors">
+                {hotelSettings.primaryEmail}
               </a>
             </div>
           </div>

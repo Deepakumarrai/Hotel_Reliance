@@ -11,11 +11,13 @@ import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { MobileMenu } from "./MobileMenu";
 import { useAuth } from "@/hooks/useAuth";
+import { useHotelSettings } from "@/hooks/useHotelSettings";
 
 export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, isAuthenticated, signOut, openAuthModal } = useAuth();
+  const hotelSettings = useHotelSettings();
 
   // Do not render guest navbar on admin panel routes
   if (pathname?.startsWith("/admin")) {
@@ -111,20 +113,23 @@ export function Navbar() {
           <div className="hidden lg:block border-b border-white/10 pb-2.5 mb-2 text-xs sm:text-[13px] tracking-wider uppercase font-light">
             <Container className="flex justify-between items-center text-white/85">
               <div className="flex items-center space-x-6">
-                <span className="flex items-center text-xs sm:text-[13px]">
+                <a
+                  href={`tel:${hotelSettings.primaryPhone}`}
+                  className="flex items-center text-xs sm:text-[13px] hover:text-[#D8B875] transition-colors"
+                >
                   <Phone className="w-3.5 h-3.5 mr-2 text-[#D8B875]" />
-                  {HOTEL_INFO.phones[0].display}
-                </span>
+                  {hotelSettings.primaryPhone}
+                </a>
                 <span className="text-[11px] sm:text-xs text-white/70">
-                  Plot No: NIHP-1, Co-Operative Colony, Bokaro Steel City
+                  {hotelSettings.fullAddress}
                 </span>
               </div>
               <div className="flex items-center space-x-4">
                 <a
-                  href={`mailto:${HOTEL_INFO.emails.reservation}`}
+                  href={`mailto:${hotelSettings.primaryEmail}`}
                   className="hover:text-[#D8B875] transition-colors text-xs sm:text-[13px]"
                 >
-                  {HOTEL_INFO.emails.reservation}
+                  {hotelSettings.primaryEmail}
                 </a>
               </div>
             </Container>

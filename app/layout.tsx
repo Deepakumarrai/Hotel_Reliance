@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Cormorant_Garamond, Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth/AuthContext";
+import { HotelSettingsProvider } from "@/hooks/useHotelSettings";
 import { GuestLayoutWrapper } from "@/components/layout/GuestLayoutWrapper";
 import { hotelData } from "@/data/hotel";
 
@@ -156,7 +157,9 @@ export default function RootLayout({
       </head>
       <body className="flex flex-col min-h-screen">
         <AuthProvider>
-          <GuestLayoutWrapper>{children}</GuestLayoutWrapper>
+          <HotelSettingsProvider>
+            <GuestLayoutWrapper>{children}</GuestLayoutWrapper>
+          </HotelSettingsProvider>
         </AuthProvider>
       </body>
     </html>

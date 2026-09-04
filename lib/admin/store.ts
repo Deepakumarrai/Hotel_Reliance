@@ -89,6 +89,29 @@ export interface CouponRecord {
   isActive: boolean;
 }
 
+export interface HotelSettings {
+  hotelName: string;
+  tagline: string;
+  description: string;
+  phones: string[];
+  emails: string[];
+  whatsappNumber: string;
+  address: {
+    plotNo: string;
+    street: string;
+    city: string;
+    state: string;
+    pincode: string;
+    fullAddress: string;
+  };
+  checkInTime: string;
+  checkOutTime: string;
+  cancellationWindowHours: number;
+  freeCancellationAllowed: boolean;
+  googleMapUrl?: string;
+  updatedAt: string;
+}
+
 // Global In-Memory Persistent Store across Next.js API lifecycle
 class AdminStore {
   public rooms: PhysicalRoom[] = [];
@@ -97,6 +120,28 @@ class AdminStore {
   public menuItems: RestaurantMenuItem[] = [];
   public banquetEnquiries: BanquetEnquiryRecord[] = [];
   public coupons: CouponRecord[] = [];
+  public hotelSettings: HotelSettings = {
+    hotelName: "Hotel Reliance",
+    tagline: "Experience Premium Hospitality in Bokaro",
+    description: "Hotel Reliance is a 45+ room property in Bokaro Steel City with quality restaurant dining, banquet spaces, meeting rooms and outdoor celebration facilities.",
+    phones: ["+91 92629 97777", "+91 92628 27777"],
+    emails: ["reservation@hotelreliance.com"],
+    whatsappNumber: "919262997777",
+    address: {
+      plotNo: "Plot No: NIHP-1",
+      street: "West Side of Co-Operative Colony",
+      city: "Bokaro Steel City",
+      state: "Jharkhand",
+      pincode: "827001",
+      fullAddress: "Plot No: NIHP-1, West Side of Co-Operative Colony, Bokaro Steel City, Jharkhand - 827001",
+    },
+    checkInTime: "12:00 PM",
+    checkOutTime: "11:00 AM",
+    cancellationWindowHours: 24,
+    freeCancellationAllowed: true,
+    googleMapUrl: "https://maps.google.com/?q=Hotel+Reliance+Bokaro+Steel+City",
+    updatedAt: new Date().toISOString(),
+  };
   public roomPrices: Record<string, { base: number; weekend: number; peak: number; extraAdult: number; extraBed: number }> = {
     deluxe: { base: 2499, weekend: 2799, peak: 3199, extraAdult: 600, extraBed: 800 },
     executive: { base: 3499, weekend: 3899, peak: 4299, extraAdult: 800, extraBed: 1000 },

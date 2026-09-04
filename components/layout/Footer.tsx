@@ -14,9 +14,11 @@ import {
 } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { hotelData } from "@/data/hotel";
+import { useHotelSettings } from "@/hooks/useHotelSettings";
 
 export function Footer() {
   const pathname = usePathname();
+  const hotelSettings = useHotelSettings();
   const currentYear = new Date().getFullYear();
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
@@ -45,18 +47,15 @@ export function Footer() {
         <div className="mb-14">
           <Link href="/" className="inline-block group">
             <span className="text-3xl sm:text-5xl font-serif tracking-[0.22em] text-white uppercase font-normal group-hover:text-[#D8B875] transition-colors">
-              Reliance
-            </span>
-            <span className="block text-[10px] sm:text-xs font-mono uppercase tracking-[0.35em] text-[#C5A880] mt-1 font-semibold">
-              Hotel • Bokaro Steel City
+              {hotelSettings.hotelName}
             </span>
           </Link>
         </div>
 
-        {/* Main 3-Column Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 pb-14 border-b border-[#2A231F]">
-          {/* Left Column: Newsletter & Contact Information (Span 5) */}
-          <div className="lg:col-span-5 space-y-8">
+        {/* Main Footer Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 pb-14 border-b border-[#26201C]">
+          {/* Left Column: Brand & Direct Contact (Span 7) */}
+          <div className="lg:col-span-7 space-y-10">
             {/* Newsletter Subscription */}
             <div>
               <span className="text-xs sm:text-[13px] font-mono tracking-[0.2em] text-[#C5A880] uppercase font-bold block mb-4">
@@ -97,7 +96,7 @@ export function Footer() {
                   For Bookings Contact
                 </span>
                 <div className="flex flex-col space-y-1.5 text-sm sm:text-base font-sans text-white/95">
-                  {hotelData.phones.map((phone) => (
+                  {hotelSettings.phones.map((phone) => (
                     <a
                       key={phone}
                       href={`tel:${phone.replace(/\s+/g, "")}`}
@@ -114,10 +113,10 @@ export function Footer() {
                   Email
                 </span>
                 <a
-                  href={`mailto:${hotelData.emails[0]}`}
+                  href={`mailto:${hotelSettings.primaryEmail}`}
                   className="text-xs sm:text-sm font-sans text-[#E5DFD7] hover:text-[#D8B875] transition-colors block break-all pt-0 sm:pt-6 font-medium"
                 >
-                  {hotelData.emails[0]}
+                  {hotelSettings.primaryEmail}
                 </a>
               </div>
             </div>
@@ -128,10 +127,10 @@ export function Footer() {
                 Customer Support
               </span>
               <a
-                href={`mailto:${hotelData.emails[0]}`}
+                href={`mailto:${hotelSettings.primaryEmail}`}
                 className="text-sm font-sans text-[#E5DFD7] hover:text-[#D8B875] transition-colors block font-medium"
               >
-                {hotelData.emails[0]}
+                {hotelSettings.primaryEmail}
               </a>
             </div>
           </div>
@@ -340,10 +339,10 @@ export function Footer() {
         <div className="pt-8 flex flex-col md:flex-row items-center justify-between text-xs text-[#9E958C] gap-4 text-center md:text-left">
           <div className="space-y-1">
             <p className="font-serif tracking-[0.05em] text-[#DFD7CF]">
-              © {currentYear} Hotel Reliance. All rights reserved.
+              © {currentYear} {hotelSettings.hotelName}. All rights reserved.
             </p>
             <p className="text-[12px] text-[#8C847C]">
-              Plot No. 12, Co-operative Colony, Bokaro Steel City, Jharkhand - 827001
+              {hotelSettings.fullAddress}
             </p>
           </div>
 

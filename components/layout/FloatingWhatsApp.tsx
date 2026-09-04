@@ -2,10 +2,11 @@
 
 import React from "react";
 import { usePathname } from "next/navigation";
-import { HOTEL_INFO } from "@/lib/constants";
+import { useHotelSettings } from "@/hooks/useHotelSettings";
 
 export function FloatingWhatsApp() {
   const pathname = usePathname();
+  const hotelSettings = useHotelSettings();
 
   // Do not render floating WhatsApp on admin panel routes
   if (pathname?.startsWith("/admin")) {
@@ -13,9 +14,9 @@ export function FloatingWhatsApp() {
   }
 
   const message = encodeURIComponent(
-    "Hello! I am visiting the Hotel Reliance website and would like to make an enquiry about room bookings or event services."
+    `Hello! I am visiting the ${hotelSettings.hotelName} website and would like to make an enquiry about room bookings or event services.`
   );
-  const waLink = `https://wa.me/${HOTEL_INFO.whatsapp.number}?text=${message}`;
+  const waLink = `https://wa.me/${hotelSettings.whatsappNumber}?text=${message}`;
 
   return (
     <div className="fixed bottom-5 right-4 sm:bottom-6 sm:right-6 z-40 flex items-center group">
