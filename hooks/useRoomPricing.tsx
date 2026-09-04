@@ -52,7 +52,18 @@ const RoomPricingContext = createContext<{
 });
 
 export function RoomPricingProvider({ children }: { children: React.ReactNode }) {
-  const [prices, setPrices] = useState<PricingMap>(defaultPricing);
+  const [prices, setPrices] = useState<PricingMap>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const saved = localStorage.getItem("hr_room_pricing");
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed && typeof parsed === "object") return parsed;
+        }
+      } catch {}
+    }
+    return defaultPricing;
+  });
 
   const fetchPricing = async () => {
     try {
@@ -61,28 +72,44 @@ export function RoomPricingProvider({ children }: { children: React.ReactNode })
         const data = await res.json();
         if (data?.prices) {
           setPrices(data.prices);
+          try {
+            if (typeof window !== "undefined") {
+              localStorage.setItem("hr_room_pricing", JSON.stringify(data.prices));
+            }
+          } catch {}
         }
       }
-    } catch (e) {
-      // Fallback silently to default
+    } catch {
+      // Fallback silently
     }
   };
 
   useEffect(() => {
+    // Initial fetch
     fetchPricing();
 
     const handleUpdate = () => {
+      try {
+        const cached = localStorage.getItem("hr_room_pricing");
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (parsed) setPrices(parsed);
+        }
+      } catch {}
       fetchPricing();
     };
 
     window.addEventListener("room-pricing-updated", handleUpdate);
     window.addEventListener("storage", handleUpdate);
+    window.addEventListener("focus", handleUpdate);
 
     return () => {
       window.removeEventListener("room-pricing-updated", handleUpdate);
       window.removeEventListener("storage", handleUpdate);
+      window.removeEventListener("focus", handleUpdate);
     };
   }, []);
+
 
   const getRoomPrice = (slug: string): number => {
     const key = slug.toLowerCase().replace("-room", "").replace("-suite", "");

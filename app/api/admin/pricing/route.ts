@@ -19,7 +19,36 @@ export async function PUT(request: Request) {
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   try {
-    const { roomType, base, weekend, peak, extraAdult, extraBed } = await request.json();
+    const body = await request.json();
+
+    // Check if batch update
+    if (body.allPrices && typeof body.allPrices === "object") {
+      const oldPrices = JSON.stringify(adminStore.roomPrices);
+      for (const [key, val] of Object.entries(body.allPrices as Record<string, any>)) {
+        if (adminStore.roomPrices[key]) {
+          adminStore.roomPrices[key] = {
+            base: Number(val.base) || adminStore.roomPrices[key].base,
+            weekend: Number(val.weekend) || adminStore.roomPrices[key].weekend,
+            peak: Number(val.peak) || adminStore.roomPrices[key].peak,
+            extraAdult: Number(val.extraAdult) || adminStore.roomPrices[key].extraAdult,
+            extraBed: Number(val.extraBed) || adminStore.roomPrices[key].extraBed,
+          };
+        }
+      }
+
+      adminStore.addAuditLog(
+        session.username,
+        "UPDATE_ALL_PRICING",
+        "Pricing",
+        "ALL",
+        JSON.stringify(adminStore.roomPrices),
+        oldPrices
+      );
+
+      return NextResponse.json({ success: true, prices: adminStore.roomPrices });
+    }
+
+    const { roomType, base, weekend, peak, extraAdult, extraBed } = body;
     if (!adminStore.roomPrices[roomType]) {
       return NextResponse.json({ error: "Invalid room type" }, { status: 400 });
     }
@@ -47,3 +76,4 @@ export async function PUT(request: Request) {
     return NextResponse.json({ error: "Failed to update pricing" }, { status: 500 });
   }
 }
+

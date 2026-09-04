@@ -33,11 +33,18 @@ export default function AdminPricingPage() {
   });
   const [saving, setSaving] = useState<string | null>(null);
 
+  const [savingAll, setSavingAll] = useState(false);
+
   const fetchPrices = async () => {
     try {
       const res = await fetch("/api/admin/pricing");
       const data = await res.json();
-      if (data.prices) setPrices(data.prices);
+      if (data.prices) {
+        setPrices(data.prices);
+        if (typeof window !== "undefined") {
+          localStorage.setItem("hr_room_pricing", JSON.stringify(data.prices));
+        }
+      }
     } catch (err) {
       console.error(err);
     }
@@ -52,7 +59,7 @@ export default function AdminPricingPage() {
       ...prev,
       [roomType]: {
         ...prev[roomType],
-        [field]: val,
+        [field]: isNaN(val) ? 0 : val,
       },
     }));
   };
@@ -69,17 +76,52 @@ export default function AdminPricingPage() {
         }),
       });
       const data = await res.json();
-      if (data.success) {
-        showToast(`Tariff rules for ${roomType.toUpperCase()} saved & synced to website!`, "success");
+      if (data.success && data.prices) {
+        setPrices(data.prices);
+        showToast(`Tariff rules for ${roomType.toUpperCase()} saved & synced to website live!`, "success");
         if (typeof window !== "undefined") {
-          window.dispatchEvent(new Event("room-pricing-updated"));
+          localStorage.setItem("hr_room_pricing", JSON.stringify(data.prices));
           localStorage.setItem("room_pricing_last_sync", Date.now().toString());
+          window.dispatchEvent(new Event("room-pricing-updated"));
+          window.dispatchEvent(new Event("storage"));
         }
+      } else {
+        showToast(data.error || "Failed to save pricing", "error");
       }
     } catch {
       showToast("Failed to save pricing", "error");
     } finally {
       setSaving(null);
+    }
+  };
+
+  const handleSaveAll = async () => {
+    setSavingAll(true);
+    try {
+      const res = await fetch("/api/admin/pricing", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          allPrices: prices,
+        }),
+      });
+      const data = await res.json();
+      if (data.success && data.prices) {
+        setPrices(data.prices);
+        showToast("All room tariff rates saved & synchronized across website live!", "success");
+        if (typeof window !== "undefined") {
+          localStorage.setItem("hr_room_pricing", JSON.stringify(data.prices));
+          localStorage.setItem("room_pricing_last_sync", Date.now().toString());
+          window.dispatchEvent(new Event("room-pricing-updated"));
+          window.dispatchEvent(new Event("storage"));
+        }
+      } else {
+        showToast(data.error || "Failed to save pricing", "error");
+      }
+    } catch {
+      showToast("Failed to save pricing", "error");
+    } finally {
+      setSavingAll(false);
     }
   };
 
@@ -107,14 +149,23 @@ export default function AdminPricingPage() {
             </p>
           </div>
 
-          <div className="flex items-center space-x-3">
+          <div className="flex flex-wrap items-center gap-3">
             <Link
               href="/admin/pricing/seasonal"
               className="px-4 py-2 rounded-lg bg-[#1B2A42] hover:bg-[#253755] text-xs font-semibold text-[#D8B875] border border-[#C4984F]/30 transition-colors flex items-center space-x-1.5"
             >
               <CalendarDays className="w-4 h-4 text-[#C4984F]" />
-              <span>Seasonal Holiday Surge</span>
+              <span>Seasonal Surge</span>
             </Link>
+
+            <button
+              onClick={handleSaveAll}
+              disabled={savingAll}
+              className="px-4 py-2 rounded-lg bg-gradient-to-r from-[#9E712E] to-[#C4984F] hover:from-[#8C6326] hover:to-[#B38740] text-xs font-bold uppercase tracking-wider text-white shadow-md transition-all flex items-center space-x-1.5 disabled:opacity-50"
+            >
+              <Save className="w-4 h-4" />
+              <span>{savingAll ? "Saving All..." : "Save All Room Tariffs"}</span>
+            </button>
           </div>
         </div>
 
@@ -126,7 +177,7 @@ export default function AdminPricingPage() {
             </div>
             <div>
               <span className="font-bold text-white">Indian Hospitality GST Slab Config:</span>
-              <p className="text-white/60">Tariffs ≤ ₹7,500/night apply 12% GST • Tariffs &gt; ₹7,500 apply 18% GST (Automatically calculated at checkout).</p>
+              <p className="text-white/60">Tariffs ≤ ₹7,500/night apply 12% GST • Tariffs &gt; ₹7,500 apply 18% GST (Automatically calculated at checkout & synchronized with website).</p>
             </div>
           </div>
           <span className="hidden sm:inline-block px-2.5 py-1 rounded bg-emerald-950 text-emerald-400 border border-emerald-500/30 font-bold text-[10px]">
@@ -150,9 +201,14 @@ export default function AdminPricingPage() {
                     <h3 className="font-serif text-lg font-bold text-white">{name}</h3>
                     <p className="text-xs text-[#E9DFD2]/60">{desc}</p>
                   </div>
-                  <span className="font-mono text-sm font-bold text-[#D8B875]">
-                    ₹{p.base.toLocaleString()} / nt
-                  </span>
+                  <div className="text-right">
+                    <span className="font-mono text-sm font-bold text-[#D8B875] block">
+                      ₹{p.base.toLocaleString()} / nt
+                    </span>
+                    <span className="text-[10px] text-emerald-400 font-semibold">
+                      Peak: ₹{p.peak.toLocaleString()}
+                    </span>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
@@ -190,16 +246,17 @@ export default function AdminPricingPage() {
 
                   {/* Peak Season Surge */}
                   <div>
-                    <label className="text-[10px] uppercase font-bold text-[#C4984F] block mb-1">
-                      Peak Holiday / Wedding Season
+                    <label className="text-[10px] uppercase font-bold text-amber-400 block mb-1 flex items-center space-x-1">
+                      <Sparkles className="w-3 h-3" />
+                      <span>Peak Holiday / Festive Season</span>
                     </label>
                     <div className="relative">
-                      <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-white/40">₹</span>
+                      <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-amber-400/60">₹</span>
                       <input
                         type="number"
                         value={p.peak}
                         onChange={(e) => handlePriceChange(key, "peak", Number(e.target.value))}
-                        className="w-full bg-[#111E31] border border-[#1B2A42] rounded-lg pl-7 pr-3 py-2 text-white font-bold focus:outline-none focus:border-[#C4984F]"
+                        className="w-full bg-[#111E31] border border-amber-500/40 rounded-lg pl-7 pr-3 py-2 text-amber-300 font-bold focus:outline-none focus:border-amber-400"
                       />
                     </div>
                   </div>
@@ -219,9 +276,28 @@ export default function AdminPricingPage() {
                       />
                     </div>
                   </div>
+
+                  {/* Extra Bed Surcharge */}
+                  <div className="sm:col-span-2">
+                    <label className="text-[10px] uppercase font-bold text-[#C4984F] block mb-1">
+                      Extra Rollaway Bed (Optional)
+                    </label>
+                    <div className="relative">
+                      <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-white/40">₹</span>
+                      <input
+                        type="number"
+                        value={p.extraBed}
+                        onChange={(e) => handlePriceChange(key, "extraBed", Number(e.target.value))}
+                        className="w-full bg-[#111E31] border border-[#1B2A42] rounded-lg pl-7 pr-3 py-2 text-white font-bold focus:outline-none focus:border-[#C4984F]"
+                      />
+                    </div>
+                  </div>
                 </div>
 
-                <div className="pt-3 border-t border-[#1B2A42] flex justify-end">
+                <div className="pt-3 border-t border-[#1B2A42] flex items-center justify-between">
+                  <span className="text-[10px] text-[#E9DFD2]/40">
+                    Live on customer site & booking
+                  </span>
                   <button
                     onClick={() => handleSave(key)}
                     disabled={isSaving}
@@ -239,3 +315,4 @@ export default function AdminPricingPage() {
     </AdminLayout>
   );
 }
+
