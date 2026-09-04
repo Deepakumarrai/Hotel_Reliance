@@ -8,6 +8,7 @@ export default function robots(): MetadataRoute.Robots {
         allow: "/",
         disallow: [
           "/auth/",
+          "/admin/",
           "/profile",
           "/my-bookings/",
           "/booking/confirmation",
@@ -20,6 +21,7 @@ export default function robots(): MetadataRoute.Robots {
         allow: "/",
         disallow: [
           "/auth/",
+          "/admin/",
           "/profile",
           "/my-bookings/",
           "/booking/confirmation",
