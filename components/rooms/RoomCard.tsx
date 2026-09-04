@@ -3,7 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Users, Bed, Expand, ArrowRight } from "lucide-react";
+import { Users, Bed, Expand, ArrowRight, Calendar, Sparkles, UserPlus } from "lucide-react";
 import { Room } from "@/types";
 import { formatPrice } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
@@ -15,12 +15,13 @@ interface RoomCardProps {
 }
 
 export function RoomCard({ room }: RoomCardProps) {
-  const { getRoomPrice } = useRoomPricing();
+  const { getRoomPrice, getRoomRules } = useRoomPricing();
+  const rules = getRoomRules(room.slug);
   const activePrice = getRoomPrice(room.slug) || room.price;
   const displayPrice = activePrice ? `${formatPrice(activePrice)}` : "Price on request";
 
   return (
-    <div className="bg-white border border-border-custom shadow-md flex flex-col group h-full transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+    <div className="bg-white border border-border-custom shadow-md flex flex-col group h-full transition-all duration-300 hover:shadow-xl hover:-translate-y-1 rounded-sm">
       {/* Room Thumbnail Image */}
       <div className="relative h-64 w-full overflow-hidden bg-dark">
         {/* Featured Badge */}
@@ -29,6 +30,12 @@ export function RoomCard({ room }: RoomCardProps) {
             <Badge variant="gold">Featured Suite</Badge>
           </div>
         )}
+
+        {/* Live Peak Season Pill */}
+        <div className="absolute bottom-3 right-3 z-20 bg-dark/85 backdrop-blur-md border border-gold/40 px-2.5 py-1 rounded text-[10px] text-[#D8B875] font-semibold flex items-center space-x-1 shadow-lg">
+          <Sparkles className="w-3 h-3 text-[#C4984F]" />
+          <span>Peak Season: {formatPrice(rules.peak)}</span>
+        </div>
         
         {/* Image Zoom Hover effect */}
         <div className="absolute inset-0 image-zoom-hover">
@@ -72,20 +79,36 @@ export function RoomCard({ room }: RoomCardProps) {
           )}
         </div>
 
+        {/* Dynamic Pricing Rates Breakdown Pills */}
+        <div className="bg-cream/60 border border-border-custom p-2.5 rounded-sm space-y-1.5 text-[11px]">
+          <div className="flex items-center justify-between text-muted">
+            <span className="flex items-center">
+              <Calendar className="w-3 h-3 mr-1 text-gold" /> Weekend (Fri-Sun):
+            </span>
+            <span className="font-semibold text-dark font-sans">{formatPrice(rules.weekend)}/nt</span>
+          </div>
+          <div className="flex items-center justify-between text-muted">
+            <span className="flex items-center">
+              <UserPlus className="w-3 h-3 mr-1 text-gold" /> Extra Adult:
+            </span>
+            <span className="font-semibold text-dark font-sans">+{formatPrice(rules.extraAdult)}/nt</span>
+          </div>
+        </div>
+
         {/* Price & Actions Row */}
-        <div className="flex items-end justify-between pt-2">
+        <div className="flex items-end justify-between pt-1">
           <div className="flex flex-col">
             <span className="text-[9px] uppercase tracking-widest text-muted font-bold block">
-              Starting from
+              Weekday Base Rate
             </span>
             <div className="flex items-baseline space-x-1">
-              <span className="text-lg font-bold text-primary font-sans">
+              <span className="text-xl font-bold text-primary font-sans">
                 {displayPrice}
               </span>
               <span className="text-[10px] text-muted">/ night</span>
             </div>
             <span className="text-[9px] text-muted/80 tracking-tight block">
-              + applicable taxes
+              + applicable GST (12% standard)
             </span>
           </div>
 

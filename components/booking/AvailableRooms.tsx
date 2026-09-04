@@ -21,7 +21,7 @@ export function AvailableRooms({
   onSelect,
   errors
 }: AvailableRoomsProps) {
-  const { getRoomPrice } = useRoomPricing();
+  const { getRoomPrice, getRoomRules } = useRoomPricing();
 
   return (
     <div className="space-y-6">
@@ -40,6 +40,7 @@ export function AvailableRooms({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {rooms.map((room) => {
           const isSelected = selectedRoomId === room.id;
+          const rules = getRoomRules(room.slug);
           const activePrice = getRoomPrice(room.slug) || room.price;
           const displayPrice = activePrice ? `${formatPrice(activePrice)}` : "Price on request";
 
@@ -102,16 +103,34 @@ export function AvailableRooms({
                   </span>
                 </div>
 
+                {/* Rate Structure Breakdown Pills */}
+                {rules && (
+                  <div className="bg-cream/70 border border-border-custom p-2 rounded text-[10px] space-y-1">
+                    <div className="flex items-center justify-between text-muted">
+                      <span>Weekend (Fri-Sun):</span>
+                      <span className="font-semibold text-dark">{formatPrice(rules.weekend)}/nt</span>
+                    </div>
+                    <div className="flex items-center justify-between text-muted">
+                      <span className="text-amber-800 font-medium">Peak Season:</span>
+                      <span className="font-bold text-amber-800">{formatPrice(rules.peak)}/nt</span>
+                    </div>
+                    <div className="flex items-center justify-between text-muted">
+                      <span>Extra Adult:</span>
+                      <span className="font-semibold text-dark">+{formatPrice(rules.extraAdult)}/nt</span>
+                    </div>
+                  </div>
+                )}
+
                 {/* Select button row */}
                 <div className="flex items-end justify-between pt-1">
                   <div className="flex flex-col">
                     <span className="text-[8px] uppercase tracking-widest text-muted font-bold block">
-                      Starting from
+                      Weekday Base
                     </span>
                     <span className="text-sm font-bold text-primary block mt-0.5">
                       {displayPrice} <span className="text-[10px] font-normal text-muted">/ night</span>
                     </span>
-                    <span className="text-[8px] text-muted/70">+ taxes</span>
+                    <span className="text-[8px] text-muted/70">+ 12% GST at checkout</span>
                   </div>
                   <button
                     type="button"
