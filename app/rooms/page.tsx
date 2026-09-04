@@ -55,7 +55,7 @@ export default function RoomsPage() {
         {/* Full-Bleed Background Room Showcase Photograph */}
         <div className="absolute inset-0 z-0">
           <Image
-            src="/images/rooms/room-showcase.png"
+            src="/images/hotel/image copy 3.png"
             alt="Hotel Reliance Rooms & Suites"
             fill
             priority

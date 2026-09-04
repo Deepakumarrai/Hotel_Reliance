@@ -50,18 +50,6 @@ export function FeaturedRooms() {
           </p>
         </FadeUp>
 
-        {/* Panoramic Rooms Showcase Banner */}
-        <div className="relative w-full aspect-[2172/724] mb-12 sm:mb-16 overflow-hidden rounded-sm border border-[#C5A880]/40 shadow-xl bg-[#FAF7F2]">
-          <Image
-            src="/images/rooms/room-showcase.png"
-            alt="Hotel Reliance Rooms & Suites Showcase"
-            fill
-            sizes="(max-w-1200px) 100vw, 1200px"
-            className="object-contain sm:object-cover w-full h-full"
-            priority
-          />
-        </div>
-
         {/* Carousel / Cards Grid with Side Navigation Arrows */}
         <div className="relative px-0 sm:px-4">
           {/* Left Circular Arrow */}
