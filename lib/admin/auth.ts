@@ -20,11 +20,22 @@ interface LoginAttempt {
   lastAttempt: number;
 }
 
+export interface AdminSession {
+  token: string;
+  username: string;
+  name: string;
+  role: "SUPER_ADMIN" | "OWNER" | "MANAGER" | "FRONT_DESK";
+  createdAt: number;
+  expiresAt: number;
+}
+
+
 // Global in-memory singleton stores across Next.js worker lifecycle & HMR
 const globalForAuth = globalThis as unknown as {
   adminSessions?: Map<string, AdminSession>;
   attemptStore?: Map<string, LoginAttempt>;
 };
+
 
 export const activeSessions =
   globalForAuth.adminSessions || new Map<string, AdminSession>();
