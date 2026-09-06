@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { 
   Search, 
@@ -71,54 +72,82 @@ export default function FAQPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
-      {/* FAQ Hero */}
-      <section
-        className="relative bg-dark text-white py-24 bg-cover bg-center"
-        style={{
-          backgroundImage: "linear-gradient(rgba(0,0,0,0.72), rgba(0,0,0,0.72)), url('/images/gallery/hotel-lobby.jpg')",
-        }}
-      >
-        <Container className="relative z-10 text-center space-y-4 max-w-3xl">
-          <span className="text-xs uppercase tracking-[0.25em] text-gold font-bold">
-            GUEST ASSISTANCE & QUERIES
-          </span>
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif font-normal tracking-[0.08em] uppercase">
-            Frequently Asked Questions
-          </h1>
-          <div className="w-16 h-[2px] bg-gold mx-auto" />
-          <p className="text-xs sm:text-sm text-white/80 font-light leading-relaxed">
-            Find immediate answers to common questions about reservations, check-in timings, Kwality Restaurant, banquet facilities, and hotel policies.
-          </p>
+      {/* Luxury Hero Banner matching Offers & Rooms Header */}
+      <section className="relative w-full aspect-[16/8.5] sm:aspect-[21/9.5] min-h-[440px] max-h-[750px] bg-black overflow-hidden flex items-end">
+        {/* Full-Bleed Background Lifestyle Photograph without Cropping or Compression */}
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/images/amenities/image.png"
+            alt="Hotel Reliance Frequently Asked Questions"
+            fill
+            priority
+            unoptimized
+            sizes="100vw"
+            className="object-cover object-[center_35%]"
+          />
+          {/* Subtle Top and Deep Bottom Vignette Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-black/30" />
+        </div>
 
-          {/* Search Box */}
-          <div className="pt-4 max-w-xl mx-auto">
-            <div className="relative">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search questions (e.g., check-in, Wi-Fi, restaurant, parking, ID)..."
-                className="w-full bg-white text-dark placeholder:text-muted/60 pl-11 pr-4 py-3.5 text-xs sm:text-sm rounded-sm shadow-xl focus:outline-none focus:ring-2 focus:ring-gold"
-              />
-              <Search className="w-4 h-4 text-gold absolute left-4 top-1/2 -translate-y-1/2" />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery("")}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-muted hover:text-dark uppercase tracking-wider"
-                >
-                  Clear
-                </button>
-              )}
+        {/* Hero Bottom Content matching Offers & Rooms Header */}
+        <Container className="relative z-10 w-full pb-10 sm:pb-14 px-4 sm:px-6">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            {/* Title with Gold Line Prefix */}
+            <div className="flex items-start space-x-3 sm:space-x-4">
+              <div className="w-8 sm:w-16 h-[2px] bg-[#C5A880] mt-4 sm:mt-5 flex-shrink-0" />
+              <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-normal tracking-[0.1em] sm:tracking-[0.14em] text-white uppercase leading-tight drop-shadow-lg">
+                Frequently
+                <span className="block">Asked Questions</span>
+              </h1>
             </div>
+
+            {/* Right Subtitle */}
+            <p className="text-[15px] sm:text-[17px] md:text-[18.5px] font-serif italic text-white/90 max-w-lg leading-[1.6] text-left md:text-right font-normal drop-shadow-md">
+              Find immediate clarity on reservations, bespoke amenities, banquet hosting, Kwality dining, and guest policies at Hotel Reliance.
+            </p>
           </div>
         </Container>
       </section>
 
       {/* Main FAQ Content Section */}
-      <section className="py-20 bg-[#FAF8F5]">
-        <Container className="max-w-5xl">
+      <section className="py-16 sm:py-24 bg-[#FAF8F5]">
+        <Container className="max-w-5xl px-4 sm:px-6">
+          {/* Section Sub-header & Search Bar */}
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-10 pb-6 border-b border-[#E8E1D7]">
+            <div>
+              <span className="text-[10px] sm:text-xs uppercase font-bold tracking-[0.22em] text-[#BA8B32] block mb-1">
+                GUEST ASSISTANCE & QUERIES
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-serif tracking-[0.08em] uppercase text-[#2B2320]">
+                Everything You Need To Know
+              </h2>
+            </div>
+
+            {/* Search Box */}
+            <div className="w-full lg:max-w-md">
+              <div className="relative">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search questions (e.g., check-in, Wi-Fi, restaurant, parking, ID)..."
+                  className="w-full bg-white text-dark placeholder:text-muted/60 pl-11 pr-10 py-3 text-xs sm:text-sm rounded-sm border border-[#E8E1D7] shadow-sm focus:outline-none focus:ring-1 focus:ring-gold focus:border-gold"
+                />
+                <Search className="w-4 h-4 text-gold absolute left-4 top-1/2 -translate-y-1/2" />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted hover:text-dark uppercase tracking-wider"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+
           {/* Category Filter Tabs */}
-          <div className="flex flex-wrap items-center justify-center gap-2 mb-12">
+          <div className="flex flex-wrap gap-2 sm:gap-2.5 mb-10">
             {CATEGORIES.map((cat) => {
               const isActive = selectedCategory === cat;
               return (
@@ -127,8 +156,8 @@ export default function FAQPage() {
                   onClick={() => setSelectedCategory(cat)}
                   className={`px-4 py-2 text-xs uppercase tracking-wider font-semibold rounded-sm border transition-all cursor-pointer ${
                     isActive
-                      ? "bg-primary text-white border-primary shadow-sm"
-                      : "bg-white text-muted border-[#E8E1D7] hover:border-gold hover:text-dark"
+                      ? "bg-[#1E1815] text-white border-[#1E1815] shadow-sm"
+                      : "bg-white text-[#5C4F46] border-[#E8E1D7] hover:border-[#BA8B32] hover:text-[#2B2320]"
                   }`}
                 >
                   {cat}
