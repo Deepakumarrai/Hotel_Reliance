@@ -224,10 +224,39 @@ export default function BanquetPage() {
             <div className="w-12 h-[1.5px] bg-[#C5A880] mx-auto mt-3" />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-2">
+          {/* Mobile Horizontal Swipeable Editorial Cards */}
+          <div className="md:hidden">
+            <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 -mx-4 px-4 pb-4 no-scrollbar">
+              {eventTypes.map((event, index) => (
+                <div
+                  key={index}
+                  className="w-[82vw] max-w-[310px] flex-shrink-0 snap-center bg-[#FAF8F5] border border-[#E8E1D7] p-6 text-center space-y-3.5 shadow-sm rounded-sm touch-card-press"
+                >
+                  <div className="w-12 h-12 bg-white border border-[#E8E1D7] flex items-center justify-center mx-auto rounded-full shadow-sm text-[#BA8B32]">
+                    {event.icon}
+                  </div>
+                  <h3 className="text-base font-serif font-normal text-[#2B2320] uppercase tracking-wide">
+                    {event.title}
+                  </h3>
+                  <p className="text-xs text-[#5C4F46] leading-relaxed font-light line-clamp-3">
+                    {event.desc}
+                  </p>
+                </div>
+              ))}
+            </div>
+            <div className="text-center pt-1 text-[#BA8B32]">
+              <span className="text-[10px] uppercase font-serif tracking-widest text-[#7A6B61]">Swipe Event Types →</span>
+            </div>
+          </div>
+
+          {/* Tablet & Desktop 3-Column Grid */}
+          <div className="hidden md:grid md:grid-cols-3 gap-8 pt-2">
             {eventTypes.map((event, index) => (
-              <div key={index} className="bg-[#FAF8F5] border border-[#E8E1D7] p-8 text-center space-y-4 hover:border-[#BA8B32] hover:shadow-lg transition-all duration-300">
-                <div className="w-12 h-12 bg-white border border-[#E8E1D7] flex items-center justify-center mx-auto rounded-full shadow-sm">
+              <div
+                key={index}
+                className="bg-[#FAF8F5] border border-[#E8E1D7] p-8 text-center space-y-4 hover:border-[#BA8B32] hover:shadow-lg transition-all duration-300 rounded-sm"
+              >
+                <div className="w-12 h-12 bg-white border border-[#E8E1D7] flex items-center justify-center mx-auto rounded-full shadow-sm text-[#BA8B32]">
                   {event.icon}
                 </div>
                 <h3 className="text-lg font-serif font-normal text-[#2B2320] uppercase tracking-wide">

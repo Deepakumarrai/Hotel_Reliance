@@ -21,25 +21,25 @@ export function RoomCard({ room }: RoomCardProps) {
   return (
     <Link
       href={`/rooms/${room.slug}`}
-      className="group flex flex-col space-y-4 transition-all duration-300 block"
+      className="group flex flex-col space-y-4 transition-all duration-300 block touch-card-press md:hover:-translate-y-2 md:hover:[transform:perspective(1000px)_rotateX(1deg)]"
     >
       {/* Room Image Container matching Offers / Dining Card Aspect Ratio */}
-      <div className="relative w-full aspect-[16/10] overflow-hidden bg-[#1E1815] shadow-sm">
+      <div className="relative w-full aspect-[16/10] overflow-hidden bg-[#1E1815] shadow-sm rounded-sm">
         <Image
           src={room.images[0]}
           alt={room.name}
           fill
-          sizes="(max-w-768px) 100vw, (max-w-1200px) 50vw, 33vw"
+          sizes="(max-width: 768px) 85vw, (max-width: 1200px) 50vw, 33vw"
           className="object-cover object-center w-full h-full transition-transform duration-700 ease-out group-hover:scale-105"
         />
 
         {/* Top Right Tariff Pill */}
-        <div className="absolute top-3 right-3 bg-black/65 backdrop-blur-md px-2.5 py-1 text-[9px] font-serif uppercase tracking-widest text-[#D8B875] border border-white/15 shadow-md">
+        <div className="absolute top-3 right-3 bg-black/70 backdrop-blur-md px-2.5 py-1 text-[9.5px] font-serif uppercase tracking-widest text-[#D8B875] border border-white/15 shadow-md rounded-sm">
           Starts {displayPrice}
         </div>
 
         {/* Bottom Left Peak Pill */}
-        <div className="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md px-2 py-0.5 text-[8.5px] font-serif tracking-wider text-emerald-400 border border-white/10 flex items-center space-x-1">
+        <div className="absolute bottom-3 left-3 bg-black/65 backdrop-blur-md px-2 py-0.5 text-[8.5px] font-serif tracking-wider text-emerald-400 border border-white/10 flex items-center space-x-1 rounded-sm">
           <Sparkles className="w-2.5 h-2.5 text-[#C4984F]" />
           <span>Peak: {formatPrice(rules.peak)}</span>
         </div>
@@ -47,7 +47,7 @@ export function RoomCard({ room }: RoomCardProps) {
 
       {/* Card Details Body with Gold Dash & Shared Editorial Typography */}
       <div className="space-y-2.5 pt-1 px-1 sm:px-0">
-        <h3 className="font-serif text-xs sm:text-base tracking-[0.1em] uppercase text-[#2B2320] font-normal group-hover:text-[#9E712E] transition-colors flex items-center">
+        <h3 className="font-serif text-sm sm:text-base tracking-[0.1em] uppercase text-[#2B2320] font-normal group-hover:text-[#9E712E] transition-colors flex items-center">
           <span className="w-3.5 sm:w-4 h-[1px] bg-[#C5A880] mr-2 flex-shrink-0" />
           <span className="truncate">{room.name}</span>
         </h3>

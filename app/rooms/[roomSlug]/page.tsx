@@ -13,6 +13,8 @@ import { RoomInfo } from "@/components/rooms/RoomInfo";
 import { RoomPrice } from "@/components/rooms/RoomPrice";
 import { RoomBookingCTA } from "@/components/rooms/RoomBookingCTA";
 import { VRViewerPlaceholder } from "@/components/rooms/VRViewerPlaceholder";
+import { Button } from "@/components/ui/Button";
+import { formatPrice } from "@/lib/utils";
 
 interface RoomPageProps {
   params: Promise<{ roomSlug: string }>;
@@ -196,6 +198,23 @@ export default async function RoomDetailPage({ params }: RoomPageProps) {
           </Container>
         </section>
       )}
+      {/* Mobile Sticky Bottom CTA Bar */}
+      <div className="fixed bottom-14 left-0 right-0 z-30 lg:hidden bg-white/95 backdrop-blur-xl border-t border-[#E8E1D7] p-3 shadow-[0_-8px_25px_rgba(17,30,49,0.12)]">
+        <div className="flex items-center justify-between max-w-md mx-auto">
+          <div>
+            <span className="text-[10px] uppercase font-serif text-[#7A6B61] tracking-wider block">From</span>
+            <div className="flex items-baseline space-x-1">
+              <span className="text-base sm:text-lg font-serif font-bold text-[#111E31]">{formatPrice(room.price)}</span>
+              <span className="text-[10px] text-[#7A6B61]">/ night</span>
+            </div>
+          </div>
+          <Link href={`/booking?room=${room.slug}`}>
+            <Button variant="primary" size="sm" className="uppercase tracking-wider font-serif text-xs px-5 py-2.5 bg-[#9E712E] hover:bg-[#B38E5D] text-white shadow-md">
+              Book Suite Now
+            </Button>
+          </Link>
+        </div>
+      </div>
     </>
   );
 }

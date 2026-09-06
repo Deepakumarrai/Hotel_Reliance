@@ -295,11 +295,56 @@ export default function RestaurantPage() {
             subtitle="MENU HIGHLIGHTS"
           />
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-6">
+          {/* Mobile Swipeable Food Cards */}
+          <div className="md:hidden pt-6">
+            <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 no-scrollbar -mx-4 px-4">
+              {chefSpecialties.map((spec, idx) => (
+                <div
+                  key={idx}
+                  className="w-[84vw] max-w-[330px] flex-shrink-0 snap-center bg-[#FAF8F5] border border-[#E8E1D7] shadow-sm overflow-hidden flex flex-col justify-between touch-card-press rounded-sm"
+                >
+                  {/* Dish High-Resolution Image */}
+                  <div className="relative aspect-[16/10] w-full overflow-hidden bg-black">
+                    <Image
+                      src={spec.image}
+                      alt={spec.name}
+                      fill
+                      unoptimized
+                      quality={100}
+                      sizes="(max-width: 768px) 85vw, 33vw"
+                      className="object-cover object-center"
+                    />
+                    <div className="absolute top-3 left-3 z-10 bg-black/80 backdrop-blur-sm px-2.5 py-1 text-[9px] uppercase tracking-widest text-[#D8B875] font-serif border border-white/10 rounded-sm">
+                      {spec.tag}
+                    </div>
+                  </div>
+
+                  {/* Dish Info */}
+                  <div className="p-5 flex-grow flex flex-col justify-between space-y-3">
+                    <div>
+                      <h4 className="text-base font-serif font-normal text-[#2B2320] flex items-center">
+                        <span className="w-3 h-[1.5px] bg-[#BA8B32] mr-2 flex-shrink-0" />
+                        <span>{spec.name}</span>
+                      </h4>
+                      <p className="text-xs text-[#5C4F46] leading-relaxed font-light mt-2 line-clamp-3">
+                        {spec.desc}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="text-center pt-2 text-[#BA8B32]">
+              <span className="text-[10px] uppercase font-serif tracking-widest text-[#7A6B61]">Swipe Signature Dishes →</span>
+            </div>
+          </div>
+
+          {/* Tablet & Desktop 3-Column Grid */}
+          <div className="hidden md:grid md:grid-cols-3 gap-8 pt-6">
             {chefSpecialties.map((spec, idx) => (
               <div
                 key={idx}
-                className="bg-[#FAF8F5] border border-[#E8E1D7] shadow-sm overflow-hidden flex flex-col justify-between group hover:shadow-xl hover:border-[#BA8B32] transition-all duration-300"
+                className="bg-[#FAF8F5] border border-[#E8E1D7] shadow-sm overflow-hidden flex flex-col justify-between group hover:shadow-xl hover:border-[#BA8B32] transition-all duration-300 rounded-sm"
               >
                 {/* Dish High-Resolution Image */}
                 <div className="relative aspect-[16/10] w-full overflow-hidden bg-black">
@@ -309,10 +354,10 @@ export default function RestaurantPage() {
                     fill
                     unoptimized
                     quality={100}
-                    sizes="(max-w-768px) 100vw, 33vw"
+                    sizes="(max-width: 768px) 100vw, 33vw"
                     className="object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
                   />
-                  <div className="absolute top-3 left-3 z-10 bg-black/80 backdrop-blur-sm px-2.5 py-1 text-[9px] uppercase tracking-widest text-[#D8B875] font-serif border border-white/10">
+                  <div className="absolute top-3 left-3 z-10 bg-black/80 backdrop-blur-sm px-2.5 py-1 text-[9px] uppercase tracking-widest text-[#D8B875] font-serif border border-white/10 rounded-sm">
                     {spec.tag}
                   </div>
                 </div>

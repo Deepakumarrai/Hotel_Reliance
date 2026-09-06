@@ -118,7 +118,25 @@ export default function PlacesPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {/* Mobile Horizontal Swipeable Attractions */}
+          <div className="md:hidden">
+            <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 no-scrollbar -mx-4 px-4">
+              {placesData.map((place) => (
+                <div
+                  key={place.id}
+                  className="w-[84vw] max-w-[330px] flex-shrink-0 snap-center h-full"
+                >
+                  <PlaceCard place={place} layout="vertical" />
+                </div>
+              ))}
+            </div>
+            <div className="text-center pt-2 text-[#BA8B32]">
+              <span className="text-[10px] uppercase font-serif tracking-widest text-[#7A6B61]">Swipe Attractions & Sights →</span>
+            </div>
+          </div>
+
+          {/* Tablet & Desktop Grid */}
+          <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {placesData.map((place) => (
               <div key={place.id} className="h-full">
                 <PlaceCard place={place} layout="vertical" />

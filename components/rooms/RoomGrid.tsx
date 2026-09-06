@@ -54,17 +54,39 @@ export function RoomGrid({ rooms }: RoomGridProps) {
       </div>
 
 
-      {/* Grid */}
+      {/* Rooms Presentation: Mobile Horizontal Swipe Carousel & Tablet/Desktop Grid */}
       {filteredRooms.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredRooms.map((room) => (
-            <div key={room.id} className="animate-fade-in">
-              <RoomCard room={room} />
+        <div>
+          {/* Mobile Swipeable Horizontal Carousel */}
+          <div className="md:hidden">
+            <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 no-scrollbar -mx-4 px-4">
+              {filteredRooms.map((room) => (
+                <div
+                  key={room.id}
+                  className="w-[84vw] max-w-[330px] flex-shrink-0 snap-center"
+                >
+                  <RoomCard room={room} />
+                </div>
+              ))}
             </div>
-          ))}
+
+            {/* Mobile Swipe Hint & Dots */}
+            <div className="flex items-center justify-center space-x-2 pt-2 text-[#C5A880]">
+              <span className="text-[10px] uppercase font-serif tracking-widest text-[#7A6B61]">Swipe Suites →</span>
+            </div>
+          </div>
+
+          {/* Tablet (2-col) & Desktop (3-col) Grid */}
+          <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredRooms.map((room) => (
+              <div key={room.id} className="animate-fade-in">
+                <RoomCard room={room} />
+              </div>
+            ))}
+          </div>
         </div>
       ) : (
-        <div className="text-center py-16 bg-white border border-border-custom max-w-md mx-auto">
+        <div className="text-center py-16 bg-white border border-[#E8E1D7] max-w-md mx-auto">
           <p className="text-sm text-muted">No rooms match your filter. Please choose another option.</p>
         </div>
       )}

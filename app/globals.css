@@ -82,8 +82,18 @@
   }
 }
 
+@keyframes errorShake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-4px); }
+  40%, 80% { transform: translateX(4px); }
+}
+
 .animate-fade-in {
   animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-error-shake {
+  animation: errorShake 0.4s ease-in-out;
 }
 
 /* Hover Zoom effect for premium cards */
@@ -98,3 +108,73 @@
 .image-zoom-hover:hover img {
   transform: scale(1.06);
 }
+
+/* 🧊 Liquid & Glass Morphism Tokens */
+.liquid-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.18);
+  border-radius: 20px;
+}
+
+.liquid-card-light {
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.88);
+  box-shadow: 0 12px 36px rgba(17, 30, 49, 0.06);
+  border-radius: 20px;
+}
+
+.liquid-card-dark {
+  background: rgba(17, 30, 49, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(197, 168, 128, 0.25);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
+  border-radius: 20px;
+}
+
+/* 📱 Mobile & Touch Feedback Utilities */
+.touch-press {
+  transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+.touch-press:active {
+  transform: scale(0.975);
+}
+
+.touch-card-press {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+.touch-card-press:active {
+  transform: scale(0.985);
+}
+
+/* Horizontal Smooth Scroll & Hide Scrollbars */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ♿ Accessibility: Prefers Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
