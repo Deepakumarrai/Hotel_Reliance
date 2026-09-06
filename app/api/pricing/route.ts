@@ -1,16 +1,21 @@
 import { NextResponse } from "next/server";
-import { adminStore } from "@/lib/admin/store";
+import { forwardToBackend } from "@/lib/admin/backendClient";
 
 export async function GET() {
-  return NextResponse.json(
-    {
-      success: true,
-      prices: adminStore.roomPrices,
-    },
-    {
-      headers: {
-        "Cache-Control": "no-store, max-age=0",
+  try {
+    const res = await forwardToBackend("/admin/pricing", { method: "GET" });
+    return NextResponse.json(
+      {
+        success: true,
+        prices: res.data.prices,
       },
-    }
-  );
+      {
+        headers: {
+          "Cache-Control": "no-store, max-age=0",
+        },
+      }
+    );
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 500 });
+  }
 }

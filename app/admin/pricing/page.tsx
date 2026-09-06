@@ -25,12 +25,8 @@ interface RoomPriceEntry {
 
 export default function AdminPricingPage() {
   const { showToast } = useToast();
-  const [prices, setPrices] = useState<Record<string, RoomPriceEntry>>({
-    deluxe: { base: 2499, weekend: 2799, peak: 3199, extraAdult: 600, extraBed: 800 },
-    executive: { base: 3499, weekend: 3899, peak: 4299, extraAdult: 800, extraBed: 1000 },
-    premium: { base: 4999, weekend: 5499, peak: 6199, extraAdult: 1000, extraBed: 1200 },
-    family: { base: 5999, weekend: 6599, peak: 7499, extraAdult: 1000, extraBed: 1200 },
-  });
+  const [prices, setPrices] = useState<Record<string, RoomPriceEntry>>({});
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<string | null>(null);
 
   const [savingAll, setSavingAll] = useState(false);
@@ -47,6 +43,8 @@ export default function AdminPricingPage() {
       }
     } catch (err) {
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -186,10 +184,15 @@ export default function AdminPricingPage() {
         </div>
 
         {/* Pricing Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {categories.map(({ key, name, desc }) => {
-            const p = prices[key] || { base: 2499, weekend: 2799, peak: 3199, extraAdult: 600, extraBed: 800 };
-            const isSaving = saving === key;
+        {loading ? (
+          <div className="py-20 text-center text-xs text-white/50 animate-pulse">
+            Loading live tariff rates from database...
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {categories.map(({ key, name, desc }) => {
+              const p = prices[key] || { base: 0, weekend: 0, peak: 0, extraAdult: 0, extraBed: 0 };
+              const isSaving = saving === key;
 
             return (
               <div
@@ -311,6 +314,7 @@ export default function AdminPricingPage() {
             );
           })}
         </div>
+        )}
       </div>
     </AdminLayout>
   );

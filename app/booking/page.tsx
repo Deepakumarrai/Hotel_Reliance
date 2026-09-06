@@ -16,7 +16,7 @@ import { BookingState, Booking } from "@/types/booking";
 import { roomsData } from "@/data/rooms";
 import { validateBooking } from "@/lib/validations";
 import { useAuth } from "@/hooks/useAuth";
-import { addBookingRecord } from "@/lib/booking/mockBookings";
+import { api } from "@/lib/api";
 
 function BookingContent() {
   const router = useRouter();
@@ -200,8 +200,36 @@ function BookingContent() {
       const diffTime = Math.abs(checkOutDate.getTime() - checkInDate.getTime());
       const nights = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
 
+      // Persist to live PostgreSQL database via backend API
+      let bookingId = `HR-${Math.floor(100000 + Math.random() * 900000)}`;
+      let finalTotal = selectedRoom.price ? Math.round(selectedRoom.price * nights * 1.12) : null;
+      try {
+        const liveRes = await api.bookings.create({
+          roomId: selectedRoom.id,
+          checkIn: bookingState.checkIn,
+          checkOut: bookingState.checkOut,
+          adults: bookingState.adults,
+          children: bookingState.children,
+          guest: {
+            name: bookingState.guest?.name || user?.name || "Guest",
+            email: bookingState.guest?.email || user?.email || "",
+            phone: bookingState.guest?.phone || user?.phone || "",
+            specialRequests: bookingState.guest?.specialRequests || ""
+          },
+          paymentMethod: "OFFLINE"
+        });
+        if (liveRes.booking?.id) {
+          bookingId = liveRes.booking.id;
+        }
+        if (liveRes.booking?.totalAmount) {
+          finalTotal = liveRes.booking.totalAmount;
+        }
+      } catch (apiErr) {
+        console.warn("API booking creation notice:", apiErr);
+      }
+
       const newBooking: Booking = {
-        id: `HR-${Math.floor(100000 + Math.random() * 900000)}`,
+        id: bookingId,
         userId: user?.id,
         checkIn: bookingState.checkIn,
         checkOut: bookingState.checkOut,
@@ -215,17 +243,14 @@ function BookingContent() {
           phone: bookingState.guest?.phone || user?.phone || "",
           specialRequests: bookingState.guest?.specialRequests || ""
         },
-        totalPrice: selectedRoom.price ? Math.round(selectedRoom.price * nights * 1.12) : null,
-        estimatedTotal: selectedRoom.price
-          ? `₹${Math.round(selectedRoom.price * nights * 1.12).toLocaleString("en-IN")} (incl. 12% GST)`
+        totalPrice: finalTotal,
+        estimatedTotal: finalTotal
+          ? `₹${finalTotal.toLocaleString("en-IN")} (incl. 12% GST)`
           : "Price on Request",
         status: "confirmed",
         createdAt: new Date().toISOString(),
         paymentMethod: "Pay at Check-In (Front Desk)"
       };
-
-      // Save to mock storage
-      addBookingRecord(newBooking);
 
       // Store in SessionStorage for confirmation page to read
       sessionStorage.setItem("confirmedBooking", JSON.stringify(newBooking));

@@ -1,16 +1,19 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { validateAdminSession } from "@/lib/admin/auth";
-import { adminStore } from "@/lib/admin/store";
+import { forwardToBackend } from "@/lib/admin/backendClient";
 
 export async function GET() {
   const cookieStore = await cookies();
   const session = validateAdminSession(cookieStore.get("hr_admin_session")?.value);
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  return NextResponse.json({
-    coupons: adminStore.coupons,
-  });
+  try {
+    const res = await forwardToBackend("/admin/offers", { method: "GET" });
+    return NextResponse.json(res.data, { status: res.status });
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 500 });
+  }
 }
 
 export async function POST(request: Request) {
@@ -19,26 +22,30 @@ export async function POST(request: Request) {
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   try {
-    const data = await request.json();
-    const newCoupon = {
-      id: `cp-${Date.now()}`,
-      code: data.code.toUpperCase().trim(),
-      discountType: data.discountType || "PERCENTAGE",
-      discountValue: Number(data.discountValue),
-      minBookingAmount: Number(data.minBookingAmount) || 0,
-      maxDiscount: Number(data.maxDiscount) || 1000,
-      startDate: data.startDate,
-      endDate: data.endDate,
-      usageLimit: Number(data.usageLimit) || 100,
-      usedCount: 0,
-      isActive: true,
-    };
+    const body = await request.json();
+    const res = await forwardToBackend("/admin/offers", {
+      method: "POST",
+      body: JSON.stringify(body)
+    });
+    return NextResponse.json(res.data, { status: res.status });
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 500 });
+  }
+}
 
-    adminStore.coupons.push(newCoupon);
-    adminStore.addAuditLog(session.username, "CREATE_COUPON", "Coupon", newCoupon.code, `${newCoupon.discountValue}% / ₹${newCoupon.discountValue}`);
+export async function PUT(request: Request) {
+  const cookieStore = await cookies();
+  const session = validateAdminSession(cookieStore.get("hr_admin_session")?.value);
+  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    return NextResponse.json({ success: true, coupon: newCoupon });
-  } catch {
-    return NextResponse.json({ error: "Failed to create coupon" }, { status: 500 });
+  try {
+    const body = await request.json();
+    const res = await forwardToBackend("/admin/offers", {
+      method: "PUT",
+      body: JSON.stringify(body)
+    });
+    return NextResponse.json(res.data, { status: res.status });
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }

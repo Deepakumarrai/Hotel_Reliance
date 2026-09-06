@@ -59,29 +59,30 @@ export function AdminHeader({
     return () => clearInterval(interval);
   }, []);
 
-  const notifications = [
-    {
-      id: "n1",
-      title: "New Booking #HR-98220",
-      desc: "Vikash Agarwal booked Family Suite for 2 nights.",
-      time: "10 mins ago",
-      type: "booking",
-    },
-    {
-      id: "n2",
-      title: "Banquet Enquiry Received",
-      desc: "Wedding reception quote for 280 guests.",
-      time: "1 hr ago",
-      type: "banquet",
-    },
-    {
-      id: "n3",
-      title: "Room 104 Housekeeping",
-      desc: "Room 104 marked as CLEANING.",
-      time: "2 hrs ago",
-      type: "room",
-    },
-  ];
+  interface HeaderNotif {
+    id: string;
+    title: string;
+    desc: string;
+    time: string;
+  }
+  const [notifications, setNotifications] = useState<HeaderNotif[]>([]);
+
+  useEffect(() => {
+    fetch("/api/admin/security")
+      .then((r) => r.json())
+      .then((d) => {
+        if (Array.isArray(d.auditLogs)) {
+          const mapped = d.auditLogs.slice(0, 5).map((log: any) => ({
+            id: log.id,
+            title: `${log.action} — ${log.entity} #${log.entityId}`,
+            desc: log.newValue || log.oldValue || `Operator: ${log.adminUser}`,
+            time: new Date(log.timestamp).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" }),
+          }));
+          setNotifications(mapped);
+        }
+      })
+      .catch((err) => console.error(err));
+  }, []);
 
   return (
     <header className="sticky top-0 z-30 bg-[#111E31] border-b border-[#1B2A42] px-4 lg:px-8 py-3 flex items-center justify-between text-white shadow-md">
@@ -171,15 +172,21 @@ export function AdminHeader({
               </div>
 
               <div className="divide-y divide-[#1B2A42] max-h-72 overflow-y-auto">
-                {notifications.map((n) => (
-                  <div key={n.id} className="p-3 hover:bg-[#111E31]/60 transition-colors">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-semibold text-[#D8B875]">{n.title}</span>
-                      <span className="text-[10px] text-white/50">{n.time}</span>
-                    </div>
-                    <p className="text-[11px] text-[#E9DFD2]/70 mt-1 leading-relaxed">{n.desc}</p>
+                {notifications.length === 0 ? (
+                  <div className="py-8 text-center text-xs text-white/40">
+                    No recent system notifications.
                   </div>
-                ))}
+                ) : (
+                  notifications.map((n) => (
+                    <div key={n.id} className="p-3 hover:bg-[#111E31]/60 transition-colors">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-semibold text-[#D8B875]">{n.title}</span>
+                        <span className="text-[10px] text-white/50">{n.time}</span>
+                      </div>
+                      <p className="text-[11px] text-[#E9DFD2]/70 mt-1 leading-relaxed">{n.desc}</p>
+                    </div>
+                  ))
+                )}
               </div>
 
               <div className="p-2.5 bg-[#070D17] text-center border-t border-[#1B2A42]">

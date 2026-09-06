@@ -1,15 +1,26 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Sparkles, Plus, Tag, Calendar, CheckCircle2, Trash2 } from "lucide-react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
-import { offersData } from "@/data/offers";
 import { useToast } from "@/components/admin/ToastContext";
+import { CouponRecord } from "@/lib/admin/store";
 
 export default function AdminOffersPage() {
   const { showToast } = useToast();
-  const [offers, setOffers] = useState(offersData);
+  const [coupons, setCoupons] = useState<CouponRecord[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/admin/offers")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.coupons) setCoupons(d.coupons);
+      })
+      .catch((err) => console.error(err))
+      .finally(() => setLoading(false));
+  }, []);
 
   return (
     <AdminLayout>
@@ -36,34 +47,48 @@ export default function AdminOffersPage() {
         </div>
 
         {/* Offers Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {offers.map((offer) => (
-            <div
-              key={offer.id}
-              className="bg-[#0B1423] border border-[#1B2A42] rounded-2xl p-6 shadow-xl space-y-4"
-            >
-              <div className="flex justify-between items-start">
-                <div>
-                  <span className="px-2 py-0.5 rounded bg-[#9E712E] text-white text-[10px] uppercase font-bold">
-                    {offer.category}
-                  </span>
-                  <h3 className="font-serif text-lg font-bold text-white mt-2">{offer.title}</h3>
+        {loading ? (
+          <div className="py-16 text-center text-xs text-white/50">
+            Loading active promotional campaigns...
+          </div>
+        ) : coupons.length === 0 ? (
+          <div className="py-16 text-center text-xs text-white/50">
+            No promotional campaigns found. Create one in Promo Coupons Generator.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {coupons.map((coupon) => (
+              <div
+                key={coupon.id}
+                className="bg-[#0B1423] border border-[#1B2A42] rounded-2xl p-6 shadow-xl space-y-4"
+              >
+                <div className="flex justify-between items-start">
+                  <div>
+                    <span className="px-2 py-0.5 rounded bg-[#9E712E] text-white text-[10px] uppercase font-bold">
+                      PROMOTIONAL CODE
+                    </span>
+                    <h3 className="font-serif text-lg font-bold text-white mt-2 font-mono">{coupon.code}</h3>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-sm font-bold text-emerald-400">
+                      {coupon.discountType === "PERCENTAGE" ? `${coupon.discountValue}% OFF` : `₹${coupon.discountValue} FLAT`}
+                    </span>
+                    <div className="text-[10px] text-white/40">Min spend: ₹{coupon.minBookingAmount.toLocaleString()}</div>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <span className="text-sm font-bold text-emerald-400">{offer.discountValue}</span>
-                  <div className="font-mono text-xs text-[#D8B875] font-bold">{offer.discountCode}</div>
+
+                <p className="text-xs text-[#E9DFD2]/70 leading-relaxed">
+                  Maximum discount cap of ₹{coupon.maxDiscount.toLocaleString()}. Used {coupon.usedCount} of {coupon.usageLimit} times.
+                </p>
+
+                <div className="pt-3 border-t border-[#1B2A42] flex justify-between items-center text-xs text-white/50">
+                  <span>Valid: {coupon.startDate} → {coupon.endDate}</span>
+                  <span className="text-emerald-400 font-bold">● ACTIVE</span>
                 </div>
               </div>
-
-              <p className="text-xs text-[#E9DFD2]/70 leading-relaxed">{offer.description}</p>
-
-              <div className="pt-3 border-t border-[#1B2A42] flex justify-between items-center text-xs text-white/50">
-                <span>Valid until: {offer.expiryDate}</span>
-                <span className="text-emerald-400 font-bold">● ACTIVE</span>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </AdminLayout>
   );

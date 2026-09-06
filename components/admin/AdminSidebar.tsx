@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -48,6 +48,30 @@ export function AdminSidebar({
   const pathname = usePathname();
   const router = useRouter();
   const { showToast } = useToast();
+  const [adminUser, setAdminUser] = useState<{
+    name: string;
+    username: string;
+    role: string;
+  } | null>(null);
+
+  useEffect(() => {
+    fetch("/api/admin/auth/session")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d?.user) setAdminUser(d.user);
+      })
+      .catch(() => {});
+  }, []);
+
+  const initials = adminUser?.name
+    ? adminUser.name
+        .split(" ")
+        .map((p) => p[0])
+        .join("")
+        .slice(0, 2)
+        .toUpperCase()
+    : "AD";
+
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(() => {
     if (pathname.includes("/admin/bookings")) return "Reservations";
     if (pathname.includes("/admin/rooms")) return "Rooms & Suites";
@@ -310,11 +334,11 @@ export function AdminSidebar({
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2.5">
             <div className="w-8 h-8 rounded-full bg-[#1B2A42] border border-[#C4984F]/40 flex items-center justify-center text-[#D8B875] font-serif font-bold text-xs">
-              VR
+              {initials}
             </div>
             <div className="overflow-hidden">
-              <div className="text-xs font-semibold text-white truncate">Vikramaditya Roy</div>
-              <div className="text-[9px] text-[#C4984F] tracking-widest uppercase">Super Admin</div>
+              <div className="text-xs font-semibold text-white truncate">{adminUser?.name || "Administrator"}</div>
+              <div className="text-[9px] text-[#C4984F] tracking-widest uppercase">{adminUser?.role || "SUPER ADMIN"}</div>
             </div>
           </div>
           <button

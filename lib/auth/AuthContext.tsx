@@ -3,14 +3,12 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { User, SignUpCredentials, SignInCredentials, UserProfileUpdate, BookingIntent } from "@/types/auth";
 import {
-  authenticateMockUser,
-  registerMockUser,
-  updateMockUser,
   getStoredCurrentUser,
   setStoredCurrentUser,
   getStoredBookingIntent,
   setStoredBookingIntent
-} from "./mockUsers";
+} from "./storage";
+import { api, setAuthToken, getAuthToken } from "@/lib/api";
 
 interface AuthContextType {
   user: User | null;
@@ -41,7 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [authModalMode, setAuthModalMode] = useState<"signin" | "signup">("signin");
 
   useEffect(() => {
-    // Hydrate user and intent from client storage
+    // Hydrate user and intent from client storage and verify with backend
     const storedUser = getStoredCurrentUser();
     const storedIntent = getStoredBookingIntent();
     
@@ -51,7 +49,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (storedIntent) {
       setBookingIntentState(storedIntent);
     }
-    setIsLoading(false);
+
+    const token = getAuthToken();
+    if (token) {
+      api.auth.getMe()
+        .then((res) => {
+          if (res?.user) {
+            setUser(res.user);
+            setStoredCurrentUser(res.user);
+          }
+        })
+        .catch(() => {
+          // Token expired or invalid
+          setAuthToken(null);
+          setUser(null);
+          setStoredCurrentUser(null);
+        })
+        .finally(() => setIsLoading(false));
+    } else {
+      setIsLoading(false);
+    }
   }, []);
 
   const setBookingIntent = (intent: BookingIntent | null) => {
@@ -77,59 +94,75 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signIn = async (credentials: SignInCredentials): Promise<{ success: boolean; error?: string }> => {
-    // Simulate brief network delay for realism
-    await new Promise((resolve) => setTimeout(resolve, 400));
-    
-    const result = authenticateMockUser(credentials.email, credentials.password);
-    if (result.success && result.user) {
-      setUser(result.user);
-      setStoredCurrentUser(result.user);
-      return { success: true };
+    try {
+      const res = await api.auth.signin({
+        email: credentials.email,
+        password: credentials.password
+      });
+
+      if (res?.token && res?.user) {
+        setAuthToken(res.token);
+        setUser(res.user);
+        setStoredCurrentUser(res.user);
+        return { success: true };
+      }
+      return { success: false, error: "Invalid credentials" };
+    } catch (err: any) {
+      return {
+        success: false,
+        error: err.message || "Authentication failed."
+      };
     }
-    return {
-      success: false,
-      error: result.error || "Authentication failed."
-    };
   };
 
   const signUp = async (credentials: SignUpCredentials): Promise<{ success: boolean; error?: string }> => {
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    try {
+      const res = await api.auth.signup({
+        name: credentials.name,
+        email: credentials.email,
+        phone: credentials.phone,
+        password: credentials.password
+      });
 
-    const result = registerMockUser(credentials);
-    if (result.success && result.user) {
-      setUser(result.user);
-      setStoredCurrentUser(result.user);
-      return { success: true };
+      if (res?.token && res?.user) {
+        setAuthToken(res.token);
+        setUser(res.user);
+        setStoredCurrentUser(res.user);
+        return { success: true };
+      }
+      return { success: false, error: "Registration failed." };
+    } catch (err: any) {
+      return {
+        success: false,
+        error: err.message || "Registration failed."
+      };
     }
-    return {
-      success: false,
-      error: result.error || "Registration failed."
-    };
   };
 
   const signOut = () => {
+    setAuthToken(null);
     setUser(null);
     setStoredCurrentUser(null);
     clearBookingIntent();
   };
 
   const signInWithGoogle = async (): Promise<{ success: boolean; error?: string }> => {
-    // Mock Google sign-in demo flow
-    await new Promise((resolve) => setTimeout(resolve, 600));
-    
-    // Create or login a mock Google guest
-    const googleUser: User = {
-      id: "usr_google_demo",
-      name: "Google Verified Guest",
-      email: "guest.google@example.com",
-      phone: "+91 92629 97777",
-      createdAt: new Date().toISOString(),
-      isVerified: true
-    };
-    
-    setUser(googleUser);
-    setStoredCurrentUser(googleUser);
-    return { success: true };
+    // In demo environment, sign in as demo verified guest through backend or test guest
+    try {
+      const res = await api.auth.signin({
+        email: "demo@example.com",
+        password: "Password123!"
+      });
+      if (res?.token && res?.user) {
+        setAuthToken(res.token);
+        setUser(res.user);
+        setStoredCurrentUser(res.user);
+        return { success: true };
+      }
+      return { success: false, error: "Google authentication failed" };
+    } catch (err: any) {
+      return { success: false, error: err.message || "Google authentication failed" };
+    }
   };
 
   const updateProfile = async (
@@ -137,13 +170,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   ): Promise<{ success: boolean; error?: string }> => {
     if (!user) return { success: false, error: "Not authenticated" };
 
-    const result = updateMockUser(user.id, data);
-    if (result.success && result.user) {
-      setUser(result.user);
-      setStoredCurrentUser(result.user);
-      return { success: true };
+    try {
+      const res = await api.auth.updateProfile(data);
+      if (res?.user) {
+        setUser(res.user);
+        setStoredCurrentUser(res.user);
+        return { success: true };
+      }
+      return { success: false, error: "Update failed" };
+    } catch (err: any) {
+      return { success: false, error: err.message || "Update failed" };
     }
-    return { success: false, error: result.error || "Update failed" };
   };
 
   return (

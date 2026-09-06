@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { validateAdminSession, getSecurityStats } from "@/lib/admin/auth";
-import { adminStore } from "@/lib/admin/store";
+import { forwardToBackend } from "@/lib/admin/backendClient";
 
 export async function GET() {
   const cookieStore = await cookies();
@@ -10,8 +10,13 @@ export async function GET() {
 
   const stats = getSecurityStats();
 
-  return NextResponse.json({
-    stats,
-    auditLogs: adminStore.auditLogs,
-  });
+  try {
+    const res = await forwardToBackend("/admin/security", { method: "GET" });
+    return NextResponse.json({
+      stats,
+      auditLogs: res.data.auditLogs || []
+    });
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 500 });
+  }
 }

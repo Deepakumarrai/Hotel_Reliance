@@ -46,12 +46,25 @@ export default function AdminAvailabilityCalendarPage() {
     setStartDate(next);
   };
 
-  const categories = [
-    { type: "deluxe", name: "Deluxe Rooms (101-112)", total: 12 },
-    { type: "executive", name: "Executive Rooms (201-215)", total: 15 },
-    { type: "premium", name: "Premium Suites (301-310)", total: 10 },
-    { type: "family", name: "Family Suites (401-408)", total: 8 },
+  const categoryDefs = [
+    { type: "deluxe", label: "Deluxe Rooms" },
+    { type: "executive", label: "Executive Rooms" },
+    { type: "premium", label: "Premium Suites" },
+    { type: "family", label: "Family Suites" },
   ];
+
+  const categories = categoryDefs.map((def) => {
+    const matchingRooms = rooms.filter(
+      (r) => r.roomType?.toLowerCase() === def.type || (r as any).category?.toLowerCase() === def.type
+    );
+    const roomNumbers = matchingRooms.map((r) => r.roomNumber).sort((a, b) => Number(a) - Number(b));
+    const rangeText = roomNumbers.length > 0 ? ` (${roomNumbers[0]}-${roomNumbers[roomNumbers.length - 1]})` : "";
+    return {
+      type: def.type,
+      name: `${def.label}${rangeText}`,
+      total: matchingRooms.length,
+    };
+  });
 
   return (
     <AdminLayout>

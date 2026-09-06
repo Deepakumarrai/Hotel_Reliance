@@ -3,27 +3,28 @@
 import React, { useState, useEffect } from "react";
 import { Settings, Hotel, Clock, ShieldCheck, Save, Phone, Mail, MapPin, MessageSquare, Globe, CheckCircle2 } from "lucide-react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
-import { hotelData } from "@/data/hotel";
 import { useToast } from "@/components/admin/ToastContext";
+
+interface SettingsFormState {
+  hotelName: string;
+  tagline: string;
+  description: string;
+  phone1: string;
+  phone2: string;
+  whatsappNumber: string;
+  email: string;
+  address: string;
+  checkInTime: string;
+  checkOutTime: string;
+  cancellationWindowHours: number;
+  freeCancellationAllowed: boolean;
+}
 
 export default function AdminSettingsPage() {
   const { showToast } = useToast();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [settings, setSettings] = useState({
-    hotelName: hotelData.name,
-    tagline: hotelData.tagline,
-    description: hotelData.description,
-    phone1: hotelData.phones[0] || "+91 92629 97777",
-    phone2: hotelData.phones[1] || "+91 92628 27777",
-    whatsappNumber: hotelData.whatsappNumber || "919262997777",
-    email: hotelData.emails[0] || "reservation@hotelreliance.com",
-    address: hotelData.address.fullAddress,
-    checkInTime: hotelData.checkInTime,
-    checkOutTime: hotelData.checkOutTime,
-    cancellationWindowHours: 24,
-    freeCancellationAllowed: true,
-  });
+  const [settings, setSettings] = useState<SettingsFormState | null>(null);
 
   useEffect(() => {
     const loadSettings = async () => {
@@ -34,16 +35,16 @@ export default function AdminSettingsPage() {
           if (data?.settings) {
             const s = data.settings;
             setSettings({
-              hotelName: s.hotelName || hotelData.name,
-              tagline: s.tagline || hotelData.tagline,
-              description: s.description || hotelData.description,
-              phone1: s.phones?.[0] || hotelData.phones[0],
-              phone2: s.phones?.[1] || hotelData.phones[1] || "",
-              whatsappNumber: s.whatsappNumber || hotelData.whatsappNumber,
-              email: s.emails?.[0] || hotelData.emails[0],
-              address: s.address?.fullAddress || hotelData.address.fullAddress,
-              checkInTime: s.checkInTime || hotelData.checkInTime,
-              checkOutTime: s.checkOutTime || hotelData.checkOutTime,
+              hotelName: s.hotelName || "",
+              tagline: s.tagline || "",
+              description: s.description || "",
+              phone1: s.phones?.[0] || "",
+              phone2: s.phones?.[1] || "",
+              whatsappNumber: s.whatsappNumber || "",
+              email: s.emails?.[0] || "",
+              address: typeof s.address === "string" ? s.address : (s.address?.fullAddress || ""),
+              checkInTime: s.checkInTime || "",
+              checkOutTime: s.checkOutTime || "",
               cancellationWindowHours: s.cancellationWindowHours ?? 24,
               freeCancellationAllowed: s.freeCancellationAllowed ?? true,
             });
@@ -61,6 +62,7 @@ export default function AdminSettingsPage() {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!settings) return;
     setSaving(true);
 
     try {
@@ -121,7 +123,7 @@ export default function AdminSettingsPage() {
           </div>
         </div>
 
-        {loading ? (
+        {loading || !settings ? (
           <div className="bg-[#0B1423] border border-[#1B2A42] rounded-2xl p-12 text-center text-[#E9DFD2]/60">
             <div className="w-8 h-8 border-2 border-[#C4984F] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
             Loading Hotel Settings...
