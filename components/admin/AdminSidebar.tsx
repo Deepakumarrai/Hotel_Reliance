@@ -117,6 +117,11 @@ export function AdminSidebar({
           href: "/admin/banquet",
           icon: <PartyPopper className="w-[18px] h-[18px] text-[#D8B77A]" />,
           hasChevron: true,
+          submenu: [
+            { title: "Venues & Event Management", href: "/admin/banquet" },
+            { title: "Event Inquiries", href: "/admin/banquet/enquiries" },
+            { title: "Event Calendar", href: "/admin/banquet/calendar" },
+          ],
         },
         {
           title: "Staff Management",
