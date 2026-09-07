@@ -162,7 +162,7 @@ export default function AdminSettingsPage() {
                   type="text"
                   value={settings.hotelName}
                   onChange={(e) => setSettings({ ...settings, hotelName: e.target.value })}
-                  className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl px-3.5 py-2.5 text-xs text-[#111923] focus:outline-none focus:border-[#B8893E] shadow-2xs"
+                  className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl px-4 py-3 min-h-[46px] text-xs text-[#111923] focus:outline-none focus:border-[#B8893E] shadow-2xs"
                   required
                 />
               </div>
@@ -175,7 +175,7 @@ export default function AdminSettingsPage() {
                   type="text"
                   value={settings.tagline}
                   onChange={(e) => setSettings({ ...settings, tagline: e.target.value })}
-                  className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl px-3.5 py-2.5 text-xs text-[#111923] focus:outline-none focus:border-[#B8893E] shadow-2xs"
+                  className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl px-4 py-3 min-h-[46px] text-xs text-[#111923] focus:outline-none focus:border-[#B8893E] shadow-2xs"
                 />
               </div>
             </div>
@@ -188,7 +188,7 @@ export default function AdminSettingsPage() {
                 rows={3}
                 value={settings.description}
                 onChange={(e) => setSettings({ ...settings, description: e.target.value })}
-                className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl px-3.5 py-2.5 text-xs text-[#111923] focus:outline-none focus:border-[#B8893E] shadow-2xs resize-none"
+                className="w-full min-h-[100px] bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl p-4 text-xs text-[#111923] focus:outline-none focus:border-[#B8893E] shadow-2xs resize-none"
               />
             </div>
 
@@ -201,7 +201,7 @@ export default function AdminSettingsPage() {
                   type="text"
                   value={settings.phone1}
                   onChange={(e) => setSettings({ ...settings, phone1: e.target.value })}
-                  className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl px-3.5 py-2.5 text-xs text-[#111923] font-mono focus:outline-none focus:border-[#B8893E] shadow-2xs"
+                  className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl px-4 py-3 min-h-[46px] text-xs text-[#111923] font-mono focus:outline-none focus:border-[#B8893E] shadow-2xs"
                   required
                 />
               </div>
@@ -213,7 +213,7 @@ export default function AdminSettingsPage() {
                   type="text"
                   value={settings.phone2}
                   onChange={(e) => setSettings({ ...settings, phone2: e.target.value })}
-                  className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl px-3.5 py-2.5 text-xs text-[#111923] font-mono focus:outline-none focus:border-[#B8893E] shadow-2xs"
+                  className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl px-4 py-3 min-h-[46px] text-xs text-[#111923] font-mono focus:outline-none focus:border-[#B8893E] shadow-2xs"
                 />
               </div>
               <div>
@@ -224,7 +224,7 @@ export default function AdminSettingsPage() {
                   type="text"
                   value={settings.whatsappNumber}
                   onChange={(e) => setSettings({ ...settings, whatsappNumber: e.target.value })}
-                  className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl px-3.5 py-2.5 text-xs text-[#111923] font-mono focus:outline-none focus:border-[#B8893E] shadow-2xs"
+                  className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl px-4 py-3 min-h-[46px] text-xs text-[#111923] font-mono focus:outline-none focus:border-[#B8893E] shadow-2xs"
                   required
                 />
               </div>
@@ -239,7 +239,7 @@ export default function AdminSettingsPage() {
                   type="email"
                   value={settings.email}
                   onChange={(e) => setSettings({ ...settings, email: e.target.value })}
-                  className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl px-3.5 py-2.5 text-xs text-[#111923] focus:outline-none focus:border-[#B8893E] shadow-2xs"
+                  className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl px-4 py-3 min-h-[46px] text-xs text-[#111923] focus:outline-none focus:border-[#B8893E] shadow-2xs"
                   required
                 />
               </div>
@@ -252,7 +252,7 @@ export default function AdminSettingsPage() {
                   type="text"
                   value={settings.address}
                   onChange={(e) => setSettings({ ...settings, address: e.target.value })}
-                  className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl px-3.5 py-2.5 text-xs text-[#111923] focus:outline-none focus:border-[#B8893E] shadow-2xs"
+                  className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl px-4 py-3 min-h-[46px] text-xs text-[#111923] focus:outline-none focus:border-[#B8893E] shadow-2xs"
                   required
                 />
               </div>
@@ -277,7 +277,7 @@ export default function AdminSettingsPage() {
                   type="text"
                   value={settings.checkInTime}
                   onChange={(e) => setSettings({ ...settings, checkInTime: e.target.value })}
-                  className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl px-3.5 py-2.5 text-xs text-[#111923] focus:outline-none focus:border-[#B8893E] shadow-2xs"
+                  className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl px-4 py-3 min-h-[46px] text-xs text-[#111923] focus:outline-none focus:border-[#B8893E] shadow-2xs"
                   required
                 />
               </div>
@@ -290,7 +290,7 @@ export default function AdminSettingsPage() {
                   type="text"
                   value={settings.checkOutTime}
                   onChange={(e) => setSettings({ ...settings, checkOutTime: e.target.value })}
-                  className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl px-3.5 py-2.5 text-xs text-[#111923] focus:outline-none focus:border-[#B8893E] shadow-2xs"
+                  className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl px-4 py-3 min-h-[46px] text-xs text-[#111923] focus:outline-none focus:border-[#B8893E] shadow-2xs"
                   required
                 />
               </div>
@@ -305,18 +305,18 @@ export default function AdminSettingsPage() {
                   type="number"
                   value={settings.cancellationWindowHours}
                   onChange={(e) => setSettings({ ...settings, cancellationWindowHours: Number(e.target.value) })}
-                  className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl px-3.5 py-2.5 text-xs text-[#111923] font-bold focus:outline-none focus:border-[#B8893E] shadow-2xs"
+                  className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl px-4 py-3 min-h-[46px] text-xs text-[#111923] font-bold focus:outline-none focus:border-[#B8893E] shadow-2xs"
                   required
                 />
               </div>
 
-              <div className="pt-4">
-                <label className="flex items-center space-x-2.5 cursor-pointer select-none">
+              <div className="pt-2">
+                <label className="flex items-center space-x-3 cursor-pointer select-none min-h-[44px]">
                   <input
                     type="checkbox"
                     checked={settings.freeCancellationAllowed}
                     onChange={(e) => setSettings({ ...settings, freeCancellationAllowed: e.target.checked })}
-                    className="rounded border-[#E8DFD2] text-[#A97A38] focus:ring-0 w-4 h-4 cursor-pointer"
+                    className="rounded border-[#E8DFD2] text-[#A97A38] focus:ring-0 w-5 h-5 cursor-pointer"
                   />
                   <span className="text-[#111923] font-medium text-xs">
                     Allow Free Cancellation within window
@@ -331,7 +331,7 @@ export default function AdminSettingsPage() {
             <button
               type="submit"
               disabled={saving}
-              className="px-6 py-3 rounded-xl bg-[#A97A38] hover:bg-[#966C30] text-white font-bold text-xs uppercase tracking-wider shadow-md transition-all active:scale-95 disabled:opacity-50 cursor-pointer flex items-center space-x-2"
+              className="w-full sm:w-auto px-7 py-3.5 min-h-[48px] rounded-xl bg-[#A97A38] hover:bg-[#966C30] text-white font-bold text-xs uppercase tracking-wider shadow-md transition-all active:scale-95 disabled:opacity-50 cursor-pointer flex items-center justify-center space-x-2"
             >
               <Save className="w-4 h-4" />
               <span>{saving ? "Syncing & Saving..." : "SAVE MASTER SETTINGS"}</span>

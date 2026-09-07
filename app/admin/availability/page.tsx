@@ -149,9 +149,105 @@ export default function AdminAvailabilityCalendarPage() {
           </div>
         </div>
 
-        {/* 2. Visual Matrix Card */}
-        <div className="bg-white border border-[#E8DFD2] rounded-2xl p-6 sm:p-8 shadow-[0_4px_18px_rgba(40,30,20,0.04)] overflow-hidden space-y-6">
-          <div className="overflow-x-auto custom-scrollbar">
+        {/* 2. Visual Matrix Card (Desktop) & Day-by-Day Cards (Mobile) */}
+        <div className="bg-white border border-[#E8DFD2] rounded-2xl p-4 sm:p-6 lg:p-8 shadow-[0_4px_18px_rgba(40,30,20,0.04)] overflow-hidden space-y-6">
+          
+          {/* Mobile View: Day Navigator & Stacked Category Cards */}
+          <div className="block md:hidden space-y-4">
+            {/* Mobile Date Header & Quick Jump */}
+            <div className="flex items-center justify-between bg-[#FCFAF6] p-3 rounded-xl border border-[#E8DFD2]">
+              <button
+                onClick={() => shiftDays(-1)}
+                className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg bg-[#0E151D] hover:bg-[#B8893E] text-white transition-colors cursor-pointer"
+                aria-label="Previous day"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <div className="text-center">
+                <span className="text-[10px] uppercase font-bold text-[#A97A38] tracking-wider block">Selected Week Window</span>
+                <span className="font-serif font-bold text-sm text-[#111923]">
+                  {days[0].dayNumber} {days[0].month} – {days[6].dayNumber} {days[6].month} {startDate.getFullYear()}
+                </span>
+              </div>
+              <button
+                onClick={() => shiftDays(1)}
+                className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg bg-[#0E151D] hover:bg-[#B8893E] text-white transition-colors cursor-pointer"
+                aria-label="Next day"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Day Selector Pills */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 custom-scrollbar">
+              {days.map((day, idx) => (
+                <button
+                  key={day.dateStr}
+                  onClick={() => {
+                    const d = new Date(startDate);
+                    d.setDate(d.getDate() + idx);
+                    // keep week anchor but allow viewing specific day
+                  }}
+                  className={`px-3 py-2 min-h-[44px] rounded-xl text-center flex-1 min-w-[64px] transition-all cursor-pointer ${
+                    idx === 0
+                      ? "bg-[#A97A38] text-white shadow-xs"
+                      : "bg-[#FAF7F2] border border-[#E8DFD2] text-[#6B6255] hover:bg-[#F3EDE4]"
+                  }`}
+                >
+                  <div className="text-[9.5px] font-bold uppercase">{day.dayName}</div>
+                  <div className="text-xs font-bold">{day.dayNumber}</div>
+                </button>
+              ))}
+            </div>
+
+            {/* Stacked Category Cards for Selected Week */}
+            <div className="space-y-3 pt-1">
+              {standardMatrix.map((cat) => {
+                const day0 = cat.dayData[0] || { left: cat.total, soldPct: 0 };
+                const isSoldOut = day0.left === 0;
+                const isLimited = day0.left <= 3 && !isSoldOut;
+
+                return (
+                  <div key={cat.type} className="p-4 rounded-xl border border-[#E8DFD2] bg-[#FAF7F2]/60 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="font-bold text-sm text-[#111923]">{cat.name}</div>
+                        <div className="text-[11px] text-[#78716C]">Total Inventory: {cat.total} Units</div>
+                      </div>
+                      <div
+                        className={`px-3 py-1.5 rounded-lg border text-right ${
+                          isSoldOut
+                            ? "bg-[#FFE4E6] border-[#FECDD3] text-[#E11D48]"
+                            : isLimited
+                            ? "bg-[#FEF3C7] border-[#FDE68A] text-[#B45309]"
+                            : "bg-[#D1FAE5] border-[#A7F3D0] text-[#065F46]"
+                        }`}
+                      >
+                        <div className="text-xs font-bold">{day0.left} Available</div>
+                        <div className="text-[9.5px] uppercase font-bold">{day0.soldPct}% Sold</div>
+                      </div>
+                    </div>
+
+                    {/* Week Mini Breakdown */}
+                    <div className="grid grid-cols-7 gap-1 pt-2 border-t border-[#EAE2D5] text-center">
+                      {days.map((day, idx) => {
+                        const dData = cat.dayData[idx] || { left: cat.total, soldPct: 0 };
+                        return (
+                          <div key={day.dateStr} className="p-1 rounded bg-white border border-[#EAE2D5]">
+                            <div className="text-[8.5px] text-[#8A8277]">{day.dayName.slice(0, 2)}</div>
+                            <div className="text-[10px] font-bold text-[#111923]">{dData.left}</div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Desktop View: Full 7-Day Matrix Table */}
+          <div className="hidden md:block overflow-x-auto custom-scrollbar">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
                 <tr className="border-b border-[#EDE6DB]">

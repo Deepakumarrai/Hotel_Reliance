@@ -282,7 +282,7 @@ export default function BanquetEnquiriesPage() {
           </div>
         </div>
 
-        {/* 4. Enquiries Table */}
+        {/* 4. Enquiries Table (Desktop) & Cards (Mobile) */}
         <div className="bg-white border border-[#E8DFD2] rounded-2xl shadow-[0_4px_18px_rgba(40,30,20,0.04)] overflow-hidden">
           {filteredEnquiries.length === 0 ? (
             <div className="py-16 text-center space-y-2">
@@ -295,108 +295,197 @@ export default function BanquetEnquiriesPage() {
               </p>
             </div>
           ) : (
-            <div className="overflow-x-auto custom-scrollbar">
-              <table className="w-full text-left text-xs">
-                <thead>
-                  <tr className="bg-[#FAF7F2] border-b border-[#E8DFD2] text-[10px] uppercase font-bold tracking-wider text-[#A97A38]">
-                    <th className="py-3.5 px-5 font-bold">INQUIRY ID</th>
-                    <th className="py-3.5 px-4 font-bold">CLIENT DETAILS</th>
-                    <th className="py-3.5 px-4 font-bold">EVENT TYPE</th>
-                    <th className="py-3.5 px-4 font-bold">EVENT DATE</th>
-                    <th className="py-3.5 px-4 font-bold text-center">GUESTS</th>
-                    <th className="py-3.5 px-4 font-bold">VENUE REQUESTED</th>
-                    <th className="py-3.5 px-4 font-bold">STATUS</th>
-                    <th className="py-3.5 px-5 font-bold text-right">ACTIONS</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#EDE6DB] text-[#111923]">
-                  {filteredEnquiries.map((e) => (
-                    <tr key={e.id} className="hover:bg-[#FAF7F2]/60 transition-colors">
-                      {/* ID */}
-                      <td className="py-4 px-5 font-bold text-[#A97A38] text-xs whitespace-nowrap font-mono">
-                        {e.id}
-                      </td>
+            <>
+              {/* Mobile View: Dedicated Inquiry Cards */}
+              <div className="block md:hidden divide-y divide-[#EDE6DB]">
+                {filteredEnquiries.map((e) => (
+                  <div key={e.id} className="p-4 space-y-3 bg-white hover:bg-[#FAF7F2]/50 transition-colors">
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono font-bold text-sm text-[#A97A38]">{e.id}</span>
+                      <span
+                        className={`px-2.5 py-0.5 rounded text-[9.5px] uppercase font-bold tracking-wider ${
+                          e.status === "CONFIRMED"
+                            ? "bg-[#DCFCE7] text-[#15803D]"
+                            : e.status === "QUOTED"
+                            ? "bg-[#DBEAFE] text-[#1D4ED8]"
+                            : e.status === "LOST"
+                            ? "bg-[#FFE4E6] text-[#E11D48]"
+                            : "bg-[#FEF3C7] text-[#B45309]"
+                        }`}
+                      >
+                        {e.status}
+                      </span>
+                    </div>
 
-                      {/* Client */}
-                      <td className="py-4 px-4 whitespace-nowrap">
-                        <div className="font-bold text-[13px] text-[#111923]">
-                          {e.name}
-                        </div>
-                        <div className="text-[11px] text-[#78716C] mt-0.5 flex items-center space-x-1">
-                          <Phone className="w-3 h-3 text-[#A97A38]" />
+                    <div className="bg-[#FAF7F2] p-3 rounded-xl border border-[#EAE2D5] space-y-2 text-xs">
+                      <div>
+                        <div className="font-bold text-sm text-[#111923]">{e.name}</div>
+                        <div className="flex items-center space-x-2 text-[11px] text-[#78716C] mt-0.5">
                           <span>{e.phone}</span>
+                          <span>•</span>
+                          <span className="truncate">{e.email}</span>
                         </div>
-                      </td>
+                      </div>
 
-                      {/* Event Type */}
-                      <td className="py-4 px-4 whitespace-nowrap font-medium text-[#111923]">
-                        {e.eventType}
-                      </td>
+                      <div className="grid grid-cols-2 gap-2 pt-1 border-t border-[#EAE2D5]">
+                        <div>
+                          <span className="text-[10px] uppercase tracking-wider text-[#8A8277] font-semibold block">Event</span>
+                          <span className="font-bold text-xs text-[#111923]">{e.eventType}</span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] uppercase tracking-wider text-[#8A8277] font-semibold block">Date & Guests</span>
+                          <span className="text-xs text-[#111923] font-medium">{e.eventDate} ({e.guestCount || 0} pax)</span>
+                        </div>
+                      </div>
 
-                      {/* Event Date */}
-                      <td className="py-4 px-4 whitespace-nowrap font-medium text-[#111923]">
-                        {e.eventDate}
-                      </td>
+                      <div className="pt-1 border-t border-[#EAE2D5]">
+                        <span className="text-[10px] uppercase tracking-wider text-[#8A8277] font-semibold block">Venue</span>
+                        <span className="text-xs text-[#6B6255] font-medium">{e.venue || "Flexible / Not Specified"}</span>
+                      </div>
 
-                      {/* Guests */}
-                      <td className="py-4 px-4 text-center whitespace-nowrap font-bold text-[#111923]">
-                        {e.guestCount || "-"}
-                      </td>
+                      {e.notes && (
+                        <div className="pt-1 border-t border-[#EAE2D5]">
+                          <span className="text-[10px] uppercase tracking-wider text-[#8A8277] font-semibold block">Requirements</span>
+                          <p className="text-[11px] text-[#6B6255] italic">{e.notes}</p>
+                        </div>
+                      )}
+                    </div>
 
-                      {/* Venue */}
-                      <td className="py-4 px-4 text-[#6B6255] font-medium whitespace-nowrap">
-                        {e.venue || "Flexible / Not Specified"}
-                      </td>
-
-                      {/* Status */}
-                      <td className="py-4 px-4 whitespace-nowrap">
-                        <span
-                          className={`px-2.5 py-1 rounded-md text-[10px] uppercase font-bold tracking-wider ${
-                            e.status === "CONFIRMED"
-                              ? "bg-[#DCFCE7] text-[#15803D] border border-[#86EFAC]"
-                              : e.status === "QUOTED"
-                              ? "bg-[#DBEAFE] text-[#1D4ED8] border border-[#BFDBFE]"
-                              : e.status === "LOST"
-                              ? "bg-[#FFE4E6] text-[#E11D48] border border-[#FECDD3]"
-                              : "bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A]"
-                          }`}
+                    {/* Actions Bar (44px min height) */}
+                    <div className="grid grid-cols-2 gap-2 pt-1">
+                      {(e.status === "NEW" || e.status === "CONTACTED") && (
+                        <button
+                          onClick={() => updateStatus(e.id, "QUOTED")}
+                          className="w-full min-h-[44px] flex items-center justify-center rounded-xl bg-[#DBEAFE] hover:bg-[#BFDBFE] text-[#1D4ED8] border border-[#BFDBFE] text-xs font-bold active:scale-95 transition-all shadow-2xs cursor-pointer"
                         >
-                          {e.status}
-                        </span>
-                      </td>
+                          Send Quote
+                        </button>
+                      )}
+                      {e.status === "QUOTED" && (
+                        <button
+                          onClick={() => updateStatus(e.id, "CONFIRMED")}
+                          className="w-full min-h-[44px] flex items-center justify-center rounded-xl bg-[#DCFCE7] hover:bg-[#BBF7D0] text-[#15803D] border border-[#86EFAC] text-xs font-bold active:scale-95 transition-all shadow-2xs cursor-pointer"
+                        >
+                          Confirm Booking
+                        </button>
+                      )}
+                      {e.status !== "LOST" && (
+                        <button
+                          onClick={() => updateStatus(e.id, "LOST")}
+                          className="w-full min-h-[44px] flex items-center justify-center rounded-xl bg-[#FFE4E6] hover:bg-[#FECDD3] text-[#E11D48] border border-[#FECDD3] text-xs font-bold active:scale-95 transition-all shadow-2xs cursor-pointer"
+                        >
+                          Decline
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
 
-                      {/* Actions */}
-                      <td className="py-4 px-5 text-right whitespace-nowrap space-x-1.5">
-                        {(e.status === "NEW" || e.status === "CONTACTED") && (
-                          <button
-                            onClick={() => updateStatus(e.id, "QUOTED")}
-                            className="px-3 py-1.5 rounded-lg bg-[#DBEAFE] hover:bg-[#BFDBFE] text-[#1D4ED8] border border-[#BFDBFE] text-xs font-bold transition-colors shadow-2xs cursor-pointer"
-                          >
-                            Send Quote
-                          </button>
-                        )}
-                        {e.status === "QUOTED" && (
-                          <button
-                            onClick={() => updateStatus(e.id, "CONFIRMED")}
-                            className="px-3 py-1.5 rounded-lg bg-[#DCFCE7] hover:bg-[#BBF7D0] text-[#15803D] border border-[#86EFAC] text-xs font-bold transition-colors shadow-2xs cursor-pointer"
-                          >
-                            Confirm Booking
-                          </button>
-                        )}
-                        {e.status !== "LOST" && (
-                          <button
-                            onClick={() => updateStatus(e.id, "LOST")}
-                            className="px-3 py-1.5 rounded-lg bg-[#FFE4E6] hover:bg-[#FECDD3] text-[#E11D48] border border-[#FECDD3] text-xs font-bold transition-colors shadow-2xs cursor-pointer"
-                          >
-                            Decline
-                          </button>
-                        )}
-                      </td>
+              {/* Desktop View: Full Enquiries Table */}
+              <div className="hidden md:block overflow-x-auto custom-scrollbar">
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="bg-[#FAF7F2] border-b border-[#E8DFD2] text-[10px] uppercase font-bold tracking-wider text-[#A97A38]">
+                      <th className="py-3.5 px-5 font-bold">INQUIRY ID</th>
+                      <th className="py-3.5 px-4 font-bold">CLIENT DETAILS</th>
+                      <th className="py-3.5 px-4 font-bold">EVENT TYPE</th>
+                      <th className="py-3.5 px-4 font-bold">EVENT DATE</th>
+                      <th className="py-3.5 px-4 font-bold text-center">GUESTS</th>
+                      <th className="py-3.5 px-4 font-bold">VENUE REQUESTED</th>
+                      <th className="py-3.5 px-4 font-bold">STATUS</th>
+                      <th className="py-3.5 px-5 font-bold text-right">ACTIONS</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-[#EDE6DB] text-[#111923]">
+                    {filteredEnquiries.map((e) => (
+                      <tr key={e.id} className="hover:bg-[#FAF7F2]/60 transition-colors">
+                        {/* ID */}
+                        <td className="py-4 px-5 font-bold text-[#A97A38] text-xs whitespace-nowrap font-mono">
+                          {e.id}
+                        </td>
+
+                        {/* Client */}
+                        <td className="py-4 px-4 whitespace-nowrap">
+                          <div className="font-bold text-[13px] text-[#111923]">
+                            {e.name}
+                          </div>
+                          <div className="text-[11px] text-[#78716C] mt-0.5 flex items-center space-x-1">
+                            <Phone className="w-3 h-3 text-[#A97A38]" />
+                            <span>{e.phone}</span>
+                          </div>
+                        </td>
+
+                        {/* Event Type */}
+                        <td className="py-4 px-4 whitespace-nowrap font-medium text-[#111923]">
+                          {e.eventType}
+                        </td>
+
+                        {/* Event Date */}
+                        <td className="py-4 px-4 whitespace-nowrap font-medium text-[#111923]">
+                          {e.eventDate}
+                        </td>
+
+                        {/* Guests */}
+                        <td className="py-4 px-4 text-center whitespace-nowrap font-bold text-[#111923]">
+                          {e.guestCount || "-"}
+                        </td>
+
+                        {/* Venue */}
+                        <td className="py-4 px-4 text-[#6B6255] font-medium whitespace-nowrap">
+                          {e.venue || "Flexible / Not Specified"}
+                        </td>
+
+                        {/* Status */}
+                        <td className="py-4 px-4 whitespace-nowrap">
+                          <span
+                            className={`px-2.5 py-1 rounded-md text-[10px] uppercase font-bold tracking-wider ${
+                              e.status === "CONFIRMED"
+                                ? "bg-[#DCFCE7] text-[#15803D] border border-[#86EFAC]"
+                                : e.status === "QUOTED"
+                                ? "bg-[#DBEAFE] text-[#1D4ED8] border border-[#BFDBFE]"
+                                : e.status === "LOST"
+                                ? "bg-[#FFE4E6] text-[#E11D48] border border-[#FECDD3]"
+                                : "bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A]"
+                            }`}
+                          >
+                            {e.status}
+                          </span>
+                        </td>
+
+                        {/* Actions */}
+                        <td className="py-4 px-5 text-right whitespace-nowrap space-x-1.5">
+                          {(e.status === "NEW" || e.status === "CONTACTED") && (
+                            <button
+                              onClick={() => updateStatus(e.id, "QUOTED")}
+                              className="px-3 py-1.5 rounded-lg bg-[#DBEAFE] hover:bg-[#BFDBFE] text-[#1D4ED8] border border-[#BFDBFE] text-xs font-bold transition-colors shadow-2xs cursor-pointer"
+                            >
+                              Send Quote
+                            </button>
+                          )}
+                          {e.status === "QUOTED" && (
+                            <button
+                              onClick={() => updateStatus(e.id, "CONFIRMED")}
+                              className="px-3 py-1.5 rounded-lg bg-[#DCFCE7] hover:bg-[#BBF7D0] text-[#15803D] border border-[#86EFAC] text-xs font-bold transition-colors shadow-2xs cursor-pointer"
+                            >
+                              Confirm Booking
+                            </button>
+                          )}
+                          {e.status !== "LOST" && (
+                            <button
+                              onClick={() => updateStatus(e.id, "LOST")}
+                              className="px-3 py-1.5 rounded-lg bg-[#FFE4E6] hover:bg-[#FECDD3] text-[#E11D48] border border-[#FECDD3] text-xs font-bold transition-colors shadow-2xs cursor-pointer"
+                            >
+                              Decline
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
           )}
         </div>
       </div>

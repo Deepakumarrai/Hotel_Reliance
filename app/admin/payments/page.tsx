@@ -169,9 +169,62 @@ export default function AdminPaymentsPage() {
           </div>
         </div>
 
-        {/* 3. Obsidian Transactions Ledger Table */}
+        {/* 3. Obsidian Transactions Ledger Table (Desktop) & Cards (Mobile) */}
         <div className="bg-[#0B141F] border border-[#182635] rounded-2xl shadow-xl overflow-hidden">
-          <div className="overflow-x-auto custom-scrollbar">
+          {/* Mobile View: Transaction Cards */}
+          <div className="block md:hidden divide-y divide-[#182635]">
+            {transactions.map((trx) => (
+              <div key={trx.id} className="p-4 space-y-3 bg-[#0B141F] hover:bg-[#111C28]/60 transition-colors">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <span className="font-mono font-bold text-sm text-[#D8B77A]">{trx.id}</span>
+                    <span className="text-[10px] text-[#94A3B8]">{trx.date}</span>
+                  </div>
+                  <span className="px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wider text-[#10B981] bg-[#064E3B]/40 border border-[#047857]/50 inline-block">
+                    ✓ {trx.status}
+                  </span>
+                </div>
+
+                <div className="bg-[#080F18] p-3 rounded-xl border border-[#182635] space-y-1.5 text-xs">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[#94A3B8]">Guest:</span>
+                    <span className="font-bold text-white text-[13px]">{trx.guestName}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-[#94A3B8]">Phone:</span>
+                    <span className="text-[#94A3B8] font-mono">{trx.guestPhone}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-[#94A3B8]">Method:</span>
+                    <span className="uppercase text-white font-medium">{trx.method}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-[#94A3B8]">Gateway Ref:</span>
+                    <span className="font-mono text-[#94A3B8] text-[11px] truncate max-w-[180px]">{trx.gatewayRefId}</span>
+                  </div>
+                  <div className="flex justify-between items-center pt-2 border-t border-[#182635]">
+                    <span className="text-[#94A3B8] font-semibold">Amount:</span>
+                    <span className="font-mono font-bold text-base text-white">
+                      ₹{trx.amount.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="pt-1">
+                  <button
+                    onClick={() => setSelectedTrx(trx)}
+                    className="w-full min-h-[44px] flex items-center justify-center space-x-2 rounded-xl border border-[#263545] bg-[#111C28] hover:bg-[#182637] text-white text-xs font-bold active:scale-95 transition-all shadow-2xs cursor-pointer"
+                  >
+                    <Eye className="w-4 h-4 text-[#D8B77A]" />
+                    <span>View Receipt & Voucher</span>
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop View: Full Ledger Table */}
+          <div className="hidden md:block overflow-x-auto custom-scrollbar">
             <table className="w-full text-left text-xs">
               <thead>
                 <tr className="border-b border-[#182635] text-[10px] uppercase font-bold tracking-wider text-[#A97A38] bg-[#080F18]/50">

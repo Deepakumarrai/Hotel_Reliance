@@ -238,7 +238,7 @@ export default function AdminPricingPage() {
                         type="number"
                         value={p.base}
                         onChange={(e) => handlePriceChange(key, "base", Number(e.target.value))}
-                        className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl pl-8 pr-3.5 py-2.5 text-xs text-[#111923] font-bold focus:outline-none focus:border-[#B8893E] shadow-2xs transition-all"
+                        className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl pl-8 pr-3.5 py-3 min-h-[46px] text-xs sm:text-[13px] text-[#111923] font-bold focus:outline-none focus:border-[#B8893E] shadow-2xs transition-all"
                       />
                     </div>
                   </div>
@@ -256,7 +256,7 @@ export default function AdminPricingPage() {
                         type="number"
                         value={p.weekend}
                         onChange={(e) => handlePriceChange(key, "weekend", Number(e.target.value))}
-                        className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl pl-8 pr-3.5 py-2.5 text-xs text-[#111923] font-bold focus:outline-none focus:border-[#B8893E] shadow-2xs transition-all"
+                        className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl pl-8 pr-3.5 py-3 min-h-[46px] text-xs sm:text-[13px] text-[#111923] font-bold focus:outline-none focus:border-[#B8893E] shadow-2xs transition-all"
                       />
                     </div>
                   </div>
@@ -275,7 +275,7 @@ export default function AdminPricingPage() {
                         type="number"
                         value={p.peak}
                         onChange={(e) => handlePriceChange(key, "peak", Number(e.target.value))}
-                        className="w-full bg-[#FCFAF6] border border-[#C69A55] rounded-xl pl-8 pr-3.5 py-2.5 text-xs text-[#111923] font-bold focus:outline-none focus:border-[#B8893E] shadow-2xs transition-all"
+                        className="w-full bg-[#FCFAF6] border border-[#C69A55] rounded-xl pl-8 pr-3.5 py-3 min-h-[46px] text-xs sm:text-[13px] text-[#111923] font-bold focus:outline-none focus:border-[#B8893E] shadow-2xs transition-all"
                       />
                     </div>
                   </div>
@@ -293,7 +293,7 @@ export default function AdminPricingPage() {
                         type="number"
                         value={p.extraAdult}
                         onChange={(e) => handlePriceChange(key, "extraAdult", Number(e.target.value))}
-                        className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl pl-8 pr-3.5 py-2.5 text-xs text-[#111923] font-bold focus:outline-none focus:border-[#B8893E] shadow-2xs transition-all"
+                        className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl pl-8 pr-3.5 py-3 min-h-[46px] text-xs sm:text-[13px] text-[#111923] font-bold focus:outline-none focus:border-[#B8893E] shadow-2xs transition-all"
                       />
                     </div>
                   </div>
@@ -311,21 +311,21 @@ export default function AdminPricingPage() {
                         type="number"
                         value={p.extraBed}
                         onChange={(e) => handlePriceChange(key, "extraBed", Number(e.target.value))}
-                        className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl pl-8 pr-3.5 py-2.5 text-xs text-[#111923] font-bold focus:outline-none focus:border-[#B8893E] shadow-2xs transition-all"
+                        className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl pl-8 pr-3.5 py-3 min-h-[46px] text-xs sm:text-[13px] text-[#111923] font-bold focus:outline-none focus:border-[#B8893E] shadow-2xs transition-all"
                       />
                     </div>
                   </div>
                 </div>
 
                 {/* Footer of Card */}
-                <div className="pt-3.5 border-t border-[#EDE6DB] flex items-center justify-between">
+                <div className="pt-3.5 border-t border-[#EDE6DB] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <span className="text-[11px] text-[#78716C]">
-                    Live on customer site & booking
+                    Live on customer site & booking engine
                   </span>
                   <button
                     onClick={() => handleSave(key)}
                     disabled={isSaving}
-                    className="px-4 py-2 rounded-xl bg-[#A97A38] hover:bg-[#966C30] text-white text-xs font-bold uppercase tracking-wider flex items-center space-x-1.5 transition-all shadow-xs cursor-pointer active:scale-95 disabled:opacity-50"
+                    className="w-full sm:w-auto px-5 py-2.5 min-h-[44px] rounded-xl bg-[#A97A38] hover:bg-[#966C30] text-white text-xs font-bold uppercase tracking-wider flex items-center justify-center space-x-1.5 transition-all shadow-xs cursor-pointer active:scale-95 disabled:opacity-50"
                   >
                     <Save className="w-3.5 h-3.5" />
                     <span>{isSaving ? "Saving..." : "SAVE RATE CHANGES"}</span>

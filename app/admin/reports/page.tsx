@@ -130,20 +130,60 @@ export default function AdminReportsPage() {
         </div>
 
         {/* 3. Room Category Revenue Contribution (Obsidian Dark Container) */}
-        <div className="bg-[#0B141F] border border-[#182635] rounded-2xl shadow-xl overflow-hidden p-6 sm:p-7 space-y-5">
+        <div className="bg-[#0B141F] border border-[#182635] rounded-2xl shadow-xl overflow-hidden p-4 sm:p-6 lg:p-7 space-y-5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#182635] pb-4">
-            <h2 className="font-serif text-[20px] font-bold text-white">
+            <h2 className="font-serif text-[18px] sm:text-[20px] font-bold text-white">
               Room Category Revenue Contribution
             </h2>
 
-            <div className="bg-[#111C28] border border-[#263545] rounded-xl px-3.5 py-2 text-xs text-[#94A3B8] font-medium flex items-center space-x-2 self-start sm:self-auto cursor-pointer shadow-2xs">
-              <Calendar className="w-3.5 h-3.5 text-[#D8B77A]" />
-              <span>1 Sept 2026 – 30 Sept 2026</span>
-              <ChevronDown className="w-3.5 h-3.5 text-[#94A3B8] ml-1" />
+            {/* Mobile / Desktop Timeframe selector */}
+            <div className="flex items-center gap-1.5 bg-[#080F18] p-1 rounded-xl border border-[#182635]">
+              {["7 Days", "30 Days", "90 Days"].map((tf, i) => (
+                <button
+                  key={tf}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                    i === 1
+                      ? "bg-[#A97A38] text-white shadow-2xs"
+                      : "text-[#94A3B8] hover:text-white"
+                  }`}
+                >
+                  {tf}
+                </button>
+              ))}
             </div>
           </div>
 
-          <div className="overflow-x-auto custom-scrollbar">
+          {/* Mobile View: Dedicated Category Revenue Cards */}
+          <div className="block md:hidden space-y-3">
+            {roomTypePerformance.map((item) => (
+              <div key={item.type} className="p-4 rounded-xl bg-[#080F18] border border-[#182635] space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-[#D8B77A] text-xs">{item.type}</span>
+                  <span className="px-2 py-0.5 rounded bg-[#111C28] border border-[#263545] text-[#94A3B8] font-bold text-[9.5px]">
+                    {item.rank}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2 pt-1 border-t border-[#182635] text-center text-xs">
+                  <div>
+                    <span className="text-[#94A3B8] text-[9.5px] uppercase block">Stays</span>
+                    <span className="font-bold text-white text-xs">{item.stays}</span>
+                  </div>
+                  <div>
+                    <span className="text-[#94A3B8] text-[9.5px] uppercase block">Revenue</span>
+                    <span className="font-mono font-bold text-xs text-[#10B981]">{item.revenue}</span>
+                  </div>
+                  <div>
+                    <span className="text-[#94A3B8] text-[9.5px] uppercase block">Avg Stay</span>
+                    <span className="font-mono text-white text-xs">{item.avgRate}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop View: Full Analytics Table */}
+          <div className="hidden md:block overflow-x-auto custom-scrollbar">
             <table className="w-full text-left text-xs">
               <thead>
                 <tr className="border-b border-[#182635] text-[10px] uppercase font-bold tracking-wider text-[#A97A38]">

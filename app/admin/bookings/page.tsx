@@ -320,7 +320,7 @@ function BookingsContent() {
         </div>
       </div>
 
-      {/* 4. Reservations Table */}
+      {/* 4. Reservations Table (Desktop) & Cards (Mobile) */}
       <div className="bg-white border border-[#E8DFD2] rounded-2xl shadow-[0_4px_18px_rgba(40,30,20,0.04)] overflow-hidden">
         {filteredBookings.length === 0 ? (
           <div className="py-16 text-center space-y-2">
@@ -333,137 +333,260 @@ function BookingsContent() {
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto custom-scrollbar">
-            <table className="w-full text-left text-xs">
-              <thead>
-                <tr className="bg-[#FAF7F2] border-b border-[#E8DFD2] text-[10px] uppercase font-bold tracking-wider text-[#8A8277]">
-                  <th className="py-3.5 px-5 font-bold">BOOKING ID</th>
-                  <th className="py-3.5 px-4 font-bold">GUEST DETAILS</th>
-                  <th className="py-3.5 px-4 font-bold">CATEGORY & ROOM</th>
-                  <th className="py-3.5 px-4 font-bold">DATES</th>
-                  <th className="py-3.5 px-4 font-bold">TOTAL AMOUNT</th>
-                  <th className="py-3.5 px-4 font-bold">PAYMENT</th>
-                  <th className="py-3.5 px-4 font-bold">STATUS</th>
-                  <th className="py-3.5 px-5 font-bold text-right">ACTIONS</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#EDE6DB] text-[#111923]">
-                {filteredBookings.map((b) => (
-                  <tr key={b.id} className="hover:bg-[#FAF7F2]/60 transition-colors">
-                    {/* Booking ID */}
-                    <td className="py-4 px-5 font-bold text-[#A97A38] text-xs whitespace-nowrap">
-                      {b.id}
-                    </td>
+          <>
+            {/* Mobile View: Dedicated Luxury Reservation Cards */}
+            <div className="block md:hidden divide-y divide-[#EDE6DB]">
+              {filteredBookings.map((b) => (
+                <div key={b.id} className="p-4 space-y-3.5 bg-white hover:bg-[#FAF7F2]/50 transition-colors">
+                  {/* Card Header: ID & Status Badges */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <span className="font-bold text-[#A97A38] text-sm tracking-wide">
+                        {b.id}
+                      </span>
+                      <span className="text-[10px] text-[#8A8277]">
+                        {b.source === "DIRECT_WALKIN" ? "Walk-in" : "Online"}
+                      </span>
+                    </div>
 
-                    {/* Guest Details */}
-                    <td className="py-4 px-4 whitespace-nowrap">
-                      <div className="font-bold text-[13px] text-[#111923]">
-                        {b.guestName}
-                      </div>
-                      <div className="text-[11px] text-[#78716C] mt-0.5">
-                        {b.guestPhone}
-                      </div>
-                    </td>
-
-                    {/* Category & Room */}
-                    <td className="py-4 px-4 whitespace-nowrap">
-                      <div className="font-bold text-[13px] text-[#111923]">
-                        {b.roomNumber ? `Room ${b.roomNumber}` : "Unassigned"}
-                      </div>
-                      <div className="text-[11px] text-[#A97A38] font-medium mt-0.5">
-                        {formatRoomTypeName(b.roomType)}
-                      </div>
-                    </td>
-
-                    {/* Dates */}
-                    <td className="py-4 px-4 whitespace-nowrap">
-                      <div className="text-[12px] font-medium text-[#111923]">
-                        {b.checkInDate} → {b.checkOutDate}
-                      </div>
-                      <div className="text-[11px] text-[#78716C] mt-0.5">
-                        {b.nights} Nights • {b.adults} Adults
-                      </div>
-                    </td>
-
-                    {/* Total Amount */}
-                    <td className="py-4 px-4 font-bold text-[13px] text-[#111923] whitespace-nowrap">
-                      ₹{b.totalAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    </td>
-
-                    {/* Payment Badge */}
-                    <td className="py-4 px-4 whitespace-nowrap">
+                    <div className="flex items-center space-x-1.5">
                       <span
-                        className={`px-2.5 py-1 rounded-md text-[10px] uppercase font-bold tracking-wider ${
+                        className={`px-2 py-0.5 rounded text-[9.5px] uppercase font-bold tracking-wider ${
                           b.paymentStatus === "SUCCESS"
-                            ? "bg-[#DCFCE7] text-[#15803D] border border-[#86EFAC]"
+                            ? "bg-[#DCFCE7] text-[#15803D]"
                             : b.paymentStatus === "REFUNDED"
-                            ? "bg-[#F3E8FF] text-[#7E22CE] border border-[#D8B4FE]"
-                            : "bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A]"
+                            ? "bg-[#F3E8FF] text-[#7E22CE]"
+                            : "bg-[#FEF3C7] text-[#B45309]"
                         }`}
                       >
                         {b.paymentStatus}
                       </span>
-                    </td>
-
-                    {/* Booking Status Badge */}
-                    <td className="py-4 px-4 whitespace-nowrap">
                       <span
-                        className={`px-2.5 py-1 rounded-md text-[10px] uppercase font-bold tracking-wider ${
+                        className={`px-2 py-0.5 rounded text-[9.5px] uppercase font-bold tracking-wider ${
                           b.bookingStatus === "CHECKED_IN"
-                            ? "bg-[#DCFCE7] text-[#15803D] border border-[#86EFAC]"
+                            ? "bg-[#DCFCE7] text-[#15803D]"
                             : b.bookingStatus === "CONFIRMED"
-                            ? "bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A]"
+                            ? "bg-[#FEF3C7] text-[#B45309]"
                             : b.bookingStatus === "CHECKED_OUT"
-                            ? "bg-[#DBEAFE] text-[#1D4ED8] border border-[#BFDBFE]"
-                            : "bg-[#FFE4E6] text-[#E11D48] border border-[#FECDD3]"
+                            ? "bg-[#DBEAFE] text-[#1D4ED8]"
+                            : "bg-[#FFE4E6] text-[#E11D48]"
                         }`}
                       >
                         {b.bookingStatus}
                       </span>
-                    </td>
+                    </div>
+                  </div>
 
-                    {/* Actions */}
-                    <td className="py-4 px-5 text-right whitespace-nowrap space-x-1.5">
-                      <Link
-                        href={`/admin/bookings/${b.id}`}
-                        className="px-3 py-1.5 rounded-lg border border-[#E8DFD2] bg-[#FAF7F2] hover:bg-[#F3EDE4] text-xs font-semibold text-[#111923] transition-colors shadow-2xs inline-block"
+                  {/* Guest & Room Details */}
+                  <div className="grid grid-cols-2 gap-2 bg-[#FAF7F2] p-3 rounded-xl border border-[#EAE2D5]">
+                    <div>
+                      <div className="text-[10px] uppercase tracking-wider text-[#8A8277] font-semibold">Guest</div>
+                      <div className="font-bold text-sm text-[#111923] truncate">{b.guestName}</div>
+                      <div className="text-xs text-[#78716C] mt-0.5">{b.guestPhone}</div>
+                    </div>
+                    <div>
+                      <div className="text-[10px] uppercase tracking-wider text-[#8A8277] font-semibold">Room & Category</div>
+                      <div className="font-bold text-sm text-[#111923]">
+                        {b.roomNumber ? `Room ${b.roomNumber}` : "Unassigned"}
+                      </div>
+                      <div className="text-xs text-[#A97A38] font-medium mt-0.5 truncate">
+                        {formatRoomTypeName(b.roomType)}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Dates & Amount */}
+                  <div className="flex items-center justify-between text-xs pt-0.5">
+                    <div>
+                      <span className="text-[10px] uppercase tracking-wider text-[#8A8277] font-semibold block">Stay Dates</span>
+                      <span className="font-medium text-[#111923]">
+                        {b.checkInDate} → {b.checkOutDate}
+                      </span>
+                      <span className="text-[11px] text-[#78716C] ml-1.5">
+                        ({b.nights} {b.nights === 1 ? "Night" : "Nights"})
+                      </span>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-[10px] uppercase tracking-wider text-[#8A8277] font-semibold block">Total Amount</span>
+                      <span className="font-bold text-base text-[#111923]">
+                        ₹{b.totalAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Actions Bar (44px min height touch targets) */}
+                  <div className="grid grid-cols-2 gap-2 pt-1 border-t border-[#EDE6DB]">
+                    <Link
+                      href={`/admin/bookings/${b.id}`}
+                      className="w-full min-h-[44px] flex items-center justify-center rounded-xl border border-[#E8DFD2] bg-[#FAF7F2] hover:bg-[#F3EDE4] text-xs font-bold text-[#111923] active:scale-95 transition-all shadow-2xs"
+                    >
+                      Invoice / View
+                    </Link>
+
+                    {b.bookingStatus === "CHECKED_IN" && (
+                      <button
+                        onClick={() => setCheckOutBooking(b)}
+                        className="w-full min-h-[44px] flex items-center justify-center rounded-xl bg-[#DBEAFE] hover:bg-[#BFDBFE] text-[#1D4ED8] border border-[#BFDBFE] text-xs font-bold active:scale-95 transition-all shadow-2xs cursor-pointer"
                       >
-                        Invoice / View
-                      </Link>
+                        Check-Out
+                      </button>
+                    )}
 
-                      {b.bookingStatus === "CHECKED_IN" && (
-                        <button
-                          onClick={() => setCheckOutBooking(b)}
-                          className="px-3 py-1.5 rounded-lg bg-[#DBEAFE] hover:bg-[#BFDBFE] text-[#1D4ED8] border border-[#BFDBFE] text-xs font-bold transition-colors shadow-2xs cursor-pointer"
+                    {b.bookingStatus === "CONFIRMED" && (
+                      <button
+                        onClick={() => setCheckInBooking(b)}
+                        className="w-full min-h-[44px] flex items-center justify-center rounded-xl bg-[#DCFCE7] hover:bg-[#BBF7D0] text-[#15803D] border border-[#86EFAC] text-xs font-bold active:scale-95 transition-all shadow-2xs cursor-pointer"
+                      >
+                        Check-In
+                      </button>
+                    )}
+
+                    {b.bookingStatus !== "CANCELLED" && b.bookingStatus !== "CHECKED_OUT" && b.bookingStatus !== "CHECKED_IN" && (
+                      <button
+                        onClick={() => setCancelBooking(b)}
+                        className="w-full min-h-[44px] flex items-center justify-center rounded-xl bg-[#FFE4E6] hover:bg-[#FECDD3] text-[#E11D48] border border-[#FECDD3] text-xs font-bold active:scale-95 transition-all shadow-2xs cursor-pointer"
+                      >
+                        Cancel
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop View: Full Luxury Reservation Table */}
+            <div className="hidden md:block overflow-x-auto custom-scrollbar">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="bg-[#FAF7F2] border-b border-[#E8DFD2] text-[10px] uppercase font-bold tracking-wider text-[#8A8277]">
+                    <th className="py-3.5 px-5 font-bold">BOOKING ID</th>
+                    <th className="py-3.5 px-4 font-bold">GUEST DETAILS</th>
+                    <th className="py-3.5 px-4 font-bold">CATEGORY & ROOM</th>
+                    <th className="py-3.5 px-4 font-bold">DATES</th>
+                    <th className="py-3.5 px-4 font-bold">TOTAL AMOUNT</th>
+                    <th className="py-3.5 px-4 font-bold">PAYMENT</th>
+                    <th className="py-3.5 px-4 font-bold">STATUS</th>
+                    <th className="py-3.5 px-5 font-bold text-right">ACTIONS</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#EDE6DB] text-[#111923]">
+                  {filteredBookings.map((b) => (
+                    <tr key={b.id} className="hover:bg-[#FAF7F2]/60 transition-colors">
+                      {/* Booking ID */}
+                      <td className="py-4 px-5 font-bold text-[#A97A38] text-xs whitespace-nowrap">
+                        {b.id}
+                      </td>
+
+                      {/* Guest Details */}
+                      <td className="py-4 px-4 whitespace-nowrap">
+                        <div className="font-bold text-[13px] text-[#111923]">
+                          {b.guestName}
+                        </div>
+                        <div className="text-[11px] text-[#78716C] mt-0.5">
+                          {b.guestPhone}
+                        </div>
+                      </td>
+
+                      {/* Category & Room */}
+                      <td className="py-4 px-4 whitespace-nowrap">
+                        <div className="font-bold text-[13px] text-[#111923]">
+                          {b.roomNumber ? `Room ${b.roomNumber}` : "Unassigned"}
+                        </div>
+                        <div className="text-[11px] text-[#A97A38] font-medium mt-0.5">
+                          {formatRoomTypeName(b.roomType)}
+                        </div>
+                      </td>
+
+                      {/* Dates */}
+                      <td className="py-4 px-4 whitespace-nowrap">
+                        <div className="text-[12px] font-medium text-[#111923]">
+                          {b.checkInDate} → {b.checkOutDate}
+                        </div>
+                        <div className="text-[11px] text-[#78716C] mt-0.5">
+                          {b.nights} Nights • {b.adults} Adults
+                        </div>
+                      </td>
+
+                      {/* Total Amount */}
+                      <td className="py-4 px-4 font-bold text-[13px] text-[#111923] whitespace-nowrap">
+                        ₹{b.totalAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </td>
+
+                      {/* Payment Badge */}
+                      <td className="py-4 px-4 whitespace-nowrap">
+                        <span
+                          className={`px-2.5 py-1 rounded-md text-[10px] uppercase font-bold tracking-wider ${
+                            b.paymentStatus === "SUCCESS"
+                              ? "bg-[#DCFCE7] text-[#15803D] border border-[#86EFAC]"
+                              : b.paymentStatus === "REFUNDED"
+                              ? "bg-[#F3E8FF] text-[#7E22CE] border border-[#D8B4FE]"
+                              : "bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A]"
+                          }`}
                         >
-                          Check-Out
-                        </button>
-                      )}
+                          {b.paymentStatus}
+                        </span>
+                      </td>
 
-                      {b.bookingStatus === "CONFIRMED" && (
-                        <button
-                          onClick={() => setCheckInBooking(b)}
-                          className="px-3 py-1.5 rounded-lg bg-[#DCFCE7] hover:bg-[#BBF7D0] text-[#15803D] border border-[#86EFAC] text-xs font-bold transition-colors shadow-2xs cursor-pointer"
+                      {/* Booking Status Badge */}
+                      <td className="py-4 px-4 whitespace-nowrap">
+                        <span
+                          className={`px-2.5 py-1 rounded-md text-[10px] uppercase font-bold tracking-wider ${
+                            b.bookingStatus === "CHECKED_IN"
+                              ? "bg-[#DCFCE7] text-[#15803D] border border-[#86EFAC]"
+                              : b.bookingStatus === "CONFIRMED"
+                              ? "bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A]"
+                              : b.bookingStatus === "CHECKED_OUT"
+                              ? "bg-[#DBEAFE] text-[#1D4ED8] border border-[#BFDBFE]"
+                              : "bg-[#FFE4E6] text-[#E11D48] border border-[#FECDD3]"
+                          }`}
                         >
-                          Check-In
-                        </button>
-                      )}
+                          {b.bookingStatus}
+                        </span>
+                      </td>
 
-                      {b.bookingStatus !== "CANCELLED" &&
-                        b.bookingStatus !== "CHECKED_OUT" && (
+                      {/* Actions */}
+                      <td className="py-4 px-5 text-right whitespace-nowrap space-x-1.5">
+                        <Link
+                          href={`/admin/bookings/${b.id}`}
+                          className="px-3 py-1.5 rounded-lg border border-[#E8DFD2] bg-[#FAF7F2] hover:bg-[#F3EDE4] text-xs font-semibold text-[#111923] transition-colors shadow-2xs inline-block"
+                        >
+                          Invoice / View
+                        </Link>
+
+                        {b.bookingStatus === "CHECKED_IN" && (
                           <button
-                            onClick={() => setCancelBooking(b)}
-                            className="px-3 py-1.5 rounded-lg bg-[#FFE4E6] hover:bg-[#FECDD3] text-[#E11D48] border border-[#FECDD3] text-xs font-bold transition-colors shadow-2xs cursor-pointer"
+                            onClick={() => setCheckOutBooking(b)}
+                            className="px-3 py-1.5 rounded-lg bg-[#DBEAFE] hover:bg-[#BFDBFE] text-[#1D4ED8] border border-[#BFDBFE] text-xs font-bold transition-colors shadow-2xs cursor-pointer"
                           >
-                            Cancel
+                            Check-Out
                           </button>
                         )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+
+                        {b.bookingStatus === "CONFIRMED" && (
+                          <button
+                            onClick={() => setCheckInBooking(b)}
+                            className="px-3 py-1.5 rounded-lg bg-[#DCFCE7] hover:bg-[#BBF7D0] text-[#15803D] border border-[#86EFAC] text-xs font-bold transition-colors shadow-2xs cursor-pointer"
+                          >
+                            Check-In
+                          </button>
+                        )}
+
+                        {b.bookingStatus !== "CANCELLED" &&
+                          b.bookingStatus !== "CHECKED_OUT" && (
+                            <button
+                              onClick={() => setCancelBooking(b)}
+                              className="px-3 py-1.5 rounded-lg bg-[#FFE4E6] hover:bg-[#FECDD3] text-[#E11D48] border border-[#FECDD3] text-xs font-bold transition-colors shadow-2xs cursor-pointer"
+                            >
+                              Cancel
+                            </button>
+                          )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
 

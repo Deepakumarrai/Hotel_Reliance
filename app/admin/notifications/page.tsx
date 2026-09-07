@@ -221,13 +221,13 @@ export default function AdminNotificationsPage() {
                     <label className="text-[10px] uppercase font-bold tracking-wider text-[#A97A38] block mb-2.5">
                       AVAILABLE TAGS
                     </label>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="flex flex-wrap gap-1.5">
                       {whatsappTags.map((tag) => (
                         <button
                           key={tag}
                           type="button"
                           onClick={() => insertTag(tag, "whatsapp")}
-                          className="bg-[#FAF7F2] border border-[#E8DFD2] text-[#6B6255] text-[11px] font-mono font-medium py-1.5 px-2 rounded-xl text-center hover:bg-[#F3EDE4] hover:text-[#111923] hover:border-[#A97A38] transition-colors cursor-pointer"
+                          className="bg-[#FAF7F2] border border-[#E8DFD2] text-[#6B6255] text-[11px] font-mono font-medium py-1.5 px-2.5 min-h-[36px] rounded-xl text-center hover:bg-[#F3EDE4] hover:text-[#111923] hover:border-[#A97A38] active:scale-95 transition-all cursor-pointer"
                         >
                           {tag}
                         </button>
@@ -235,11 +235,11 @@ export default function AdminNotificationsPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-center space-x-2.5 pt-2">
+                  <div className="flex flex-col sm:flex-row items-center gap-2.5 pt-2">
                     <button
                       type="button"
                       onClick={() => handleTestMessage("WhatsApp")}
-                      className="flex-1 py-2.5 rounded-xl bg-[#FAF7F2] border border-[#E8DFD2] hover:bg-[#F3EDE4] text-[#8C6326] font-bold text-xs flex items-center justify-center space-x-1.5 shadow-2xs transition-colors cursor-pointer"
+                      className="w-full sm:flex-1 min-h-[44px] py-2.5 rounded-xl bg-[#FAF7F2] border border-[#E8DFD2] hover:bg-[#F3EDE4] text-[#8C6326] font-bold text-xs flex items-center justify-center space-x-1.5 shadow-2xs active:scale-95 transition-all cursor-pointer"
                     >
                       <Send className="w-3.5 h-3.5" />
                       <span>Test Message</span>
@@ -248,7 +248,7 @@ export default function AdminNotificationsPage() {
                       type="button"
                       onClick={handleSave}
                       disabled={isSaving}
-                      className="flex-1 py-2.5 rounded-xl bg-[#A97A38] hover:bg-[#966C30] text-white font-bold text-xs flex items-center justify-center space-x-1.5 shadow-xs transition-all active:scale-95 cursor-pointer disabled:opacity-50"
+                      className="w-full sm:flex-1 min-h-[44px] py-2.5 rounded-xl bg-[#A97A38] hover:bg-[#966C30] text-white font-bold text-xs flex items-center justify-center space-x-1.5 shadow-xs transition-all active:scale-95 cursor-pointer disabled:opacity-50"
                     >
                       <Save className="w-3.5 h-3.5" />
                       <span>{isSaving ? "Saving..." : "Save Template"}</span>
@@ -300,34 +300,23 @@ export default function AdminNotificationsPage() {
                     <label className="text-[10px] uppercase font-bold tracking-wider text-[#A97A38] block mb-1.5">
                       EMAIL SUBJECT LINE
                     </label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        value={emailSubject}
-                        onChange={(e) => setEmailSubject(e.target.value)}
-                        className="w-full bg-[#0B141F] border border-[#182635] rounded-xl px-4 py-2.5 pr-9 text-xs text-white placeholder:text-[#64748B] focus:outline-none focus:border-[#A97A38] shadow-xl font-mono"
-                      />
-                      {emailSubject && (
-                        <button
-                          type="button"
-                          onClick={() => setEmailSubject("")}
-                          className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#94A3B8] hover:text-white"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
-                      )}
-                    </div>
+                    <input
+                      type="text"
+                      value={emailSubject}
+                      onChange={(e) => setEmailSubject(e.target.value)}
+                      className="w-full bg-[#0B141F] border border-[#182635] rounded-xl px-4 py-3 min-h-[46px] text-xs font-sans text-white placeholder:text-[#64748B] focus:outline-none focus:border-[#A97A38] shadow-xl font-mono"
+                    />
                   </div>
 
                   <div>
                     <label className="text-[10px] uppercase font-bold tracking-wider text-[#A97A38] block mb-1.5">
-                      EMAIL BODY COPY
+                      HTML / PLAIN TEXT EMAIL BODY
                     </label>
                     <textarea
-                      rows={4}
+                      rows={7}
                       value={emailBody}
                       onChange={(e) => setEmailBody(e.target.value)}
-                      className="w-full bg-[#0B141F] border border-[#182635] rounded-xl p-4 text-xs font-sans text-white placeholder:text-[#64748B] leading-relaxed focus:outline-none focus:border-[#A97A38] shadow-xl resize-none font-mono"
+                      className="w-full min-h-[140px] bg-[#0B141F] border border-[#182635] rounded-xl p-4 text-xs font-sans text-white placeholder:text-[#64748B] leading-relaxed focus:outline-none focus:border-[#A97A38] shadow-xl resize-none font-mono"
                     />
                   </div>
                 </div>
@@ -336,15 +325,15 @@ export default function AdminNotificationsPage() {
                 <div className="lg:col-span-4 flex flex-col justify-between space-y-4">
                   <div>
                     <label className="text-[10px] uppercase font-bold tracking-wider text-[#A97A38] block mb-2.5">
-                      AVAILABLE TAGS
+                      AVAILABLE EMAIL TAGS
                     </label>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="flex flex-wrap gap-1.5">
                       {emailTags.map((tag) => (
                         <button
                           key={tag}
                           type="button"
                           onClick={() => insertTag(tag, "email")}
-                          className="bg-[#FAF7F2] border border-[#E8DFD2] text-[#6B6255] text-[11px] font-mono font-medium py-1.5 px-2 rounded-xl text-center hover:bg-[#F3EDE4] hover:text-[#111923] hover:border-[#A97A38] transition-colors cursor-pointer"
+                          className="bg-[#FAF7F2] border border-[#E8DFD2] text-[#6B6255] text-[11px] font-mono font-medium py-1.5 px-2.5 min-h-[36px] rounded-xl text-center hover:bg-[#F3EDE4] hover:text-[#111923] hover:border-[#A97A38] active:scale-95 transition-all cursor-pointer"
                         >
                           {tag}
                         </button>
@@ -352,20 +341,20 @@ export default function AdminNotificationsPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-center space-x-2.5 pt-2">
+                  <div className="flex flex-col sm:flex-row items-center gap-2.5 pt-2">
                     <button
                       type="button"
                       onClick={() => handleTestMessage("Email")}
-                      className="flex-1 py-2.5 rounded-xl bg-[#FAF7F2] border border-[#E8DFD2] hover:bg-[#F3EDE4] text-[#8C6326] font-bold text-xs flex items-center justify-center space-x-1.5 shadow-2xs transition-colors cursor-pointer"
+                      className="w-full sm:flex-1 min-h-[44px] py-2.5 rounded-xl bg-[#FAF7F2] border border-[#E8DFD2] hover:bg-[#F3EDE4] text-[#8C6326] font-bold text-xs flex items-center justify-center space-x-1.5 shadow-2xs active:scale-95 transition-all cursor-pointer"
                     >
                       <Send className="w-3.5 h-3.5" />
-                      <span>Test Email</span>
+                      <span>Send Test Email</span>
                     </button>
                     <button
                       type="button"
                       onClick={handleSave}
                       disabled={isSaving}
-                      className="flex-1 py-2.5 rounded-xl bg-[#A97A38] hover:bg-[#966C30] text-white font-bold text-xs flex items-center justify-center space-x-1.5 shadow-xs transition-all active:scale-95 cursor-pointer disabled:opacity-50"
+                      className="w-full sm:flex-1 min-h-[44px] py-2.5 rounded-xl bg-[#A97A38] hover:bg-[#966C30] text-white font-bold text-xs flex items-center justify-center space-x-1.5 shadow-xs transition-all active:scale-95 cursor-pointer disabled:opacity-50"
                     >
                       <Save className="w-3.5 h-3.5" />
                       <span>{isSaving ? "Saving..." : "Save Template"}</span>

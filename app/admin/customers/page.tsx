@@ -168,9 +168,71 @@ export default function AdminCustomersPage() {
           />
         </div>
 
-        {/* 3. Obsidian Customers Table */}
+        {/* 3. Obsidian Customers Table (Desktop) & Cards (Mobile) */}
         <div className="bg-[#0B141F] border border-[#182635] rounded-2xl shadow-xl overflow-hidden">
-          <div className="overflow-x-auto custom-scrollbar">
+          {/* Mobile View: Customer Cards */}
+          <div className="block md:hidden divide-y divide-[#182635]">
+            {filtered.map((c) => (
+              <div key={c.id} className="p-4 space-y-3 bg-[#0B141F] hover:bg-[#111C28]/60 transition-colors">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <span className="font-bold text-white text-sm">{c.name}</span>
+                    {c.vipStatus && (
+                      <span className="px-1.5 py-0.5 rounded bg-[#9E712E] text-white text-[9px] font-bold uppercase tracking-wider">
+                        VIP
+                      </span>
+                    )}
+                  </div>
+                  <span className="px-2 py-0.5 rounded text-[9.5px] font-bold tracking-wider text-[#10B981] bg-[#064E3B]/40 border border-[#047857]/50">
+                    Verified
+                  </span>
+                </div>
+
+                <div className="bg-[#080F18] p-3 rounded-xl border border-[#182635] space-y-2 text-xs">
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <span className="text-[#94A3B8] text-[10px] uppercase font-semibold block">Phone</span>
+                      <span className="font-mono text-xs text-[#D8B77A] font-semibold">{c.phone}</span>
+                    </div>
+                    <div>
+                      <span className="text-[#94A3B8] text-[10px] uppercase font-semibold block">Email</span>
+                      <span className="text-xs text-white truncate block">{c.email}</span>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2 pt-2 border-t border-[#182635] text-center">
+                    <div>
+                      <span className="text-[#94A3B8] text-[9.5px] uppercase block">Total Stays</span>
+                      <span className="font-bold text-white text-xs">{c.totalStays}</span>
+                    </div>
+                    <div>
+                      <span className="text-[#94A3B8] text-[9.5px] uppercase block">Lifetime Spend</span>
+                      <span className="font-mono font-bold text-xs text-[#10B981]">
+                        ₹{c.totalSpent.toLocaleString("en-IN", { minimumFractionDigits: 0 })}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-[#94A3B8] text-[9.5px] uppercase block">Last Stay</span>
+                      <span className="text-[#94A3B8] text-xs">{c.lastStayDate}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-1">
+                  <button
+                    onClick={() => setSelectedGuest(c)}
+                    className="w-full min-h-[44px] flex items-center justify-center space-x-2 rounded-xl border border-[#263545] bg-[#111C28] hover:bg-[#182637] text-white text-xs font-bold active:scale-95 transition-all shadow-2xs cursor-pointer"
+                  >
+                    <Eye className="w-4 h-4 text-[#D8B77A]" />
+                    <span>View Customer Profile & History</span>
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop View: Full Customers Table */}
+          <div className="hidden md:block overflow-x-auto custom-scrollbar">
             <table className="w-full text-left text-xs">
               <thead>
                 <tr className="border-b border-[#182635] text-[10.5px] uppercase font-bold tracking-wider text-[#A97A38] bg-[#080F18]/50">

@@ -213,11 +213,22 @@ export function AdminSidebar({
     setOpenSubmenu((prev) => (prev === title ? null : title));
   };
 
+  // Handle Escape key to close mobile drawer
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && mobileOpen) {
+        setMobileOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [mobileOpen, setMobileOpen]);
+
   const SidebarContent = (
-    <div className="flex flex-col h-full bg-[#0E1418] text-[#D1D5DB] select-none border-r border-[#1B252E]">
+    <div className="flex flex-col h-full bg-[#0B1423] text-[#D1D5DB] select-none border-r border-[#1B2A42] pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
       {/* Brand Crest Header */}
-      <div className="pt-6 pb-4 px-5 text-center relative border-b border-[#1B252E]/80">
-        <Link href="/admin/dashboard" className="block group">
+      <div className="pt-6 pb-4 px-5 text-center relative border-b border-[#1B2A42]/80">
+        <Link href="/admin/dashboard" onClick={() => setMobileOpen(false)} className="block group">
           <div className="font-serif tracking-[0.22em] text-[16px] font-bold text-[#E5BE76] uppercase group-hover:text-white transition-colors">
             HOTEL RELIANCE
           </div>
@@ -232,7 +243,8 @@ export function AdminSidebar({
         </Link>
         <button
           onClick={() => setMobileOpen(false)}
-          className="lg:hidden absolute top-4 right-4 text-white/70 hover:text-white p-1 rounded"
+          className="lg:hidden absolute top-4 right-4 min-w-[44px] min-h-[44px] flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 active:scale-95 rounded-xl transition-all cursor-pointer"
+          aria-label="Close menu"
         >
           <X className="w-5 h-5" />
         </button>
@@ -257,20 +269,20 @@ export function AdminSidebar({
                     <div>
                       <button
                         onClick={() => toggleSubmenu(item.title)}
-                        className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all cursor-pointer ${
+                        className={`w-full flex items-center justify-between px-3.5 py-3 min-h-[44px] rounded-xl text-xs font-medium transition-all cursor-pointer ${
                           isSectionActive
-                            ? "bg-[#252822]/90 text-[#F5E6CC] font-semibold border-l-[3px] border-l-[#D8B77A] shadow-xs"
-                            : "text-[#C4BCB1] hover:bg-[#161E26] hover:text-white"
+                            ? "bg-[#1B2A42] text-[#F5E6CC] font-semibold border-l-[3px] border-l-[#D8B77A] shadow-xs"
+                            : "text-[#C4BCB1] hover:bg-[#162338] hover:text-white"
                         }`}
                       >
                         <div className="flex items-center space-x-3">
                           <span>{item.icon}</span>
-                          <span className="text-[12.5px] font-medium">{item.title}</span>
+                          <span className="text-[13px] font-medium">{item.title}</span>
                         </div>
                         {isSubmenuOpen ? (
-                          <ChevronDown className="w-3.5 h-3.5 text-[#D8B77A]" />
+                          <ChevronDown className="w-4 h-4 text-[#D8B77A]" />
                         ) : (
-                          <ChevronRight className="w-3.5 h-3.5 text-[#B8893E]/60" />
+                          <ChevronRight className="w-4 h-4 text-[#B8893E]/60" />
                         )}
                       </button>
 
@@ -287,10 +299,10 @@ export function AdminSidebar({
                                 key={sub.title}
                                 href={sub.href}
                                 onClick={() => setMobileOpen(false)}
-                                className={`block px-3 py-1.5 rounded-lg text-[11.5px] transition-all relative ${
+                                className={`block px-3.5 py-2.5 min-h-[40px] rounded-xl text-[12px] transition-all relative ${
                                   isSubActive
-                                    ? "bg-[#282721] text-[#E6C687] font-semibold border border-[#B8893E]/35 shadow-2xs"
-                                    : "text-[#A89F91] hover:text-white hover:bg-[#161E26]"
+                                    ? "bg-[#21324E] text-[#E6C687] font-semibold border border-[#B8893E]/35 shadow-2xs"
+                                    : "text-[#A89F91] hover:text-white hover:bg-[#162338]"
                                 }`}
                               >
                                 {sub.title}
@@ -304,18 +316,18 @@ export function AdminSidebar({
                     <Link
                       href={item.href}
                       onClick={() => setMobileOpen(false)}
-                      className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all ${
+                      className={`flex items-center justify-between px-3.5 py-3 min-h-[44px] rounded-xl text-xs font-medium transition-all ${
                         pathname === item.href
-                          ? "bg-[#252822]/90 text-[#F5E6CC] font-semibold border-l-[3px] border-l-[#D8B77A]"
-                          : "text-[#C4BCB1] hover:bg-[#161E26] hover:text-white"
+                          ? "bg-[#1B2A42] text-[#F5E6CC] font-semibold border-l-[3px] border-l-[#D8B77A]"
+                          : "text-[#C4BCB1] hover:bg-[#162338] hover:text-white"
                       }`}
                     >
                       <div className="flex items-center space-x-3">
                         <span>{item.icon}</span>
-                        <span className="text-[12.5px] font-medium">{item.title}</span>
+                        <span className="text-[13px] font-medium">{item.title}</span>
                       </div>
                       {item.hasChevron && (
-                        <ChevronRight className="w-3.5 h-3.5 text-[#B8893E]/60" />
+                        <ChevronRight className="w-4 h-4 text-[#B8893E]/60" />
                       )}
                     </Link>
                   )}
@@ -327,21 +339,21 @@ export function AdminSidebar({
       </nav>
 
       {/* User Footer Profile Card */}
-      <div className="p-3.5 border-t border-[#1B252E] bg-[#0A0F13]">
+      <div className="p-3.5 border-t border-[#1B2A42] bg-[#0B1423]">
         <div className="flex items-center justify-between">
-          <Link href="/admin/profile" className="flex items-center space-x-2.5 hover:opacity-90 transition-opacity">
-            <div className="w-8.5 h-8.5 rounded-full bg-[#A97A32] border border-[#D8B77A]/50 flex items-center justify-center text-white font-serif font-bold text-xs shadow-inner flex-shrink-0">
+          <Link href="/admin/profile" onClick={() => setMobileOpen(false)} className="flex items-center space-x-2.5 hover:opacity-90 transition-opacity">
+            <div className="w-9 h-9 rounded-full bg-[#8C6527] border border-[#D8B77A]/50 flex items-center justify-center text-white font-serif font-bold text-xs shadow-inner flex-shrink-0">
               VR
             </div>
             <div className="overflow-hidden">
-              <div className="text-[12px] font-bold text-white truncate">Vikramaditya Roy (GM)</div>
+              <div className="text-[12.5px] font-bold text-white truncate">Vikramaditya Roy</div>
               <div className="text-[9.5px] text-[#D8B77A] tracking-wider uppercase font-semibold">SUPER_ADMIN</div>
             </div>
           </Link>
           <button
             onClick={handleLogout}
             title="Sign Out"
-            className="flex items-center space-x-1.5 px-2 py-1 text-[#C69A55] hover:text-[#E5B869] hover:bg-white/5 rounded-md transition-colors text-[11px] font-medium cursor-pointer"
+            className="flex items-center space-x-1.5 px-3 py-2 min-h-[40px] text-[#C69A55] hover:text-[#E5B869] hover:bg-white/5 active:scale-95 rounded-lg transition-colors text-[11px] font-medium cursor-pointer"
           >
             <LogOut className="w-3.5 h-3.5" />
             <span>Logout</span>
@@ -362,10 +374,10 @@ export function AdminSidebar({
       {mobileOpen && (
         <div className="fixed inset-0 z-50 lg:hidden flex">
           <div
-            className="fixed inset-0 bg-black/75 backdrop-blur-xs transition-opacity"
+            className="fixed inset-0 bg-black/80 backdrop-blur-xs transition-opacity animate-in fade-in duration-200"
             onClick={() => setMobileOpen(false)}
           />
-          <div className="relative w-72 max-w-[85vw] h-full shadow-2xl z-10 animate-in slide-in-from-left duration-300">
+          <div className="relative w-[85vw] max-w-[360px] h-[100dvh] shadow-2xl z-10 animate-in slide-in-from-left duration-300">
             {SidebarContent}
           </div>
         </div>
