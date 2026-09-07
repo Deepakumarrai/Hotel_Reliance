@@ -13,7 +13,6 @@ import {
   CreditCard,
   UserCog,
   PartyPopper,
-  UtensilsCrossed,
   Image as ImageIcon,
   Sparkles,
   BarChart3,
@@ -25,7 +24,7 @@ import {
   ChevronDown,
   ChevronRight,
   X,
-  Hotel
+  Hotel,
 } from "lucide-react";
 import { useToast } from "./ToastContext";
 
@@ -35,6 +34,11 @@ interface NavItem {
   icon: React.ReactNode;
   badge?: string;
   submenu?: { title: string; href: string }[];
+}
+
+interface NavSection {
+  sectionTitle: string;
+  items: NavItem[];
 }
 
 export function AdminSidebar({
@@ -73,129 +77,148 @@ export function AdminSidebar({
 
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(() => {
     if (pathname.includes("/admin/bookings")) return "Reservations";
-    if (pathname.includes("/admin/rooms")) return "Rooms & Inventory";
+    if (pathname.includes("/admin/rooms") || pathname.includes("/admin/availability")) return "Rooms & Inventory";
     if (pathname.includes("/admin/pricing")) return "Pricing & Rates";
     if (pathname.includes("/admin/payments") || pathname.includes("/admin/refunds")) return "Payments & Refunds";
     if (pathname.includes("/admin/banquet")) return "Banquets & Events";
-    if (pathname.includes("/admin/restaurant")) return "Restaurant";
     if (pathname.includes("/admin/offers") || pathname.includes("/admin/coupons")) return "Offers & Coupons";
     return null;
   });
 
-  const navItems: NavItem[] = [
+  const navSections: NavSection[] = [
     {
-      title: "Dashboard",
-      href: "/admin/dashboard",
-      icon: <LayoutDashboard className="w-4 h-4" />,
-    },
-    {
-      title: "Reservations",
-      href: "/admin/bookings",
-      icon: <CalendarCheck2 className="w-4 h-4" />,
-      submenu: [
-        { title: "All Bookings", href: "/admin/bookings" },
-        { title: "Today's Arrivals", href: "/admin/bookings?filter=arrivals" },
-        { title: "Today's Departures", href: "/admin/bookings?filter=departures" },
+      sectionTitle: "MAIN",
+      items: [
+        {
+          title: "Dashboard",
+          href: "/admin/dashboard",
+          icon: <LayoutDashboard className="w-4 h-4" />,
+        },
+        {
+          title: "Reservations",
+          href: "/admin/bookings",
+          icon: <CalendarCheck2 className="w-4 h-4" />,
+          submenu: [
+            { title: "All Reservations", href: "/admin/bookings" },
+            { title: "Today's Arrivals", href: "/admin/bookings?filter=arrivals" },
+            { title: "Today's Departures", href: "/admin/bookings?filter=departures" },
+            { title: "Pending", href: "/admin/bookings?filter=pending" },
+            { title: "Confirmed", href: "/admin/bookings?filter=confirmed" },
+            { title: "Cancelled", href: "/admin/bookings?filter=cancelled" },
+          ],
+        },
       ],
     },
     {
-      title: "Rooms & Inventory",
-      href: "/admin/rooms",
-      icon: <BedDouble className="w-4 h-4" />,
-      submenu: [
-        { title: "Physical Rooms (101-412)", href: "/admin/rooms" },
-        { title: "Room Categories", href: "/admin/rooms/types" },
+      sectionTitle: "HOTEL MANAGEMENT",
+      items: [
+        {
+          title: "Rooms & Inventory",
+          href: "/admin/rooms",
+          icon: <BedDouble className="w-4 h-4" />,
+          submenu: [
+            { title: "Room Categories", href: "/admin/rooms/types" },
+            { title: "Physical Rooms (101-412)", href: "/admin/rooms" },
+            { title: "Availability Calendar", href: "/admin/availability" },
+          ],
+        },
+        {
+          title: "Pricing & Rates",
+          href: "/admin/pricing",
+          icon: <CircleDollarSign className="w-4 h-4" />,
+          submenu: [
+            { title: "Base & Weekend Rates", href: "/admin/pricing" },
+            { title: "Seasonal & Peak Surge", href: "/admin/pricing/seasonal" },
+          ],
+        },
+        {
+          title: "Banquets & Events",
+          href: "/admin/banquet",
+          icon: <PartyPopper className="w-4 h-4" />,
+          submenu: [
+            { title: "Venues & Lawns", href: "/admin/banquet" },
+            { title: "Quotation Pipeline", href: "/admin/banquet/enquiries" },
+          ],
+        },
+        {
+          title: "Staff Management",
+          href: "/admin/staff",
+          icon: <UserCog className="w-4 h-4" />,
+        },
       ],
     },
     {
-      title: "Pricing & Rates",
-      href: "/admin/pricing",
-      icon: <CircleDollarSign className="w-4 h-4" />,
-      submenu: [
-        { title: "Tariff Configurator", href: "/admin/pricing" },
-        { title: "Seasonal & Peak Surge", href: "/admin/pricing/seasonal" },
+      sectionTitle: "CUSTOMER",
+      items: [
+        {
+          title: "Customers & CRM",
+          href: "/admin/customers",
+          icon: <Users className="w-4 h-4" />,
+        },
+        {
+          title: "Payments & Refunds",
+          href: "/admin/payments",
+          icon: <CreditCard className="w-4 h-4" />,
+          submenu: [
+            { title: "Transactions Ledger", href: "/admin/payments" },
+            { title: "Refund Processing", href: "/admin/refunds" },
+          ],
+        },
+        {
+          title: "Offers & Coupons",
+          href: "/admin/offers",
+          icon: <Sparkles className="w-4 h-4" />,
+          submenu: [
+            { title: "Active Promotions", href: "/admin/offers" },
+            { title: "Promo Coupons", href: "/admin/coupons" },
+          ],
+        },
       ],
     },
     {
-      title: "Availability Calendar",
-      href: "/admin/availability",
-      icon: <CalendarDays className="w-4 h-4" />,
-    },
-    {
-      title: "Customers & CRM",
-      href: "/admin/customers",
-      icon: <Users className="w-4 h-4" />,
-    },
-    {
-      title: "Payments & Refunds",
-      href: "/admin/payments",
-      icon: <CreditCard className="w-4 h-4" />,
-      submenu: [
-        { title: "Transactions Ledger", href: "/admin/payments" },
-        { title: "Refund Processing", href: "/admin/refunds" },
+      sectionTitle: "CONTENT",
+      items: [
+        {
+          title: "Gallery & Media",
+          href: "/admin/content/gallery",
+          icon: <ImageIcon className="w-4 h-4" />,
+        },
+        {
+          title: "Hotel Settings",
+          href: "/admin/settings",
+          icon: <Settings className="w-4 h-4" />,
+        },
       ],
     },
     {
-      title: "Staff Management",
-      href: "/admin/staff",
-      icon: <UserCog className="w-4 h-4" />,
-    },
-    {
-      title: "Banquets & Events",
-      href: "/admin/banquet",
-      icon: <PartyPopper className="w-4 h-4" />,
-      submenu: [
-        { title: "Venues & Lawns", href: "/admin/banquet" },
-        { title: "Quotation Pipeline", href: "/admin/banquet/enquiries" },
+      sectionTitle: "BUSINESS",
+      items: [
+        {
+          title: "Reports & Analytics",
+          href: "/admin/reports",
+          icon: <BarChart3 className="w-4 h-4" />,
+        },
+        {
+          title: "Notifications",
+          href: "/admin/notifications",
+          icon: <Bell className="w-4 h-4" />,
+        },
       ],
     },
     {
-      title: "Restaurant",
-      href: "/admin/restaurant",
-      icon: <UtensilsCrossed className="w-4 h-4" />,
-      submenu: [
-        { title: "Kwality Menu & Prices", href: "/admin/restaurant" },
-        { title: "Table Enquiries", href: "/admin/restaurant/enquiries" },
+      sectionTitle: "SYSTEM",
+      items: [
+        {
+          title: "Admin Profile",
+          href: "/admin/profile",
+          icon: <User className="w-4 h-4" />,
+        },
+        {
+          title: "Security & Audit",
+          href: "/admin/security",
+          icon: <ShieldCheck className="w-4 h-4" />,
+        },
       ],
-    },
-    {
-      title: "Offers & Coupons",
-      href: "/admin/offers",
-      icon: <Sparkles className="w-4 h-4" />,
-      submenu: [
-        { title: "Promotions", href: "/admin/offers" },
-        { title: "Promo Coupons", href: "/admin/coupons" },
-      ],
-    },
-    {
-      title: "Gallery & Media",
-      href: "/admin/content/gallery",
-      icon: <ImageIcon className="w-4 h-4" />,
-    },
-    {
-      title: "Reports & Analytics",
-      href: "/admin/reports",
-      icon: <BarChart3 className="w-4 h-4" />,
-    },
-    {
-      title: "Notifications",
-      href: "/admin/notifications",
-      icon: <Bell className="w-4 h-4" />,
-    },
-    {
-      title: "Hotel Settings",
-      href: "/admin/settings",
-      icon: <Settings className="w-4 h-4" />,
-    },
-    {
-      title: "Security & Audit",
-      href: "/admin/security",
-      icon: <ShieldCheck className="w-4 h-4" />,
-    },
-    {
-      title: "Admin Profile",
-      href: "/admin/profile",
-      icon: <User className="w-4 h-4" />,
     },
   ];
 
@@ -239,86 +262,93 @@ export function AdminSidebar({
         </button>
       </div>
 
-      {/* Navigation Scrollable Area */}
-      <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1 custom-scrollbar">
-        {navItems.map((item) => {
-          const isActive =
-            pathname === item.href ||
-            (item.submenu && item.submenu.some((sub) => pathname === sub.href));
-          const isSubmenuOpen = openSubmenu === item.title;
-
-          return (
-            <div key={item.title} className="space-y-0.5">
-              {item.submenu ? (
-                <button
-                  onClick={() => toggleSubmenu(item.title)}
-                  className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs tracking-wide font-medium transition-all ${
-                    isActive
-                      ? "bg-[#111E31] text-[#D8B875] border-l-[3px] border-[#C4984F] shadow-sm font-semibold"
-                      : "text-[#E9DFD2]/80 hover:bg-[#111E31]/70 hover:text-white"
-                  }`}
-                >
-                  <div className="flex items-center space-x-3">
-                    <span className={isActive ? "text-[#C4984F]" : "text-[#D8B875]/70"}>
-                      {item.icon}
-                    </span>
-                    <span>{item.title}</span>
-                  </div>
-                  {isSubmenuOpen ? (
-                    <ChevronDown className="w-3.5 h-3.5 text-white/50" />
-                  ) : (
-                    <ChevronRight className="w-3.5 h-3.5 text-white/50" />
-                  )}
-                </button>
-              ) : (
-                <Link
-                  href={item.href}
-                  onClick={() => setMobileOpen(false)}
-                  className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs tracking-wide font-medium transition-all ${
-                    pathname === item.href
-                      ? "bg-[#111E31] text-[#D8B875] border-l-[3px] border-[#C4984F] shadow-sm font-semibold"
-                      : "text-[#E9DFD2]/80 hover:bg-[#111E31]/70 hover:text-white"
-                  }`}
-                >
-                  <div className="flex items-center space-x-3">
-                    <span className={pathname === item.href ? "text-[#C4984F]" : "text-[#D8B875]/70"}>
-                      {item.icon}
-                    </span>
-                    <span>{item.title}</span>
-                  </div>
-                  {item.badge && (
-                    <span className="px-1.5 py-0.5 text-[9px] bg-[#9E712E] text-white rounded font-bold">
-                      {item.badge}
-                    </span>
-                  )}
-                </Link>
-              )}
-
-              {/* Submenu Dropdown */}
-              {item.submenu && isSubmenuOpen && (
-                <div className="pl-9 pr-2 py-1 space-y-1 border-l border-[#1B2A42] ml-4 my-1">
-                  {item.submenu.map((sub) => {
-                    const isSubActive = pathname === sub.href;
-                    return (
-                      <Link
-                        key={sub.title}
-                        href={sub.href}
-                        onClick={() => setMobileOpen(false)}
-                        className={`block px-2.5 py-1.5 rounded text-[11px] font-medium transition-colors ${
-                          isSubActive
-                            ? "text-[#C4984F] font-bold bg-[#1B2A42]/70"
-                            : "text-[#E9DFD2]/60 hover:text-white hover:bg-[#111E31]"
-                        }`}
-                      >
-                        {sub.title}
-                      </Link>
-                    );
-                  })}
-                </div>
-              )}
+      {/* Navigation Scrollable Area with Section Titles */}
+      <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-4 custom-scrollbar">
+        {navSections.map((section) => (
+          <div key={section.sectionTitle} className="space-y-1">
+            <div className="px-3 pt-1 pb-1 text-[9px] font-bold uppercase tracking-[0.22em] text-[#C4984F]/70">
+              {section.sectionTitle}
             </div>
-          );
-        })}
+            {section.items.map((item) => {
+              const isActive =
+                pathname === item.href ||
+                (item.submenu && item.submenu.some((sub) => pathname === sub.href));
+              const isSubmenuOpen = openSubmenu === item.title;
+
+              return (
+                <div key={item.title} className="space-y-0.5">
+                  {item.submenu ? (
+                    <button
+                      onClick={() => toggleSubmenu(item.title)}
+                      className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs tracking-wide font-medium transition-all ${
+                        isActive
+                          ? "bg-[#111E31] text-[#D8B875] border-l-[3px] border-[#C4984F] shadow-sm font-semibold"
+                          : "text-[#E9DFD2]/80 hover:bg-[#111E31]/70 hover:text-white"
+                      }`}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <span className={isActive ? "text-[#C4984F]" : "text-[#D8B875]/70"}>
+                          {item.icon}
+                        </span>
+                        <span>{item.title}</span>
+                      </div>
+                      {isSubmenuOpen ? (
+                        <ChevronDown className="w-3.5 h-3.5 text-white/50" />
+                      ) : (
+                        <ChevronRight className="w-3.5 h-3.5 text-white/50" />
+                      )}
+                    </button>
+                  ) : (
+                    <Link
+                      href={item.href}
+                      onClick={() => setMobileOpen(false)}
+                      className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs tracking-wide font-medium transition-all ${
+                        pathname === item.href
+                          ? "bg-[#111E31] text-[#D8B875] border-l-[3px] border-[#C4984F] shadow-sm font-semibold"
+                          : "text-[#E9DFD2]/80 hover:bg-[#111E31]/70 hover:text-white"
+                      }`}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <span className={pathname === item.href ? "text-[#C4984F]" : "text-[#D8B875]/70"}>
+                          {item.icon}
+                        </span>
+                        <span>{item.title}</span>
+                      </div>
+                      {item.badge && (
+                        <span className="px-1.5 py-0.5 text-[9px] bg-[#9E712E] text-white rounded font-bold">
+                          {item.badge}
+                        </span>
+                      )}
+                    </Link>
+                  )}
+
+                  {/* Submenu Dropdown */}
+                  {item.submenu && isSubmenuOpen && (
+                    <div className="pl-9 pr-2 py-1 space-y-1 border-l border-[#1B2A42] ml-4 my-1">
+                      {item.submenu.map((sub) => {
+                        const isSubActive = pathname === sub.href;
+                        return (
+                          <Link
+                            key={sub.title}
+                            href={sub.href}
+                            onClick={() => setMobileOpen(false)}
+                            className={`block px-2.5 py-1.5 rounded text-[11px] font-medium transition-colors ${
+                              isSubActive
+                                ? "text-[#C4984F] font-bold bg-[#1B2A42]/70"
+                                : "text-[#E9DFD2]/60 hover:text-white hover:bg-[#111E31]"
+                            }`}
+                          >
+                            {sub.title}
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        ))}
       </nav>
 
       {/* User Footer Card */}
