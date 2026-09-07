@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect, useCallback, useMemo, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, ArrowRight, Check, AlertCircle, Calendar, UserCheck, Lock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -92,8 +92,62 @@ function BookingContent() {
     });
   }, [searchParams]);
 
+  // Live dynamic availability from PostgreSQL
+  const [availableRooms, setAvailableRooms] = useState<any[]>(roomsData);
+  const [isLoadingAvailability, setIsLoadingAvailability] = useState<boolean>(false);
+
+  // Compute nights
+  const nights = useMemo(() => {
+    if (!bookingState.checkIn || !bookingState.checkOut) return 1;
+    const start = new Date(bookingState.checkIn);
+    const end = new Date(bookingState.checkOut);
+    const diffDays = Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+    return Math.max(1, diffDays);
+  }, [bookingState.checkIn, bookingState.checkOut]);
+
+  // Fetch live availability from backend API
+  const fetchLiveAvailability = useCallback(async () => {
+    if (!bookingState.checkIn || !bookingState.checkOut) return;
+    setIsLoadingAvailability(true);
+    try {
+      const res = await api.rooms.checkAvailability({
+        checkIn: bookingState.checkIn,
+        checkOut: bookingState.checkOut,
+        adults: bookingState.adults,
+        children: bookingState.children
+      });
+
+      if (res?.availableRooms && Array.isArray(res.availableRooms) && res.availableRooms.length > 0) {
+        setAvailableRooms(res.availableRooms);
+
+        // If selected room is now sold out or exceeds guest count, reset selection
+        if (bookingState.selectedRoomId) {
+          const current = res.availableRooms.find((r: any) => r.id === bookingState.selectedRoomId);
+          if (current && (current.isSoldOut || current.fitsGuests === false)) {
+            setBookingState((prev) => ({ ...prev, selectedRoomId: null }));
+          }
+        }
+      }
+    } catch (err) {
+      console.warn("Live availability check notice:", err);
+    } finally {
+      setIsLoadingAvailability(false);
+    }
+  }, [bookingState.checkIn, bookingState.checkOut, bookingState.adults, bookingState.children, bookingState.selectedRoomId]);
+
+  // Fetch on date/guest changes
+  useEffect(() => {
+    fetchLiveAvailability();
+  }, [bookingState.checkIn, bookingState.checkOut, bookingState.adults, bookingState.children]);
+
   // Find active room object
-  const selectedRoom = roomsData.find((r) => r.id === bookingState.selectedRoomId) || null;
+  const selectedRoom = useMemo(() => {
+    return (
+      availableRooms.find((r) => r.id === bookingState.selectedRoomId) ||
+      roomsData.find((r) => r.id === bookingState.selectedRoomId) ||
+      null
+    );
+  }, [availableRooms, bookingState.selectedRoomId]);
 
   // Handles state changes
   const handleDateChange = (field: "checkIn" | "checkOut", value: string) => {
@@ -141,8 +195,13 @@ function BookingContent() {
       return;
     }
 
+    // When moving to step 3 (Accommodations), refresh live availability
+    if (step === 2) {
+      fetchLiveAvailability();
+    }
+
     // If moving to step 4 (guest details / confirmation) and not authenticated, prompt auth
-    if (step >= 2 && !isAuthenticated) {
+    if (step >= 3 && !isAuthenticated) {
       openAuthModal("signin", {
         roomId: bookingState.selectedRoomId,
         roomSlug: selectedRoom?.slug,
@@ -380,10 +439,17 @@ function BookingContent() {
                       </h3>
                     </div>
                     <AvailableRooms
-                      rooms={roomsData}
+                      rooms={availableRooms}
                       selectedRoomId={bookingState.selectedRoomId}
                       onSelect={handleRoomSelect}
                       errors={errors}
+                      isLoading={isLoadingAvailability}
+                      checkIn={bookingState.checkIn}
+                      checkOut={bookingState.checkOut}
+                      adults={bookingState.adults}
+                      children={bookingState.children}
+                      nights={nights}
+                      onEditDates={() => setStep(1)}
                     />
                   </>
                 )}

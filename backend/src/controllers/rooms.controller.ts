@@ -54,7 +54,10 @@ export class RoomsController {
   }
 
   public static async checkAvailability(req: Request, res: Response): Promise<void> {
-    const { checkIn, checkOut, adults = 1, children = 0 } = req.body;
+    const checkIn = (req.body?.checkIn || req.query?.checkIn) as string;
+    const checkOut = (req.body?.checkOut || req.query?.checkOut) as string;
+    const adults = Number(req.body?.adults || req.query?.adults || 1);
+    const children = Number(req.body?.children || req.query?.children || 0);
 
     if (!checkIn || !checkOut) {
       res.status(400).json({ status: "error", message: "checkIn and checkOut dates are required." });
@@ -64,15 +67,20 @@ export class RoomsController {
     try {
       const start = new Date(checkIn);
       const end = new Date(checkOut);
-      const nights = Math.max(1, Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)));
+      const diffDays = Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+      const nights = Math.max(1, diffDays);
 
-      // Fetch all active rooms matching capacity
+      // Fetch all active rooms with maintenance units and active overlapping bookings
       const rooms = await prisma.room.findMany({
-        where: {
-          isActive: true,
-          capacityAdults: { gte: Number(adults) }
-        },
+        where: { isActive: true },
+        orderBy: { pricePerNight: "asc" },
         include: {
+          inventoryUnits: {
+            where: {
+              status: { in: ["MAINTENANCE", "OUT_OF_SERVICE"] }
+            },
+            select: { id: true, roomNumber: true, status: true }
+          },
           bookings: {
             where: {
               status: { notIn: ["CANCELLED"] },
@@ -80,16 +88,24 @@ export class RoomsController {
                 { checkInDate: { lt: end } },
                 { checkOutDate: { gt: start } }
               ]
-            }
+            },
+            select: { id: true, roomNumber: true }
           }
         }
       });
 
       const availableRooms = rooms.map((r) => {
         const bookedUnitsCount = r.bookings.length;
+        const outOfServiceCount = r.inventoryUnits.length;
         const isTemporarilyLocked = lockService.isLocked(r.id, checkIn);
         const lockedDeduction = isTemporarilyLocked ? 1 : 0;
-        const availableUnits = Math.max(0, r.totalInventory - bookedUnitsCount - lockedDeduction);
+
+        const availableUnits = Math.max(
+          0,
+          r.totalInventory - bookedUnitsCount - outOfServiceCount - lockedDeduction
+        );
+        const isSoldOut = availableUnits <= 0;
+        const fitsGuests = r.capacityAdults >= adults;
 
         const pricePerNight = Number(r.pricePerNight);
         const totalStayPrice = pricePerNight * nights;
@@ -101,9 +117,21 @@ export class RoomsController {
           name: r.name,
           slug: r.slug,
           category: r.category,
+          tagline: r.tagline,
+          shortDesc: r.shortDesc,
+          description: r.description,
           pricePerNight,
+          price: pricePerNight,
           totalInventory: r.totalInventory,
           availableUnits,
+          isSoldOut,
+          fitsGuests,
+          capacityAdults: r.capacityAdults,
+          capacityKids: r.capacityKids,
+          occupancy: r.capacityAdults + (r.capacityKids > 0 ? ` + ${r.capacityKids} Child` : ""),
+          bedType: r.bedType,
+          size: `${r.roomSizeSqFt} sq. ft.`,
+          roomSizeSqFt: r.roomSizeSqFt,
           nights,
           totalStayPrice,
           tax,
@@ -113,7 +141,14 @@ export class RoomsController {
         };
       });
 
-      res.status(200).json({ status: "success", availableRooms });
+      res.status(200).json({
+        status: "success",
+        checkIn,
+        checkOut,
+        nights,
+        guests: { adults, children },
+        availableRooms
+      });
     } catch (err: any) {
       res.status(500).json({ status: "error", message: err.message });
     }
