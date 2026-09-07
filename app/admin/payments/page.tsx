@@ -21,8 +21,34 @@ export default function AdminPaymentsPage() {
 
   const totalCollected = bookings.reduce((acc, b) => acc + (b.paidAmount || 0), 0);
   const pendingCollection = bookings
-    .filter((b) => b.paymentStatus === "PENDING" && b.bookingStatus !== "CANCELLED")
+    .filter((b) => (b.paymentStatus === "PENDING" || !b.paymentStatus) && b.bookingStatus !== "CANCELLED")
     .reduce((acc, b) => acc + (b.totalAmount - (b.paidAmount || 0)), 0);
+
+  const handleSettle = async (bookingId: string) => {
+    try {
+      const res = await fetch("/api/admin/bookings", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: bookingId,
+          action: "SETTLE_PAYMENT",
+          paymentMethod: "CASH",
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setBookings((prev) =>
+          prev.map((b) =>
+            b.id === bookingId
+              ? { ...b, paymentStatus: "PAID", paidAmount: b.totalAmount }
+              : b
+          )
+        );
+      }
+    } catch (err) {
+      console.error("Failed to settle payment:", err);
+    }
+  };
 
   return (
     <AdminLayout>
@@ -113,18 +139,27 @@ export default function AdminPaymentsPage() {
                       <td className="py-3.5">
                         <span
                           className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                            b.paymentStatus === "SUCCESS"
+                            b.paymentStatus === "SUCCESS" || b.paymentStatus === "PAID"
                               ? "bg-emerald-950 text-emerald-400 border border-emerald-500/30"
                               : b.paymentStatus === "REFUNDED"
                               ? "bg-purple-950 text-purple-400 border border-purple-500/30"
                               : "bg-amber-950 text-amber-400 border border-amber-500/30"
                           }`}
                         >
-                          {b.paymentStatus}
+                          {b.paymentStatus === "PAID" ? "SETTLED (PAID)" : b.paymentStatus}
                         </span>
                       </td>
                       <td className="py-3.5 text-right font-mono text-[11px] text-white/50">
-                        {b.transactionId || "OFFLINE_CASH_POS"}
+                        {b.paymentStatus === "PENDING" && b.bookingStatus !== "CANCELLED" ? (
+                          <button
+                            onClick={() => handleSettle(b.id)}
+                            className="px-2.5 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[10px] tracking-wider transition-colors uppercase cursor-pointer"
+                          >
+                            Settle Folio
+                          </button>
+                        ) : (
+                          b.transactionId || "OFFLINE_CASH_POS"
+                        )}
                       </td>
                     </tr>
                   ))}

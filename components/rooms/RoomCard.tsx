@@ -33,6 +33,12 @@ export function RoomCard({ room }: RoomCardProps) {
           className="object-cover object-center w-full h-full transition-transform duration-700 ease-out group-hover:scale-105"
         />
 
+        {/* Top Left Availability Pill */}
+        <div className="absolute top-3 left-3 bg-emerald-950/85 backdrop-blur-md px-2.5 py-1 text-[9px] font-serif uppercase tracking-widest text-emerald-300 border border-emerald-500/40 flex items-center space-x-1.5 shadow-md rounded-sm">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+          <span>AVAILABLE</span>
+        </div>
+
         {/* Top Right Tariff Pill */}
         <div className="absolute top-3 right-3 bg-black/70 backdrop-blur-md px-2.5 py-1 text-[9.5px] font-serif uppercase tracking-widest text-[#D8B875] border border-white/15 shadow-md rounded-sm">
           Starts {displayPrice}

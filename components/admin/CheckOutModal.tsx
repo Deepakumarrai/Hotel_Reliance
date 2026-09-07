@@ -17,6 +17,8 @@ export function CheckOutModal({
   const { showToast } = useToast();
   const [loading, setLoading] = useState(false);
   const [additionalCharges, setAdditionalCharges] = useState(0);
+  const [settlePayment, setSettlePayment] = useState(true);
+  const [paymentMethod, setPaymentMethod] = useState<string>("CASH");
 
   const pendingAmount = Math.max(0, booking.totalAmount + additionalCharges - booking.paidAmount);
 
@@ -29,11 +31,17 @@ export function CheckOutModal({
         body: JSON.stringify({
           id: booking.id,
           action: "CHECK_OUT",
+          additionalCharges,
+          settlePayment,
+          paymentMethod,
         }),
       });
       const data = await res.json();
       if (data.success) {
-        showToast(`Guest ${booking.guestName} checked out! Room ${booking.roomNumber || ""} set to CLEANING.`, "success");
+        showToast(
+          `Guest ${booking.guestName} checked out! ${settlePayment ? "Payment settled." : ""} Room ${booking.roomNumber || ""} set to CLEANING.`,
+          "success"
+        );
         onSuccess();
         onClose();
       } else {
@@ -115,6 +123,51 @@ export function CheckOutModal({
               {pendingAmount > 0 ? `₹${pendingAmount.toLocaleString()} DUE` : "SETTLED (₹0)"}
             </span>
           </div>
+
+          {/* Settle Payment Option */}
+          {pendingAmount > 0 && (
+            <div className="p-3.5 bg-[#111E31] rounded-lg border border-[#1B2A42] space-y-2.5">
+              <label className="flex items-center space-x-2.5 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={settlePayment}
+                  onChange={(e) => setSettlePayment(e.target.checked)}
+                  className="w-4 h-4 rounded text-emerald-500 focus:ring-0 cursor-pointer"
+                />
+                <span className="text-xs font-semibold text-white">
+                  Collect & Settle Full Payment upon Check-Out
+                </span>
+              </label>
+
+              {settlePayment && (
+                <div className="space-y-1.5 pt-1">
+                  <span className="text-[10px] uppercase font-bold tracking-wider text-[#C4984F] block">
+                    Payment Collection Method:
+                  </span>
+                  <div className="grid grid-cols-3 gap-2">
+                    {[
+                      { id: "CASH", label: "Cash" },
+                      { id: "CARD", label: "Card / POS" },
+                      { id: "UPI", label: "UPI / QR" },
+                    ].map((m) => (
+                      <button
+                        key={m.id}
+                        type="button"
+                        onClick={() => setPaymentMethod(m.id)}
+                        className={`py-1.5 px-2 text-[11px] rounded font-semibold border transition-all ${
+                          paymentMethod === m.id
+                            ? "bg-emerald-950 text-emerald-300 border-emerald-500/60 shadow-xs"
+                            : "bg-[#070D17] text-white/70 border-[#1B2A42] hover:border-white/20"
+                        }`}
+                      >
+                        {m.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Note about room status */}
           <p className="text-[11px] text-[#E9DFD2]/50 italic">

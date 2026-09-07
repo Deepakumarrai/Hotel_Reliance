@@ -38,6 +38,7 @@ export interface Booking {
   totalPrice: number | null;
   estimatedTotal?: string;
   status: "confirmed" | "pending" | "completed" | "cancelled";
+  roomNumber?: string;
   createdAt: string;
   paymentMethod?: string;
 }

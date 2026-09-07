@@ -363,9 +363,28 @@ export async function updateAdminBooking(req: Request, res: Response): Promise<v
         }
         return result;
       } else if (action === "CHECK_OUT") {
+        const { additionalCharges, settlePayment, paymentMethod } = data;
+        const addCharge = Number(additionalCharges || 0);
+        const finalTotal = Number(booking.totalAmount) + addCharge;
+        const shouldSettle = settlePayment !== false; // Settle by default on check-out
+
+        const updateData: any = {
+          status: "CHECKED_OUT"
+        };
+        if (addCharge > 0) {
+          updateData.totalAmount = finalTotal;
+        }
+        if (shouldSettle) {
+          updateData.paidAmount = finalTotal;
+          updateData.paymentStatus = "PAID";
+          if (paymentMethod) {
+            updateData.paymentMethod = paymentMethod;
+          }
+        }
+
         const result = await tx.booking.update({
           where: { id },
-          data: { status: "CHECKED_OUT" },
+          data: updateData,
           include: { room: true }
         });
 
@@ -380,6 +399,18 @@ export async function updateAdminBooking(req: Request, res: Response): Promise<v
             }
           });
         }
+        return result;
+      } else if (action === "SETTLE_PAYMENT") {
+        const finalTotal = Number(booking.totalAmount);
+        const result = await tx.booking.update({
+          where: { id },
+          data: {
+            paidAmount: finalTotal,
+            paymentStatus: "PAID",
+            paymentMethod: data.paymentMethod || booking.paymentMethod || "CASH"
+          },
+          include: { room: true }
+        });
         return result;
       } else if (action === "CANCEL") {
         const result = await tx.booking.update({
@@ -440,7 +471,7 @@ export async function updateAdminBooking(req: Request, res: Response): Promise<v
         guestName: updated.guestName,
         guestEmail: updated.guestEmail,
         guestPhone: updated.guestPhone,
-        roomType: updated.room.slug,
+        roomType: (updated as any).room?.slug || booking.room?.slug || "deluxe",
         roomNumber: updated.roomNumber,
         checkInDate: updated.checkInDate.toISOString().split("T")[0],
         checkOutDate: updated.checkOutDate.toISOString().split("T")[0],

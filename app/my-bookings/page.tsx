@@ -73,6 +73,7 @@ function MyBookingsContent() {
               status: (b.bookingStatus?.toLowerCase() || b.status?.toLowerCase() || "confirmed") as any,
               paymentStatus: (b.paymentStatus?.toLowerCase() || "paid") as any,
               paymentMethod: b.paymentMethod || "online",
+              roomNumber: b.roomNumber,
               guest: {
                 name: b.guestName || user.name,
                 email: b.guestEmail || user.email,
@@ -236,9 +237,16 @@ function MyBookingsContent() {
                         <span className="text-[10px] text-muted uppercase font-bold tracking-widest block">
                           Booking ID: <strong className="text-dark">{booking.id}</strong>
                         </span>
-                        <h2 className="text-xl sm:text-2xl font-serif text-dark mt-0.5">
-                          {booking.room.name}
-                        </h2>
+                        <div className="flex flex-wrap items-center gap-2 mt-0.5">
+                          <h2 className="text-xl sm:text-2xl font-serif text-dark">
+                            {booking.room.name}
+                          </h2>
+                          {booking.roomNumber && (
+                            <span className="inline-flex items-center px-2 py-0.5 bg-gold/15 text-gold border border-gold/30 rounded text-[11px] font-bold tracking-wider">
+                              Room #{booking.roomNumber}
+                            </span>
+                          )}
+                        </div>
                       </div>
                       <div className="text-right">
                         <span className="text-[10px] text-muted uppercase font-bold block">Rate Estimate</span>

@@ -78,32 +78,13 @@ export function AvailableRooms({
   onEditDates
 }: AvailableRoomsProps) {
   const { getRoomPrice, getRoomRules } = useRoomPricing();
-  const [filterMode, setFilterMode] = useState<"all" | "available" | "fits">("all");
 
-  // Summary counts
-  const availableCount = useMemo(
-    () => rooms.filter((r) => (r.availableUnits ?? 1) > 0 && !r.isSoldOut).length,
-    [rooms]
-  );
-  const fitsCount = useMemo(
-    () => rooms.filter((r) => r.fitsGuests !== false).length,
-    [rooms]
-  );
-
-  // Filtered rooms
-  const displayedRooms = useMemo(() => {
-    if (filterMode === "available") {
-      return rooms.filter((r) => (r.availableUnits ?? 1) > 0 && !r.isSoldOut);
-    }
-    if (filterMode === "fits") {
-      return rooms.filter((r) => r.fitsGuests !== false);
-    }
-    return rooms;
-  }, [rooms, filterMode]);
+  // Always display all rooms as requested (do not filter out unavailable rooms)
+  const displayedRooms = rooms;
 
   return (
     <div className="space-y-6">
-      {/* Top Banner: Live Availability & Date Context */}
+      {/* Top Banner: Real-Time Availability & Date Context */}
       <div className="bg-white border border-gold/40 p-4 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="space-y-1">
           <div className="flex items-center space-x-2">
@@ -115,7 +96,7 @@ export function AvailableRooms({
               Live Property Inventory
             </span>
             <span className="text-[10px] text-muted">•</span>
-            <span className="text-[10px] text-muted font-medium">45 Physical Units</span>
+            <span className="text-[10px] text-muted font-medium">Instant Booking Confirmation</span>
           </div>
 
           <div className="text-xs text-dark font-medium flex flex-wrap items-center gap-x-2">
@@ -133,7 +114,7 @@ export function AvailableRooms({
                 </span>
               </>
             ) : (
-              <span>Select dates to calculate real-time rates and physical room allocation.</span>
+              <span>Select dates to calculate real-time rates and live suite availability.</span>
             )}
           </div>
         </div>
@@ -150,57 +131,17 @@ export function AvailableRooms({
         )}
       </div>
 
-      {/* Filter Tabs */}
+      {/* Accommodations Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-border-custom pb-3">
         <div className="flex items-center space-x-2">
-          <Filter className="w-3.5 h-3.5 text-gold" />
-          <span className="text-xs font-bold uppercase tracking-wider text-muted">
-            Filter View:
+          <Layers className="w-4 h-4 text-gold" />
+          <span className="text-xs font-bold uppercase tracking-wider text-dark">
+            All Accommodations & Suites
           </span>
-          <div className="flex items-center space-x-1 bg-cream p-1 border border-border-custom text-[11px]">
-            <button
-              type="button"
-              onClick={() => setFilterMode("all")}
-              className={cn(
-                "px-2.5 py-1 font-semibold transition-colors cursor-pointer",
-                filterMode === "all"
-                  ? "bg-white text-dark shadow-xs border border-border-custom"
-                  : "text-muted hover:text-dark"
-              )}
-            >
-              All Suites ({rooms.length})
-            </button>
-            <button
-              type="button"
-              onClick={() => setFilterMode("available")}
-              className={cn(
-                "px-2.5 py-1 font-semibold transition-colors cursor-pointer",
-                filterMode === "available"
-                  ? "bg-white text-dark shadow-xs border border-border-custom"
-                  : "text-muted hover:text-dark"
-              )}
-            >
-              Available Only ({availableCount})
-            </button>
-            {fitsCount < rooms.length && (
-              <button
-                type="button"
-                onClick={() => setFilterMode("fits")}
-                className={cn(
-                  "px-2.5 py-1 font-semibold transition-colors cursor-pointer",
-                  filterMode === "fits"
-                    ? "bg-white text-dark shadow-xs border border-border-custom"
-                    : "text-muted hover:text-dark"
-                )}
-              >
-                Fits {adults} Guests ({fitsCount})
-              </button>
-            )}
-          </div>
         </div>
 
         <span className="text-[11px] text-muted">
-          Showing {displayedRooms.length} of {rooms.length} categories
+          Showing all {displayedRooms.length} room categories
         </span>
       </div>
 
@@ -235,18 +176,11 @@ export function AvailableRooms({
         <div className="bg-white border border-border-custom p-8 text-center space-y-4">
           <AlertCircle className="w-8 h-8 text-amber-600 mx-auto" />
           <h4 className="text-base font-serif text-dark font-normal">
-            No accommodations match your current filter
+            No accommodations currently available
           </h4>
           <p className="text-xs text-muted max-w-md mx-auto leading-relaxed">
-            There are no room categories currently matching the selected view. Try switching to "All Suites" or adjusting your stay dates.
+            Please try selecting different stay dates to view available suites.
           </p>
-          <button
-            type="button"
-            onClick={() => setFilterMode("all")}
-            className="px-4 py-2 bg-primary text-white text-xs font-bold uppercase tracking-wider rounded-xs cursor-pointer hover:bg-primary-hover"
-          >
-            Show All Accommodations
-          </button>
         </div>
       ) : (
         /* Room Cards Grid */
@@ -286,13 +220,15 @@ export function AvailableRooms({
                   "bg-white border flex flex-col justify-between transition-all duration-300 shadow-sm relative select-none",
                   isSelected
                     ? "border-gold ring-2 ring-gold/30 shadow-md"
+                    : isSoldOut
+                    ? "border-stone-300 bg-stone-100/80 cursor-not-allowed"
                     : isSelectable
                     ? "border-border-custom hover:border-gold/60 cursor-pointer"
                     : "border-border-custom opacity-75 cursor-not-allowed bg-stone-50/50"
                 )}
               >
-                {/* Image Section with Dynamic Badges */}
-                <div className="relative h-52 w-full overflow-hidden bg-dark">
+                {/* Image Section with Black Shading for Unavailable */}
+                <div className="relative h-56 w-full overflow-hidden bg-black">
                   <Image
                     src={room.images?.[0] || "/images/rooms/deluxe/main.jpg"}
                     alt={room.name}
@@ -300,31 +236,45 @@ export function AvailableRooms({
                     sizes="(max-width: 768px) 100vw, 40vw"
                     className={cn(
                       "object-cover transition-transform duration-500",
-                      isSelectable ? "hover:scale-105" : "grayscale-[30%]"
+                      isSoldOut
+                        ? "grayscale contrast-75 brightness-[0.35]"
+                        : isSelectable
+                        ? "hover:scale-105"
+                        : "grayscale-[20%]"
                     )}
                   />
 
-                  {/* Top-Left Live Inventory Badge */}
+                  {/* BLACK SHADED PHOTO OVERLAY FOR UNAVAILABLE ROOMS */}
+                  {isSoldOut && (
+                    <div className="absolute inset-0 bg-black/75 z-10 flex flex-col items-center justify-center p-4 text-center pointer-events-none">
+                      <div className="px-3.5 py-1.5 bg-black/90 border border-red-500/60 text-red-200 shadow-2xl rounded-xs flex items-center space-x-2">
+                        <XCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
+                        <span className="text-[11px] font-serif uppercase tracking-[0.16em] font-bold">
+                          UNAVAILABLE
+                        </span>
+                      </div>
+                      <span className="text-[10px] text-white/70 font-light mt-1.5 tracking-wider">
+                        Not available for your selected dates
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Top-Left Status Tag: AVAILABLE vs UNAVAILABLE */}
                   <div className="absolute top-3 left-3 z-20 flex flex-col gap-1.5">
                     {isSoldOut ? (
-                      <span className="inline-flex items-center space-x-1 px-2.5 py-1 bg-red-900/90 text-white backdrop-blur-md text-[10px] font-bold uppercase tracking-wider border border-red-700/60 shadow-md">
-                        <XCircle className="w-3 h-3 text-red-300" />
-                        <span>Sold Out for Dates</span>
-                      </span>
-                    ) : isLowInventory ? (
-                      <span className="inline-flex items-center space-x-1 px-2.5 py-1 bg-amber-900/90 text-amber-200 backdrop-blur-md text-[10px] font-bold uppercase tracking-wider border border-amber-600/60 shadow-md animate-pulse">
-                        <Flame className="w-3 h-3 text-amber-400" />
-                        <span>Only {availableUnits} Left!</span>
+                      <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 bg-red-950/95 text-red-200 backdrop-blur-md text-[10px] font-bold uppercase tracking-wider border border-red-600/70 shadow-lg rounded-xs">
+                        <XCircle className="w-3.5 h-3.5 text-red-400" />
+                        <span>UNAVAILABLE</span>
                       </span>
                     ) : (
-                      <span className="inline-flex items-center space-x-1 px-2.5 py-1 bg-emerald-950/85 text-emerald-200 backdrop-blur-md text-[10px] font-semibold uppercase tracking-wider border border-emerald-600/50 shadow-md">
-                        <CheckCircle2 className="w-3 h-3 text-emerald-400" />
-                        <span>{availableUnits} of {totalInventory} Available</span>
+                      <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 bg-emerald-950/90 text-emerald-200 backdrop-blur-md text-[10px] font-bold uppercase tracking-wider border border-emerald-500/60 shadow-lg rounded-xs">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                        <span>AVAILABLE</span>
                       </span>
                     )}
 
                     {/* Capacity mismatch tag */}
-                    {!fitsGuests && (
+                    {!fitsGuests && !isSoldOut && (
                       <span className="inline-flex items-center space-x-1 px-2 py-0.5 bg-stone-900/90 text-stone-200 backdrop-blur-md text-[9px] font-medium border border-stone-600 shadow-xs">
                         <AlertCircle className="w-2.5 h-2.5 text-amber-400" />
                         <span>Max {room.capacityAdults || 2} Adults</span>
@@ -438,17 +388,17 @@ export function AvailableRooms({
                         "px-4 py-2 text-[10px] font-bold uppercase tracking-wider border transition-all select-none",
                         isSelected
                           ? "bg-gold border-gold text-white shadow-sm"
-                          : isSelectable
-                          ? "bg-transparent border-primary text-primary hover:bg-primary hover:text-white cursor-pointer"
                           : isSoldOut
+                          ? "bg-stone-800 text-stone-300 border-stone-700 cursor-not-allowed"
+                          : !fitsGuests
                           ? "bg-stone-200 border-stone-300 text-stone-500 cursor-not-allowed"
-                          : "bg-stone-100 border-stone-300 text-stone-500 cursor-not-allowed"
+                          : "bg-transparent border-primary text-primary hover:bg-primary hover:text-white cursor-pointer"
                       )}
                     >
                       {isSelected
                         ? "Selected"
                         : isSoldOut
-                        ? "Sold Out"
+                        ? "Unavailable"
                         : !fitsGuests
                         ? "Capacity Exceeded"
                         : "Select Suite"}

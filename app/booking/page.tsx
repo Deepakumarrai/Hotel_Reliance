@@ -261,7 +261,9 @@ function BookingContent() {
 
       // Persist to live PostgreSQL database via backend API
       let bookingId = `HR-${Math.floor(100000 + Math.random() * 900000)}`;
-      let finalTotal = selectedRoom.price ? Math.round(selectedRoom.price * nights * 1.12) : null;
+      let finalTotal = selectedRoom.grandTotal || (selectedRoom.price ? Math.round(selectedRoom.price * nights * 1.12) : null);
+      let allocatedRoomNumber: string | undefined = undefined;
+
       try {
         const liveRes = await api.bookings.create({
           roomId: selectedRoom.id,
@@ -280,11 +282,17 @@ function BookingContent() {
         if (liveRes.booking?.id) {
           bookingId = liveRes.booking.id;
         }
-        if (liveRes.booking?.totalAmount) {
-          finalTotal = liveRes.booking.totalAmount;
+        if (liveRes.booking?.totalAmount || liveRes.booking?.grandTotal) {
+          finalTotal = liveRes.booking.totalAmount || liveRes.booking.grandTotal;
         }
-      } catch (apiErr) {
-        console.warn("API booking creation notice:", apiErr);
+        if (liveRes.booking?.roomNumber) {
+          allocatedRoomNumber = liveRes.booking.roomNumber;
+        }
+      } catch (apiErr: any) {
+        console.error("Booking creation error:", apiErr);
+        setBookingError(apiErr.message || "Failed to confirm reservation. Please check availability.");
+        setIsSubmitting(false);
+        return;
       }
 
       const newBooking: Booking = {
@@ -295,7 +303,11 @@ function BookingContent() {
         nights,
         adults: bookingState.adults,
         children: bookingState.children,
-        room: selectedRoom,
+        room: {
+          ...selectedRoom,
+          roomNumber: allocatedRoomNumber
+        },
+        roomNumber: allocatedRoomNumber,
         guest: {
           name: bookingState.guest?.name || user?.name || "Guest",
           email: bookingState.guest?.email || user?.email || "",

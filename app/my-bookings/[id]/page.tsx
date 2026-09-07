@@ -71,6 +71,7 @@ function BookingDetailContent({ params }: { params: Promise<{ id: string }> }) {
             status: (b.bookingStatus?.toLowerCase() || b.status?.toLowerCase() || "confirmed") as any,
             paymentStatus: (b.paymentStatus?.toLowerCase() || "paid") as any,
             paymentMethod: b.paymentMethod || "online",
+            roomNumber: b.roomNumber,
             guest: {
               name: b.guestName || "",
               email: b.guestEmail || "",
@@ -201,17 +202,24 @@ function BookingDetailContent({ params }: { params: Promise<{ id: string }> }) {
               <span className="text-xl font-serif font-bold text-white tracking-wider block">
                 {booking.id}
               </span>
-              <span
-                className={`inline-block mt-1 px-2 py-0.5 text-[9px] uppercase font-bold tracking-wider rounded-sm ${
-                  booking.status === "confirmed"
-                    ? "bg-emerald-500 text-white"
-                    : booking.status === "completed"
-                    ? "bg-slate-300 text-slate-900"
-                    : "bg-red-500 text-white"
-                }`}
-              >
-                Status: {booking.status}
-              </span>
+              <div className="flex flex-col sm:items-end gap-1 mt-1">
+                <span
+                  className={`inline-block px-2 py-0.5 text-[9px] uppercase font-bold tracking-wider rounded-sm ${
+                    booking.status === "confirmed"
+                      ? "bg-emerald-500 text-white"
+                      : booking.status === "completed"
+                      ? "bg-slate-300 text-slate-900"
+                      : "bg-red-500 text-white"
+                  }`}
+                >
+                  Status: {booking.status}
+                </span>
+                {booking.roomNumber && (
+                  <span className="inline-block px-2 py-0.5 bg-gold text-dark text-[10px] uppercase font-bold tracking-wider rounded-sm">
+                    Assigned Room #{booking.roomNumber}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 
@@ -273,9 +281,16 @@ function BookingDetailContent({ params }: { params: Promise<{ id: string }> }) {
                     />
                   </div>
                   <div className="space-y-1">
-                    <h4 className="text-lg font-serif font-normal text-dark">
-                      {booking.room.name}
-                    </h4>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h4 className="text-lg font-serif font-normal text-dark">
+                        {booking.room.name}
+                      </h4>
+                      {booking.roomNumber && (
+                        <span className="inline-flex items-center px-2 py-0.5 bg-primary text-gold text-xs font-bold rounded">
+                          Room #{booking.roomNumber}
+                        </span>
+                      )}
+                    </div>
                     <p className="text-xs text-muted line-clamp-2">{booking.room.description}</p>
                     <span className="text-[11px] text-gold font-medium block">
                       Room Size: {booking.room.size || "280 sq. ft."}

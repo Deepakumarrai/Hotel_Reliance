@@ -48,10 +48,10 @@ class InventoryLockService {
   /**
    * Release lock when reservation completes or is abandoned
    */
-  public async releaseLock(roomId: string, dateStr: string, bookingId: string): Promise<void> {
+  public async releaseLock(roomId: string, dateStr: string, bookingId?: string): Promise<void> {
     const key = `hold:inventory:${roomId}:${dateStr}`;
     const existing = this.inMemoryLocks.get(key);
-    if (existing && existing.bookingId === bookingId) {
+    if (existing && (!bookingId || existing.bookingId === bookingId)) {
       this.inMemoryLocks.delete(key);
     }
   }

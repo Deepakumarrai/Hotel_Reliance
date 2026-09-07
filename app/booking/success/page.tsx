@@ -91,9 +91,16 @@ export default function BookingSuccessPage() {
               <span className="text-lg sm:text-xl font-serif font-bold text-white tracking-wider block">
                 {booking?.id || "HR-928412"}
               </span>
-              <span className="inline-block px-2 py-0.5 bg-emerald-500 text-white text-[9px] uppercase font-bold tracking-wider mt-1 rounded-sm">
-                Status: Confirmed
-              </span>
+              <div className="flex flex-col sm:items-end gap-1 mt-1">
+                <span className="inline-block px-2 py-0.5 bg-emerald-500 text-white text-[9px] uppercase font-bold tracking-wider rounded-sm">
+                  Status: Confirmed (Instant)
+                </span>
+                {booking?.roomNumber && (
+                  <span className="inline-block px-2 py-0.5 bg-gold text-dark text-[10px] uppercase font-bold tracking-wider rounded-sm">
+                    Assigned Room #{booking.roomNumber}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 
@@ -136,9 +143,16 @@ export default function BookingSuccessPage() {
                 <h3 className="text-[10px] uppercase tracking-widest font-bold text-gold">
                   Room Information
                 </h3>
-                <h4 className="text-base font-serif font-semibold text-dark">
-                  {booking?.room?.name || "Deluxe Suite"}
-                </h4>
+                <div className="flex flex-wrap items-center gap-2">
+                  <h4 className="text-base font-serif font-semibold text-dark">
+                    {booking?.room?.name || "Deluxe Suite"}
+                  </h4>
+                  {booking?.roomNumber && (
+                    <span className="inline-flex items-center px-2 py-0.5 bg-primary text-gold text-[11px] font-bold tracking-wider rounded">
+                      Room #{booking.roomNumber}
+                    </span>
+                  )}
+                </div>
                 <p className="text-muted leading-relaxed font-light">
                   {booking?.room?.description || "Elegant comfort with modern amenities, designed for a relaxing business or leisure stay."}
                 </p>
