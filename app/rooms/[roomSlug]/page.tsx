@@ -199,7 +199,7 @@ export default async function RoomDetailPage({ params }: RoomPageProps) {
         </section>
       )}
       {/* Mobile Sticky Bottom CTA Bar */}
-      <div className="fixed bottom-14 left-0 right-0 z-30 lg:hidden bg-white/95 backdrop-blur-xl border-t border-[#E8E1D7] p-3 shadow-[0_-8px_25px_rgba(17,30,49,0.12)]">
+      <div className="fixed bottom-0 left-0 right-0 z-30 lg:hidden bg-white/95 backdrop-blur-xl border-t border-[#E8E1D7] p-3 shadow-[0_-8px_25px_rgba(17,30,49,0.12)]">
         <div className="flex items-center justify-between max-w-md mx-auto">
           <div>
             <span className="text-[10px] uppercase font-serif text-[#7A6B61] tracking-wider block">From</span>
