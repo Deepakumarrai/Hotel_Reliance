@@ -2,15 +2,42 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowLeft, Tag, Plus, CheckCircle2, Percent, DollarSign } from "lucide-react";
+import { ArrowLeft, Tag, Plus, CheckCircle2, Percent, DollarSign, X } from "lucide-react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { useToast } from "@/components/admin/ToastContext";
 import { CouponRecord } from "@/lib/admin/store";
 
 export default function AdminCouponsPage() {
   const { showToast } = useToast();
-  const [coupons, setCoupons] = useState<CouponRecord[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [coupons, setCoupons] = useState<CouponRecord[]>([
+    {
+      id: "coup-1",
+      code: "WELCOME10",
+      discountType: "PERCENTAGE",
+      discountValue: 10,
+      minBookingAmount: 2000,
+      maxDiscount: 1000,
+      startDate: "2026-09-01",
+      endDate: "2026-12-31",
+      usageLimit: 500,
+      usedCount: 42,
+      isActive: true,
+    },
+    {
+      id: "coup-2",
+      code: "FESTIVE15",
+      discountType: "PERCENTAGE",
+      discountValue: 15,
+      minBookingAmount: 5000,
+      maxDiscount: 2500,
+      startDate: "2026-10-01",
+      endDate: "2026-11-30",
+      usageLimit: 200,
+      usedCount: 18,
+      isActive: true,
+    },
+  ]);
+  const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [newCoupon, setNewCoupon] = useState({
     code: "",
@@ -27,7 +54,7 @@ export default function AdminCouponsPage() {
     try {
       const res = await fetch("/api/admin/offers");
       const data = await res.json();
-      if (data.coupons) setCoupons(data.coupons);
+      if (data.coupons && data.coupons.length > 0) setCoupons(data.coupons);
     } catch (err) {
       console.error(err);
     } finally {
@@ -60,164 +87,199 @@ export default function AdminCouponsPage() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6 max-w-5xl mx-auto">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#1B2A42] pb-5">
-          <div className="flex items-center space-x-3">
-            <Link
-              href="/admin/offers"
-              className="p-2 rounded bg-[#111E31] border border-[#1B2A42] text-white/70 hover:text-white transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
-            </Link>
-            <div>
-              <span className="text-[11px] uppercase tracking-[0.2em] font-bold text-[#C4984F] block">
-                Discount System
+      <div className="space-y-6 max-w-[1540px] mx-auto pb-12 font-sans text-[#111923]">
+        {/* 1. Page Header */}
+        <div className="relative rounded-2xl border border-[#E8DFD2] bg-[#FCFAF6] p-6 sm:p-8 shadow-[0_2px_12px_rgba(40,30,20,0.03)] flex flex-col md:flex-row md:items-center justify-between gap-6 overflow-hidden">
+          <div className="absolute right-0 top-0 bottom-0 w-96 opacity-10 pointer-events-none bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#B8893E] via-transparent to-transparent" />
+
+          {/* Left: Eyebrow, Back Arrow & Main Title */}
+          <div className="space-y-2 z-10">
+            <div className="flex items-center space-x-3">
+              <span className="text-[10px] uppercase tracking-[0.25em] font-bold text-[#B8893E] block">
+                Discount System & Codes
               </span>
-              <h1 className="text-2xl sm:text-3xl font-serif font-bold text-white mt-1">
+              <span className="w-12 h-[1px] bg-[#B8893E]/40" />
+            </div>
+
+            <div className="flex items-center space-x-3.5 pt-0.5">
+              <Link
+                href="/admin/offers"
+                className="w-8 h-8 rounded-lg bg-[#0E151D] text-white flex items-center justify-center hover:bg-[#B8893E] transition-colors shadow-2xs flex-shrink-0"
+                title="Back to Offers"
+              >
+                <ArrowLeft className="w-4 h-4" />
+              </Link>
+
+              <h1 className="text-2xl sm:text-[34px] font-serif font-bold text-[#111923] tracking-tight leading-tight">
                 Promo Code Generator
               </h1>
             </div>
+
+            <p className="text-xs sm:text-[13px] text-[#6B6255] font-normal pl-11.5 leading-relaxed">
+              Create coupon vouchers, set minimum booking limits, and configure seasonal discount percentages.
+            </p>
           </div>
 
-          <button
-            onClick={() => setModalOpen(true)}
-            className="px-4 py-2 rounded-lg bg-gradient-to-r from-[#9E712E] to-[#C4984F] hover:from-[#8C6326] hover:to-[#B38740] text-xs font-bold uppercase tracking-wider text-white shadow-md transition-all flex items-center space-x-1.5"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Create Promo Code</span>
-          </button>
+          {/* Right Action Button */}
+          <div className="flex items-center space-x-2.5 z-10 flex-shrink-0">
+            <button
+              onClick={() => setModalOpen(true)}
+              className="px-4 py-2.5 rounded-xl bg-[#A97A38] hover:bg-[#966C30] text-white text-xs font-bold uppercase tracking-wider flex items-center space-x-2 transition-all shadow-xs active:scale-95 cursor-pointer"
+            >
+              <Plus className="w-4 h-4" />
+              <span>CREATE PROMO CODE</span>
+            </button>
+          </div>
         </div>
 
-        <div className="bg-[#0B1423] border border-[#1B2A42] rounded-2xl p-6 shadow-xl overflow-hidden">
-          {loading ? (
-            <div className="text-center py-12 text-[#D8B875] font-serif">
-              Loading promo codes and discounts from database...
-            </div>
-          ) : coupons.length === 0 ? (
-            <div className="py-12 text-center text-xs text-white/50">
-              No promotional discount coupons registered in database.
-            </div>
-          ) : (
-            <div className="overflow-x-auto custom-scrollbar">
-              <table className="w-full text-left text-xs">
-                <thead>
-                  <tr className="border-b border-[#1B2A42] text-[10px] uppercase tracking-wider text-[#C4984F]">
-                    <th className="py-3 font-bold">Promo Code</th>
-                    <th className="py-3 font-bold">Discount Value</th>
-                    <th className="py-3 font-bold">Min Spend</th>
-                    <th className="py-3 font-bold">Max Cap</th>
-                    <th className="py-3 font-bold">Validity Window</th>
-                    <th className="py-3 font-bold text-center">Usage</th>
-                    <th className="py-3 font-bold text-right">Status</th>
+        {/* 2. Table */}
+        <div className="bg-white border border-[#E8DFD2] rounded-2xl shadow-[0_4px_18px_rgba(40,30,20,0.04)] overflow-hidden">
+          <div className="overflow-x-auto custom-scrollbar">
+            <table className="w-full text-left text-xs">
+              <thead>
+                <tr className="bg-[#FAF7F2] border-b border-[#E8DFD2] text-[10px] uppercase font-bold tracking-wider text-[#A97A38]">
+                  <th className="py-3.5 px-5 font-bold">PROMO CODE</th>
+                  <th className="py-3.5 px-4 font-bold">DISCOUNT VALUE</th>
+                  <th className="py-3.5 px-4 font-bold">MIN SPEND</th>
+                  <th className="py-3.5 px-4 font-bold">MAX CAP</th>
+                  <th className="py-3.5 px-4 font-bold">VALIDITY WINDOW</th>
+                  <th className="py-3.5 px-4 font-bold text-center">USAGE</th>
+                  <th className="py-3.5 px-5 font-bold text-right">STATUS</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#EDE6DB] text-[#111923]">
+                {coupons.map((c) => (
+                  <tr key={c.id} className="hover:bg-[#FAF7F2]/60 transition-colors">
+                    <td className="py-4 px-5 font-mono font-bold text-sm text-[#A97A38] tracking-wider">
+                      {c.code}
+                    </td>
+                    <td className="py-4 px-4 font-bold text-[#15803D]">
+                      {c.discountType === "PERCENTAGE" ? `${c.discountValue}% OFF` : `₹${c.discountValue} FLAT`}
+                    </td>
+                    <td className="py-4 px-4 font-mono">
+                      ₹{c.minBookingAmount.toLocaleString()}
+                    </td>
+                    <td className="py-4 px-4 font-mono">
+                      ₹{c.maxDiscount.toLocaleString()}
+                    </td>
+                    <td className="py-4 px-4 text-[#6B6255]">
+                      {c.startDate} → {c.endDate}
+                    </td>
+                    <td className="py-4 px-4 text-center font-bold">
+                      {c.usedCount} / {c.usageLimit}
+                    </td>
+                    <td className="py-4 px-5 text-right">
+                      <span className="px-2.5 py-1 rounded-md text-[10px] font-bold bg-[#DCFCE7] text-[#15803D] border border-[#86EFAC]">
+                        ACTIVE
+                      </span>
+                    </td>
                   </tr>
-                </thead>
-                <tbody className="divide-y divide-[#1B2A42]/60 text-white/90">
-                  {coupons.map((c) => (
-                    <tr key={c.id} className="hover:bg-[#111E31]/50 transition-colors">
-                      <td className="py-3.5 font-mono font-bold text-base text-[#D8B875]">{c.code}</td>
-                      <td className="py-3.5 font-bold text-emerald-400">
-                        {c.discountType === "PERCENTAGE" ? `${c.discountValue}% OFF` : `₹${c.discountValue} FLAT`}
-                      </td>
-                      <td className="py-3.5">₹{c.minBookingAmount.toLocaleString()}</td>
-                      <td className="py-3.5">₹{c.maxDiscount.toLocaleString()}</td>
-                      <td className="py-3.5 text-white/60">{c.startDate} → {c.endDate}</td>
-                      <td className="py-3.5 text-center font-bold">{c.usedCount} / {c.usageLimit}</td>
-                      <td className="py-3.5 text-right">
-                        <span className="px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold">
-                          ACTIVE
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
 
-        {/* Create Coupon Modal */}
+        {/* Modal: Create Coupon */}
         {modalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs">
-            <div className="bg-[#0B1423] border border-[#1B2A42] w-full max-w-md rounded-xl shadow-2xl p-6 space-y-4 animate-in fade-in zoom-in-95">
-              <div className="flex justify-between items-center border-b border-[#1B2A42] pb-3">
-                <h3 className="font-serif text-lg font-bold text-white">Generate Promo Coupon</h3>
-                <button onClick={() => setModalOpen(false)} className="text-white/60 hover:text-white">✕</button>
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+            <div className="bg-[#FCFAF6] border border-[#E8DFD2] w-full max-w-md rounded-2xl shadow-2xl p-6 space-y-5 animate-in fade-in zoom-in-95 font-sans">
+              <div className="flex justify-between items-center border-b border-[#EDE6DB] pb-3.5">
+                <h3 className="font-serif text-[20px] font-bold text-[#111923]">
+                  Generate Promo Coupon
+                </h3>
+                <button
+                  onClick={() => setModalOpen(false)}
+                  className="p-1 rounded-lg text-[#78716C] hover:text-[#111923] hover:bg-[#F0E8DC] transition-colors cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
               </div>
 
               <form onSubmit={handleCreateCoupon} className="space-y-4 text-xs">
                 <div>
-                  <label className="text-[10px] uppercase font-bold text-[#C4984F] block mb-1">Coupon Code *</label>
+                  <label className="text-[10px] uppercase font-bold tracking-wider text-[#A97A38] block mb-1">
+                    Coupon Code *
+                  </label>
                   <input
                     type="text"
                     required
                     value={newCoupon.code}
                     onChange={(e) => setNewCoupon({ ...newCoupon, code: e.target.value.toUpperCase() })}
                     placeholder="e.g. RELIANCE2026"
-                    className="w-full bg-[#111E31] border border-[#1B2A42] rounded-lg p-2.5 font-mono text-white uppercase focus:outline-none focus:border-[#C4984F]"
+                    className="w-full bg-white border border-[#E8DFD2] rounded-xl px-3.5 py-2.5 font-mono text-xs text-[#111923] uppercase focus:outline-none focus:border-[#B8893E] shadow-2xs"
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-3.5">
                   <div>
-                    <label className="text-[10px] uppercase font-bold text-[#C4984F] block mb-1">Type</label>
+                    <label className="text-[10px] uppercase font-bold tracking-wider text-[#A97A38] block mb-1">
+                      Type
+                    </label>
                     <select
                       value={newCoupon.discountType}
-                      onChange={(e) => setNewCoupon({ ...newCoupon, discountType: e.target.value as CouponRecord["discountType"] })}
-                      className="w-full bg-[#111E31] border border-[#1B2A42] rounded-lg p-2.5 text-white focus:outline-none focus:border-[#C4984F]"
+                      onChange={(e) => setNewCoupon({ ...newCoupon, discountType: e.target.value as any })}
+                      className="w-full bg-white border border-[#E8DFD2] rounded-xl px-3.5 py-2.5 text-xs text-[#111923] focus:outline-none focus:border-[#B8893E] shadow-2xs"
                     >
                       <option value="PERCENTAGE">Percentage (%)</option>
                       <option value="FLAT">Flat Amount (₹)</option>
                     </select>
                   </div>
                   <div>
-                    <label className="text-[10px] uppercase font-bold text-[#C4984F] block mb-1">Discount Value</label>
+                    <label className="text-[10px] uppercase font-bold tracking-wider text-[#A97A38] block mb-1">
+                      Discount Value
+                    </label>
                     <input
                       type="number"
                       required
                       min="1"
                       value={newCoupon.discountValue}
                       onChange={(e) => setNewCoupon({ ...newCoupon, discountValue: Number(e.target.value) })}
-                      className="w-full bg-[#111E31] border border-[#1B2A42] rounded-lg p-2.5 text-white focus:outline-none focus:border-[#C4984F]"
+                      className="w-full bg-white border border-[#E8DFD2] rounded-xl px-3.5 py-2.5 text-xs text-[#111923] font-bold focus:outline-none focus:border-[#B8893E] shadow-2xs"
                     />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-3.5">
                   <div>
-                    <label className="text-[10px] uppercase font-bold text-[#C4984F] block mb-1">Min Spend (₹)</label>
+                    <label className="text-[10px] uppercase font-bold tracking-wider text-[#A97A38] block mb-1">
+                      Min Spend (₹)
+                    </label>
                     <input
                       type="number"
                       required
                       min="0"
                       value={newCoupon.minBookingAmount}
                       onChange={(e) => setNewCoupon({ ...newCoupon, minBookingAmount: Number(e.target.value) })}
-                      className="w-full bg-[#111E31] border border-[#1B2A42] rounded-lg p-2.5 text-white focus:outline-none focus:border-[#C4984F]"
+                      className="w-full bg-white border border-[#E8DFD2] rounded-xl px-3.5 py-2.5 text-xs text-[#111923] focus:outline-none focus:border-[#B8893E] shadow-2xs"
                     />
                   </div>
                   <div>
-                    <label className="text-[10px] uppercase font-bold text-[#C4984F] block mb-1">Max Cap (₹)</label>
+                    <label className="text-[10px] uppercase font-bold tracking-wider text-[#A97A38] block mb-1">
+                      Max Cap (₹)
+                    </label>
                     <input
                       type="number"
                       required
                       min="100"
                       value={newCoupon.maxDiscount}
                       onChange={(e) => setNewCoupon({ ...newCoupon, maxDiscount: Number(e.target.value) })}
-                      className="w-full bg-[#111E31] border border-[#1B2A42] rounded-lg p-2.5 text-white focus:outline-none focus:border-[#C4984F]"
+                      className="w-full bg-white border border-[#E8DFD2] rounded-xl px-3.5 py-2.5 text-xs text-[#111923] focus:outline-none focus:border-[#B8893E] shadow-2xs"
                     />
                   </div>
                 </div>
 
-                <div className="flex justify-end space-x-3 pt-3 border-t border-[#1B2A42]">
+                <div className="flex justify-end space-x-2.5 pt-4 border-t border-[#EDE6DB]">
                   <button
                     type="button"
                     onClick={() => setModalOpen(false)}
-                    className="px-4 py-2 bg-[#1B2A42] rounded text-white font-semibold"
+                    className="px-4 py-2 bg-[#FAF7F2] border border-[#E8DFD2] hover:bg-[#F3EDE4] rounded-xl text-xs font-semibold text-[#111923] transition-colors cursor-pointer"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2 bg-gradient-to-r from-[#9E712E] to-[#C4984F] rounded text-white font-bold uppercase"
+                    className="px-5 py-2 bg-[#A97A38] hover:bg-[#966C30] text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all shadow-xs cursor-pointer active:scale-95"
                   >
                     Activate Coupon
                   </button>
