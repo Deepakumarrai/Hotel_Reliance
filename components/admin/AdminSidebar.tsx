@@ -78,12 +78,12 @@ export function AdminSidebar({
         {
           title: "Dashboard",
           href: "/admin/dashboard",
-          icon: <LayoutDashboard className="w-[18px] h-[18px]" />,
+          icon: <LayoutDashboard className="w-[18px] h-[18px] text-[#D8B77A]" />,
         },
         {
           title: "Reservations",
           href: "/admin/bookings",
-          icon: <CalendarCheck2 className="w-[18px] h-[18px]" />,
+          icon: <CalendarCheck2 className="w-[18px] h-[18px] text-[#D8B77A]" />,
           hasChevron: true,
         },
       ],
@@ -94,7 +94,7 @@ export function AdminSidebar({
         {
           title: "Rooms & Inventory",
           href: "/admin/rooms",
-          icon: <BedDouble className="w-[18px] h-[18px]" />,
+          icon: <BedDouble className="w-[18px] h-[18px] text-[#D8B77A]" />,
           hasChevron: true,
           submenu: [
             { title: "Room Categories", href: "/admin/rooms/types" },
@@ -105,7 +105,7 @@ export function AdminSidebar({
         {
           title: "Pricing & Rates",
           href: "/admin/pricing",
-          icon: <CircleDollarSign className="w-[18px] h-[18px]" />,
+          icon: <CircleDollarSign className="w-[18px] h-[18px] text-[#D8B77A]" />,
           hasChevron: true,
           submenu: [
             { title: "Base & Weekend Rates", href: "/admin/pricing" },
@@ -115,13 +115,13 @@ export function AdminSidebar({
         {
           title: "Banquets & Events",
           href: "/admin/banquet",
-          icon: <PartyPopper className="w-[18px] h-[18px]" />,
+          icon: <PartyPopper className="w-[18px] h-[18px] text-[#D8B77A]" />,
           hasChevron: true,
         },
         {
           title: "Staff Management",
           href: "/admin/staff",
-          icon: <Users className="w-[18px] h-[18px]" />,
+          icon: <Users className="w-[18px] h-[18px] text-[#D8B77A]" />,
         },
       ],
     },
@@ -131,13 +131,13 @@ export function AdminSidebar({
         {
           title: "Customers & CRM",
           href: "/admin/customers",
-          icon: <User className="w-[18px] h-[18px]" />,
+          icon: <User className="w-[18px] h-[18px] text-[#D8B77A]" />,
           hasChevron: true,
         },
         {
           title: "Payments & Refunds",
           href: "/admin/payments",
-          icon: <CreditCard className="w-[18px] h-[18px]" />,
+          icon: <CreditCard className="w-[18px] h-[18px] text-[#D8B77A]" />,
           hasChevron: true,
           submenu: [
             { title: "Transactions Ledger", href: "/admin/payments" },
@@ -147,7 +147,8 @@ export function AdminSidebar({
         {
           title: "Offers & Coupons",
           href: "/admin/offers",
-          icon: <Tag className="w-[18px] h-[18px]" />,
+          icon: <Tag className="w-[18px] h-[18px] text-[#D8B77A]" />,
+          hasChevron: true,
         },
       ],
     },
@@ -157,12 +158,12 @@ export function AdminSidebar({
         {
           title: "Gallery & Media",
           href: "/admin/content/gallery",
-          icon: <ImageIcon className="w-[18px] h-[18px]" />,
+          icon: <ImageIcon className="w-[18px] h-[18px] text-[#D8B77A]" />,
         },
         {
           title: "Hotel Settings",
           href: "/admin/settings",
-          icon: <Settings className="w-[18px] h-[18px]" />,
+          icon: <Settings className="w-[18px] h-[18px] text-[#D8B77A]" />,
         },
       ],
     },
@@ -172,12 +173,12 @@ export function AdminSidebar({
         {
           title: "Reports & Analytics",
           href: "/admin/reports",
-          icon: <BarChart3 className="w-[18px] h-[18px]" />,
+          icon: <BarChart3 className="w-[18px] h-[18px] text-[#D8B77A]" />,
         },
         {
           title: "Notifications",
           href: "/admin/notifications",
-          icon: <Bell className="w-[18px] h-[18px]" />,
+          icon: <Bell className="w-[18px] h-[18px] text-[#D8B77A]" />,
         },
       ],
     },
@@ -199,20 +200,20 @@ export function AdminSidebar({
   };
 
   const SidebarContent = (
-    <div className="flex flex-col h-full bg-[#071019] text-[#D1D5DB] select-none border-r border-[#15202B]">
+    <div className="flex flex-col h-full bg-[#0E1418] text-[#D1D5DB] select-none border-r border-[#1B252E]">
       {/* Brand Crest Header */}
-      <div className="pt-6 pb-4 px-5 text-center relative border-b border-[#15202B]/60">
+      <div className="pt-6 pb-4 px-5 text-center relative border-b border-[#1B252E]/80">
         <Link href="/admin/dashboard" className="block group">
-          <div className="font-serif tracking-[0.22em] text-[15px] font-bold text-[#D8B77A] uppercase group-hover:text-white transition-colors">
-            Hotel Reliance
+          <div className="font-serif tracking-[0.22em] text-[16px] font-bold text-[#E5BE76] uppercase group-hover:text-white transition-colors">
+            HOTEL RELIANCE
           </div>
-          <div className="text-[9px] uppercase tracking-[0.28em] text-[#B8893E] font-medium mt-1">
-            Control Center
+          <div className="text-[9.5px] uppercase tracking-[0.32em] text-[#B8893E] font-semibold mt-1">
+            CONTROL CENTER
           </div>
-          <div className="flex items-center justify-center space-x-2 mt-2.5 text-[#B8893E]/60">
-            <span className="w-8 h-[1px] bg-gradient-to-r from-transparent to-[#B8893E]/50" />
+          <div className="flex items-center justify-center space-x-2 mt-2.5 text-[#B8893E]">
+            <span className="w-8 h-[1px] bg-gradient-to-r from-transparent to-[#B8893E]/60" />
             <span className="text-[8px]">◇</span>
-            <span className="w-8 h-[1px] bg-gradient-to-l from-transparent to-[#B8893E]/50" />
+            <span className="w-8 h-[1px] bg-gradient-to-l from-transparent to-[#B8893E]/60" />
           </div>
         </Link>
         <button
@@ -224,10 +225,10 @@ export function AdminSidebar({
       </div>
 
       {/* Navigation Scrollable Area with Section Titles */}
-      <nav className="flex-1 overflow-y-auto px-3.5 py-3.5 space-y-3.5 custom-scrollbar">
+      <nav className="flex-1 overflow-y-auto px-3.5 py-4 space-y-4 custom-scrollbar">
         {navSections.map((section) => (
           <div key={section.sectionTitle} className="space-y-1">
-            <div className="px-3 pt-1 pb-1 text-[9px] font-bold uppercase tracking-[0.2em] text-[#B8893E]/75">
+            <div className="px-3 pt-1 pb-1 text-[9.5px] font-bold uppercase tracking-[0.2em] text-[#C69A55]">
               {section.sectionTitle}
             </div>
             {section.items.map((item) => {
@@ -242,28 +243,29 @@ export function AdminSidebar({
                     <div>
                       <button
                         onClick={() => toggleSubmenu(item.title)}
-                        className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+                        className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all cursor-pointer ${
                           isSectionActive
-                            ? "bg-[#182635] text-[#D8B77A] font-semibold"
-                            : "text-[#9CA3AF] hover:bg-[#121E2B] hover:text-[#E5E7EB]"
+                            ? "bg-[#252822]/90 text-[#F5E6CC] font-semibold border-l-[3px] border-l-[#D8B77A] shadow-xs"
+                            : "text-[#C4BCB1] hover:bg-[#161E26] hover:text-white"
                         }`}
                       >
                         <div className="flex items-center space-x-3">
-                          <span className={isSectionActive ? "text-[#D8B77A]" : "text-[#9CA3AF]"}>
-                            {item.icon}
-                          </span>
-                          <span className="text-[12px]">{item.title}</span>
+                          <span>{item.icon}</span>
+                          <span className="text-[12.5px] font-medium">{item.title}</span>
                         </div>
                         {isSubmenuOpen ? (
-                          <ChevronDown className="w-3.5 h-3.5 text-white/50" />
+                          <ChevronDown className="w-3.5 h-3.5 text-[#D8B77A]" />
                         ) : (
-                          <ChevronRight className="w-3.5 h-3.5 text-white/40" />
+                          <ChevronRight className="w-3.5 h-3.5 text-[#B8893E]/60" />
                         )}
                       </button>
 
-                      {/* Submenu Dropdown Items */}
+                      {/* Submenu Dropdown Items with Connector Line */}
                       {isSubmenuOpen && (
-                        <div className="pl-6 pr-1 py-1 space-y-0.5 mt-0.5">
+                        <div className="relative pl-6 pr-1 py-1 space-y-1 mt-1">
+                          {/* Vertical Connector Line */}
+                          <div className="absolute left-4 top-1 bottom-1 w-[1px] bg-[#B8893E]/25" />
+
                           {item.submenu.map((sub) => {
                             const isSubActive = pathname === sub.href;
                             return (
@@ -271,10 +273,10 @@ export function AdminSidebar({
                                 key={sub.title}
                                 href={sub.href}
                                 onClick={() => setMobileOpen(false)}
-                                className={`block px-3 py-1.5 rounded-md text-[11px] font-medium transition-all ${
+                                className={`block px-3 py-1.5 rounded-lg text-[11.5px] transition-all relative ${
                                   isSubActive
-                                    ? "bg-[#25201A] text-[#D8B77A] font-bold border border-[#B8893E]/30"
-                                    : "text-[#9CA3AF] hover:text-white hover:bg-[#121E2B]"
+                                    ? "bg-[#282721] text-[#E6C687] font-semibold border border-[#B8893E]/35 shadow-2xs"
+                                    : "text-[#A89F91] hover:text-white hover:bg-[#161E26]"
                                 }`}
                               >
                                 {sub.title}
@@ -288,20 +290,18 @@ export function AdminSidebar({
                     <Link
                       href={item.href}
                       onClick={() => setMobileOpen(false)}
-                      className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+                      className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all ${
                         pathname === item.href
-                          ? "bg-[#182635] text-[#D8B77A] font-semibold"
-                          : "text-[#9CA3AF] hover:bg-[#121E2B] hover:text-[#E5E7EB]"
+                          ? "bg-[#252822]/90 text-[#F5E6CC] font-semibold border-l-[3px] border-l-[#D8B77A]"
+                          : "text-[#C4BCB1] hover:bg-[#161E26] hover:text-white"
                       }`}
                     >
                       <div className="flex items-center space-x-3">
-                        <span className={pathname === item.href ? "text-[#D8B77A]" : "text-[#9CA3AF]"}>
-                          {item.icon}
-                        </span>
-                        <span className="text-[12px]">{item.title}</span>
+                        <span>{item.icon}</span>
+                        <span className="text-[12.5px] font-medium">{item.title}</span>
                       </div>
                       {item.hasChevron && (
-                        <ChevronRight className="w-3.5 h-3.5 text-white/40" />
+                        <ChevronRight className="w-3.5 h-3.5 text-[#B8893E]/60" />
                       )}
                     </Link>
                   )}
@@ -313,24 +313,24 @@ export function AdminSidebar({
       </nav>
 
       {/* User Footer Profile Card */}
-      <div className="p-3.5 border-t border-[#15202B] bg-[#050C14]">
+      <div className="p-3.5 border-t border-[#1B252E] bg-[#0A0F13]">
         <div className="flex items-center justify-between">
           <Link href="/admin/profile" className="flex items-center space-x-2.5 hover:opacity-90 transition-opacity">
-            <div className="w-8 h-8 rounded-full bg-[#B8893E] border border-[#D8B77A]/40 flex items-center justify-center text-white font-serif font-bold text-xs shadow-inner">
+            <div className="w-8.5 h-8.5 rounded-full bg-[#A97A32] border border-[#D8B77A]/50 flex items-center justify-center text-white font-serif font-bold text-xs shadow-inner flex-shrink-0">
               VR
             </div>
             <div className="overflow-hidden">
-              <div className="text-xs font-semibold text-white truncate">Vikramaditya Roy (GM)</div>
-              <div className="text-[9px] text-[#B8893E] tracking-widest uppercase font-bold">SUPER ADMIN</div>
+              <div className="text-[12px] font-bold text-white truncate">Vikramaditya Roy (GM)</div>
+              <div className="text-[9.5px] text-[#D8B77A] tracking-wider uppercase font-semibold">SUPER_ADMIN</div>
             </div>
           </Link>
           <button
             onClick={handleLogout}
             title="Sign Out"
-            className="flex items-center space-x-1 p-1.5 text-white/60 hover:text-rose-400 hover:bg-rose-950/30 rounded-md transition-colors text-[11px] cursor-pointer"
+            className="flex items-center space-x-1.5 px-2 py-1 text-[#C69A55] hover:text-[#E5B869] hover:bg-white/5 rounded-md transition-colors text-[11px] font-medium cursor-pointer"
           >
             <LogOut className="w-3.5 h-3.5" />
-            <span className="text-[10px]">Logout</span>
+            <span>Logout</span>
           </button>
         </div>
       </div>
