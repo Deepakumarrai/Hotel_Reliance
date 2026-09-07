@@ -133,13 +133,13 @@ export default function AdminDashboardPage() {
           </div>
 
           <div className="flex items-center space-x-3">
-            <button
-              onClick={() => setQuickBookingOpen(true)}
-              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#9E712E] to-[#C4984F] hover:from-[#8C6326] hover:to-[#B38740] text-xs font-bold uppercase tracking-wider text-white shadow-lg transition-all flex items-center space-x-2 cursor-pointer active:scale-95"
+            <Link
+              href="/admin/availability"
+              className="px-4 py-2.5 rounded-xl bg-[#1B2A42] hover:bg-[#223552] border border-[#C4984F]/30 text-xs font-semibold text-[#D8B875] shadow-lg transition-all flex items-center space-x-2"
             >
-              <PlusCircle className="w-4 h-4" />
-              <span>+ New Reservation</span>
-            </button>
+              <BedDouble className="w-4 h-4 text-[#C4984F]" />
+              <span>Room Availability Grid</span>
+            </Link>
           </div>
         </div>
 
