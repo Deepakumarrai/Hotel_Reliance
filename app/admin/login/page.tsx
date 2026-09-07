@@ -162,7 +162,7 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 rounded-lg bg-gradient-to-r from-[#9E712E] via-[#C4984F] to-[#9E712E] hover:from-[#8C6326] hover:to-[#B38740] text-white text-xs font-bold uppercase tracking-[0.15em] shadow-xl transition-all duration-300 flex items-center justify-center space-x-2 disabled:opacity-50"
+              className="w-full py-3.5 rounded-lg bg-gradient-to-r from-[#9E712E] via-[#C4984F] to-[#9E712E] hover:from-[#8C6326] hover:to-[#B38740] text-white text-xs font-bold uppercase tracking-[0.15em] shadow-xl transition-all duration-300 flex items-center justify-center space-x-2 disabled:opacity-50 cursor-pointer"
             >
               {loading ? (
                 <span>Authenticating Credentials...</span>
@@ -173,10 +173,39 @@ export default function AdminLoginPage() {
                 </>
               )}
             </button>
+
+            {/* Quick Fill Demo / Staff Button */}
+            <button
+              type="button"
+              onClick={() => {
+                setUsername("admin@HotelReliance");
+                setPassword("HotelReliance2026");
+              }}
+              className="w-full py-2.5 rounded-lg border border-[#D8B875]/30 bg-[#111E31]/80 hover:bg-[#1B2A42] text-[#D8B875] text-xs font-semibold tracking-wider transition-all flex items-center justify-center space-x-2 cursor-pointer"
+            >
+              <KeyRound className="w-3.5 h-3.5 text-[#C4984F]" />
+              <span>Auto-Fill Admin Credentials</span>
+            </button>
           </form>
 
+          {/* Credentials Info Box */}
+          <div className="mt-4 p-3 rounded-lg bg-[#111E31]/60 border border-[#1B2A42] text-[11px] text-[#E9DFD2]/80 space-y-1">
+            <div className="font-semibold text-[#C4984F] flex items-center justify-between">
+              <span>Admin Access Info:</span>
+              <span className="text-[10px] text-emerald-400">● Live Active</span>
+            </div>
+            <div className="flex justify-between text-[11px]">
+              <span className="text-white/50">Username:</span>
+              <code className="font-mono text-white select-all">admin@HotelReliance</code>
+            </div>
+            <div className="flex justify-between text-[11px]">
+              <span className="text-white/50">Password:</span>
+              <code className="font-mono text-white select-all">HotelReliance2026</code>
+            </div>
+          </div>
+
           {/* Security Banner Footer */}
-          <div className="mt-6 pt-5 border-t border-[#1B2A42] text-center space-y-1">
+          <div className="mt-5 pt-4 border-t border-[#1B2A42] text-center space-y-1">
             <p className="text-[10px] text-white/40">
               Maximum 4 failed attempts permitted before automatic 2-hour IP lockout.
             </p>
