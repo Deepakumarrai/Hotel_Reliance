@@ -12,18 +12,18 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <ToastProvider>
-      <div className="flex min-h-screen bg-[#070D17] text-[#E9DFD2] font-sans selection:bg-[#9E712E] selection:text-white">
-        {/* Sidebar */}
+      <div className="flex min-h-screen bg-[#F8F5F0] text-[#111E31] font-sans selection:bg-[#9E712E] selection:text-white">
+        {/* Left Fixed Sidebar */}
         <AdminSidebar mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />
 
         {/* Main Content Area */}
-        <div className="flex-1 flex flex-col min-w-0">
+        <div className="flex-1 flex flex-col min-w-0 bg-[#F8F5F0]">
           <AdminHeader
             setMobileOpen={setMobileOpen}
             onOpenQuickBooking={() => setQuickBookingOpen(true)}
           />
 
-          <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+          <main className="flex-1 p-4 sm:p-6 lg:p-7 overflow-y-auto">
             {children}
           </main>
         </div>
