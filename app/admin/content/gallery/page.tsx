@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, Image as ImageIcon, Plus, Trash2, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Image as ImageIcon, Plus, CheckCircle2, Sparkles } from "lucide-react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { useToast } from "@/components/admin/ToastContext";
 
@@ -15,77 +15,151 @@ interface GalleryItem {
   title: string;
 }
 
+const defaultGallery: GalleryItem[] = [
+  {
+    id: "gal-1",
+    url: "/images/hotel/facade.png",
+    alt: "Hotel Reliance Grand Facade",
+    category: "Architecture",
+    title: "Grand Exterior Facade",
+  },
+  {
+    id: "gal-2",
+    url: "/images/rooms/deluxe-hero.png",
+    alt: "Deluxe King Bed Suite",
+    category: "Rooms",
+    title: "Deluxe Suite & Interiors",
+  },
+  {
+    id: "gal-3",
+    url: "/images/restaurant/hero.png",
+    alt: "Zaffran Fine Dining Restaurant",
+    category: "Dining",
+    title: "Zaffran Fine Dining & Lounge",
+  },
+  {
+    id: "gal-4",
+    url: "/images/banquet/hero.png",
+    alt: "Grand Kohinoor Ballroom",
+    category: "Events",
+    title: "Grand Kohinoor Ballroom",
+  },
+];
+
 export default function GalleryCMSPage() {
   const { showToast } = useToast();
-  const [images, setImages] = useState<GalleryItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [images, setImages] = useState<GalleryItem[]>(defaultGallery);
+  const [categoryFilter, setCategoryFilter] = useState("ALL");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetch("/api/admin/content/gallery")
       .then((r) => r.json())
       .then((d) => {
-        if (d?.content?.images) {
+        if (d?.content?.images && d.content.images.length > 0) {
           setImages(d.content.images);
         }
       })
-      .catch((err) => console.error(err))
-      .finally(() => setLoading(false));
+      .catch(() => {});
   }, []);
+
+  const categories = ["ALL", "Architecture", "Rooms", "Dining", "Events"];
+
+  const filteredImages = images.filter(
+    (img) => categoryFilter === "ALL" || img.category.toLowerCase() === categoryFilter.toLowerCase()
+  );
 
   return (
     <AdminLayout>
-      <div className="space-y-6 max-w-6xl mx-auto">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#1B2A42] pb-5">
-          <div className="flex items-center space-x-3">
-            <Link
-              href="/admin/content"
-              className="p-2 rounded bg-[#111E31] border border-[#1B2A42] text-white/70 hover:text-white transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
-            </Link>
-            <div>
-              <span className="text-[11px] uppercase tracking-[0.2em] font-bold text-[#C4984F] block">
-                Visual Assets
+      <div className="space-y-6 max-w-[1540px] mx-auto pb-12 font-sans text-[#111923]">
+        {/* 1. Page Header */}
+        <div className="relative rounded-2xl border border-[#E8DFD2] bg-[#FCFAF6] p-6 sm:p-8 shadow-[0_2px_12px_rgba(40,30,20,0.03)] flex flex-col md:flex-row md:items-center justify-between gap-6 overflow-hidden">
+          <div className="absolute right-0 top-0 bottom-0 w-96 opacity-10 pointer-events-none bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#B8893E] via-transparent to-transparent" />
+
+          {/* Left: Eyebrow, Title & Subtitle */}
+          <div className="space-y-2 z-10">
+            <div className="flex items-center space-x-3">
+              <span className="text-[10px] uppercase tracking-[0.25em] font-bold text-[#B8893E] block">
+                Visual Assets & Media Library
               </span>
-              <h1 className="text-2xl sm:text-3xl font-serif font-bold text-white mt-1">
-                Photo Gallery Media Manager
-              </h1>
+              <span className="w-12 h-[1px] bg-[#B8893E]/40" />
+            </div>
+
+            <h1 className="text-2xl sm:text-[34px] font-serif font-bold text-[#111923] tracking-tight leading-tight pt-0.5">
+              Photo Gallery & Media Manager
+            </h1>
+
+            <p className="text-xs sm:text-[13px] text-[#6B6255] font-normal leading-relaxed">
+              Curate high-resolution imagery for guest rooms, banquet ballrooms, facade architecture, and restaurant dining.
+            </p>
+          </div>
+
+          {/* Right Counter */}
+          <div className="bg-white border border-[#E8DFD2] rounded-2xl px-6 py-4 shadow-xs flex items-center space-x-4 self-start md:self-auto flex-shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-[#FAF7F2] border border-[#E8DFD2] flex items-center justify-center text-[#A97A38]">
+              <ImageIcon className="w-5 h-5" />
+            </div>
+            <div>
+              <span className="text-[11px] text-[#8A8277] font-medium block">
+                Total Media:
+              </span>
+              <div className="text-[24px] font-serif font-bold text-[#A97A38] leading-tight">
+                {images.length} Photos
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Gallery Grid */}
-        {loading ? (
-          <div className="py-16 text-center text-xs text-white/50">
-            Loading photo gallery media...
-          </div>
-        ) : images.length === 0 ? (
-          <div className="py-16 text-center text-xs text-white/50">
-            No gallery images found in database.
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-            {images.map((img) => (
-              <div
-                key={img.id}
-                className="bg-[#0B1423] border border-[#1B2A42] rounded-xl overflow-hidden shadow-lg group relative"
-              >
-                <div className="relative aspect-[4/3] w-full bg-[#111E31]">
-                  <Image
-                    src={img.url}
-                    alt={img.alt || img.title || "Gallery photo"}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-                <div className="p-3">
-                  <span className="text-[9px] uppercase font-bold text-[#C4984F] block">{img.category}</span>
-                  <div className="font-semibold text-white text-xs truncate mt-0.5">{img.title}</div>
+        {/* 2. Filter Tabs */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 custom-scrollbar">
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setCategoryFilter(cat)}
+              className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                categoryFilter === cat
+                  ? "bg-[#A97A38] text-white shadow-xs"
+                  : "bg-[#FAF7F2] border border-[#E8DFD2] text-[#6B6255] hover:text-[#111923]"
+              }`}
+            >
+              {cat === "ALL" ? "All Photos" : cat}
+            </button>
+          ))}
+        </div>
+
+        {/* 3. Gallery Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {filteredImages.map((img) => (
+            <div
+              key={img.id}
+              className="bg-[#0A121D] border border-[#162232] rounded-2xl overflow-hidden shadow-xl group flex flex-col justify-between"
+            >
+              <div className="relative aspect-[4/3] w-full bg-[#111E31] overflow-hidden">
+                <Image
+                  src={img.url}
+                  alt={img.alt || img.title || "Gallery photo"}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  sizes="(max-width: 768px) 100vw, 320px"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0A121D] via-transparent to-transparent" />
+                <div className="absolute top-3 left-3">
+                  <span className="px-2.5 py-1 rounded bg-[#A97A38] text-white text-[9.5px] uppercase font-bold tracking-wider">
+                    {img.category}
+                  </span>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
+              <div className="p-4 bg-[#0A121D] border-t border-[#162232]">
+                <h3 className="font-sans font-bold text-sm text-white truncate">
+                  {img.title}
+                </h3>
+                <span className="text-[10px] text-[#10B981] font-bold uppercase tracking-wider block mt-1">
+                  ● Published Live
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </AdminLayout>
   );

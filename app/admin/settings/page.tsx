@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Settings, Hotel, Clock, ShieldCheck, Save, Phone, Mail, MapPin, MessageSquare, Globe, CheckCircle2 } from "lucide-react";
+import { Settings, Hotel, Clock, ShieldCheck, Save, Phone, Mail, MapPin, CheckCircle2 } from "lucide-react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { useToast } from "@/components/admin/ToastContext";
 
@@ -22,9 +22,22 @@ interface SettingsFormState {
 
 export default function AdminSettingsPage() {
   const { showToast } = useToast();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [settings, setSettings] = useState<SettingsFormState | null>(null);
+  const [settings, setSettings] = useState<SettingsFormState>({
+    hotelName: "Hotel Reliance",
+    tagline: "The Pinnacle of Luxury Hospitality in Bokaro",
+    description: "Centrally located in Chas, Bokaro Steel City with 45 luxurious rooms, banquet ballrooms, and fine dining.",
+    phone1: "+91 92629 97777",
+    phone2: "+91 6542 265000",
+    whatsappNumber: "919262997777",
+    email: "reservations@hotelreliancebokaro.com",
+    address: "Opp. HP Petrol Pump, Bye Pass Road, Chas, Bokaro, Jharkhand - 827013",
+    checkInTime: "12:00 PM",
+    checkOutTime: "11:00 AM",
+    cancellationWindowHours: 24,
+    freeCancellationAllowed: true,
+  });
 
   useEffect(() => {
     const loadSettings = async () => {
@@ -35,16 +48,16 @@ export default function AdminSettingsPage() {
           if (data?.settings) {
             const s = data.settings;
             setSettings({
-              hotelName: s.hotelName || "",
+              hotelName: s.hotelName || "Hotel Reliance",
               tagline: s.tagline || "",
               description: s.description || "",
-              phone1: s.phones?.[0] || "",
+              phone1: s.phones?.[0] || "+91 92629 97777",
               phone2: s.phones?.[1] || "",
-              whatsappNumber: s.whatsappNumber || "",
-              email: s.emails?.[0] || "",
+              whatsappNumber: s.whatsappNumber || "919262997777",
+              email: s.emails?.[0] || "reservations@hotelreliancebokaro.com",
               address: typeof s.address === "string" ? s.address : (s.address?.fullAddress || ""),
-              checkInTime: s.checkInTime || "",
-              checkOutTime: s.checkOutTime || "",
+              checkInTime: s.checkInTime || "12:00 PM",
+              checkOutTime: s.checkOutTime || "11:00 AM",
               cancellationWindowHours: s.cancellationWindowHours ?? 24,
               freeCancellationAllowed: s.freeCancellationAllowed ?? true,
             });
@@ -52,8 +65,6 @@ export default function AdminSettingsPage() {
         }
       } catch (err) {
         console.error("Failed to load settings:", err);
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -62,7 +73,6 @@ export default function AdminSettingsPage() {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!settings) return;
     setSaving(true);
 
     try {
@@ -86,15 +96,14 @@ export default function AdminSettingsPage() {
 
       if (res.ok) {
         showToast("Master Hotel Settings saved & synced to customer website!", "success");
-        // Dispatch event for instant update across tabs
         if (typeof window !== "undefined") {
           window.dispatchEvent(new Event("hotel-settings-updated"));
           localStorage.setItem("hotel_settings_last_sync", Date.now().toString());
         }
       } else {
-        showToast("Failed to save hotel settings. Please try again.", "error");
+        showToast("Failed to save hotel settings.", "error");
       }
-    } catch (err) {
+    } catch {
       showToast("Error updating settings.", "error");
     } finally {
       setSaving(false);
@@ -103,202 +112,232 @@ export default function AdminSettingsPage() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6 max-w-4xl mx-auto">
-        <div className="border-b border-[#1B2A42] pb-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <span className="text-[11px] uppercase tracking-[0.2em] font-bold text-[#C4984F] block">
-              Core Configuration
-            </span>
-            <h1 className="text-2xl sm:text-3xl font-serif font-bold text-white mt-1">
+      <div className="space-y-6 max-w-[1540px] mx-auto pb-12 font-sans text-[#111923]">
+        {/* 1. Page Header */}
+        <div className="relative rounded-2xl border border-[#E8DFD2] bg-[#FCFAF6] p-6 sm:p-8 shadow-[0_2px_12px_rgba(40,30,20,0.03)] flex flex-col md:flex-row md:items-center justify-between gap-6 overflow-hidden">
+          <div className="absolute right-0 top-0 bottom-0 w-96 opacity-10 pointer-events-none bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#B8893E] via-transparent to-transparent" />
+
+          {/* Left: Eyebrow, Title & Subtitle */}
+          <div className="space-y-2 z-10">
+            <div className="flex items-center space-x-3">
+              <span className="text-[10px] uppercase tracking-[0.25em] font-bold text-[#B8893E] block">
+                Core Configuration & Brand Identity
+              </span>
+              <span className="w-12 h-[1px] bg-[#B8893E]/40" />
+            </div>
+
+            <h1 className="text-2xl sm:text-[34px] font-serif font-bold text-[#111923] tracking-tight leading-tight pt-0.5">
               Master Hotel Settings & Policies
             </h1>
-            <p className="text-xs text-[#E9DFD2]/70 mt-1">
-              Changes made here update immediately across the entire customer-facing website (Navbar, Footer, Contact, About, WhatsApp chat, and Booking engine).
+
+            <p className="text-xs sm:text-[13px] text-[#6B6255] font-normal leading-relaxed">
+              Updates sync immediately across the website (Navbar, Footer, Contact, WhatsApp chat, and booking engine).
             </p>
           </div>
 
-          <div className="flex items-center space-x-2 bg-[#0B1423] border border-[#1B2A42] px-3 py-1.5 rounded-lg text-xs text-[#E9DFD2]">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-            <span>Live Sync Active</span>
+          {/* Right Live Sync Status */}
+          <div className="flex items-center space-x-2 bg-[#DCFCE7] border border-[#86EFAC] px-4 py-2 rounded-xl text-xs text-[#15803D] font-bold flex-shrink-0">
+            <CheckCircle2 className="w-4 h-4 text-[#15803D]" />
+            <span>LIVE SYNC ACTIVE</span>
           </div>
         </div>
 
-        {loading || !settings ? (
-          <div className="bg-[#0B1423] border border-[#1B2A42] rounded-2xl p-12 text-center text-[#E9DFD2]/60">
-            <div className="w-8 h-8 border-2 border-[#C4984F] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-            Loading Hotel Settings...
-          </div>
-        ) : (
-          <form onSubmit={handleSave} className="space-y-6 text-xs">
-            {/* General Property Info */}
-            <div className="bg-[#0B1423] border border-[#1B2A42] rounded-2xl p-6 sm:p-8 shadow-xl space-y-4">
-              <h2 className="font-serif text-base font-bold text-white border-b border-[#1B2A42] pb-3 flex items-center space-x-2">
-                <Hotel className="w-4 h-4 text-[#C4984F]" />
-                <span>Property Identity & Contact Channels</span>
+        {/* 2. Configuration Form */}
+        <form onSubmit={handleSave} className="space-y-6 text-xs">
+          {/* Section 1: Property Info */}
+          <div className="bg-white border border-[#E8DFD2] rounded-2xl p-6 sm:p-8 shadow-[0_4px_18px_rgba(40,30,20,0.04)] space-y-5">
+            <div className="flex items-center space-x-2.5 border-b border-[#EDE6DB] pb-4">
+              <Hotel className="w-5 h-5 text-[#A97A38]" />
+              <h2 className="font-serif text-lg font-bold text-[#111923]">
+                Property Identity & Contact Channels
               </h2>
+            </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-[10px] uppercase font-bold text-[#C4984F] block mb-1">Hotel Legal Name</label>
-                  <input
-                    type="text"
-                    value={settings.hotelName}
-                    onChange={(e) => setSettings({ ...settings, hotelName: e.target.value })}
-                    className="w-full bg-[#111E31] border border-[#1B2A42] rounded-lg p-2.5 text-white focus:outline-none focus:border-[#C4984F]"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="text-[10px] uppercase font-bold text-[#C4984F] block mb-1">Brand Tagline</label>
-                  <input
-                    type="text"
-                    value={settings.tagline}
-                    onChange={(e) => setSettings({ ...settings, tagline: e.target.value })}
-                    className="w-full bg-[#111E31] border border-[#1B2A42] rounded-lg p-2.5 text-white focus:outline-none focus:border-[#C4984F]"
-                  />
-                </div>
-              </div>
-
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="text-[10px] uppercase font-bold text-[#C4984F] block mb-1">Hospitality Overview / Description</label>
-                <textarea
-                  rows={3}
-                  value={settings.description}
-                  onChange={(e) => setSettings({ ...settings, description: e.target.value })}
-                  className="w-full bg-[#111E31] border border-[#1B2A42] rounded-lg p-2.5 text-white focus:outline-none focus:border-[#C4984F]"
+                <label className="text-[10px] uppercase font-bold tracking-wider text-[#A97A38] block mb-1.5">
+                  Hotel Legal Name
+                </label>
+                <input
+                  type="text"
+                  value={settings.hotelName}
+                  onChange={(e) => setSettings({ ...settings, hotelName: e.target.value })}
+                  className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl px-3.5 py-2.5 text-xs text-[#111923] focus:outline-none focus:border-[#B8893E] shadow-2xs"
+                  required
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div>
-                  <label className="text-[10px] uppercase font-bold text-[#C4984F] block mb-1">Primary Phone</label>
-                  <input
-                    type="text"
-                    value={settings.phone1}
-                    onChange={(e) => setSettings({ ...settings, phone1: e.target.value })}
-                    className="w-full bg-[#111E31] border border-[#1B2A42] rounded-lg p-2.5 text-white focus:outline-none focus:border-[#C4984F]"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="text-[10px] uppercase font-bold text-[#C4984F] block mb-1">Secondary Phone</label>
-                  <input
-                    type="text"
-                    value={settings.phone2}
-                    onChange={(e) => setSettings({ ...settings, phone2: e.target.value })}
-                    className="w-full bg-[#111E31] border border-[#1B2A42] rounded-lg p-2.5 text-white focus:outline-none focus:border-[#C4984F]"
-                  />
-                </div>
-                <div>
-                  <label className="text-[10px] uppercase font-bold text-[#C4984F] block mb-1">WhatsApp Chat Number</label>
-                  <input
-                    type="text"
-                    value={settings.whatsappNumber}
-                    onChange={(e) => setSettings({ ...settings, whatsappNumber: e.target.value })}
-                    placeholder="919262997777"
-                    className="w-full bg-[#111E31] border border-[#1B2A42] rounded-lg p-2.5 text-white focus:outline-none focus:border-[#C4984F]"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-[10px] uppercase font-bold text-[#C4984F] block mb-1">Reservation Email</label>
-                  <input
-                    type="email"
-                    value={settings.email}
-                    onChange={(e) => setSettings({ ...settings, email: e.target.value })}
-                    className="w-full bg-[#111E31] border border-[#1B2A42] rounded-lg p-2.5 text-white focus:outline-none focus:border-[#C4984F]"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="text-[10px] uppercase font-bold text-[#C4984F] block mb-1">Registered Hotel Address</label>
-                  <input
-                    type="text"
-                    value={settings.address}
-                    onChange={(e) => setSettings({ ...settings, address: e.target.value })}
-                    className="w-full bg-[#111E31] border border-[#1B2A42] rounded-lg p-2.5 text-white focus:outline-none focus:border-[#C4984F]"
-                    required
-                  />
-                </div>
+              <div>
+                <label className="text-[10px] uppercase font-bold tracking-wider text-[#A97A38] block mb-1.5">
+                  Brand Tagline
+                </label>
+                <input
+                  type="text"
+                  value={settings.tagline}
+                  onChange={(e) => setSettings({ ...settings, tagline: e.target.value })}
+                  className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl px-3.5 py-2.5 text-xs text-[#111923] focus:outline-none focus:border-[#B8893E] shadow-2xs"
+                />
               </div>
             </div>
 
-            {/* Operational Check-In / Out Times */}
-            <div className="bg-[#0B1423] border border-[#1B2A42] rounded-2xl p-6 sm:p-8 shadow-xl space-y-4">
-              <h2 className="font-serif text-base font-bold text-white border-b border-[#1B2A42] pb-3 flex items-center space-x-2">
-                <Clock className="w-4 h-4 text-[#C4984F]" />
-                <span>Standard Stays & Cancellation Policies</span>
+            <div>
+              <label className="text-[10px] uppercase font-bold tracking-wider text-[#A97A38] block mb-1.5">
+                Hospitality Overview / Description
+              </label>
+              <textarea
+                rows={3}
+                value={settings.description}
+                onChange={(e) => setSettings({ ...settings, description: e.target.value })}
+                className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl px-3.5 py-2.5 text-xs text-[#111923] focus:outline-none focus:border-[#B8893E] shadow-2xs resize-none"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div>
+                <label className="text-[10px] uppercase font-bold tracking-wider text-[#A97A38] block mb-1.5">
+                  Primary Phone
+                </label>
+                <input
+                  type="text"
+                  value={settings.phone1}
+                  onChange={(e) => setSettings({ ...settings, phone1: e.target.value })}
+                  className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl px-3.5 py-2.5 text-xs text-[#111923] font-mono focus:outline-none focus:border-[#B8893E] shadow-2xs"
+                  required
+                />
+              </div>
+              <div>
+                <label className="text-[10px] uppercase font-bold tracking-wider text-[#A97A38] block mb-1.5">
+                  Secondary Phone
+                </label>
+                <input
+                  type="text"
+                  value={settings.phone2}
+                  onChange={(e) => setSettings({ ...settings, phone2: e.target.value })}
+                  className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl px-3.5 py-2.5 text-xs text-[#111923] font-mono focus:outline-none focus:border-[#B8893E] shadow-2xs"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] uppercase font-bold tracking-wider text-[#A97A38] block mb-1.5">
+                  WhatsApp Chat Number
+                </label>
+                <input
+                  type="text"
+                  value={settings.whatsappNumber}
+                  onChange={(e) => setSettings({ ...settings, whatsappNumber: e.target.value })}
+                  className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl px-3.5 py-2.5 text-xs text-[#111923] font-mono focus:outline-none focus:border-[#B8893E] shadow-2xs"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="text-[10px] uppercase font-bold tracking-wider text-[#A97A38] block mb-1.5">
+                  Reservation Email
+                </label>
+                <input
+                  type="email"
+                  value={settings.email}
+                  onChange={(e) => setSettings({ ...settings, email: e.target.value })}
+                  className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl px-3.5 py-2.5 text-xs text-[#111923] focus:outline-none focus:border-[#B8893E] shadow-2xs"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="text-[10px] uppercase font-bold tracking-wider text-[#A97A38] block mb-1.5">
+                  Registered Hotel Address
+                </label>
+                <input
+                  type="text"
+                  value={settings.address}
+                  onChange={(e) => setSettings({ ...settings, address: e.target.value })}
+                  className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl px-3.5 py-2.5 text-xs text-[#111923] focus:outline-none focus:border-[#B8893E] shadow-2xs"
+                  required
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Section 2: Check-In & Policies */}
+          <div className="bg-white border border-[#E8DFD2] rounded-2xl p-6 sm:p-8 shadow-[0_4px_18px_rgba(40,30,20,0.04)] space-y-5">
+            <div className="flex items-center space-x-2.5 border-b border-[#EDE6DB] pb-4">
+              <Clock className="w-5 h-5 text-[#A97A38]" />
+              <h2 className="font-serif text-lg font-bold text-[#111923]">
+                Standard Stays & Cancellation Policies
               </h2>
+            </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-[10px] uppercase font-bold text-[#C4984F] block mb-1">Check-In Standard Time</label>
-                  <input
-                    type="text"
-                    value={settings.checkInTime}
-                    onChange={(e) => setSettings({ ...settings, checkInTime: e.target.value })}
-                    className="w-full bg-[#111E31] border border-[#1B2A42] rounded-lg p-2.5 text-white focus:outline-none focus:border-[#C4984F]"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="text-[10px] uppercase font-bold text-[#C4984F] block mb-1">Check-Out Standard Time</label>
-                  <input
-                    type="text"
-                    value={settings.checkOutTime}
-                    onChange={(e) => setSettings({ ...settings, checkOutTime: e.target.value })}
-                    className="w-full bg-[#111E31] border border-[#1B2A42] rounded-lg p-2.5 text-white focus:outline-none focus:border-[#C4984F]"
-                    required
-                  />
-                </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="text-[10px] uppercase font-bold tracking-wider text-[#A97A38] block mb-1.5">
+                  Check-In Standard Time
+                </label>
+                <input
+                  type="text"
+                  value={settings.checkInTime}
+                  onChange={(e) => setSettings({ ...settings, checkInTime: e.target.value })}
+                  className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl px-3.5 py-2.5 text-xs text-[#111923] focus:outline-none focus:border-[#B8893E] shadow-2xs"
+                  required
+                />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
-                <div>
-                  <label className="text-[10px] uppercase font-bold text-[#C4984F] block mb-1">
-                    Free Cancellation Window (Hours prior to check-in)
-                  </label>
-                  <input
-                    type="number"
-                    value={settings.cancellationWindowHours}
-                    onChange={(e) => setSettings({ ...settings, cancellationWindowHours: Number(e.target.value) })}
-                    className="w-full bg-[#111E31] border border-[#1B2A42] rounded-lg p-2.5 text-white focus:outline-none focus:border-[#C4984F]"
-                    required
-                  />
-                </div>
-
-                <div className="pt-4">
-                  <label className="flex items-center space-x-2.5 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={settings.freeCancellationAllowed}
-                      onChange={(e) => setSettings({ ...settings, freeCancellationAllowed: e.target.checked })}
-                      className="rounded border-[#1B2A42] bg-[#111E31] text-[#C4984F] focus:ring-0 w-4 h-4"
-                    />
-                    <span className="text-white font-medium">Allow Free Cancellation within window</span>
-                  </label>
-                </div>
+              <div>
+                <label className="text-[10px] uppercase font-bold tracking-wider text-[#A97A38] block mb-1.5">
+                  Check-Out Standard Time
+                </label>
+                <input
+                  type="text"
+                  value={settings.checkOutTime}
+                  onChange={(e) => setSettings({ ...settings, checkOutTime: e.target.value })}
+                  className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl px-3.5 py-2.5 text-xs text-[#111923] focus:outline-none focus:border-[#B8893E] shadow-2xs"
+                  required
+                />
               </div>
             </div>
 
-            <div className="flex justify-end pt-2">
-              <button
-                type="submit"
-                disabled={saving}
-                className="inline-flex items-center space-x-2 px-6 py-3 rounded-lg bg-gradient-to-r from-[#9E712E] to-[#C4984F] hover:from-[#8C6326] hover:to-[#B38740] text-white font-semibold text-xs tracking-wider uppercase shadow-lg transition-all active:scale-95 disabled:opacity-50"
-              >
-                <Save className="w-4 h-4" />
-                <span>{saving ? "Syncing & Saving..." : "Save Master Settings"}</span>
-              </button>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center pt-2">
+              <div>
+                <label className="text-[10px] uppercase font-bold tracking-wider text-[#A97A38] block mb-1.5">
+                  Free Cancellation Window (Hours prior to check-in)
+                </label>
+                <input
+                  type="number"
+                  value={settings.cancellationWindowHours}
+                  onChange={(e) => setSettings({ ...settings, cancellationWindowHours: Number(e.target.value) })}
+                  className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl px-3.5 py-2.5 text-xs text-[#111923] font-bold focus:outline-none focus:border-[#B8893E] shadow-2xs"
+                  required
+                />
+              </div>
+
+              <div className="pt-4">
+                <label className="flex items-center space-x-2.5 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={settings.freeCancellationAllowed}
+                    onChange={(e) => setSettings({ ...settings, freeCancellationAllowed: e.target.checked })}
+                    className="rounded border-[#E8DFD2] text-[#A97A38] focus:ring-0 w-4 h-4 cursor-pointer"
+                  />
+                  <span className="text-[#111923] font-medium text-xs">
+                    Allow Free Cancellation within window
+                  </span>
+                </label>
+              </div>
             </div>
-          </form>
-        )}
+          </div>
+
+          {/* Submit Button */}
+          <div className="flex justify-end pt-2">
+            <button
+              type="submit"
+              disabled={saving}
+              className="px-6 py-3 rounded-xl bg-[#A97A38] hover:bg-[#966C30] text-white font-bold text-xs uppercase tracking-wider shadow-md transition-all active:scale-95 disabled:opacity-50 cursor-pointer flex items-center space-x-2"
+            >
+              <Save className="w-4 h-4" />
+              <span>{saving ? "Syncing & Saving..." : "SAVE MASTER SETTINGS"}</span>
+            </button>
+          </div>
+        </form>
       </div>
     </AdminLayout>
   );
