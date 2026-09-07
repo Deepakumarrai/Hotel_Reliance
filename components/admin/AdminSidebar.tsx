@@ -22,7 +22,6 @@ import {
   ChevronDown,
   ChevronRight,
   X,
-  Sparkles,
 } from "lucide-react";
 import { useToast } from "./ToastContext";
 
@@ -64,21 +63,12 @@ export function AdminSidebar({
       .catch(() => {});
   }, []);
 
-  const initials = adminUser?.name
-    ? adminUser.name
-        .split(" ")
-        .map((p) => p[0])
-        .join("")
-        .slice(0, 2)
-        .toUpperCase()
-    : "VR";
-
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(() => {
     if (pathname.includes("/admin/rooms") || pathname.includes("/admin/availability")) return "Rooms & Inventory";
     if (pathname.includes("/admin/pricing")) return "Pricing & Rates";
     if (pathname.includes("/admin/customers")) return "Customers & CRM";
     if (pathname.includes("/admin/payments") || pathname.includes("/admin/refunds")) return "Payments & Refunds";
-    return null;
+    return "Rooms & Inventory";
   });
 
   const navSections: NavSection[] = [
@@ -88,12 +78,13 @@ export function AdminSidebar({
         {
           title: "Dashboard",
           href: "/admin/dashboard",
-          icon: <LayoutDashboard className="w-4 h-4" />,
+          icon: <LayoutDashboard className="w-[18px] h-[18px]" />,
         },
         {
           title: "Reservations",
           href: "/admin/bookings",
-          icon: <CalendarCheck2 className="w-4 h-4" />,
+          icon: <CalendarCheck2 className="w-[18px] h-[18px]" />,
+          hasChevron: true,
         },
       ],
     },
@@ -103,17 +94,18 @@ export function AdminSidebar({
         {
           title: "Rooms & Inventory",
           href: "/admin/rooms",
-          icon: <BedDouble className="w-4 h-4" />,
+          icon: <BedDouble className="w-[18px] h-[18px]" />,
           hasChevron: true,
           submenu: [
-            { title: "Physical Rooms (101-412)", href: "/admin/rooms" },
             { title: "Room Categories", href: "/admin/rooms/types" },
+            { title: "Physical Rooms (101-412)", href: "/admin/rooms" },
+            { title: "Availability Calendar", href: "/admin/availability" },
           ],
         },
         {
           title: "Pricing & Rates",
           href: "/admin/pricing",
-          icon: <CircleDollarSign className="w-4 h-4" />,
+          icon: <CircleDollarSign className="w-[18px] h-[18px]" />,
           hasChevron: true,
           submenu: [
             { title: "Base & Weekend Rates", href: "/admin/pricing" },
@@ -121,19 +113,15 @@ export function AdminSidebar({
           ],
         },
         {
-          title: "Availability Calendar",
-          href: "/admin/availability",
-          icon: <Calendar className="w-4 h-4" />,
-        },
-        {
           title: "Banquets & Events",
           href: "/admin/banquet",
-          icon: <PartyPopper className="w-4 h-4" />,
+          icon: <PartyPopper className="w-[18px] h-[18px]" />,
+          hasChevron: true,
         },
         {
           title: "Staff Management",
           href: "/admin/staff",
-          icon: <Users className="w-4 h-4" />,
+          icon: <Users className="w-[18px] h-[18px]" />,
         },
       ],
     },
@@ -143,13 +131,13 @@ export function AdminSidebar({
         {
           title: "Customers & CRM",
           href: "/admin/customers",
-          icon: <User className="w-4 h-4" />,
+          icon: <User className="w-[18px] h-[18px]" />,
           hasChevron: true,
         },
         {
           title: "Payments & Refunds",
           href: "/admin/payments",
-          icon: <CreditCard className="w-4 h-4" />,
+          icon: <CreditCard className="w-[18px] h-[18px]" />,
           hasChevron: true,
           submenu: [
             { title: "Transactions Ledger", href: "/admin/payments" },
@@ -159,7 +147,7 @@ export function AdminSidebar({
         {
           title: "Offers & Coupons",
           href: "/admin/offers",
-          icon: <Tag className="w-4 h-4" />,
+          icon: <Tag className="w-[18px] h-[18px]" />,
         },
       ],
     },
@@ -169,12 +157,12 @@ export function AdminSidebar({
         {
           title: "Gallery & Media",
           href: "/admin/content/gallery",
-          icon: <ImageIcon className="w-4 h-4" />,
+          icon: <ImageIcon className="w-[18px] h-[18px]" />,
         },
         {
           title: "Hotel Settings",
           href: "/admin/settings",
-          icon: <Settings className="w-4 h-4" />,
+          icon: <Settings className="w-[18px] h-[18px]" />,
         },
       ],
     },
@@ -184,12 +172,12 @@ export function AdminSidebar({
         {
           title: "Reports & Analytics",
           href: "/admin/reports",
-          icon: <BarChart3 className="w-4 h-4" />,
+          icon: <BarChart3 className="w-[18px] h-[18px]" />,
         },
         {
           title: "Notifications",
           href: "/admin/notifications",
-          icon: <Bell className="w-4 h-4" />,
+          icon: <Bell className="w-[18px] h-[18px]" />,
         },
       ],
     },
@@ -211,20 +199,20 @@ export function AdminSidebar({
   };
 
   const SidebarContent = (
-    <div className="flex flex-col h-full bg-[#0A1118] text-[#D1D5DB] select-none border-r border-[#15202B]">
+    <div className="flex flex-col h-full bg-[#071019] text-[#D1D5DB] select-none border-r border-[#15202B]">
       {/* Brand Crest Header */}
-      <div className="pt-6 pb-5 px-5 text-center relative border-b border-[#15202B]/60">
+      <div className="pt-6 pb-4 px-5 text-center relative border-b border-[#15202B]/60">
         <Link href="/admin/dashboard" className="block group">
-          <div className="font-serif tracking-[0.22em] text-[15px] font-bold text-[#D8B875] uppercase group-hover:text-white transition-colors">
+          <div className="font-serif tracking-[0.22em] text-[15px] font-bold text-[#D8B77A] uppercase group-hover:text-white transition-colors">
             Hotel Reliance
           </div>
-          <div className="text-[9px] uppercase tracking-[0.28em] text-[#C4984F]/80 font-medium mt-1">
+          <div className="text-[9px] uppercase tracking-[0.28em] text-[#B8893E] font-medium mt-1">
             Control Center
           </div>
-          <div className="flex items-center justify-center space-x-2 mt-3 text-[#C4984F]/50">
-            <span className="w-8 h-[1px] bg-gradient-to-r from-transparent to-[#C4984F]/50" />
+          <div className="flex items-center justify-center space-x-2 mt-2.5 text-[#B8893E]/60">
+            <span className="w-8 h-[1px] bg-gradient-to-r from-transparent to-[#B8893E]/50" />
             <span className="text-[8px]">◇</span>
-            <span className="w-8 h-[1px] bg-gradient-to-l from-transparent to-[#C4984F]/50" />
+            <span className="w-8 h-[1px] bg-gradient-to-l from-transparent to-[#B8893E]/50" />
           </div>
         </Link>
         <button
@@ -236,14 +224,14 @@ export function AdminSidebar({
       </div>
 
       {/* Navigation Scrollable Area with Section Titles */}
-      <nav className="flex-1 overflow-y-auto px-3.5 py-4 space-y-4 custom-scrollbar">
+      <nav className="flex-1 overflow-y-auto px-3.5 py-3.5 space-y-3.5 custom-scrollbar">
         {navSections.map((section) => (
           <div key={section.sectionTitle} className="space-y-1">
-            <div className="px-3 pt-1 pb-1 text-[9px] font-bold uppercase tracking-[0.2em] text-[#C4984F]/70">
+            <div className="px-3 pt-1 pb-1 text-[9px] font-bold uppercase tracking-[0.2em] text-[#B8893E]/75">
               {section.sectionTitle}
             </div>
             {section.items.map((item) => {
-              const isActive =
+              const isSectionActive =
                 pathname === item.href ||
                 (item.submenu && item.submenu.some((sub) => pathname === sub.href));
               const isSubmenuOpen = openSubmenu === item.title;
@@ -251,38 +239,63 @@ export function AdminSidebar({
               return (
                 <div key={item.title} className="space-y-0.5">
                   {item.submenu ? (
-                    <button
-                      onClick={() => toggleSubmenu(item.title)}
-                      className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer ${
-                        isActive
-                          ? "bg-[#182635] text-[#D8B875] font-semibold shadow-xs"
-                          : "text-[#9CA3AF] hover:bg-[#121E2B] hover:text-[#E5E7EB]"
-                      }`}
-                    >
-                      <div className="flex items-center space-x-3">
-                        <span className={isActive ? "text-[#D8B875]" : "text-[#9CA3AF]"}>
-                          {item.icon}
-                        </span>
-                        <span className="text-[12px]">{item.title}</span>
-                      </div>
-                      {isSubmenuOpen ? (
-                        <ChevronDown className="w-3.5 h-3.5 text-white/40" />
-                      ) : (
-                        <ChevronRight className="w-3.5 h-3.5 text-white/40" />
+                    <div>
+                      <button
+                        onClick={() => toggleSubmenu(item.title)}
+                        className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+                          isSectionActive
+                            ? "bg-[#182635] text-[#D8B77A] font-semibold"
+                            : "text-[#9CA3AF] hover:bg-[#121E2B] hover:text-[#E5E7EB]"
+                        }`}
+                      >
+                        <div className="flex items-center space-x-3">
+                          <span className={isSectionActive ? "text-[#D8B77A]" : "text-[#9CA3AF]"}>
+                            {item.icon}
+                          </span>
+                          <span className="text-[12px]">{item.title}</span>
+                        </div>
+                        {isSubmenuOpen ? (
+                          <ChevronDown className="w-3.5 h-3.5 text-white/50" />
+                        ) : (
+                          <ChevronRight className="w-3.5 h-3.5 text-white/40" />
+                        )}
+                      </button>
+
+                      {/* Submenu Dropdown Items */}
+                      {isSubmenuOpen && (
+                        <div className="pl-6 pr-1 py-1 space-y-0.5 mt-0.5">
+                          {item.submenu.map((sub) => {
+                            const isSubActive = pathname === sub.href;
+                            return (
+                              <Link
+                                key={sub.title}
+                                href={sub.href}
+                                onClick={() => setMobileOpen(false)}
+                                className={`block px-3 py-1.5 rounded-md text-[11px] font-medium transition-all ${
+                                  isSubActive
+                                    ? "bg-[#25201A] text-[#D8B77A] font-bold border border-[#B8893E]/30"
+                                    : "text-[#9CA3AF] hover:text-white hover:bg-[#121E2B]"
+                                }`}
+                              >
+                                {sub.title}
+                              </Link>
+                            );
+                          })}
+                        </div>
                       )}
-                    </button>
+                    </div>
                   ) : (
                     <Link
                       href={item.href}
                       onClick={() => setMobileOpen(false)}
                       className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-all ${
-                        isActive
-                          ? "bg-[#182635] text-[#D8B875] font-semibold shadow-xs"
+                        pathname === item.href
+                          ? "bg-[#182635] text-[#D8B77A] font-semibold"
                           : "text-[#9CA3AF] hover:bg-[#121E2B] hover:text-[#E5E7EB]"
                       }`}
                     >
                       <div className="flex items-center space-x-3">
-                        <span className={isActive ? "text-[#D8B875]" : "text-[#9CA3AF]"}>
+                        <span className={pathname === item.href ? "text-[#D8B77A]" : "text-[#9CA3AF]"}>
                           {item.icon}
                         </span>
                         <span className="text-[12px]">{item.title}</span>
@@ -292,29 +305,6 @@ export function AdminSidebar({
                       )}
                     </Link>
                   )}
-
-                  {/* Submenu Dropdown */}
-                  {item.submenu && isSubmenuOpen && (
-                    <div className="pl-9 pr-2 py-1 space-y-1 border-l border-[#1F2D3D] ml-4 my-1">
-                      {item.submenu.map((sub) => {
-                        const isSubActive = pathname === sub.href;
-                        return (
-                          <Link
-                            key={sub.title}
-                            href={sub.href}
-                            onClick={() => setMobileOpen(false)}
-                            className={`block px-2.5 py-1.5 rounded text-[11px] font-medium transition-colors ${
-                              isSubActive
-                                ? "text-[#D8B875] font-bold bg-[#182635]"
-                                : "text-[#9CA3AF] hover:text-white hover:bg-[#121E2B]"
-                            }`}
-                          >
-                            {sub.title}
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  )}
                 </div>
               );
             })}
@@ -323,24 +313,24 @@ export function AdminSidebar({
       </nav>
 
       {/* User Footer Profile Card */}
-      <div className="p-3.5 border-t border-[#15202B] bg-[#070D14]">
+      <div className="p-3.5 border-t border-[#15202B] bg-[#050C14]">
         <div className="flex items-center justify-between">
           <Link href="/admin/profile" className="flex items-center space-x-2.5 hover:opacity-90 transition-opacity">
-            <div className="w-8 h-8 rounded-full bg-[#8C6527] border border-[#D8B875]/40 flex items-center justify-center text-white font-serif font-bold text-xs shadow-inner">
-              {initials}
+            <div className="w-8 h-8 rounded-full bg-[#B8893E] border border-[#D8B77A]/40 flex items-center justify-center text-white font-serif font-bold text-xs shadow-inner">
+              VR
             </div>
             <div className="overflow-hidden">
-              <div className="text-xs font-semibold text-white truncate">{adminUser?.name || "Vikramaditya Roy (GM)"}</div>
-              <div className="text-[9px] text-[#C4984F] tracking-widest uppercase font-bold">{adminUser?.role || "SUPER ADMIN"}</div>
+              <div className="text-xs font-semibold text-white truncate">Vikramaditya Roy (GM)</div>
+              <div className="text-[9px] text-[#B8893E] tracking-widest uppercase font-bold">SUPER ADMIN</div>
             </div>
           </Link>
           <button
             onClick={handleLogout}
             title="Sign Out"
-            className="flex items-center space-x-1 p-1.5 text-white/50 hover:text-rose-400 hover:bg-rose-950/30 rounded-md transition-colors text-[11px] cursor-pointer"
+            className="flex items-center space-x-1 p-1.5 text-white/60 hover:text-rose-400 hover:bg-rose-950/30 rounded-md transition-colors text-[11px] cursor-pointer"
           >
             <LogOut className="w-3.5 h-3.5" />
-            <span className="hidden xl:inline text-[10px]">Logout</span>
+            <span className="text-[10px]">Logout</span>
           </button>
         </div>
       </div>
@@ -349,8 +339,8 @@ export function AdminSidebar({
 
   return (
     <>
-      {/* Desktop Sidebar (Fixed Left) */}
-      <aside className="hidden lg:block w-64 h-screen sticky top-0 flex-shrink-0 z-30 shadow-xl">
+      {/* Desktop Sidebar (Fixed Left, Width ~280px) */}
+      <aside className="hidden lg:block w-[280px] h-screen sticky top-0 flex-shrink-0 z-30 shadow-xl">
         {SidebarContent}
       </aside>
 
