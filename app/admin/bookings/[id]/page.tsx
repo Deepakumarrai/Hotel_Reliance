@@ -65,8 +65,8 @@ export default function SingleBookingDetailPage() {
   if (loading) {
     return (
       <AdminLayout>
-        <div className="py-24 text-center text-white/50 text-xs animate-pulse">
-          Loading reservation details for #{id}...
+        <div className="py-24 text-center text-[#8A8277] text-xs font-serif animate-pulse">
+          Loading reservation folio details for #{id}...
         </div>
       </AdminLayout>
     );
@@ -76,13 +76,13 @@ export default function SingleBookingDetailPage() {
     return (
       <AdminLayout>
         <div className="py-20 text-center space-y-3">
-          <h2 className="text-xl font-serif text-white">Booking #{id} Not Found</h2>
-          <p className="text-xs text-white/50">The requested reservation record does not exist.</p>
+          <h2 className="text-xl font-serif text-[#111923]">Booking #{id} Not Found</h2>
+          <p className="text-xs text-[#6B6255]">The requested reservation record does not exist.</p>
           <Link
             href="/admin/bookings"
-            className="inline-block px-4 py-2 bg-[#1B2A42] text-[#D8B875] text-xs font-semibold rounded"
+            className="inline-block px-4 py-2 bg-[#A97A38] text-white text-xs font-semibold rounded-xl"
           >
-            ← Back to All Bookings
+            ← Back to All Reservations
           </Link>
         </div>
       </AdminLayout>
@@ -91,71 +91,89 @@ export default function SingleBookingDetailPage() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6 max-w-5xl mx-auto">
-        {/* Top Back & Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#1B2A42] pb-5">
-          <div className="flex items-center space-x-3">
-            <Link
-              href="/admin/bookings"
-              className="p-2 rounded bg-[#111E31] border border-[#1B2A42] text-white/70 hover:text-white transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
-            </Link>
-            <div>
-              <div className="flex items-center space-x-2">
-                <span className="font-mono text-sm font-bold text-[#D8B875]">{booking.id}</span>
+      <div className="space-y-6 max-w-[1540px] mx-auto pb-12 font-sans text-[#111923]">
+        {/* 1. Page Header */}
+        <div className="relative rounded-2xl border border-[#E8DFD2] bg-[#FCFAF6] p-6 sm:p-8 shadow-[0_2px_12px_rgba(40,30,20,0.03)] flex flex-col md:flex-row md:items-center justify-between gap-6 overflow-hidden">
+          <div className="absolute right-0 top-0 bottom-0 w-96 opacity-10 pointer-events-none bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#B8893E] via-transparent to-transparent" />
+
+          {/* Left: Eyebrow, Back Arrow & Main Title */}
+          <div className="space-y-2 z-10">
+            <div className="flex items-center space-x-3">
+              <span className="text-[10px] uppercase tracking-[0.25em] font-bold text-[#B8893E] block">
+                Folio & Invoice Breakdown
+              </span>
+              <span className="w-12 h-[1px] bg-[#B8893E]/40" />
+            </div>
+
+            <div className="flex items-center space-x-3.5 pt-0.5">
+              <Link
+                href="/admin/bookings"
+                className="w-8 h-8 rounded-lg bg-[#0E151D] text-white flex items-center justify-center hover:bg-[#B8893E] transition-colors shadow-2xs flex-shrink-0"
+                title="Back to Bookings"
+              >
+                <ArrowLeft className="w-4 h-4" />
+              </Link>
+
+              <div className="flex items-center space-x-3">
+                <h1 className="text-2xl sm:text-[34px] font-serif font-bold text-[#111923] tracking-tight leading-tight">
+                  {booking.guestName}
+                </h1>
+                <span className="font-mono text-sm font-bold text-[#A97A38] bg-[#FAF7F2] border border-[#E8DFD2] px-2.5 py-1 rounded-md">
+                  #{booking.id}
+                </span>
                 <span
-                  className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                  className={`px-2.5 py-1 rounded-md text-[10px] uppercase font-bold tracking-wider ${
                     booking.bookingStatus === "CHECKED_IN"
-                      ? "bg-emerald-950 text-emerald-300 border border-emerald-500/40"
+                      ? "bg-[#DCFCE7] text-[#15803D] border border-[#86EFAC]"
                       : booking.bookingStatus === "CHECKED_OUT"
-                      ? "bg-blue-950 text-blue-300 border border-blue-500/40"
+                      ? "bg-[#DBEAFE] text-[#1D4ED8] border border-[#BFDBFE]"
                       : booking.bookingStatus === "CANCELLED"
-                      ? "bg-red-950 text-red-400 border border-red-500/40"
-                      : "bg-[#1B2A42] text-[#D8B875] border border-[#C4984F]/40"
+                      ? "bg-[#FFE4E6] text-[#E11D48] border border-[#FECDD3]"
+                      : "bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A]"
                   }`}
                 >
                   {booking.bookingStatus}
                 </span>
               </div>
-              <h1 className="text-xl sm:text-2xl font-serif font-bold text-white mt-0.5">
-                {booking.guestName}
-              </h1>
             </div>
+
+            <p className="text-xs sm:text-[13px] text-[#6B6255] font-normal pl-11.5 leading-relaxed">
+              Official tax invoice folio, room assignment ledger, and verified payment gateway records.
+            </p>
           </div>
 
-          {/* Actions & Print */}
-          <div className="flex items-center space-x-2.5">
+          {/* Right Action Buttons */}
+          <div className="flex items-center space-x-2.5 z-10 flex-shrink-0">
             <button
               onClick={() => window.print()}
-              className="px-3 py-2 rounded bg-[#1B2A42] hover:bg-[#253755] text-xs font-semibold text-[#E9DFD2] border border-[#1B2A42] transition-colors flex items-center space-x-1.5"
+              className="px-4 py-2.5 rounded-xl bg-white border border-[#E8DFD2] hover:bg-[#FAF7F2] text-[#111923] text-xs font-semibold flex items-center space-x-2 transition-all shadow-2xs cursor-pointer"
             >
-              <Printer className="w-3.5 h-3.5 text-[#C4984F]" />
+              <Printer className="w-3.5 h-3.5 text-[#A97A38]" />
               <span>Print Tax Invoice</span>
             </button>
 
             {booking.bookingStatus === "CONFIRMED" && (
               <button
                 onClick={() => setCheckInOpen(true)}
-                className="px-4 py-2 rounded bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-xs font-bold uppercase tracking-wider text-white shadow-md transition-all"
+                className="px-4 py-2.5 rounded-xl bg-[#15803D] hover:bg-[#166534] text-white text-xs font-bold uppercase tracking-wider flex items-center space-x-2 shadow-xs cursor-pointer transition-all active:scale-95"
               >
-                Check-In Guest
+                <span>Check-In Guest</span>
               </button>
             )}
 
             {booking.bookingStatus === "CHECKED_IN" && (
               <button
                 onClick={() => setCheckOutOpen(true)}
-                className="px-4 py-2 rounded bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-xs font-bold uppercase tracking-wider text-white shadow-md transition-all"
+                className="px-4 py-2.5 rounded-xl bg-[#1D4ED8] hover:bg-[#1E40AF] text-white text-xs font-bold uppercase tracking-wider flex items-center space-x-2 shadow-xs cursor-pointer transition-all active:scale-95"
               >
-                Check-Out & Settle
+                <span>Check-Out & Settle</span>
               </button>
             )}
 
             {booking.bookingStatus !== "CANCELLED" && booking.bookingStatus !== "CHECKED_OUT" && (
               <button
                 onClick={() => setCancelOpen(true)}
-                className="px-3 py-2 rounded bg-red-950 hover:bg-red-900 text-red-300 text-xs font-semibold transition-colors"
+                className="px-3.5 py-2.5 rounded-xl bg-[#FFE4E6] hover:bg-[#FECDD3] text-[#E11D48] border border-[#FECDD3] text-xs font-bold transition-colors cursor-pointer"
               >
                 Cancel
               </button>
@@ -163,125 +181,125 @@ export default function SingleBookingDetailPage() {
           </div>
         </div>
 
-        {/* Printable Tax Invoice Card */}
-        <div className="bg-[#0B1423] border border-[#1B2A42] rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6 print:bg-white print:text-black print:border-black">
+        {/* 2. Official Tax Invoice Folio Card */}
+        <div className="bg-white border border-[#E8DFD2] rounded-2xl p-6 sm:p-8 shadow-[0_4px_18px_rgba(40,30,20,0.04)] space-y-6 print:border-black">
           {/* Invoice Header */}
-          <div className="flex flex-col sm:flex-row justify-between gap-6 border-b border-[#1B2A42] pb-6">
-            <div className="space-y-1">
+          <div className="flex flex-col sm:flex-row justify-between gap-6 border-b border-[#EDE6DB] pb-6">
+            <div className="space-y-1.5">
               <div className="flex items-center space-x-2">
-                <Hotel className="w-6 h-6 text-[#C4984F]" />
-                <span className="font-serif text-xl font-bold tracking-wider text-white uppercase print:text-black">
+                <Hotel className="w-6 h-6 text-[#A97A38]" />
+                <span className="font-serif text-2xl font-bold tracking-wider text-[#111923] uppercase">
                   Hotel Reliance
                 </span>
               </div>
-              <p className="text-xs text-[#E9DFD2]/60 max-w-sm print:text-gray-600">
-                Plot No: NIHP-1, West Side of Co-Operative Colony, Bokaro Steel City, Jharkhand - 827001
+              <p className="text-xs text-[#6B6255] max-w-sm">
+                Opp. HP Petrol Pump, Bye Pass Road, Chas, Bokaro Steel City, Jharkhand - 827013
               </p>
-              <p className="text-xs text-[#D8B875] font-mono print:text-black">
-                GSTIN: 20AABCH8920K1ZX • Phones: +91 92629 97777 / +91 92628 27777
+              <p className="text-xs text-[#A97A38] font-mono font-medium">
+                GSTIN: 20AABCH8920K1ZX • Phone: +91 92629 97777 / +91 6542 265000
               </p>
             </div>
 
             <div className="text-left sm:text-right space-y-1">
-              <span className="text-[10px] uppercase font-bold tracking-widest text-[#C4984F] block">
-                Official Booking Confirmation & Invoice
+              <span className="text-[10px] uppercase font-bold tracking-widest text-[#A97A38] block">
+                OFFICIAL BOOKING CONFIRMATION & TAX INVOICE
               </span>
-              <div className="font-mono text-lg font-bold text-white print:text-black">
-                {booking.id}
+              <div className="font-mono text-xl font-bold text-[#111923]">
+                #{booking.id}
               </div>
-              <div className="text-xs text-white/50 print:text-gray-600">
+              <div className="text-xs text-[#78716C]">
                 Issued: {new Date(booking.createdAt).toLocaleDateString("en-IN", { dateStyle: "long" })}
               </div>
             </div>
           </div>
 
           {/* Grid: Guest & Stay Details */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-[#111E31] p-5 rounded-xl border border-[#1B2A42] text-xs print:bg-gray-100 print:text-black">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-[#FCFAF6] p-5 rounded-2xl border border-[#E8DFD2] text-xs">
             <div className="space-y-2">
-              <span className="text-[10px] uppercase font-bold tracking-wider text-[#C4984F]">
+              <span className="text-[10px] uppercase font-bold tracking-wider text-[#A97A38] block">
                 Guest Information
               </span>
-              <div className="font-bold text-base text-white print:text-black">{booking.guestName}</div>
-              <div className="text-[#E9DFD2]/70 flex items-center space-x-1.5">
-                <Phone className="w-3.5 h-3.5 text-[#C4984F]" />
-                <span>{booking.guestPhone}</span>
+              <div className="font-bold text-base text-[#111923]">{booking.guestName}</div>
+              <div className="text-[#6B6255] flex items-center space-x-1.5">
+                <Phone className="w-3.5 h-3.5 text-[#A97A38]" />
+                <span className="font-mono">{booking.guestPhone}</span>
               </div>
-              <div className="text-[#E9DFD2]/70 flex items-center space-x-1.5">
-                <Mail className="w-3.5 h-3.5 text-[#C4984F]" />
+              <div className="text-[#6B6255] flex items-center space-x-1.5">
+                <Mail className="w-3.5 h-3.5 text-[#A97A38]" />
                 <span>{booking.guestEmail || "No email recorded"}</span>
               </div>
             </div>
 
             <div className="space-y-2">
-              <span className="text-[10px] uppercase font-bold tracking-wider text-[#C4984F]">
+              <span className="text-[10px] uppercase font-bold tracking-wider text-[#A97A38] block">
                 Stay Specifications
               </span>
-              <div className="font-bold text-white print:text-black capitalize">
+              <div className="font-bold text-base text-[#111923] capitalize">
                 {booking.roomType} Room {booking.roomNumber ? `(Room #${booking.roomNumber})` : "(Unassigned)"}
               </div>
-              <div className="text-[#E9DFD2]/70">
-                Check-In: <strong>{booking.checkInDate}</strong> (12:00 PM)
+              <div className="text-[#6B6255]">
+                Check-In: <strong className="text-[#111923]">{booking.checkInDate}</strong> (12:00 PM)
               </div>
-              <div className="text-[#E9DFD2]/70">
-                Check-Out: <strong>{booking.checkOutDate}</strong> (11:00 AM)
+              <div className="text-[#6B6255]">
+                Check-Out: <strong className="text-[#111923]">{booking.checkOutDate}</strong> (11:00 AM)
               </div>
-              <div className="text-[#E9DFD2]/70">
+              <div className="text-[#6B6255]">
                 Occupancy: {booking.adults} Adults {booking.children > 0 && `• ${booking.children} Kids`} • {booking.nights} {booking.nights === 1 ? "Night" : "Nights"}
               </div>
             </div>
           </div>
 
-          {/* Tariff Itemized Ledger Table */}
-          <div className="border border-[#1B2A42] rounded-xl overflow-hidden print:border-black">
+          {/* Itemized Table */}
+          <div className="border border-[#E8DFD2] rounded-xl overflow-hidden">
             <table className="w-full text-left text-xs">
-              <thead className="bg-[#111E31] text-[10px] uppercase tracking-wider text-[#C4984F] border-b border-[#1B2A42] print:bg-gray-200 print:text-black">
+              <thead className="bg-[#FAF7F2] text-[10px] uppercase tracking-wider text-[#A97A38] border-b border-[#E8DFD2]">
                 <tr>
-                  <th className="p-3 font-bold">Item Description</th>
-                  <th className="p-3 font-bold text-center">Nights</th>
-                  <th className="p-3 font-bold text-right">Rate / Night</th>
-                  <th className="p-3 font-bold text-right">Subtotal</th>
+                  <th className="p-3.5 font-bold">Item Description</th>
+                  <th className="p-3.5 font-bold text-center">Nights</th>
+                  <th className="p-3.5 font-bold text-right">Rate / Night</th>
+                  <th className="p-3.5 font-bold text-right">Subtotal</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#1B2A42] text-white/90 print:divide-gray-300 print:text-black">
+              <tbody className="divide-y divide-[#EDE6DB] text-[#111923]">
                 <tr>
-                  <td className="p-3">
-                    <div className="font-semibold capitalize">{booking.roomType} Room Accommodation</div>
-                    <div className="text-[10px] text-white/40">Includes High-Speed Wi-Fi & 24/7 Room Service Support</div>
+                  <td className="p-3.5">
+                    <div className="font-bold capitalize">{booking.roomType} Room Accommodation</div>
+                    <div className="text-[10px] text-[#78716C]">Includes High-Speed Wi-Fi & 24/7 Room Service Support</div>
                   </td>
-                  <td className="p-3 text-center font-medium">{booking.nights}</td>
-                  <td className="p-3 text-right">₹{Math.round(booking.baseAmount / booking.nights).toLocaleString()}</td>
-                  <td className="p-3 text-right font-semibold">₹{booking.baseAmount.toLocaleString()}</td>
+                  <td className="p-3.5 text-center font-medium">{booking.nights}</td>
+                  <td className="p-3.5 text-right font-mono">₹{Math.round(booking.baseAmount / booking.nights).toLocaleString()}</td>
+                  <td className="p-3.5 text-right font-bold font-mono">₹{booking.baseAmount.toLocaleString()}</td>
                 </tr>
                 {booking.discountAmount > 0 && (
-                  <tr className="text-emerald-400 print:text-emerald-700">
-                    <td className="p-3">Seasonal / Coupon Discount Applied</td>
-                    <td className="p-3 text-center">—</td>
-                    <td className="p-3 text-right">—</td>
-                    <td className="p-3 text-right font-semibold">-₹{booking.discountAmount.toLocaleString()}</td>
+                  <tr className="text-[#15803D]">
+                    <td className="p-3.5">Seasonal / Coupon Discount Applied</td>
+                    <td className="p-3.5 text-center">—</td>
+                    <td className="p-3.5 text-right">—</td>
+                    <td className="p-3.5 text-right font-bold font-mono">-₹{booking.discountAmount.toLocaleString()}</td>
                   </tr>
                 )}
                 <tr>
-                  <td className="p-3">Goods & Services Tax (GST @ 12%)</td>
-                  <td className="p-3 text-center">—</td>
-                  <td className="p-3 text-right">—</td>
-                  <td className="p-3 text-right font-semibold">₹{booking.taxAmount.toLocaleString()}</td>
+                  <td className="p-3.5">Goods & Services Tax (GST @ 12%)</td>
+                  <td className="p-3.5 text-center">—</td>
+                  <td className="p-3.5 text-right">—</td>
+                  <td className="p-3.5 text-right font-mono font-medium">₹{booking.taxAmount.toLocaleString()}</td>
                 </tr>
               </tbody>
-              <tfoot className="bg-[#111E31] border-t-2 border-[#C4984F]/40 print:bg-gray-100">
+              <tfoot className="bg-[#FAF7F2] border-t-2 border-[#E8DFD2]">
                 <tr>
-                  <td colSpan={3} className="p-3 text-right font-bold uppercase tracking-wider text-[#C4984F] print:text-black">
+                  <td colSpan={3} className="p-3.5 text-right font-bold uppercase tracking-wider text-[#A97A38]">
                     Grand Total Amount:
                   </td>
-                  <td className="p-3 text-right text-base font-bold text-[#D8B875] print:text-black">
-                    ₹{booking.totalAmount.toLocaleString()}
+                  <td className="p-3.5 text-right text-base font-bold text-[#111923] font-mono">
+                    ₹{booking.totalAmount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
                   </td>
                 </tr>
                 <tr>
-                  <td colSpan={3} className="p-3 text-right text-xs font-medium text-white/60 print:text-black">
+                  <td colSpan={3} className="p-3.5 text-right text-xs font-medium text-[#78716C]">
                     Paid via {booking.paymentMethod}:
                   </td>
-                  <td className="p-3 text-right text-xs font-bold text-emerald-400 print:text-black">
-                    ₹{booking.paidAmount.toLocaleString()}
+                  <td className="p-3.5 text-right text-xs font-bold text-[#15803D] font-mono">
+                    ₹{booking.paidAmount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
                   </td>
                 </tr>
               </tfoot>
@@ -290,21 +308,11 @@ export default function SingleBookingDetailPage() {
 
           {/* Special Requests */}
           {booking.specialRequests && (
-            <div className="p-4 bg-[#111E31] rounded-xl border border-[#1B2A42] text-xs">
-              <span className="text-[10px] uppercase font-bold tracking-wider text-[#C4984F] block mb-1">
+            <div className="p-4 bg-[#FAF7F2] rounded-xl border border-[#E8DFD2] text-xs">
+              <span className="text-[10px] uppercase font-bold tracking-wider text-[#A97A38] block mb-1">
                 Guest Special Requests
               </span>
-              <p className="text-[#E9DFD2]/80 italic">"{booking.specialRequests}"</p>
-            </div>
-          )}
-
-          {booking.cancellationReason && (
-            <div className="p-4 bg-red-950/40 rounded-xl border border-red-500/40 text-xs text-red-300">
-              <span className="text-[10px] uppercase font-bold tracking-wider text-red-400 block mb-1">
-                Cancellation Details
-              </span>
-              <p>Reason: {booking.cancellationReason}</p>
-              {booking.refundAmount ? <p className="font-bold mt-1">Refund Processed: ₹{booking.refundAmount.toLocaleString()}</p> : null}
+              <p className="text-[#6B6255] italic">"{booking.specialRequests}"</p>
             </div>
           )}
         </div>
