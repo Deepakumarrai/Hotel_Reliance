@@ -290,7 +290,7 @@ export const api = {
             images: r.images,
             capacityAdults: r.occupancy,
             bedType: r.bedType,
-            roomSizeSqFt: parseInt(r.size) || 300,
+            roomSizeSqFt: parseInt(r.size || "300") || 300,
             amenities: r.amenities
           }))
         };
@@ -316,7 +316,7 @@ export const api = {
             images: found.images,
             capacityAdults: found.occupancy,
             bedType: found.bedType,
-            roomSizeSqFt: parseInt(found.size) || 300,
+            roomSizeSqFt: parseInt(found.size || "300") || 300,
             amenities: found.amenities
           }
         };
@@ -398,7 +398,7 @@ export const api = {
           status: "CONFIRMED",
           paymentStatus: body.paymentMethod === "PAY_AT_HOTEL" ? "PENDING" : "PAID",
           paymentMethod: body.paymentMethod || "PAY_AT_HOTEL",
-          totalAmount: matchingRoom.price * 1.12,
+          totalAmount: (matchingRoom.price || 2499) * 1.12,
           createdAt: new Date().toISOString()
         };
         saveStoredBooking(newBooking);

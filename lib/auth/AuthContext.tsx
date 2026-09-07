@@ -16,6 +16,7 @@ interface AuthContextType {
   isLoading: boolean;
   signIn: (credentials: SignInCredentials) => Promise<{ success: boolean; error?: string }>;
   signUp: (credentials: SignUpCredentials) => Promise<{ success: boolean; error?: string }>;
+  signOut: () => void;
   signInWithGoogle: (googleData?: {
     credential?: string;
     email?: string;
