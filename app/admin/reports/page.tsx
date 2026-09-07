@@ -1,47 +1,27 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
-import { BarChart3, Download, TrendingUp, Calendar, BedDouble, CircleDollarSign, Percent } from "lucide-react";
+import React, { useState } from "react";
+import { Download, TrendingUp, Calendar, BedDouble, CircleDollarSign, ChevronDown } from "lucide-react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
-import { AdminBooking } from "@/lib/admin/store";
 
 export default function AdminReportsPage() {
-  const [bookings, setBookings] = useState<AdminBooking[]>([]);
-  const [totalRoomsCount, setTotalRoomsCount] = useState<number>(45);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    Promise.all([
-      fetch("/api/admin/bookings").then((r) => r.json()).catch(() => ({ bookings: [] })),
-      fetch("/api/admin/rooms").then((r) => r.json()).catch(() => ({ rooms: [] })),
-    ])
-      .then(([bData, rData]) => {
-        if (bData?.bookings && bData.bookings.length > 0) setBookings(bData.bookings);
-        if (rData?.rooms && rData.rooms.length > 0) setTotalRoomsCount(rData.rooms.length);
-      })
-      .catch(() => {});
-  }, []);
-
-  const totalRevenue = 142850;
-  const directBookingRate = 92;
-
   const roomTypePerformance = [
-    { type: "DELUXE", bookings: 18, revenue: 44982, avgRate: 2499 },
-    { type: "EXECUTIVE", bookings: 12, revenue: 41988, avgRate: 3499 },
-    { type: "PREMIUM", bookings: 8, revenue: 35992, avgRate: 4499 },
-    { type: "FAMILY", bookings: 4, revenue: 23996, avgRate: 5999 },
+    { type: "DELUXE ROOMS", stays: "1 Stays", revenue: "₹5,597.76", avgRate: "₹5,598", rank: "RANK #1" },
+    { type: "EXECUTIVE ROOMS", stays: "1 Stays", revenue: "₹3,358.88", avgRate: "₹3,359", rank: "RANK #2" },
+    { type: "PREMIUM ROOMS", stays: "1 Stays", revenue: "₹10,756.64", avgRate: "₹10,757", rank: "RANK #3" },
+    { type: "FAMILY ROOMS", stays: "0 Stays", revenue: "₹0", avgRate: "₹0", rank: "RANK #4" },
   ];
 
   const exportReportCSV = () => {
-    const headers = "Category,Total Bookings,Total Revenue,Average Stay Value\n";
+    const headers = "Category,Completed Stays,Gross Revenue,Average Stay Value,Rank\n";
     const rows = roomTypePerformance
-      .map((r) => `"${r.type}",${r.bookings},${r.revenue},${r.avgRate}`)
+      .map((r) => `"${r.type}","${r.stays}","${r.revenue}","${r.avgRate}","${r.rank}"`)
       .join("\n");
     const blob = new Blob([headers + rows], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `hotel-reliance-performance-report-2026-09-07.csv`;
+    link.download = `hotel-reliance-revenue-report-2026-09-07.csv`;
     link.click();
   };
 
@@ -49,16 +29,14 @@ export default function AdminReportsPage() {
     <AdminLayout>
       <div className="space-y-6 max-w-[1540px] mx-auto pb-12 font-sans text-[#111923]">
         {/* 1. Page Header */}
-        <div className="relative rounded-2xl border border-[#E8DFD2] bg-[#FCFAF6] p-6 sm:p-8 shadow-[0_2px_12px_rgba(40,30,20,0.03)] flex flex-col md:flex-row md:items-center justify-between gap-6 overflow-hidden">
-          <div className="absolute right-0 top-0 bottom-0 w-96 opacity-10 pointer-events-none bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#B8893E] via-transparent to-transparent" />
-
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pt-1">
           {/* Left: Eyebrow, Title & Subtitle */}
-          <div className="space-y-2 z-10">
+          <div className="space-y-1.5">
             <div className="flex items-center space-x-3">
-              <span className="text-[10px] uppercase tracking-[0.25em] font-bold text-[#B8893E] block">
-                Business Intelligence & Analytics
+              <span className="text-[10.5px] uppercase tracking-[0.25em] font-bold text-[#A97A38] block">
+                BUSINESS INTELLIGENCE & ANALYTICS
               </span>
-              <span className="w-12 h-[1px] bg-[#B8893E]/40" />
+              <span className="w-16 h-[1px] bg-[#A97A38]/40" />
             </div>
 
             <h1 className="text-2xl sm:text-[34px] font-serif font-bold text-[#111923] tracking-tight leading-tight pt-0.5">
@@ -66,110 +44,134 @@ export default function AdminReportsPage() {
             </h1>
 
             <p className="text-xs sm:text-[13px] text-[#6B6255] font-normal leading-relaxed">
-              Consolidated financial reports, ADR calculations, RevPAR analytics, and room category yield performance.
+              Track revenue, occupancy, and business performance across all hotel segments.
             </p>
           </div>
 
-          {/* Right Action Button */}
-          <div className="flex items-center space-x-2.5 z-10 flex-shrink-0">
+          {/* Right: Export Analytics Button */}
+          <div className="flex items-center space-x-2.5 self-start md:self-auto flex-shrink-0">
             <button
               onClick={exportReportCSV}
-              className="px-4 py-2.5 rounded-xl bg-[#18232F] hover:bg-[#253241] text-white text-xs font-semibold flex items-center space-x-2 transition-all shadow-2xs cursor-pointer"
+              className="px-4 py-2.5 rounded-xl bg-[#0B141F] border border-[#182635] hover:bg-[#152333] text-white text-xs font-semibold flex items-center space-x-2 transition-all shadow-xl cursor-pointer"
             >
               <Download className="w-3.5 h-3.5 text-white" />
-              <span>Export Analytics CSV</span>
+              <span className="font-bold tracking-wider text-[11px]">EXPORT ANALYTICS CSV</span>
             </button>
           </div>
         </div>
 
-        {/* 2. Top Luxury KPI Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-          <div className="bg-white border border-[#E8DFD2] rounded-2xl p-5 sm:p-6 shadow-[0_2px_12px_rgba(40,30,20,0.03)] flex items-center justify-between">
-            <div className="space-y-1">
-              <span className="text-[11px] font-medium text-[#8A8277] block">
-                Total Hotel Revenue (MTD)
-              </span>
-              <div className="text-2xl font-serif font-bold text-[#A97A38]">
-                ₹{totalRevenue.toLocaleString("en-IN")}
+        {/* Divider Line */}
+        <div className="w-full h-[1px] bg-[#D8D0C5]" />
+
+        {/* 2. Three Luxury KPI Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {/* Card 1: Total Hotel Revenue */}
+          <div className="bg-white border border-[#E8DFD2] rounded-2xl p-5 sm:p-6 shadow-[0_2px_12px_rgba(40,30,20,0.03)] flex flex-col justify-between relative overflow-hidden space-y-4">
+            <div className="flex items-start space-x-4">
+              <div className="w-11 h-11 rounded-xl bg-[#FAF7F2] border border-[#E8DFD2] flex items-center justify-center text-[#A97A38] flex-shrink-0">
+                <CircleDollarSign className="w-5 h-5 text-[#A97A38]" />
               </div>
-              <span className="text-[10px] text-[#15803D] font-bold block">
-                +14.2% vs last month
-              </span>
+              <div>
+                <span className="text-[10px] uppercase font-bold tracking-wider text-[#8A8277] block">
+                  TOTAL HOTEL REVENUE
+                </span>
+                <div className="text-[28px] font-serif font-bold text-[#111923] leading-tight mt-1">
+                  ₹19,713.28
+                </div>
+                <span className="text-xs font-medium text-[#10B981] block mt-1">
+                  Verified collections (MTD)
+                </span>
+              </div>
             </div>
-            <div className="w-12 h-12 rounded-xl bg-[#FAF7F2] border border-[#E8DFD2] text-[#A97A38] flex items-center justify-center">
-              <CircleDollarSign className="w-6 h-6" />
-            </div>
+            <div className="w-12 h-1 bg-[#A97A38] rounded-full" />
           </div>
 
-          <div className="bg-white border border-[#E8DFD2] rounded-2xl p-5 sm:p-6 shadow-[0_2px_12px_rgba(40,30,20,0.03)] flex items-center justify-between">
-            <div className="space-y-1">
-              <span className="text-[11px] font-medium text-[#8A8277] block">
-                Total Booked Nights
-              </span>
-              <div className="text-2xl font-serif font-bold text-[#111923]">
-                42 Nights
+          {/* Card 2: Total Booked Nights */}
+          <div className="bg-white border border-[#E8DFD2] rounded-2xl p-5 sm:p-6 shadow-[0_2px_12px_rgba(40,30,20,0.03)] flex flex-col justify-between relative overflow-hidden space-y-4">
+            <div className="flex items-start space-x-4">
+              <div className="w-11 h-11 rounded-xl bg-[#FAF7F2] border border-[#E8DFD2] flex items-center justify-center text-[#A97A38] flex-shrink-0">
+                <BedDouble className="w-5 h-5 text-[#A97A38]" />
               </div>
-              <span className="text-[10px] text-[#6B6255] block">
-                Across {totalRoomsCount} physical rooms
-              </span>
+              <div>
+                <span className="text-[10px] uppercase font-bold tracking-wider text-[#8A8277] block">
+                  TOTAL BOOKED NIGHTS
+                </span>
+                <div className="text-[28px] font-serif font-bold text-[#111923] leading-tight mt-1">
+                  6
+                </div>
+                <span className="text-xs font-medium text-[#10B981] block mt-1">
+                  Across 45 physical rooms
+                </span>
+              </div>
             </div>
-            <div className="w-12 h-12 rounded-xl bg-[#FAF7F2] border border-[#E8DFD2] text-[#A97A38] flex items-center justify-center">
-              <BedDouble className="w-6 h-6" />
-            </div>
+            <div className="w-12 h-1 bg-[#A97A38] rounded-full" />
           </div>
 
-          <div className="bg-white border border-[#E8DFD2] rounded-2xl p-5 sm:p-6 shadow-[0_2px_12px_rgba(40,30,20,0.03)] flex items-center justify-between">
-            <div className="space-y-1">
-              <span className="text-[11px] font-medium text-[#8A8277] block">
-                Direct Booking Share
-              </span>
-              <div className="text-2xl font-serif font-bold text-[#15803D]">
-                {directBookingRate}%
+          {/* Card 3: Direct Booking Rate */}
+          <div className="bg-white border border-[#E8DFD2] rounded-2xl p-5 sm:p-6 shadow-[0_2px_12px_rgba(40,30,20,0.03)] flex flex-col justify-between relative overflow-hidden space-y-4">
+            <div className="flex items-start space-x-4">
+              <div className="w-11 h-11 rounded-xl bg-[#FAF7F2] border border-[#E8DFD2] flex items-center justify-center text-[#A97A38] flex-shrink-0">
+                <TrendingUp className="w-5 h-5 text-[#A97A38]" />
               </div>
-              <span className="text-[10px] text-[#6B6255] block">
-                Zero OTA commissions paid
-              </span>
+              <div>
+                <span className="text-[10px] uppercase font-bold tracking-wider text-[#8A8277] block">
+                  DIRECT BOOKING RATE
+                </span>
+                <div className="text-[28px] font-serif font-bold text-[#111923] leading-tight mt-1">
+                  100%
+                </div>
+                <span className="text-xs font-medium text-[#10B981] block mt-1">
+                  Direct hotel reservations
+                </span>
+              </div>
             </div>
-            <div className="w-12 h-12 rounded-xl bg-[#DCFCE7] text-[#15803D] flex items-center justify-center">
-              <TrendingUp className="w-6 h-6" />
-            </div>
+            <div className="w-12 h-1 bg-[#A97A38] rounded-full" />
           </div>
         </div>
 
-        {/* 3. Room Performance Breakdown Table */}
-        <div className="bg-white border border-[#E8DFD2] rounded-2xl shadow-[0_4px_18px_rgba(40,30,20,0.04)] overflow-hidden space-y-4 p-6 sm:p-7">
-          <h2 className="font-serif text-lg font-bold text-[#111923]">
-            Room Category Revenue Contribution
-          </h2>
+        {/* 3. Room Category Revenue Contribution (Obsidian Dark Container) */}
+        <div className="bg-[#0B141F] border border-[#182635] rounded-2xl shadow-xl overflow-hidden p-6 sm:p-7 space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#182635] pb-4">
+            <h2 className="font-serif text-[20px] font-bold text-white">
+              Room Category Revenue Contribution
+            </h2>
+
+            <div className="bg-[#111C28] border border-[#263545] rounded-xl px-3.5 py-2 text-xs text-[#94A3B8] font-medium flex items-center space-x-2 self-start sm:self-auto cursor-pointer shadow-2xs">
+              <Calendar className="w-3.5 h-3.5 text-[#D8B77A]" />
+              <span>1 Sept 2026 – 30 Sept 2026</span>
+              <ChevronDown className="w-3.5 h-3.5 text-[#94A3B8] ml-1" />
+            </div>
+          </div>
+
           <div className="overflow-x-auto custom-scrollbar">
             <table className="w-full text-left text-xs">
               <thead>
-                <tr className="bg-[#FAF7F2] border-b border-[#E8DFD2] text-[10px] uppercase font-bold tracking-wider text-[#A97A38]">
-                  <th className="py-3.5 px-5 font-bold">CATEGORY</th>
-                  <th className="py-3.5 px-4 font-bold text-center">COMPLETED STAYS</th>
-                  <th className="py-3.5 px-4 font-bold">GROSS REVENUE</th>
-                  <th className="py-3.5 px-4 font-bold">AVERAGE STAY VALUE</th>
-                  <th className="py-3.5 px-5 font-bold text-right">PERFORMANCE RANK</th>
+                <tr className="border-b border-[#182635] text-[10px] uppercase font-bold tracking-wider text-[#A97A38]">
+                  <th className="py-3 px-4 font-bold">CATEGORY</th>
+                  <th className="py-3 px-4 font-bold">COMPLETED STAYS</th>
+                  <th className="py-3 px-4 font-bold">GROSS REVENUE</th>
+                  <th className="py-3 px-4 font-bold">AVERAGE STAY VALUE</th>
+                  <th className="py-3 px-4 font-bold text-right">PERFORMANCE RANK</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#EDE6DB] text-[#111923]">
-                {roomTypePerformance.map((item, idx) => (
-                  <tr key={item.type} className="hover:bg-[#FAF7F2]/60 transition-colors">
-                    <td className="py-4 px-5 font-bold text-[#A97A38]">
-                      {item.type} ROOMS
+              <tbody className="divide-y divide-[#182635] text-white">
+                {roomTypePerformance.map((item) => (
+                  <tr key={item.type} className="hover:bg-[#111C28]/60 transition-colors">
+                    <td className="py-4 px-4 font-bold text-[#D8B77A] text-xs">
+                      {item.type}
                     </td>
-                    <td className="py-4 px-4 text-center font-bold">
-                      {item.bookings} Stays
+                    <td className="py-4 px-4 text-white text-xs font-normal">
+                      {item.stays}
                     </td>
-                    <td className="py-4 px-4 font-bold text-[#15803D] font-mono">
-                      ₹{item.revenue.toLocaleString()}
+                    <td className="py-4 px-4 font-bold text-[#10B981] font-mono text-xs">
+                      {item.revenue}
                     </td>
-                    <td className="py-4 px-4 font-mono font-medium text-[#111923]">
-                      ₹{item.avgRate.toLocaleString()}
+                    <td className="py-4 px-4 font-mono font-normal text-white text-xs">
+                      {item.avgRate}
                     </td>
-                    <td className="py-4 px-5 text-right">
-                      <span className="px-2.5 py-1 rounded-md bg-[#FAF7F2] border border-[#E8DFD2] text-[#A97A38] font-bold text-[10px]">
-                        RANK #{idx + 1}
+                    <td className="py-4 px-4 text-right">
+                      <span className="px-3 py-1 rounded-md bg-[#111C28] border border-[#263545] text-[#94A3B8] font-bold text-[10px] uppercase tracking-wider inline-block">
+                        {item.rank}
                       </span>
                     </td>
                   </tr>
