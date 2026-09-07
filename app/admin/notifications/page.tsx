@@ -1,22 +1,38 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Mail, Smartphone, Save, Bell, CheckCircle2 } from "lucide-react";
+import {
+  Mail,
+  Smartphone,
+  Save,
+  Send,
+  Tag,
+  ChevronUp,
+  ChevronDown,
+  X,
+  Sparkles,
+  MessageSquare,
+} from "lucide-react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { useToast } from "@/components/admin/ToastContext";
 
 export default function AdminNotificationsPage() {
   const { showToast } = useToast();
-  const [whatsappTemplate, setWhatsappTemplate] = useState(
-    "Namaste {{GuestName}}! Your luxury stay at Hotel Reliance Bokaro is confirmed (ID: {{BookingID}}). Room: {{RoomType}}. Check-in: {{CheckInDate}}. We look forward to hosting you!"
+  const [whatsappOpen, setWhatsappOpen] = useState(true);
+  const [emailOpen, setEmailOpen] = useState(true);
+
+  const [whatsappBody, setWhatsappBody] = useState(
+    `Hi {{GUESTNAME}},\n\nYour booking ({{BOOKINGID}}) for {{ROOMTYPE}} on {{CHECKINDATE}} is confirmed!\nWe look forward to welcoming you at Hotel Reliance.\n\nWarm regards,\nHotel Reliance Team`
   );
+
   const [emailSubject, setEmailSubject] = useState(
-    "Booking Confirmation & Tax Invoice — Hotel Reliance Bokaro (#{{BookingID}})"
+    "Your Stay at Hotel Reliance - Booking #{{BOOKINGID}} Confirmed"
   );
+
   const [emailBody, setEmailBody] = useState(
-    "Dear {{GuestName}},\n\nThank you for choosing Hotel Reliance. Your reservation for {{RoomType}} is confirmed from {{CheckInDate}} to {{CheckOutDate}}.\n\nPlease find your official GST Tax Invoice and hotel directions attached.\n\nWarm regards,\nFront Desk & Concierge\nHotel Reliance"
+    `Dear {{GUESTNAME}},\n\nThank you for choosing Hotel Reliance. Your booking has been confirmed.`
   );
-  const [isLoading, setIsLoading] = useState(false);
+
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
@@ -25,11 +41,13 @@ export default function AdminNotificationsPage() {
       .then((data) => {
         if (data?.templates) {
           if (data.templates.whatsapp_booking?.body) {
-            setWhatsappTemplate(data.templates.whatsapp_booking.body);
+            setWhatsappBody(data.templates.whatsapp_booking.body);
           }
           if (data.templates.email_invoice?.subject) {
             setEmailSubject(data.templates.email_invoice.subject);
-            setEmailBody(data.templates.email_invoice.body || "");
+          }
+          if (data.templates.email_invoice?.body) {
+            setEmailBody(data.templates.email_invoice.body);
           }
         }
       })
@@ -44,7 +62,7 @@ export default function AdminNotificationsPage() {
         fetch("/api/admin/notifications", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id: "whatsapp_booking", body: whatsappTemplate }),
+          body: JSON.stringify({ id: "whatsapp_booking", body: whatsappBody }),
         }),
         fetch("/api/admin/notifications", {
           method: "PUT",
@@ -53,7 +71,7 @@ export default function AdminNotificationsPage() {
         }),
       ]);
 
-      showToast("Notification templates saved successfully in database!", "success");
+      showToast("Notification templates saved successfully!", "success");
     } catch {
       showToast("Error saving templates", "error");
     } finally {
@@ -61,20 +79,54 @@ export default function AdminNotificationsPage() {
     }
   };
 
+  const insertTag = (tag: string, target: "whatsapp" | "email") => {
+    if (target === "whatsapp") {
+      setWhatsappBody((prev) => `${prev} ${tag}`);
+      showToast(`Tag ${tag} inserted into WhatsApp template`, "info");
+    } else {
+      setEmailBody((prev) => `${prev} ${tag}`);
+      showToast(`Tag ${tag} inserted into Email template`, "info");
+    }
+  };
+
+  const handleTestMessage = (type: "WhatsApp" | "Email") => {
+    showToast(`Test ${type} message triggered to hotel test sandbox!`, "success");
+  };
+
+  const whatsappTags = [
+    "{{GUESTNAME}}",
+    "{{BOOKINGID}}",
+    "{{ROOMTYPE}}",
+    "{{CHECKINDATE}}",
+    "{{CHECKOUTDATE}}",
+    "{{AMOUNT}}",
+    "{{HOTELNAME}}",
+    "{{PHONENUMBER}}",
+  ];
+
+  const emailTags = [
+    "{{GUESTNAME}}",
+    "{{BOOKINGID}}",
+    "{{ROOMTYPE}}",
+    "{{CHECKINDATE}}",
+    "{{CHECKOUTDATE}}",
+    "{{AMOUNT}}",
+    "{{HOTELNAME}}",
+    "{{HOTELADDRESS}}",
+  ];
+
   return (
     <AdminLayout>
       <div className="space-y-6 max-w-[1540px] mx-auto pb-12 font-sans text-[#111923]">
         {/* 1. Page Header */}
-        <div className="relative rounded-2xl border border-[#E8DFD2] bg-[#FCFAF6] p-6 sm:p-8 shadow-[0_2px_12px_rgba(40,30,20,0.03)] flex flex-col md:flex-row md:items-center justify-between gap-6 overflow-hidden">
-          <div className="absolute right-0 top-0 bottom-0 w-96 opacity-10 pointer-events-none bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#B8893E] via-transparent to-transparent" />
-
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pt-1">
           {/* Left: Eyebrow, Title & Subtitle */}
-          <div className="space-y-2 z-10">
+          <div className="space-y-1.5">
             <div className="flex items-center space-x-3">
-              <span className="text-[10px] uppercase tracking-[0.25em] font-bold text-[#B8893E] block">
-                Guest Communications & Automated Alerts
+              <span className="text-[10.5px] uppercase tracking-[0.25em] font-bold text-[#A97A38] block">
+                GUEST COMMUNICATIONS & ALERTS
               </span>
-              <span className="w-12 h-[1px] bg-[#B8893E]/40" />
+              <span className="w-16 h-[1px] bg-[#A97A38]/40" />
             </div>
 
             <h1 className="text-2xl sm:text-[34px] font-serif font-bold text-[#111923] tracking-tight leading-tight pt-0.5">
@@ -82,102 +134,248 @@ export default function AdminNotificationsPage() {
             </h1>
 
             <p className="text-xs sm:text-[13px] text-[#6B6255] font-normal leading-relaxed">
-              Configure instant WhatsApp Cloud API messages, transactional email invoices, and booking SMS triggers.
+              Configure instant WhatsApp Cloud API messages, transactional email invoices, and SMS triggers.
             </p>
           </div>
 
-          {/* Right Live Sync Status */}
-          <div className="flex items-center space-x-2 bg-[#DCFCE7] border border-[#86EFAC] px-4 py-2 rounded-xl text-xs text-[#15803D] font-bold flex-shrink-0">
-            <CheckCircle2 className="w-4 h-4 text-[#15803D]" />
-            <span>CLOUD API ACTIVE</span>
+          {/* Right: Decorative Tagline Banner */}
+          <div className="hidden lg:flex items-center space-x-4 bg-gradient-to-r from-transparent via-[#FAF7F2] to-[#F3EDE4] border border-[#E8DFD2] rounded-2xl px-6 py-3.5 shadow-2xs select-none flex-shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-[#FAF7F2] border border-[#E8DFD2] flex items-center justify-center text-[#A97A38]">
+              <MessageSquare className="w-5 h-5 text-[#A97A38]" />
+            </div>
+            <div>
+              <span className="font-serif italic text-sm text-[#A97A38] block leading-tight">
+                Stay Connected.
+              </span>
+              <span className="font-serif font-bold text-base text-[#111923] block leading-tight">
+                Delight Every Guest.
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* 2. Notification Templates Form */}
-        <form onSubmit={handleSave} className="space-y-6 text-xs">
-          {/* WhatsApp Template Card */}
-          <div className="bg-white border border-[#E8DFD2] rounded-2xl p-6 sm:p-8 shadow-[0_4px_18px_rgba(40,30,20,0.04)] space-y-4">
-            <div className="flex items-center space-x-3 border-b border-[#EDE6DB] pb-4">
-              <div className="w-9 h-9 rounded-xl bg-[#DCFCE7] text-[#15803D] flex items-center justify-center flex-shrink-0">
-                <Smartphone className="w-4.5 h-4.5" />
+        {/* Divider Line */}
+        <div className="w-full h-[1px] bg-[#D8D0C5]" />
+
+        {/* 2. Notification Cards */}
+        <div className="space-y-6">
+          {/* Card 1: WhatsApp Cloud API */}
+          <div className="bg-white border border-[#86EFAC]/70 rounded-2xl p-6 sm:p-7 shadow-[0_2px_12px_rgba(40,30,20,0.03)] space-y-5">
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-[#EDE6DB] pb-4">
+              <div className="flex items-center space-x-3.5">
+                <div className="w-11 h-11 rounded-xl bg-[#25D366] text-white flex items-center justify-center shadow-2xs flex-shrink-0">
+                  <Smartphone className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-serif text-[17px] font-bold text-[#111923]">
+                    WhatsApp Cloud API — Booking Confirmation Template
+                  </h3>
+                  <p className="text-xs text-[#78716C] mt-0.5">
+                    Dispatched automatically upon payment / confirmation
+                  </p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-serif text-base font-bold text-[#111923]">
-                  WhatsApp Cloud API — Booking Confirmation Template
-                </h3>
-                <p className="text-[11px] text-[#78716C]">
-                  Dispatched automatically upon payment verification and guest room allocation
-                </p>
+
+              <div className="flex items-center space-x-3">
+                <span className="px-3 py-1 rounded-full text-xs font-bold text-[#15803D] bg-[#DCFCE7] border border-[#86EFAC] flex items-center space-x-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#15803D] inline-block" />
+                  <span>Active</span>
+                </span>
+                <button
+                  onClick={() => setWhatsappOpen(!whatsappOpen)}
+                  className="p-1 rounded-lg text-[#78716C] hover:text-[#111923] hover:bg-[#FAF7F2] transition-colors cursor-pointer"
+                >
+                  {whatsappOpen ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+                </button>
               </div>
             </div>
 
-            <div>
-              <label className="text-[10px] uppercase font-bold tracking-wider text-[#A97A38] block mb-1.5">
-                Message Body (Supports dynamic tags: {"{{GuestName}}"}, {"{{BookingID}}"}, {"{{RoomType}}"}, {"{{CheckInDate}}"})
-              </label>
-              <textarea
-                rows={4}
-                value={whatsappTemplate}
-                onChange={(e) => setWhatsappTemplate(e.target.value)}
-                className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl p-3 text-xs text-[#111923] leading-relaxed focus:outline-none focus:border-[#B8893E] shadow-2xs resize-none"
-              />
-            </div>
+            {/* Body */}
+            {whatsappOpen && (
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 pt-1">
+                {/* Left: Message Body Textarea */}
+                <div className="lg:col-span-8 space-y-2">
+                  <label className="text-[10px] uppercase font-bold tracking-wider text-[#A97A38] block">
+                    MESSAGE BODY (SUPPORTS DYNAMIC TAGS)
+                  </label>
+                  <textarea
+                    rows={6}
+                    value={whatsappBody}
+                    onChange={(e) => setWhatsappBody(e.target.value)}
+                    className="w-full bg-[#0B141F] border border-[#182635] rounded-xl p-4 text-xs font-sans text-white placeholder:text-[#64748B] leading-relaxed focus:outline-none focus:border-[#A97A38] shadow-xl resize-none font-mono"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => insertTag("{{GUESTNAME}}", "whatsapp")}
+                    className="text-xs font-semibold text-[#A97A38] hover:text-[#966C30] flex items-center space-x-1 pt-1 cursor-pointer"
+                  >
+                    <Tag className="w-3.5 h-3.5" />
+                    <span>Insert Tags ▾</span>
+                  </button>
+                </div>
+
+                {/* Right: Available Tags & Action Buttons */}
+                <div className="lg:col-span-4 flex flex-col justify-between space-y-4">
+                  <div>
+                    <label className="text-[10px] uppercase font-bold tracking-wider text-[#A97A38] block mb-2.5">
+                      AVAILABLE TAGS
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {whatsappTags.map((tag) => (
+                        <button
+                          key={tag}
+                          type="button"
+                          onClick={() => insertTag(tag, "whatsapp")}
+                          className="bg-[#FAF7F2] border border-[#E8DFD2] text-[#6B6255] text-[11px] font-mono font-medium py-1.5 px-2 rounded-xl text-center hover:bg-[#F3EDE4] hover:text-[#111923] hover:border-[#A97A38] transition-colors cursor-pointer"
+                        >
+                          {tag}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-2.5 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => handleTestMessage("WhatsApp")}
+                      className="flex-1 py-2.5 rounded-xl bg-[#FAF7F2] border border-[#E8DFD2] hover:bg-[#F3EDE4] text-[#8C6326] font-bold text-xs flex items-center justify-center space-x-1.5 shadow-2xs transition-colors cursor-pointer"
+                    >
+                      <Send className="w-3.5 h-3.5" />
+                      <span>Test Message</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleSave}
+                      disabled={isSaving}
+                      className="flex-1 py-2.5 rounded-xl bg-[#A97A38] hover:bg-[#966C30] text-white font-bold text-xs flex items-center justify-center space-x-1.5 shadow-xs transition-all active:scale-95 cursor-pointer disabled:opacity-50"
+                    >
+                      <Save className="w-3.5 h-3.5" />
+                      <span>{isSaving ? "Saving..." : "Save Template"}</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Email Template Card */}
-          <div className="bg-white border border-[#E8DFD2] rounded-2xl p-6 sm:p-8 shadow-[0_4px_18px_rgba(40,30,20,0.04)] space-y-4">
-            <div className="flex items-center space-x-3 border-b border-[#EDE6DB] pb-4">
-              <div className="w-9 h-9 rounded-xl bg-[#DBEAFE] text-[#1D4ED8] flex items-center justify-center flex-shrink-0">
-                <Mail className="w-4.5 h-4.5" />
+          {/* Card 2: Transactional Email */}
+          <div className="bg-white border border-[#BFDBFE] rounded-2xl p-6 sm:p-7 shadow-[0_2px_12px_rgba(40,30,20,0.03)] space-y-5">
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-[#EDE6DB] pb-4">
+              <div className="flex items-center space-x-3.5">
+                <div className="w-11 h-11 rounded-xl bg-[#2563EB] text-white flex items-center justify-center shadow-2xs flex-shrink-0">
+                  <Mail className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-serif text-[17px] font-bold text-[#111923]">
+                    Transactional Email (Resend / SendGrid)
+                  </h3>
+                  <p className="text-xs text-[#78716C] mt-0.5">
+                    Delivers PDF Tax Invoice with check-in instructions
+                  </p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-serif text-base font-bold text-[#111923]">
-                  Transactional Email (Resend / SMTP Gateway)
-                </h3>
-                <p className="text-[11px] text-[#78716C]">
-                  Delivers PDF Tax Invoice with check-in instructions and hotel navigation coordinates
-                </p>
+
+              <div className="flex items-center space-x-3">
+                <span className="px-3 py-1 rounded-full text-xs font-bold text-[#15803D] bg-[#DCFCE7] border border-[#86EFAC] flex items-center space-x-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#15803D] inline-block" />
+                  <span>Active</span>
+                </span>
+                <button
+                  onClick={() => setEmailOpen(!emailOpen)}
+                  className="p-1 rounded-lg text-[#78716C] hover:text-[#111923] hover:bg-[#FAF7F2] transition-colors cursor-pointer"
+                >
+                  {emailOpen ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+                </button>
               </div>
             </div>
 
-            <div className="space-y-4">
-              <div>
-                <label className="text-[10px] uppercase font-bold tracking-wider text-[#A97A38] block mb-1.5">
-                  Email Subject Line
-                </label>
-                <input
-                  type="text"
-                  value={emailSubject}
-                  onChange={(e) => setEmailSubject(e.target.value)}
-                  className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl p-2.5 text-xs text-[#111923] focus:outline-none focus:border-[#B8893E] shadow-2xs"
-                />
-              </div>
+            {/* Body */}
+            {emailOpen && (
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 pt-1">
+                {/* Left: Subject Line & Body Textarea */}
+                <div className="lg:col-span-8 space-y-3.5">
+                  <div>
+                    <label className="text-[10px] uppercase font-bold tracking-wider text-[#A97A38] block mb-1.5">
+                      EMAIL SUBJECT LINE
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={emailSubject}
+                        onChange={(e) => setEmailSubject(e.target.value)}
+                        className="w-full bg-[#0B141F] border border-[#182635] rounded-xl px-4 py-2.5 pr-9 text-xs text-white placeholder:text-[#64748B] focus:outline-none focus:border-[#A97A38] shadow-xl font-mono"
+                      />
+                      {emailSubject && (
+                        <button
+                          type="button"
+                          onClick={() => setEmailSubject("")}
+                          className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#94A3B8] hover:text-white"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
 
-              <div>
-                <label className="text-[10px] uppercase font-bold tracking-wider text-[#A97A38] block mb-1.5">
-                  Email Body Copy
-                </label>
-                <textarea
-                  rows={5}
-                  value={emailBody}
-                  onChange={(e) => setEmailBody(e.target.value)}
-                  className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl p-3 text-xs text-[#111923] leading-relaxed focus:outline-none focus:border-[#B8893E] shadow-2xs resize-none font-mono"
-                />
-              </div>
-            </div>
-          </div>
+                  <div>
+                    <label className="text-[10px] uppercase font-bold tracking-wider text-[#A97A38] block mb-1.5">
+                      EMAIL BODY COPY
+                    </label>
+                    <textarea
+                      rows={4}
+                      value={emailBody}
+                      onChange={(e) => setEmailBody(e.target.value)}
+                      className="w-full bg-[#0B141F] border border-[#182635] rounded-xl p-4 text-xs font-sans text-white placeholder:text-[#64748B] leading-relaxed focus:outline-none focus:border-[#A97A38] shadow-xl resize-none font-mono"
+                    />
+                  </div>
+                </div>
 
-          <div className="flex justify-end pt-2">
-            <button
-              type="submit"
-              disabled={isSaving}
-              className="px-6 py-3 rounded-xl bg-[#A97A38] hover:bg-[#966C30] text-white font-bold text-xs uppercase tracking-wider shadow-md transition-all active:scale-95 disabled:opacity-50 cursor-pointer flex items-center space-x-2"
-            >
-              <Save className="w-4 h-4" />
-              <span>{isSaving ? "Saving Templates..." : "SAVE NOTIFICATION TEMPLATES"}</span>
-            </button>
+                {/* Right: Available Tags & Action Buttons */}
+                <div className="lg:col-span-4 flex flex-col justify-between space-y-4">
+                  <div>
+                    <label className="text-[10px] uppercase font-bold tracking-wider text-[#A97A38] block mb-2.5">
+                      AVAILABLE TAGS
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {emailTags.map((tag) => (
+                        <button
+                          key={tag}
+                          type="button"
+                          onClick={() => insertTag(tag, "email")}
+                          className="bg-[#FAF7F2] border border-[#E8DFD2] text-[#6B6255] text-[11px] font-mono font-medium py-1.5 px-2 rounded-xl text-center hover:bg-[#F3EDE4] hover:text-[#111923] hover:border-[#A97A38] transition-colors cursor-pointer"
+                        >
+                          {tag}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-2.5 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => handleTestMessage("Email")}
+                      className="flex-1 py-2.5 rounded-xl bg-[#FAF7F2] border border-[#E8DFD2] hover:bg-[#F3EDE4] text-[#8C6326] font-bold text-xs flex items-center justify-center space-x-1.5 shadow-2xs transition-colors cursor-pointer"
+                    >
+                      <Send className="w-3.5 h-3.5" />
+                      <span>Test Email</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleSave}
+                      disabled={isSaving}
+                      className="flex-1 py-2.5 rounded-xl bg-[#A97A38] hover:bg-[#966C30] text-white font-bold text-xs flex items-center justify-center space-x-1.5 shadow-xs transition-all active:scale-95 cursor-pointer disabled:opacity-50"
+                    >
+                      <Save className="w-3.5 h-3.5" />
+                      <span>{isSaving ? "Saving..." : "Save Template"}</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
-        </form>
+        </div>
       </div>
     </AdminLayout>
   );
