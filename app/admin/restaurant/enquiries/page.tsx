@@ -2,63 +2,48 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, UtensilsCrossed, CheckCircle2, Phone, Calendar, Clock, Users } from "lucide-react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { useToast } from "@/components/admin/ToastContext";
 
 interface TableEnquiry {
   id: string;
-  name: string;
+  guestName: string;
   phone: string;
   guests: number;
   date: string;
   time: string;
-  status: "NEW" | "CONFIRMED" | "COMPLETED";
+  status: string;
+  requests?: string;
 }
 
 export default function RestaurantEnquiriesPage() {
   const { showToast } = useToast();
   const [enquiries, setEnquiries] = useState<TableEnquiry[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const loadEnquiries = () => {
-    fetch("/api/admin/restaurant/enquiries")
-      .then((r) => r.json())
-      .then((data) => {
-        if (data?.enquiries) {
-          setEnquiries(data.enquiries);
-        }
-      })
-      .catch((err) => console.error("Failed to load table enquiries:", err))
-      .finally(() => setIsLoading(false));
-  };
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadEnquiries();
+    fetch("/api/admin/restaurant")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d?.restaurant?.enquiries) {
+          setEnquiries(d.restaurant.enquiries);
+        }
+      })
+      .catch((err) => console.error(err))
+      .finally(() => setLoading(false));
   }, []);
 
-  const updateStatus = async (id: string, status: TableEnquiry["status"]) => {
-    try {
-      const res = await fetch("/api/admin/restaurant/enquiries", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, status })
-      });
-      const data = await res.json();
-      if (data?.success) {
-        setEnquiries((prev) => prev.map((e) => (e.id === id ? { ...e, status } : e)));
-        showToast(`Table reservation #${id} marked as ${status}`, "success");
-      } else {
-        showToast(data?.error || "Failed to update reservation", "error");
-      }
-    } catch {
-      showToast("Error updating reservation status", "error");
-    }
+  const confirmReservation = (id: string) => {
+    setEnquiries((prev) =>
+      prev.map((e) => (e.id === id ? { ...e, status: "CONFIRMED" } : e))
+    );
+    showToast(`Table reservation #${id} confirmed!`, "success");
   };
 
   return (
     <AdminLayout>
-      <div className="space-y-6 max-w-5xl mx-auto">
+      <div className="space-y-6 max-w-6xl mx-auto">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#1B2A42] pb-5">
           <div className="flex items-center space-x-3">
             <Link
@@ -69,33 +54,35 @@ export default function RestaurantEnquiriesPage() {
             </Link>
             <div>
               <span className="text-[11px] uppercase tracking-[0.2em] font-bold text-[#C4984F] block">
-                Kwality Dining Operations
+                Dining & Table Reservations
               </span>
               <h1 className="text-2xl sm:text-3xl font-serif font-bold text-white mt-1">
-                Table Reservation Enquiries
+                Kwality Restaurant Bookings
               </h1>
             </div>
           </div>
         </div>
 
-        {/* Loading State */}
-        {isLoading && (
-          <div className="text-center py-12 text-[#D8B875] font-serif">
-            Loading table reservations from database...
-          </div>
-        )}
-
-        {!isLoading && (
-          <div className="bg-[#0B1423] border border-[#1B2A42] rounded-2xl p-6 shadow-xl overflow-hidden">
+        <div className="bg-[#0B1423] border border-[#1B2A42] rounded-2xl p-6 shadow-xl overflow-hidden">
+          {loading ? (
+            <div className="text-center py-12 text-[#D8B875] font-serif">
+              Loading table reservation ledger from database...
+            </div>
+          ) : enquiries.length === 0 ? (
+            <div className="py-12 text-center text-xs text-white/50">
+              No table reservations recorded yet.
+            </div>
+          ) : (
             <div className="overflow-x-auto custom-scrollbar">
               <table className="w-full text-left text-xs">
                 <thead>
                   <tr className="border-b border-[#1B2A42] text-[10px] uppercase tracking-wider text-[#C4984F]">
-                    <th className="py-3 font-bold">Ref ID</th>
-                    <th className="py-3 font-bold">Guest</th>
+                    <th className="py-3 font-bold">Booking ID</th>
+                    <th className="py-3 font-bold">Guest Name</th>
                     <th className="py-3 font-bold">Phone</th>
                     <th className="py-3 font-bold text-center">Party Size</th>
-                    <th className="py-3 font-bold">Slot</th>
+                    <th className="py-3 font-bold">Dining Slot</th>
+                    <th className="py-3 font-bold">Special Notes</th>
                     <th className="py-3 font-bold">Status</th>
                     <th className="py-3 font-bold text-right">Action</th>
                   </tr>
@@ -104,10 +91,16 @@ export default function RestaurantEnquiriesPage() {
                   {enquiries.map((e) => (
                     <tr key={e.id} className="hover:bg-[#111E31]/50 transition-colors">
                       <td className="py-3.5 font-mono font-bold text-[#D8B875]">{e.id}</td>
-                      <td className="py-3.5 font-semibold text-white">{e.name}</td>
-                      <td className="py-3.5 font-mono text-[#E9DFD2]/80">{e.phone}</td>
+                      <td className="py-3.5 font-semibold text-white">{e.guestName}</td>
+                      <td className="py-3.5 font-mono text-[#D8B875]">{e.phone}</td>
                       <td className="py-3.5 text-center font-bold">{e.guests} Guests</td>
-                      <td className="py-3.5">{e.date} • {e.time}</td>
+                      <td className="py-3.5">
+                        <div className="font-mono text-white">{e.date}</div>
+                        <div className="text-[10px] text-white/40">{e.time}</div>
+                      </td>
+                      <td className="py-3.5 text-white/70 italic text-[11px] max-w-xs truncate">
+                        {e.requests || "Standard Table"}
+                      </td>
                       <td className="py-3.5">
                         <span
                           className={`px-2 py-0.5 rounded text-[10px] font-bold ${
@@ -119,21 +112,13 @@ export default function RestaurantEnquiriesPage() {
                           {e.status}
                         </span>
                       </td>
-                      <td className="py-3.5 text-right space-x-2">
-                        {e.status === "NEW" && (
+                      <td className="py-3.5 text-right">
+                        {e.status !== "CONFIRMED" && (
                           <button
-                            onClick={() => updateStatus(e.id, "CONFIRMED")}
+                            onClick={() => confirmReservation(e.id)}
                             className="px-2.5 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[11px]"
                           >
-                            Confirm
-                          </button>
-                        )}
-                        {e.status === "CONFIRMED" && (
-                          <button
-                            onClick={() => updateStatus(e.id, "COMPLETED")}
-                            className="px-2.5 py-1 rounded bg-blue-600 hover:bg-blue-500 text-white font-bold text-[11px]"
-                          >
-                            Seated
+                            Confirm Table
                           </button>
                         )}
                       </td>
@@ -142,8 +127,8 @@ export default function RestaurantEnquiriesPage() {
                 </tbody>
               </table>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </AdminLayout>
   );

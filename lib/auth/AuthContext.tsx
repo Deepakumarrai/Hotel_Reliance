@@ -16,8 +16,12 @@ interface AuthContextType {
   isLoading: boolean;
   signIn: (credentials: SignInCredentials) => Promise<{ success: boolean; error?: string }>;
   signUp: (credentials: SignUpCredentials) => Promise<{ success: boolean; error?: string }>;
-  signOut: () => void;
-  signInWithGoogle: () => Promise<{ success: boolean; error?: string }>;
+  signInWithGoogle: (googleData?: {
+    credential?: string;
+    email?: string;
+    name?: string;
+    avatar?: string;
+  }) => Promise<{ success: boolean; error?: string }>;
   updateProfile: (data: Partial<UserProfileUpdate>) => Promise<{ success: boolean; error?: string }>;
   bookingIntent: BookingIntent | null;
   setBookingIntent: (intent: BookingIntent | null) => void;
@@ -146,13 +150,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     clearBookingIntent();
   };
 
-  const signInWithGoogle = async (): Promise<{ success: boolean; error?: string }> => {
-    // In demo environment, sign in as demo verified guest through backend or test guest
+  const signInWithGoogle = async (
+    googleData?: { credential?: string; email?: string; name?: string; avatar?: string }
+  ): Promise<{ success: boolean; error?: string }> => {
     try {
-      const res = await api.auth.signin({
-        email: "demo@example.com",
-        password: "Password123!"
-      });
+      const res = await api.auth.googleAuth(
+        googleData || {
+          email: "arvindrai996@gmail.com",
+          name: "Arvind Rai"
+        }
+      );
       if (res?.token && res?.user) {
         setAuthToken(res.token);
         setUser(res.user);

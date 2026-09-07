@@ -5,6 +5,7 @@ import { Sparkles, Calendar, Heart, Award } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { VenueCard, Venue } from "@/components/banquet/VenueCard";
+import { DynamicVenuesList } from "@/components/banquet/DynamicVenuesList";
 import { BanquetEnquiry } from "@/components/banquet/BanquetEnquiry";
 import { Banquet3DPlaceholder } from "@/components/banquet/Banquet3DPlaceholder";
 import { HomeCTA } from "@/components/home/HomeCTA";
@@ -196,13 +197,7 @@ export default function BanquetPage() {
             </p>
           </div>
           
-          <div className="space-y-12">
-            {venuesList.map((venue) => (
-              <div key={venue.id} id={venue.id}>
-                <VenueCard venue={venue} />
-              </div>
-            ))}
-          </div>
+          <DynamicVenuesList initialVenues={venuesList} />
 
           {/* Interactive Layout Visualizer */}
           <div className="pt-6">
