@@ -1,0 +1,320 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  GUEST
+  STAFF
+  ADMIN
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CHECKED_IN
+  CHECKED_OUT
+  CANCELLED
+  NO_SHOW
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum RoomCategory {
+  DELUXE
+  EXECUTIVE
+  PREMIUM
+  FAMILY
+}
+
+model User {
+  id            String    @id @default(uuid())
+  name          String
+  email         String    @unique
+  phone         String    @unique
+  passwordHash  String?
+  role          Role      @default(GUEST)
+  avatar        String?
+  isVerified    Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  bookings      Booking[]
+  reviews       Review[]
+  sessions      Session[]
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  userId       String
+  token        String   @unique
+  expiresAt    DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Room {
+  id              String        @id
+  slug            String        @unique
+  name            String
+  category        RoomCategory
+  tagline         String
+  description     String        @db.Text
+  shortDesc       String
+  pricePerNight   Decimal       @db.Decimal(10, 2)
+  capacityAdults  Int
+  capacityKids    Int
+  bedType         String
+  roomSizeSqFt    Int
+  images          String[]
+  amenities       String[]
+  totalInventory  Int           @default(10)
+  isActive        Boolean       @default(true)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  inventoryUnits  RoomUnit[]
+  bookings        Booking[]
+}
+
+model RoomUnit {
+  id               String    @id @default(uuid())
+  roomNumber       String    @unique
+  roomId           String
+  floor            Int
+  status           String    @default("AVAILABLE") // "AVAILABLE" | "OCCUPIED" | "RESERVED" | "CLEANING" | "MAINTENANCE" | "OUT_OF_SERVICE"
+  isOccupied       Boolean   @default(false)
+  currentBookingId String?
+  assignedGuest    String?
+  notes            String?   @db.Text
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @default(now()) @updatedAt
+
+  room             Room      @relation(fields: [roomId], references: [id], onDelete: Cascade)
+}
+
+model Booking {
+  id                 String        @id // e.g. HR-849204
+  userId             String?
+  roomId             String
+  roomNumber         String?
+  checkInDate        DateTime      @db.Date
+  checkOutDate       DateTime      @db.Date
+  nights             Int
+  adults             Int
+  children           Int
+  guestName          String
+  guestEmail         String
+  guestPhone         String
+  specialRequests    String?       @db.Text
+  baseAmount         Decimal       @default(0.00) @db.Decimal(10, 2)
+  taxAmount          Decimal       @db.Decimal(10, 2)
+  discountCode       String?
+  discountAmount     Decimal       @default(0.00) @db.Decimal(10, 2)
+  totalAmount        Decimal       @db.Decimal(10, 2)
+  paidAmount         Decimal       @default(0.00) @db.Decimal(10, 2)
+  status             BookingStatus @default(PENDING)
+  paymentStatus      PaymentStatus @default(PENDING)
+  paymentId          String?
+  paymentMethod      String?       // "RAZORPAY", "PAY_AT_HOTEL", "UPI", "CREDIT_CARD"
+  transactionId      String?
+  cancellationReason String?       @db.Text
+  refundAmount       Decimal?      @db.Decimal(10, 2)
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  user               User?         @relation(fields: [userId], references: [id])
+  room               Room          @relation(fields: [roomId], references: [id])
+  payment            Payment?
+}
+
+model Payment {
+  id                String        @id @default(uuid())
+  bookingId         String        @unique
+  gateway           String        // "RAZORPAY", "CASHFREE", "STRIPE"
+  orderId           String        @unique // Gateway Order ID
+  paymentId         String?       @unique // Gateway Transaction ID
+  amount            Decimal       @db.Decimal(10, 2)
+  currency          String        @default("INR")
+  status            PaymentStatus @default(PENDING)
+  gatewaySignature  String?
+  rawPayload        Json?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  booking           Booking       @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+}
+
+model Offer {
+  id            String    @id @default(uuid())
+  title         String
+  description   String    @db.Text
+  discountCode  String    @unique
+  discountValue String    // "15% OFF", "FLAT ₹500 OFF"
+  discountPct   Decimal?  @db.Decimal(5, 2)
+  discountFixed Decimal?  @db.Decimal(10, 2)
+  category      String    // "Staycation", "Corporate", "Wedding", "Dining"
+  expiryDate    DateTime
+  image         String
+  inclusions    String[]
+  terms         String?   @db.Text
+  isActive      Boolean   @default(true)
+}
+
+model Enquiry {
+  id          String    @id @default(uuid())
+  type        String    // "GENERAL", "BANQUET", "RESTAURANT_TABLE", "CORPORATE"
+  name        String
+  email       String
+  phone       String
+  date        DateTime?
+  guestCount  Int?
+  message     String    @db.Text
+  status      String    @default("NEW") // "NEW", "CONTACTED", "QUOTED", "CONFIRMED", "COMPLETED", "LOST"
+  venue       String?   // For banquet
+  budget      String?
+  notes       String?   @db.Text
+  time        String?   // For dining reservations
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now()) @updatedAt
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  userId    String?
+  author    String
+  role      String?
+  location  String?
+  rating    Int      @default(5)
+  comment   String   @db.Text
+  isApproved Boolean @default(false)
+  createdAt DateTime @default(now())
+
+  user      User?    @relation(fields: [userId], references: [id])
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  timestamp  DateTime @default(now())
+  adminUser  String
+  action     String
+  entity     String
+  entityId   String
+  oldValue   String?  @db.Text
+  newValue   String?  @db.Text
+  ipAddress  String?
+}
+
+model MenuItem {
+  id          String   @id @default(uuid())
+  name        String
+  category    String   // "Starters", "Main Course", "Biryani", "Chinese", "Tandoor", "Desserts", "Beverages"
+  description String   @db.Text
+  price       Decimal  @db.Decimal(10, 2)
+  image       String
+  isVeg       Boolean  @default(true)
+  isAvailable Boolean  @default(true)
+  isFeatured  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Coupon {
+  id               String   @id @default(uuid())
+  code             String   @unique
+  discountType     String   // "PERCENTAGE" | "FLAT"
+  discountValue    Decimal  @db.Decimal(10, 2)
+  minBookingAmount Decimal  @default(0.00) @db.Decimal(10, 2)
+  maxDiscount      Decimal  @default(0.00) @db.Decimal(10, 2)
+  startDate        DateTime
+  endDate          DateTime
+  usageLimit       Int      @default(100)
+  usedCount        Int      @default(0)
+  isActive         Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model HotelSetting {
+  id                      String   @id @default("default")
+  hotelName               String   @default("Hotel Reliance")
+  tagline                 String   @default("Experience Premium Hospitality in Bokaro")
+  description             String   @db.Text
+  phones                  String[]
+  emails                  String[]
+  whatsappNumber          String   @default("919262997777")
+  plotNo                  String   @default("Plot No: NIHP-1")
+  street                  String   @default("West Side of Co-Operative Colony")
+  city                    String   @default("Bokaro Steel City")
+  state                   String   @default("Jharkhand")
+  pincode                 String   @default("827001")
+  fullAddress             String   @db.Text
+  checkInTime             String   @default("12:00 PM")
+  checkOutTime            String   @default("11:00 AM")
+  cancellationWindowHours Int      @default(24)
+  freeCancellationAllowed Boolean  @default(true)
+  googleMapUrl            String?  @db.Text
+  updatedAt               DateTime @updatedAt
+}
+
+model RoomPricing {
+  roomSlug   String   @id // "deluxe", "executive", "premium", "family"
+  base       Decimal  @db.Decimal(10, 2)
+  weekend    Decimal  @db.Decimal(10, 2)
+  peak       Decimal  @db.Decimal(10, 2)
+  extraAdult Decimal  @db.Decimal(10, 2)
+  extraBed   Decimal  @db.Decimal(10, 2)
+  updatedAt  DateTime @updatedAt
+}
+
+model SeasonRule {
+  id              String   @id @default(uuid())
+  name            String
+  startDate       String
+  endDate         String
+  multiplier      Decimal  @db.Decimal(5, 2)
+  minNights       Int      @default(1)
+  applicableRooms String   @default("All Categories")
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Staff {
+  id         String   @id @default(uuid())
+  name       String
+  role       String
+  department String
+  experience String
+  bio        String   @db.Text
+  image      String
+  phone      String?
+  email      String?
+  order      Int      @default(0)
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model NotificationTemplate {
+  id        String   @id // "whatsapp_booking", "email_invoice"
+  name      String
+  channel   String   // "WHATSAPP", "EMAIL", "SMS"
+  subject   String?
+  body      String   @db.Text
+  updatedAt DateTime @updatedAt
+}
+
+model CmsContent {
+  id        String   @id // "homepage_hero", "about_hotel", etc.
+  data      Json
+  updatedAt DateTime @updatedAt
+}

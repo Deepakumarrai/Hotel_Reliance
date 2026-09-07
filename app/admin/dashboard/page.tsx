@@ -31,6 +31,7 @@ import { AdminBooking, PhysicalRoom } from "@/lib/admin/store";
 export default function AdminDashboardPage() {
   const [bookings, setBookings] = useState<AdminBooking[]>([]);
   const [rooms, setRooms] = useState<PhysicalRoom[]>([]);
+  const [adminName, setAdminName] = useState("Admin");
   const [loading, setLoading] = useState(true);
 
   // Modal active states
@@ -40,16 +41,19 @@ export default function AdminDashboardPage() {
 
   const fetchDashboardData = async () => {
     try {
-      const [bookingsRes, roomsRes] = await Promise.all([
+      const [bookingsRes, roomsRes, sessionRes] = await Promise.all([
         fetch("/api/admin/bookings"),
         fetch("/api/admin/rooms"),
+        fetch("/api/admin/auth/session"),
       ]);
 
       const bookingsData = await bookingsRes.json();
       const roomsData = await roomsRes.json();
+      const sessionData = await sessionRes.json();
 
       if (bookingsData.bookings) setBookings(bookingsData.bookings);
       if (roomsData.rooms) setRooms(roomsData.rooms);
+      if (sessionData?.user?.name) setAdminName(sessionData.user.name);
     } catch (err) {
       console.error("Failed to load dashboard data", err);
     } finally {
@@ -105,10 +109,10 @@ export default function AdminDashboardPage() {
               Hotel Management Control Center
             </span>
             <h1 className="text-2xl sm:text-3xl font-serif font-bold text-white mt-1">
-              Good Morning, Vikramaditya Roy
+              Good Morning, {adminName}
             </h1>
             <p className="text-xs text-[#E9DFD2]/60 mt-1">
-              Hotel Reliance • Co-operative Colony, Bokaro Steel City • 45 Rooms Active
+              Hotel Reliance • Co-operative Colony, Bokaro Steel City • {totalRoomsCount} Rooms Active
             </p>
           </div>
 
@@ -188,7 +192,9 @@ export default function AdminDashboardPage() {
           </div>
           <div className="bg-[#111E31] border border-[#1B2A42] p-4 rounded-xl text-center">
             <span className="text-[10px] uppercase font-bold text-[#E9DFD2]/60">Avg Booking</span>
-            <div className="text-xl font-bold text-[#D8B875] mt-1">₹4,250</div>
+            <div className="text-xl font-bold text-[#D8B875] mt-1">
+              ₹{bookings.length > 0 ? Math.round(totalRevenue / bookings.length).toLocaleString() : 0}
+            </div>
             <span className="text-[10px] text-white/40">Per Stay</span>
           </div>
           <div className="bg-[#111E31] border border-[#1B2A42] p-4 rounded-xl text-center">

@@ -9,9 +9,14 @@ import { AdminBooking } from "@/lib/admin/store";
 
 export default function AdminPaymentsPage() {
   const [bookings, setBookings] = useState<AdminBooking[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/admin/bookings").then((r) => r.json()).then((d) => d.bookings && setBookings(d.bookings));
+    fetch("/api/admin/bookings")
+      .then((r) => r.json())
+      .then((d) => d.bookings && setBookings(d.bookings))
+      .catch((err) => console.error("Failed to load payments:", err))
+      .finally(() => setLoading(false));
   }, []);
 
   const totalCollected = bookings.reduce((acc, b) => acc + (b.paidAmount || 0), 0);
@@ -71,52 +76,62 @@ export default function AdminPaymentsPage() {
 
         {/* Transactions Table */}
         <div className="bg-[#0B1423] border border-[#1B2A42] rounded-2xl p-6 shadow-xl overflow-hidden">
-          <div className="overflow-x-auto custom-scrollbar">
-            <table className="w-full text-left text-xs">
-              <thead>
-                <tr className="border-b border-[#1B2A42] text-[10px] uppercase tracking-wider text-[#C4984F]">
-                  <th className="py-3 font-bold">Transaction / Booking</th>
-                  <th className="py-3 font-bold">Customer</th>
-                  <th className="py-3 font-bold">Method</th>
-                  <th className="py-3 font-bold">Amount</th>
-                  <th className="py-3 font-bold">Status</th>
-                  <th className="py-3 font-bold text-right">Gateway Ref ID</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#1B2A42]/60 text-white/90">
-                {bookings.map((b) => (
-                  <tr key={b.id} className="hover:bg-[#111E31]/50 transition-colors">
-                    <td className="py-3.5">
-                      <div className="font-mono font-bold text-[#D8B875]">{b.id}</div>
-                      <div className="text-[10px] text-white/40">{b.createdAt ? b.createdAt.split("T")[0] : "Today"}</div>
-                    </td>
-                    <td className="py-3.5">
-                      <div className="font-semibold text-white">{b.guestName}</div>
-                      <div className="text-[10px] text-white/40">{b.guestPhone}</div>
-                    </td>
-                    <td className="py-3.5 capitalize font-medium text-white/80">{b.paymentMethod}</td>
-                    <td className="py-3.5 font-bold text-white">₹{b.totalAmount.toLocaleString()}</td>
-                    <td className="py-3.5">
-                      <span
-                        className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                          b.paymentStatus === "SUCCESS"
-                            ? "bg-emerald-950 text-emerald-400 border border-emerald-500/30"
-                            : b.paymentStatus === "REFUNDED"
-                            ? "bg-purple-950 text-purple-400 border border-purple-500/30"
-                            : "bg-amber-950 text-amber-400 border border-amber-500/30"
-                        }`}
-                      >
-                        {b.paymentStatus}
-                      </span>
-                    </td>
-                    <td className="py-3.5 text-right font-mono text-[11px] text-white/50">
-                      {b.transactionId || "OFFLINE_CASH_POS"}
-                    </td>
+          {loading ? (
+            <div className="text-center py-12 text-[#D8B875] font-serif">
+              Loading payment transactions from database...
+            </div>
+          ) : bookings.length === 0 ? (
+            <div className="py-12 text-center text-xs text-white/50">
+              No payment transactions recorded in database.
+            </div>
+          ) : (
+            <div className="overflow-x-auto custom-scrollbar">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="border-b border-[#1B2A42] text-[10px] uppercase tracking-wider text-[#C4984F]">
+                    <th className="py-3 font-bold">Transaction / Booking</th>
+                    <th className="py-3 font-bold">Customer</th>
+                    <th className="py-3 font-bold">Method</th>
+                    <th className="py-3 font-bold">Amount</th>
+                    <th className="py-3 font-bold">Status</th>
+                    <th className="py-3 font-bold text-right">Gateway Ref ID</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-[#1B2A42]/60 text-white/90">
+                  {bookings.map((b) => (
+                    <tr key={b.id} className="hover:bg-[#111E31]/50 transition-colors">
+                      <td className="py-3.5">
+                        <div className="font-mono font-bold text-[#D8B875]">{b.id}</div>
+                        <div className="text-[10px] text-white/40">{b.createdAt ? b.createdAt.split("T")[0] : "Today"}</div>
+                      </td>
+                      <td className="py-3.5">
+                        <div className="font-semibold text-white">{b.guestName}</div>
+                        <div className="text-[10px] text-white/40">{b.guestPhone}</div>
+                      </td>
+                      <td className="py-3.5 capitalize font-medium text-white/80">{b.paymentMethod}</td>
+                      <td className="py-3.5 font-bold text-white">₹{b.totalAmount.toLocaleString()}</td>
+                      <td className="py-3.5">
+                        <span
+                          className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                            b.paymentStatus === "SUCCESS"
+                              ? "bg-emerald-950 text-emerald-400 border border-emerald-500/30"
+                              : b.paymentStatus === "REFUNDED"
+                              ? "bg-purple-950 text-purple-400 border border-purple-500/30"
+                              : "bg-amber-950 text-amber-400 border border-amber-500/30"
+                          }`}
+                        >
+                          {b.paymentStatus}
+                        </span>
+                      </td>
+                      <td className="py-3.5 text-right font-mono text-[11px] text-white/50">
+                        {b.transactionId || "OFFLINE_CASH_POS"}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
     </AdminLayout>

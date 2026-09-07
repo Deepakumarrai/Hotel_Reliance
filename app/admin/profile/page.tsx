@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { User, ShieldCheck, KeyRound, LogOut, Lock, CheckCircle2 } from "lucide-react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
@@ -9,9 +9,32 @@ import { useToast } from "@/components/admin/ToastContext";
 export default function AdminProfilePage() {
   const router = useRouter();
   const { showToast } = useToast();
+  const [adminUser, setAdminUser] = useState<{
+    name: string;
+    username: string;
+    role: string;
+  } | null>(null);
   const [currentPass, setCurrentPass] = useState("");
   const [newPass, setNewPass] = useState("");
   const [confirmPass, setConfirmPass] = useState("");
+
+  useEffect(() => {
+    fetch("/api/admin/auth/session")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d?.user) setAdminUser(d.user);
+      })
+      .catch((err) => console.error(err));
+  }, []);
+
+  const initials = adminUser?.name
+    ? adminUser.name
+        .split(" ")
+        .map((p) => p[0])
+        .join("")
+        .slice(0, 2)
+        .toUpperCase()
+    : "AD";
 
   const handlePasswordChange = (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,17 +75,21 @@ export default function AdminProfilePage() {
         <div className="bg-[#0B1423] border border-[#1B2A42] rounded-2xl p-6 sm:p-8 shadow-xl space-y-6">
           <div className="flex items-center space-x-4">
             <div className="w-16 h-16 rounded-full bg-[#1B2A42] border-2 border-[#C4984F] flex items-center justify-center text-xl font-serif font-bold text-[#D8B875]">
-              VR
+              {initials}
             </div>
             <div>
               <div className="flex items-center space-x-2">
-                <h2 className="text-xl font-serif font-bold text-white">Vikramaditya Roy</h2>
+                <h2 className="text-xl font-serif font-bold text-white">
+                  {adminUser?.name || "Hotel Administrator"}
+                </h2>
                 <span className="px-2 py-0.5 rounded bg-amber-950 text-amber-400 border border-amber-500/30 text-[9px] font-bold uppercase">
-                  Super Admin
+                  {adminUser?.role || "SUPER_ADMIN"}
                 </span>
               </div>
-              <p className="text-xs text-[#E9DFD2]/60 mt-0.5">Username: admin@HotelReliance</p>
-              <p className="text-xs text-[#D8B875]">General Manager • Hotel Reliance, Bokaro Steel City</p>
+              <p className="text-xs text-[#E9DFD2]/60 mt-0.5">
+                Username: {adminUser?.username || "admin@HotelReliance"}
+              </p>
+              <p className="text-xs text-[#D8B875]">Hotel Reliance, Bokaro Steel City</p>
             </div>
           </div>
 

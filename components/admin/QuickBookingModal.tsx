@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { X, Calendar, User, Phone, Mail, BedDouble, CreditCard, Sparkles } from "lucide-react";
 import { useToast } from "./ToastContext";
 
@@ -13,6 +13,8 @@ export function QuickBookingModal({
 }) {
   const { showToast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [roomPrices, setRoomPrices] = useState<Record<string, number>>({});
+  const [availableRooms, setAvailableRooms] = useState<Array<{ roomNumber: string; roomType: string }>>([]);
 
   const todayStr = new Date().toISOString().split("T")[0];
   const tomorrowStr = new Date(Date.now() + 86400000).toISOString().split("T")[0];
@@ -32,18 +34,46 @@ export function QuickBookingModal({
     specialRequests: "",
   });
 
-  const roomPrices: Record<string, number> = {
-    deluxe: 2499,
-    executive: 3499,
-    premium: 4999,
-    family: 5999,
-  };
+  useEffect(() => {
+    fetch("/api/admin/pricing")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d?.prices) {
+          const mapped: Record<string, number> = {};
+          Object.keys(d.prices).forEach((k) => {
+            mapped[k] = d.prices[k].base;
+          });
+          setRoomPrices(mapped);
+        }
+      })
+      .catch((err) => console.error(err));
+
+    fetch("/api/admin/rooms")
+      .then((r) => r.json())
+      .then((d) => {
+        if (Array.isArray(d?.rooms)) {
+          const avail = d.rooms
+            .filter((r: any) => r.status === "AVAILABLE")
+            .map((r: any) => ({ roomNumber: r.roomNumber, roomType: r.roomType }));
+          setAvailableRooms(avail);
+          if (avail.length > 0) {
+            setFormData((prev) => ({
+              ...prev,
+              roomNumber: avail[0].roomNumber,
+              roomType: avail[0].roomType,
+            }));
+          }
+        }
+      })
+      .catch((err) => console.error(err));
+  }, []);
 
   const calculateTotal = () => {
     const d1 = new Date(formData.checkInDate);
     const d2 = new Date(formData.checkOutDate);
     const nights = Math.max(1, Math.ceil((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24)));
-    const base = (roomPrices[formData.roomType] || 2499) * nights;
+    const baseRate = roomPrices[formData.roomType] || 0;
+    const base = baseRate * nights;
     const tax = base * 0.12;
     return { nights, base, tax, grandTotal: base + tax };
   };
@@ -157,23 +187,45 @@ export function QuickBookingModal({
                 onChange={(e) => setFormData({ ...formData, roomType: e.target.value })}
                 className="w-full bg-[#111E31] border border-[#1B2A42] rounded px-3 py-2 text-xs text-white focus:outline-none focus:border-[#C4984F]"
               >
-                <option value="deluxe">Deluxe Room (₹2,499)</option>
-                <option value="executive">Executive Room (₹3,499)</option>
-                <option value="premium">Premium Suite (₹4,999)</option>
-                <option value="family">Family Suite (₹5,999)</option>
+                <option value="deluxe">Deluxe Room {roomPrices["deluxe"] ? `(₹${roomPrices["deluxe"].toLocaleString()})` : ""}</option>
+                <option value="executive">Executive Room {roomPrices["executive"] ? `(₹${roomPrices["executive"].toLocaleString()})` : ""}</option>
+                <option value="premium">Premium Suite {roomPrices["premium"] ? `(₹${roomPrices["premium"].toLocaleString()})` : ""}</option>
+                <option value="family">Family Suite {roomPrices["family"] ? `(₹${roomPrices["family"].toLocaleString()})` : ""}</option>
               </select>
             </div>
             <div>
               <label className="text-[10px] uppercase font-bold tracking-wider text-[#C4984F] block mb-1.5">
                 Assign Room Number
               </label>
-              <input
-                type="text"
-                value={formData.roomNumber}
-                onChange={(e) => setFormData({ ...formData, roomNumber: e.target.value })}
-                placeholder="e.g. 101"
-                className="w-full bg-[#111E31] border border-[#1B2A42] rounded px-3 py-2 text-xs text-white focus:outline-none focus:border-[#C4984F]"
-              />
+              {availableRooms.length > 0 ? (
+                <select
+                  value={formData.roomNumber}
+                  onChange={(e) => setFormData({ ...formData, roomNumber: e.target.value })}
+                  className="w-full bg-[#111E31] border border-[#1B2A42] rounded px-3 py-2 text-xs text-white focus:outline-none focus:border-[#C4984F]"
+                >
+                  {availableRooms
+                    .filter((r) => r.roomType === formData.roomType)
+                    .map((r) => (
+                      <option key={r.roomNumber} value={r.roomNumber}>
+                        Room {r.roomNumber} ({r.roomType.toUpperCase()})
+                      </option>
+                    ))}
+                  {availableRooms.filter((r) => r.roomType === formData.roomType).length === 0 &&
+                    availableRooms.map((r) => (
+                      <option key={r.roomNumber} value={r.roomNumber}>
+                        Room {r.roomNumber} ({r.roomType.toUpperCase()})
+                      </option>
+                    ))}
+                </select>
+              ) : (
+                <input
+                  type="text"
+                  value={formData.roomNumber}
+                  onChange={(e) => setFormData({ ...formData, roomNumber: e.target.value })}
+                  placeholder="e.g. 101"
+                  className="w-full bg-[#111E31] border border-[#1B2A42] rounded px-3 py-2 text-xs text-white focus:outline-none focus:border-[#C4984F]"
+                />
+              )}
             </div>
             <div>
               <label className="text-[10px] uppercase font-bold tracking-wider text-[#C4984F] block mb-1.5">

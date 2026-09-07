@@ -10,6 +10,7 @@ import { BanquetEnquiryRecord } from "@/lib/admin/store";
 export default function BanquetEnquiriesPage() {
   const { showToast } = useToast();
   const [enquiries, setEnquiries] = useState<BanquetEnquiryRecord[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const fetchEnquiries = async () => {
     try {
@@ -18,6 +19,8 @@ export default function BanquetEnquiriesPage() {
       if (data.enquiries) setEnquiries(data.enquiries);
     } catch (err) {
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -65,8 +68,17 @@ export default function BanquetEnquiriesPage() {
         </div>
 
         <div className="bg-[#0B1423] border border-[#1B2A42] rounded-2xl p-6 shadow-xl overflow-hidden">
-          <div className="overflow-x-auto custom-scrollbar">
-            <table className="w-full text-left text-xs">
+          {loading ? (
+            <div className="text-center py-12 text-[#D8B875] font-serif">
+              Loading banquet enquiries from database...
+            </div>
+          ) : enquiries.length === 0 ? (
+            <div className="py-12 text-center text-xs text-white/50">
+              No banquet or wedding enquiries found in database.
+            </div>
+          ) : (
+            <div className="overflow-x-auto custom-scrollbar">
+              <table className="w-full text-left text-xs">
               <thead>
                 <tr className="border-b border-[#1B2A42] text-[10px] uppercase tracking-wider text-[#C4984F]">
                   <th className="py-3 font-bold">Enquiry ID</th>
@@ -125,8 +137,9 @@ export default function BanquetEnquiriesPage() {
                   </tr>
                 ))}
               </tbody>
-            </table>
-          </div>
+              </table>
+            </div>
+          )}
         </div>
       </div>
     </AdminLayout>

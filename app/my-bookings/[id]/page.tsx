@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, Printer, Calendar, Clock, MapPin, Phone, Mail, CheckCircle2, AlertCircle, Ban, Download } from "lucide-react";
 import { motion } from "framer-motion";
 import { AuthGuard } from "@/components/auth/AuthGuard";
-import { getBookingById, cancelBookingRecord } from "@/lib/booking/mockBookings";
+import { api } from "@/lib/api";
 import { Booking } from "@/types/booking";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
@@ -26,8 +26,70 @@ function BookingDetailContent({ params }: { params: Promise<{ id: string }> }) {
   const [feedback, setFeedback] = useState<string | null>(null);
 
   useEffect(() => {
-    const data = getBookingById(bookingId);
-    setBooking(data || null);
+    const fetchBooking = async () => {
+      try {
+        const res = await api.bookings.getById(bookingId);
+        if (res.status === "success" && res.booking) {
+          const b = res.booking;
+          const formatted: Booking = {
+            id: b.id,
+            bookingId: b.bookingId || b.id,
+            roomId: b.room?.id || b.roomId || "deluxe-room",
+            roomSlug: b.room?.slug || b.roomType || "deluxe",
+            roomName: b.room?.name || `${(b.roomType || "deluxe").toUpperCase()} Room`,
+            roomImage: b.room?.images?.[0] || "/images/rooms/deluxe.png",
+            room: b.room || {
+              id: b.room?.id || b.roomId || "deluxe-room",
+              name: b.room?.name || `${(b.roomType || "deluxe").toUpperCase()} Room`,
+              slug: b.room?.slug || b.roomType || "deluxe",
+              type: b.roomType || "deluxe",
+              price: b.baseAmount || b.totalAmount || 2499,
+              description: "Luxury hotel accommodation with modern amenities.",
+              shortDescription: "Luxury stay at Hotel Reliance.",
+              capacity: { adults: b.adults || 2, children: b.children || 0, maxTotal: 4 },
+              amenities: ["Free High-Speed Wi-Fi", "Air Conditioning", "HD TV", "Room Service"],
+              features: ["City View", "King Bed", "Ensuite Bathroom"],
+              images: [b.room?.images?.[0] || "/images/rooms/deluxe.png"],
+              heroImage: b.room?.images?.[0] || "/images/rooms/deluxe.png",
+              bedType: "King Bed",
+              size: "350 sq.ft",
+              view: "City View",
+              rating: 4.8,
+              reviewCount: 120,
+              isFeatured: false,
+              inventory: 10
+            },
+            checkIn: b.checkInDate || b.checkIn,
+            checkOut: b.checkOutDate || b.checkOut,
+            adults: b.adults || 2,
+            children: b.children || 0,
+            nights: b.nights || 1,
+            basePrice: b.baseAmount || b.totalAmount,
+            discount: b.discountAmount || 0,
+            taxes: b.taxAmount || 0,
+            totalPrice: b.totalAmount,
+            status: (b.bookingStatus?.toLowerCase() || b.status?.toLowerCase() || "confirmed") as any,
+            paymentStatus: (b.paymentStatus?.toLowerCase() || "paid") as any,
+            paymentMethod: b.paymentMethod || "online",
+            guest: {
+              name: b.guestName || "",
+              email: b.guestEmail || "",
+              phone: b.guestPhone || "",
+              specialRequests: b.specialRequests,
+            },
+            createdAt: b.createdAt || new Date().toISOString(),
+          };
+          setBooking(formatted);
+        } else {
+          setBooking(null);
+        }
+      } catch (err) {
+        console.error("Failed to fetch booking detail:", err);
+        setBooking(null);
+      }
+    };
+
+    fetchBooking();
   }, [bookingId]);
 
   if (booking === undefined) {
@@ -65,12 +127,16 @@ function BookingDetailContent({ params }: { params: Promise<{ id: string }> }) {
     window.print();
   };
 
-  const handleCancel = () => {
+  const handleCancel = async () => {
     if (confirm(`Are you sure you want to cancel booking ${booking.id}?`)) {
-      const res = cancelBookingRecord(booking.id);
-      if (res.success) {
-        setBooking({ ...booking, status: "cancelled" });
-        setFeedback("Your reservation has been cancelled.");
+      try {
+        const res = await api.bookings.cancel(booking.id);
+        if (res.status === "success") {
+          setBooking({ ...booking, status: "cancelled" });
+          setFeedback("Your reservation has been cancelled.");
+        }
+      } catch (err: any) {
+        alert(err.message || "Failed to cancel booking");
       }
     }
   };

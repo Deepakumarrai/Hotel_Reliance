@@ -8,34 +8,21 @@ import { BanquetEnquiryRecord } from "@/lib/admin/store";
 
 export default function AdminBanquetPage() {
   const [enquiries, setEnquiries] = useState<BanquetEnquiryRecord[]>([]);
+  const [venues, setVenues] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/admin/banquet").then((r) => r.json()).then((d) => d.enquiries && setEnquiries(d.enquiries));
+    Promise.all([
+      fetch("/api/admin/banquet").then((r) => r.json()),
+      fetch("/api/admin/content/banquet_venues").then((r) => r.json())
+    ])
+      .then(([bData, vData]) => {
+        if (bData?.enquiries) setEnquiries(bData.enquiries);
+        if (vData?.content?.venues) setVenues(vData.content.venues);
+      })
+      .catch((err) => console.error("Failed to load banquet data:", err))
+      .finally(() => setLoading(false));
   }, []);
-
-  const venues = [
-    {
-      name: "Grand AC Banquet Hall",
-      capacity: "Up to 350 Guests",
-      size: "4,200 sq. ft.",
-      amenities: ["Integrated AV Setup", "Stage Lighting", "Buffet Area", "Bride/Groom Makeup Suites"],
-      status: "ACTIVE",
-    },
-    {
-      name: "Executive Meeting Boardroom",
-      capacity: "Up to 30 Guests",
-      size: "800 sq. ft.",
-      amenities: ["Digital Projector & LED Display", "High-Speed Wi-Fi", "Ergonomic Conference Seating"],
-      status: "ACTIVE",
-    },
-    {
-      name: "Celebration Open Lawn",
-      capacity: "Up to 500 Guests",
-      size: "12,000 sq. ft.",
-      amenities: ["Landscaped Greenery", "Grand Entry Gate", "Weatherproof Canopy Layout", "Silent Generator Backup"],
-      status: "ACTIVE",
-    },
-  ];
 
   return (
     <AdminLayout>
@@ -63,8 +50,17 @@ export default function AdminBanquetPage() {
         </div>
 
         {/* Venues Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {venues.map((v) => (
+        {loading ? (
+          <div className="text-center py-12 text-[#D8B875] font-serif">
+            Loading banquet venues and specifications from database...
+          </div>
+        ) : venues.length === 0 ? (
+          <div className="bg-[#0B1423] border border-[#1B2A42] rounded-2xl p-12 text-center text-xs text-white/50">
+            No venues registered in database yet.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {venues.map((v) => (
             <div
               key={v.name}
               className="bg-[#0B1423] border border-[#1B2A42] rounded-2xl p-6 shadow-xl flex flex-col justify-between space-y-4"
@@ -91,7 +87,7 @@ export default function AdminBanquetPage() {
 
                 <div className="mt-4 space-y-1.5 text-xs">
                   <span className="text-[10px] uppercase font-bold text-[#C4984F] block">Key Amenities</span>
-                  {v.amenities.map((a) => (
+                  {v.amenities?.map((a: string) => (
                     <div key={a} className="text-white/80 flex items-center space-x-1.5">
                       <span className="text-[#D8B875]">✓</span>
                       <span>{a}</span>
@@ -111,6 +107,7 @@ export default function AdminBanquetPage() {
             </div>
           ))}
         </div>
+      )}
       </div>
     </AdminLayout>
   );

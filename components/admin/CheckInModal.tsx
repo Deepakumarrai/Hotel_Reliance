@@ -18,7 +18,7 @@ export function CheckInModal({
 }) {
   const { showToast } = useToast();
   const [selectedRoom, setSelectedRoom] = useState<string>(
-    booking.roomNumber || (availableRooms[0]?.roomNumber ?? "101")
+    booking.roomNumber || (availableRooms[0]?.roomNumber ?? "")
   );
   const [loading, setLoading] = useState(false);
 
@@ -116,7 +116,7 @@ export function CheckInModal({
                 </option>
               ))}
               {displayRooms.length === 0 && (
-                <option value="101">Room 101 (Deluxe)</option>
+                <option value="">No available rooms for this category</option>
               )}
             </select>
             <p className="text-[11px] text-white/40 mt-1.5">
@@ -135,7 +135,7 @@ export function CheckInModal({
             </button>
             <button
               type="button"
-              disabled={loading}
+              disabled={loading || !selectedRoom}
               onClick={handleCheckIn}
               className="px-6 py-2 rounded bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-xs font-bold uppercase tracking-wider text-white shadow-lg transition-all disabled:opacity-50"
             >

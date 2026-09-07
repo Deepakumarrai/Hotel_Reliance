@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowLeft, CalendarDays, Plus, Sparkles, Trash2 } from "lucide-react";
+import { ArrowLeft, Plus, Trash2 } from "lucide-react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { useToast } from "@/components/admin/ToastContext";
 
@@ -18,26 +18,8 @@ interface SeasonRule {
 
 export default function SeasonalPricingPage() {
   const { showToast } = useToast();
-  const [seasons, setSeasons] = useState<SeasonRule[]>([
-    {
-      id: "s-1",
-      name: "Durga Puja & Festive Holiday Season",
-      startDate: "2026-10-01",
-      endDate: "2026-10-25",
-      multiplier: 25, // +25%
-      minNights: 2,
-      applicableRooms: "All Categories",
-    },
-    {
-      id: "s-2",
-      name: "Winter Wedding & Corporate Peak Surge",
-      startDate: "2026-11-15",
-      endDate: "2026-12-31",
-      multiplier: 20, // +20%
-      minNights: 1,
-      applicableRooms: "Deluxe & Executive",
-    },
-  ]);
+  const [seasons, setSeasons] = useState<SeasonRule[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [newSeason, setNewSeason] = useState({
     name: "",
@@ -49,20 +31,56 @@ export default function SeasonalPricingPage() {
   });
   const [modalOpen, setModalOpen] = useState(false);
 
-  const handleAddSeason = (e: React.FormEvent) => {
-    e.preventDefault();
-    const created: SeasonRule = {
-      id: `s-${Date.now()}`,
-      ...newSeason,
-    };
-    setSeasons([...seasons, created]);
-    showToast(`Seasonal surge rule '${created.name}' created!`, "success");
-    setModalOpen(false);
+  const loadSeasons = () => {
+    fetch("/api/admin/pricing/seasonal")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data?.seasons) {
+          setSeasons(data.seasons);
+        }
+      })
+      .catch((err) => console.error("Failed to fetch seasons:", err))
+      .finally(() => setIsLoading(false));
   };
 
-  const handleDelete = (id: string) => {
-    setSeasons(seasons.filter((s) => s.id !== id));
-    showToast("Seasonal surge rule removed", "info");
+  useEffect(() => {
+    loadSeasons();
+  }, []);
+
+  const handleAddSeason = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const res = await fetch("/api/admin/pricing/seasonal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newSeason)
+      });
+      const data = await res.json();
+      if (data?.rule) {
+        showToast(`Seasonal surge rule '${data.rule.name}' created!`, "success");
+        setModalOpen(false);
+        loadSeasons();
+      } else {
+        showToast(data?.error || "Failed to create rule", "error");
+      }
+    } catch {
+      showToast("Network error creating seasonal rule", "error");
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      const res = await fetch(`/api/admin/pricing/seasonal/${id}`, { method: "DELETE" });
+      const data = await res.json();
+      if (data?.success) {
+        showToast("Seasonal surge rule removed", "info");
+        setSeasons(seasons.filter((s) => s.id !== id));
+      } else {
+        showToast(data?.error || "Failed to delete rule", "error");
+      }
+    } catch {
+      showToast("Error deleting rule", "error");
+    }
   };
 
   return (
@@ -96,35 +114,44 @@ export default function SeasonalPricingPage() {
           </button>
         </div>
 
-        {/* List of Seasons */}
-        <div className="space-y-4">
-          {seasons.map((season) => (
-            <div
-              key={season.id}
-              className="bg-[#0B1423] border border-[#1B2A42] rounded-2xl p-6 shadow-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
-            >
-              <div className="space-y-1">
-                <div className="flex items-center space-x-2">
-                  <h3 className="font-serif text-lg font-bold text-white">{season.name}</h3>
-                  <span className="px-2 py-0.5 rounded bg-[#9E712E]/30 border border-[#C4984F]/40 text-[#D8B875] text-[10px] font-bold">
-                    +{season.multiplier}% SURGE
-                  </span>
-                </div>
-                <p className="text-xs text-[#E9DFD2]/60">
-                  {season.startDate} → {season.endDate} • Min Stay: {season.minNights} {season.minNights === 1 ? "Night" : "Nights"} • Applies to: {season.applicableRooms}
-                </p>
-              </div>
+        {/* Loading State */}
+        {isLoading && (
+          <div className="text-center py-12 text-[#D8B875] font-serif">
+            Loading seasonal rules from database...
+          </div>
+        )}
 
-              <button
-                onClick={() => handleDelete(season.id)}
-                className="p-2 text-white/50 hover:text-red-400 hover:bg-red-950/30 rounded transition-colors"
-                title="Delete Rule"
+        {/* List of Seasons */}
+        {!isLoading && (
+          <div className="space-y-4">
+            {seasons.map((season) => (
+              <div
+                key={season.id}
+                className="bg-[#0B1423] border border-[#1B2A42] rounded-2xl p-6 shadow-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
               >
-                <Trash2 className="w-4 h-4" />
-              </button>
-            </div>
-          ))}
-        </div>
+                <div className="space-y-1">
+                  <div className="flex items-center space-x-2">
+                    <h3 className="font-serif text-lg font-bold text-white">{season.name}</h3>
+                    <span className="px-2 py-0.5 rounded bg-[#9E712E]/30 border border-[#C4984F]/40 text-[#D8B875] text-[10px] font-bold">
+                      +{season.multiplier}% SURGE
+                    </span>
+                  </div>
+                  <p className="text-xs text-[#E9DFD2]/60">
+                    {season.startDate} → {season.endDate} • Min Stay: {season.minNights} {season.minNights === 1 ? "Night" : "Nights"} • Applies to: {season.applicableRooms}
+                  </p>
+                </div>
+
+                <button
+                  onClick={() => handleDelete(season.id)}
+                  className="p-2 text-white/50 hover:text-red-400 hover:bg-red-950/30 rounded transition-colors"
+                  title="Delete Rule"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Add Modal */}
         {modalOpen && (

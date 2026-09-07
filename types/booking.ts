@@ -18,6 +18,7 @@ export interface BookingState {
 
 export interface Booking {
   id: string; // e.g. HR-849204
+  bookingId?: string;
   userId?: string;
   checkIn: string;
   checkOut: string;
@@ -25,6 +26,14 @@ export interface Booking {
   adults: number;
   children: number;
   room: Room;
+  roomId?: string;
+  roomSlug?: string;
+  roomName?: string;
+  roomImage?: string;
+  basePrice?: number;
+  discount?: number;
+  taxes?: number;
+  paymentStatus?: "paid" | "pending" | "refunded" | string;
   guest: GuestDetails;
   totalPrice: number | null;
   estimatedTotal?: string;

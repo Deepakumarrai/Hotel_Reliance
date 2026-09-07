@@ -8,14 +8,31 @@ import { AdminBooking } from "@/lib/admin/store";
 
 export default function AdminReportsPage() {
   const [bookings, setBookings] = useState<AdminBooking[]>([]);
+  const [totalRoomsCount, setTotalRoomsCount] = useState<number>(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/admin/bookings").then((r) => r.json()).then((d) => d.bookings && setBookings(d.bookings));
+    Promise.all([
+      fetch("/api/admin/bookings").then((r) => r.json()),
+      fetch("/api/admin/rooms").then((r) => r.json())
+    ])
+      .then(([bData, rData]) => {
+        if (bData?.bookings) setBookings(bData.bookings);
+        if (rData?.rooms) setTotalRoomsCount(rData.rooms.length);
+      })
+      .catch((err) => console.error("Failed to load reports data:", err))
+      .finally(() => setLoading(false));
   }, []);
 
   const totalRevenue = bookings
     .filter((b) => b.bookingStatus !== "CANCELLED")
     .reduce((acc, b) => acc + (b.paidAmount || 0), 0);
+
+  const directBookingsCount = bookings.filter(
+    (b) => !b.source || b.source === "DIRECT" || b.source === "FRONT_DESK"
+  ).length;
+  const directBookingRate =
+    bookings.length > 0 ? Math.round((directBookingsCount / bookings.length) * 100) : 100;
 
   const roomTypePerformance = ["deluxe", "executive", "premium", "family"].map((type) => {
     const matching = bookings.filter((b) => b.roomType === type && b.bookingStatus !== "CANCELLED");
@@ -70,22 +87,20 @@ export default function AdminReportsPage() {
             title="Total Hotel Revenue"
             value={`₹${totalRevenue.toLocaleString()}`}
             subtitle="Verified collections (MTD)"
-            trend="14.8%"
-            trendUp={true}
             icon={<CircleDollarSign className="w-5 h-5" />}
             variant="gold"
           />
           <KPIStatCard
             title="Total Booked Nights"
             value={bookings.reduce((acc, b) => acc + (b.bookingStatus !== "CANCELLED" ? b.nights : 0), 0)}
-            subtitle="Across 45 physical rooms"
+            subtitle={totalRoomsCount > 0 ? `Across ${totalRoomsCount} physical rooms` : "Across hotel inventory"}
             icon={<BedDouble className="w-5 h-5" />}
             variant="navy"
           />
           <KPIStatCard
             title="Direct Booking Rate"
-            value="84.2%"
-            subtitle="Commission-free revenue"
+            value={`${directBookingRate}%`}
+            subtitle="Direct hotel reservations"
             icon={<TrendingUp className="w-5 h-5" />}
             variant="emerald"
           />

@@ -10,6 +10,7 @@ import { CouponRecord } from "@/lib/admin/store";
 export default function AdminCouponsPage() {
   const { showToast } = useToast();
   const [coupons, setCoupons] = useState<CouponRecord[]>([]);
+  const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [newCoupon, setNewCoupon] = useState({
     code: "",
@@ -29,6 +30,8 @@ export default function AdminCouponsPage() {
       if (data.coupons) setCoupons(data.coupons);
     } catch (err) {
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -86,40 +89,50 @@ export default function AdminCouponsPage() {
         </div>
 
         <div className="bg-[#0B1423] border border-[#1B2A42] rounded-2xl p-6 shadow-xl overflow-hidden">
-          <div className="overflow-x-auto custom-scrollbar">
-            <table className="w-full text-left text-xs">
-              <thead>
-                <tr className="border-b border-[#1B2A42] text-[10px] uppercase tracking-wider text-[#C4984F]">
-                  <th className="py-3 font-bold">Promo Code</th>
-                  <th className="py-3 font-bold">Discount Value</th>
-                  <th className="py-3 font-bold">Min Spend</th>
-                  <th className="py-3 font-bold">Max Cap</th>
-                  <th className="py-3 font-bold">Validity Window</th>
-                  <th className="py-3 font-bold text-center">Usage</th>
-                  <th className="py-3 font-bold text-right">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#1B2A42]/60 text-white/90">
-                {coupons.map((c) => (
-                  <tr key={c.id} className="hover:bg-[#111E31]/50 transition-colors">
-                    <td className="py-3.5 font-mono font-bold text-base text-[#D8B875]">{c.code}</td>
-                    <td className="py-3.5 font-bold text-emerald-400">
-                      {c.discountType === "PERCENTAGE" ? `${c.discountValue}% OFF` : `₹${c.discountValue} FLAT`}
-                    </td>
-                    <td className="py-3.5">₹{c.minBookingAmount.toLocaleString()}</td>
-                    <td className="py-3.5">₹{c.maxDiscount.toLocaleString()}</td>
-                    <td className="py-3.5 text-white/60">{c.startDate} → {c.endDate}</td>
-                    <td className="py-3.5 text-center font-bold">{c.usedCount} / {c.usageLimit}</td>
-                    <td className="py-3.5 text-right">
-                      <span className="px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold">
-                        ACTIVE
-                      </span>
-                    </td>
+          {loading ? (
+            <div className="text-center py-12 text-[#D8B875] font-serif">
+              Loading promo codes and discounts from database...
+            </div>
+          ) : coupons.length === 0 ? (
+            <div className="py-12 text-center text-xs text-white/50">
+              No promotional discount coupons registered in database.
+            </div>
+          ) : (
+            <div className="overflow-x-auto custom-scrollbar">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="border-b border-[#1B2A42] text-[10px] uppercase tracking-wider text-[#C4984F]">
+                    <th className="py-3 font-bold">Promo Code</th>
+                    <th className="py-3 font-bold">Discount Value</th>
+                    <th className="py-3 font-bold">Min Spend</th>
+                    <th className="py-3 font-bold">Max Cap</th>
+                    <th className="py-3 font-bold">Validity Window</th>
+                    <th className="py-3 font-bold text-center">Usage</th>
+                    <th className="py-3 font-bold text-right">Status</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-[#1B2A42]/60 text-white/90">
+                  {coupons.map((c) => (
+                    <tr key={c.id} className="hover:bg-[#111E31]/50 transition-colors">
+                      <td className="py-3.5 font-mono font-bold text-base text-[#D8B875]">{c.code}</td>
+                      <td className="py-3.5 font-bold text-emerald-400">
+                        {c.discountType === "PERCENTAGE" ? `${c.discountValue}% OFF` : `₹${c.discountValue} FLAT`}
+                      </td>
+                      <td className="py-3.5">₹{c.minBookingAmount.toLocaleString()}</td>
+                      <td className="py-3.5">₹{c.maxDiscount.toLocaleString()}</td>
+                      <td className="py-3.5 text-white/60">{c.startDate} → {c.endDate}</td>
+                      <td className="py-3.5 text-center font-bold">{c.usedCount} / {c.usageLimit}</td>
+                      <td className="py-3.5 text-right">
+                        <span className="px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold">
+                          ACTIVE
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
 
         {/* Create Coupon Modal */}
