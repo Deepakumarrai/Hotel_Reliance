@@ -66,10 +66,19 @@ export function AdminSidebar({
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(() => {
     if (pathname.includes("/admin/rooms") || pathname.includes("/admin/availability")) return "Rooms & Inventory";
     if (pathname.includes("/admin/pricing")) return "Pricing & Rates";
+    if (pathname.includes("/admin/banquet")) return "Banquets & Events";
     if (pathname.includes("/admin/customers")) return "Customers & CRM";
     if (pathname.includes("/admin/payments") || pathname.includes("/admin/refunds")) return "Payments & Refunds";
     return "Rooms & Inventory";
   });
+
+  useEffect(() => {
+    if (pathname.includes("/admin/rooms") || pathname.includes("/admin/availability")) setOpenSubmenu("Rooms & Inventory");
+    else if (pathname.includes("/admin/pricing")) setOpenSubmenu("Pricing & Rates");
+    else if (pathname.includes("/admin/banquet")) setOpenSubmenu("Banquets & Events");
+    else if (pathname.includes("/admin/customers")) setOpenSubmenu("Customers & CRM");
+    else if (pathname.includes("/admin/payments") || pathname.includes("/admin/refunds")) setOpenSubmenu("Payments & Refunds");
+  }, [pathname]);
 
   const navSections: NavSection[] = [
     {
