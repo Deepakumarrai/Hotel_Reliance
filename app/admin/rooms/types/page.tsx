@@ -253,24 +253,25 @@ export default function RoomCategoriesManagerPage() {
           {displayCategories.map((cat) => (
             <div
               key={cat.id}
-              className="bg-white border border-[#E5DDD2] rounded-2xl overflow-hidden shadow-[0_4px_18px_rgba(40,30,20,0.04)] hover:border-[#B8893E]/50 hover:shadow-[0_6px_22px_rgba(40,30,20,0.08)] transition-all flex flex-col md:flex-row group"
+              className="bg-white border border-[#E5DDD2] rounded-2xl overflow-hidden shadow-[0_4px_18px_rgba(40,30,20,0.04)] hover:border-[#B8893E]/50 hover:shadow-[0_6px_22px_rgba(40,30,20,0.08)] transition-all flex flex-col md:flex-row group min-w-0"
             >
-              {/* Left Side: Room Image (40% width) */}
-              <div className="relative w-full md:w-[40%] min-h-[240px] md:min-h-[300px] flex-shrink-0 bg-[#FAF7F2] overflow-hidden">
+              {/* Left Side: Room Image (38-40% width) */}
+              <div className="relative w-full md:w-[38%] min-h-[220px] md:min-h-[280px] self-stretch flex-shrink-0 bg-[#FAF7F2] overflow-hidden">
                 <Image
                   src={cat.image}
                   alt={cat.name}
                   fill
+                  sizes="(max-width: 768px) 100vw, 40vw"
                   className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                 />
 
                 {/* Top-Left Category Badge */}
-                <div className="absolute top-3 left-3 bg-[#181E24]/85 backdrop-blur-xs px-2.5 py-1 rounded-md text-[10px] uppercase tracking-wider font-bold text-white border border-white/10 shadow-xs">
+                <div className="absolute top-3 left-3 bg-[#181E24]/85 backdrop-blur-xs px-2.5 py-1 rounded-md text-[10px] uppercase tracking-wider font-bold text-white border border-white/10 shadow-xs z-10">
                   {cat.badge}
                 </div>
 
                 {/* Top-Right Price Badge */}
-                <div className="absolute top-3 right-3 bg-[#181E24]/85 backdrop-blur-xs px-3 py-1 rounded-md text-xs font-bold text-white border border-[#B8893E]/40 shadow-xs">
+                <div className="absolute top-3 right-3 bg-[#181E24]/85 backdrop-blur-xs px-2.5 py-1 rounded-md text-xs font-bold text-white border border-[#B8893E]/40 shadow-xs z-10">
                   <span className="text-[#D8B77A] font-serif text-[13px] font-bold">
                     ₹{cat.price.toLocaleString()}
                   </span>
@@ -280,52 +281,52 @@ export default function RoomCategoriesManagerPage() {
                 </div>
               </div>
 
-              {/* Right Side: Room Information (60% width) */}
-              <div className="flex-1 p-5 sm:p-6 flex flex-col justify-between space-y-4">
-                <div className="space-y-3.5">
+              {/* Right Side: Room Information (60-62% width) */}
+              <div className="flex-1 p-4 sm:p-5 lg:p-6 flex flex-col justify-between space-y-3.5 min-w-0 overflow-hidden">
+                <div className="space-y-3 min-w-0">
                   {/* Title & Description */}
-                  <div className="space-y-1">
-                    <h2 className="font-serif text-[24px] sm:text-[26px] font-bold text-[#111923] tracking-tight leading-snug group-hover:text-[#B8893E] transition-colors">
+                  <div className="space-y-1 min-w-0">
+                    <h2 className="font-serif text-[22px] sm:text-[25px] font-bold text-[#111923] tracking-tight leading-snug group-hover:text-[#B8893E] transition-colors truncate">
                       {cat.name}
                     </h2>
-                    <p className="text-[12.5px] text-[#635C52] leading-relaxed line-clamp-2">
+                    <p className="text-[12px] sm:text-[12.5px] text-[#635C52] leading-relaxed line-clamp-2">
                       {cat.description}
                     </p>
                   </div>
 
                   {/* 3-Column Specifications Row */}
-                  <div className="grid grid-cols-3 gap-2 bg-[#FAF7F2] p-2.5 sm:p-3 rounded-xl border border-[#E8DFD2] text-left">
-                    <div className="flex items-center space-x-2">
-                      <Users className="w-4 h-4 text-[#B8893E] flex-shrink-0" />
-                      <div>
-                        <span className="text-[8.5px] uppercase font-bold tracking-wider text-[#8A8277] block">
+                  <div className="grid grid-cols-3 gap-1.5 sm:gap-2 bg-[#FAF7F2] p-2 sm:p-2.5 rounded-xl border border-[#E8DFD2] text-left min-w-0">
+                    <div className="flex items-center space-x-1.5 sm:space-x-2 min-w-0">
+                      <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#B8893E] flex-shrink-0" />
+                      <div className="min-w-0 flex-1">
+                        <span className="text-[8px] sm:text-[8.5px] uppercase font-bold tracking-wider text-[#8A8277] block truncate">
                           MAX GUESTS
                         </span>
-                        <span className="text-[12px] font-bold text-[#111923] leading-tight block mt-0.5">
+                        <span className="text-[11px] sm:text-[11.5px] font-bold text-[#111923] leading-tight block mt-0.5 truncate">
                           {cat.maxGuests}
                         </span>
                       </div>
                     </div>
 
-                    <div className="flex items-center space-x-2 border-l border-[#E8DFD2] pl-2.5">
-                      <Bed className="w-4 h-4 text-[#B8893E] flex-shrink-0" />
-                      <div>
-                        <span className="text-[8.5px] uppercase font-bold tracking-wider text-[#8A8277] block">
+                    <div className="flex items-center space-x-1.5 sm:space-x-2 border-l border-[#E8DFD2] pl-1.5 sm:pl-2.5 min-w-0">
+                      <Bed className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#B8893E] flex-shrink-0" />
+                      <div className="min-w-0 flex-1">
+                        <span className="text-[8px] sm:text-[8.5px] uppercase font-bold tracking-wider text-[#8A8277] block truncate">
                           BEDDING
                         </span>
-                        <span className="text-[12px] font-bold text-[#111923] leading-tight block mt-0.5">
+                        <span className="text-[11px] sm:text-[11.5px] font-bold text-[#111923] leading-tight block mt-0.5 truncate">
                           {cat.bedding}
                         </span>
                       </div>
                     </div>
 
-                    <div className="flex items-center space-x-2 border-l border-[#E8DFD2] pl-2.5">
-                      <Maximize2 className="w-4 h-4 text-[#B8893E] flex-shrink-0" />
-                      <div>
-                        <span className="text-[8.5px] uppercase font-bold tracking-wider text-[#8A8277] block">
+                    <div className="flex items-center space-x-1.5 sm:space-x-2 border-l border-[#E8DFD2] pl-1.5 sm:pl-2.5 min-w-0">
+                      <Maximize2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#B8893E] flex-shrink-0" />
+                      <div className="min-w-0 flex-1">
+                        <span className="text-[8px] sm:text-[8.5px] uppercase font-bold tracking-wider text-[#8A8277] block truncate">
                           ROOM AREA
                         </span>
-                        <span className="text-[12px] font-bold text-[#111923] leading-tight block mt-0.5">
+                        <span className="text-[11px] sm:text-[11.5px] font-bold text-[#111923] leading-tight block mt-0.5 truncate">
                           {cat.roomArea}
                         </span>
                       </div>
@@ -333,22 +334,22 @@ export default function RoomCategoriesManagerPage() {
                   </div>
 
                   {/* Included Amenities Chips */}
-                  <div>
-                    <span className="text-[9.5px] uppercase font-bold tracking-wider text-[#A9824B] block mb-2">
+                  <div className="min-w-0">
+                    <span className="text-[9px] sm:text-[9.5px] uppercase font-bold tracking-wider text-[#A9824B] block mb-1.5">
                       INCLUDED AMENITIES ({cat.amenitiesCount})
                     </span>
-                    <div className="flex flex-wrap gap-1.5 items-center">
+                    <div className="flex flex-wrap gap-1 sm:gap-1.5 items-center">
                       {cat.amenities.map((a) => (
                         <span
                           key={a}
-                          className="px-2.5 py-1 rounded-md bg-[#FAF7F2] border border-[#E8DFD2] text-[11px] text-[#554E44] font-medium flex items-center"
+                          className="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-md bg-[#FAF7F2] border border-[#E8DFD2] text-[10px] sm:text-[10.5px] text-[#554E44] font-medium flex items-center whitespace-nowrap"
                         >
-                          <span className="text-[#B8893E] font-bold mr-1.5">✓</span>
+                          <span className="text-[#B8893E] font-bold mr-1">✓</span>
                           <span>{a}</span>
                         </span>
                       ))}
                       {cat.moreAmenitiesCount > 0 && (
-                        <span className="text-[11px] text-[#B8893E] font-bold px-1.5 py-0.5">
+                        <span className="text-[10px] sm:text-[10.5px] text-[#B8893E] font-bold px-1 sm:px-1.5 py-0.5 whitespace-nowrap">
                           +{cat.moreAmenitiesCount} more
                         </span>
                       )}
@@ -357,12 +358,12 @@ export default function RoomCategoriesManagerPage() {
                 </div>
 
                 {/* Bottom Action Controls */}
-                <div className="pt-3.5 border-t border-[#EDE6DB] flex items-center justify-between gap-2">
-                  <div className="flex items-center space-x-2">
+                <div className="pt-3 border-t border-[#EDE6DB] flex items-center justify-between gap-1.5 sm:gap-2 flex-wrap sm:flex-nowrap">
+                  <div className="flex items-center space-x-1.5 sm:space-x-2">
                     {/* Preview Card */}
                     <button
                       onClick={() => setPreviewingRoom(cat)}
-                      className="px-3.5 py-2 rounded-lg border border-[#E2D8CA] bg-[#FAF7F2] hover:bg-[#F3EDE4] text-[#111923] text-xs font-semibold flex items-center space-x-1.5 transition-colors shadow-2xs cursor-pointer"
+                      className="px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg border border-[#E2D8CA] bg-[#FAF7F2] hover:bg-[#F3EDE4] text-[#111923] text-[11px] sm:text-xs font-semibold flex items-center space-x-1.5 transition-colors shadow-2xs cursor-pointer whitespace-nowrap"
                     >
                       <Eye className="w-3.5 h-3.5 text-[#B8893E] flex-shrink-0" />
                       <span>Preview Card</span>
@@ -371,7 +372,7 @@ export default function RoomCategoriesManagerPage() {
                     {/* Availability */}
                     <Link
                       href="/admin/availability"
-                      className="px-3.5 py-2 rounded-lg border border-[#E2D8CA] bg-[#FAF7F2] hover:bg-[#F3EDE4] text-[#111923] text-xs font-semibold flex items-center space-x-1.5 transition-colors shadow-2xs"
+                      className="px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg border border-[#E2D8CA] bg-[#FAF7F2] hover:bg-[#F3EDE4] text-[#111923] text-[11px] sm:text-xs font-semibold flex items-center space-x-1.5 transition-colors shadow-2xs whitespace-nowrap"
                     >
                       <Calendar className="w-3.5 h-3.5 text-[#B8893E] flex-shrink-0" />
                       <span>Availability</span>
@@ -381,7 +382,7 @@ export default function RoomCategoriesManagerPage() {
                   {/* Configure Room */}
                   <button
                     onClick={() => setConfiguringRoom(cat)}
-                    className="px-4 py-2 rounded-lg bg-[#B38138] hover:bg-[#9E702E] text-white text-xs font-bold uppercase tracking-wider flex items-center space-x-1.5 transition-all shadow-xs cursor-pointer active:scale-95"
+                    className="px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-lg bg-[#B38138] hover:bg-[#9E702E] text-white text-[10.5px] sm:text-xs font-bold uppercase tracking-wider flex items-center space-x-1.5 transition-all shadow-xs cursor-pointer active:scale-95 whitespace-nowrap flex-shrink-0"
                   >
                     <Edit3 className="w-3.5 h-3.5 flex-shrink-0" />
                     <span>CONFIGURE ROOM</span>
