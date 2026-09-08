@@ -5,7 +5,9 @@
  */
 
 const BACKEND_API_URL =
-  process.env.BACKEND_API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001/api/v1";
+  process.env.BACKEND_API_URL ||
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://hotel-reliance-backend.onrender.com/api/v1";
 
 interface CacheEntry {
   expiry: number;
