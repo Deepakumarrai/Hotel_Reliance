@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "../services/prisma";
+import { cacheGet, cacheInvalidate } from "../services/cache";
 
 // Helper to log administrative actions to PostgreSQL
 async function recordAuditLog(
@@ -33,115 +34,105 @@ async function recordAuditLog(
 // ----------------------------------------------------
 export async function getDashboardStats(req: Request, res: Response): Promise<void> {
   try {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const tomorrow = new Date(today);
-    tomorrow.setDate(today.getDate() + 1);
+    const data = await cacheGet("admin:dashboard", async () => {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const tomorrow = new Date(today);
+      tomorrow.setDate(today.getDate() + 1);
 
-    // Total physical room units
-    const totalRooms = await prisma.roomUnit.count();
+      // Run independent Prisma queries in parallel via Promise.all
+      const [totalRooms, statusGroups, todayArrivals, todayDepartures, revenueAgg, recentBookings] =
+        await Promise.all([
+          prisma.roomUnit.count(),
+          prisma.roomUnit.groupBy({
+            by: ["status"],
+            _count: { _all: true }
+          }),
+          prisma.booking.count({
+            where: {
+              checkInDate: { gte: today, lt: tomorrow },
+              status: { in: ["CONFIRMED", "PENDING"] }
+            }
+          }),
+          prisma.booking.count({
+            where: {
+              checkOutDate: { gte: today, lt: tomorrow },
+              status: "CHECKED_IN"
+            }
+          }),
+          prisma.booking.aggregate({
+            where: {
+              status: { in: ["CONFIRMED", "CHECKED_IN", "CHECKED_OUT"] }
+            },
+            _sum: {
+              totalAmount: true,
+              paidAmount: true
+            }
+          }),
+          prisma.booking.findMany({
+            take: 6,
+            orderBy: { createdAt: "desc" },
+            include: { room: true }
+          })
+        ]);
 
-    // Counts by room status
-    const statusGroups = await prisma.roomUnit.groupBy({
-      by: ["status"],
-      _count: { _all: true }
-    });
+      const roomCounts = {
+        available: 0,
+        occupied: 0,
+        reserved: 0,
+        cleaning: 0,
+        maintenance: 0,
+        outOfService: 0
+      };
 
-    const roomCounts = {
-      available: 0,
-      occupied: 0,
-      reserved: 0,
-      cleaning: 0,
-      maintenance: 0,
-      outOfService: 0
-    };
+      statusGroups.forEach((g) => {
+        const s = g.status.toUpperCase();
+        if (s === "AVAILABLE") roomCounts.available = g._count._all;
+        else if (s === "OCCUPIED") roomCounts.occupied = g._count._all;
+        else if (s === "RESERVED") roomCounts.reserved = g._count._all;
+        else if (s === "CLEANING") roomCounts.cleaning = g._count._all;
+        else if (s === "MAINTENANCE") roomCounts.maintenance = g._count._all;
+        else if (s === "OUT_OF_SERVICE") roomCounts.outOfService = g._count._all;
+      });
 
-    statusGroups.forEach((g) => {
-      const s = g.status.toUpperCase();
-      if (s === "AVAILABLE") roomCounts.available = g._count._all;
-      else if (s === "OCCUPIED") roomCounts.occupied = g._count._all;
-      else if (s === "RESERVED") roomCounts.reserved = g._count._all;
-      else if (s === "CLEANING") roomCounts.cleaning = g._count._all;
-      else if (s === "MAINTENANCE") roomCounts.maintenance = g._count._all;
-      else if (s === "OUT_OF_SERVICE") roomCounts.outOfService = g._count._all;
-    });
+      const occupiedOrReserved = roomCounts.occupied + roomCounts.reserved;
+      const occupancyRate = totalRooms > 0 ? Math.round((occupiedOrReserved / totalRooms) * 100) : 0;
 
-    // Occupancy percentage based on occupied + reserved
-    const occupiedOrReserved = roomCounts.occupied + roomCounts.reserved;
-    const occupancyRate = totalRooms > 0 ? Math.round((occupiedOrReserved / totalRooms) * 100) : 0;
-
-    // Today's arrivals (Check-in date is today)
-    const todayArrivals = await prisma.booking.count({
-      where: {
-        checkInDate: {
-          gte: today,
-          lt: tomorrow
+      return {
+        success: true,
+        stats: {
+          totalRooms,
+          occupancyRate,
+          occupiedRooms: roomCounts.occupied,
+          availableRooms: roomCounts.available,
+          cleaningRooms: roomCounts.cleaning,
+          maintenanceRooms: roomCounts.maintenance,
+          todayArrivals,
+          todayDepartures,
+          totalRevenue: Number(revenueAgg._sum.totalAmount || 0),
+          totalPaid: Number(revenueAgg._sum.paidAmount || 0),
+          roomCounts
         },
-        status: { in: ["CONFIRMED", "PENDING"] }
-      }
-    });
+        recentBookings: recentBookings.map((b) => ({
+          id: b.id,
+          guestName: b.guestName,
+          guestEmail: b.guestEmail,
+          guestPhone: b.guestPhone,
+          roomType: b.room.slug,
+          roomNumber: b.roomNumber,
+          checkInDate: b.checkInDate.toISOString().split("T")[0],
+          checkOutDate: b.checkOutDate.toISOString().split("T")[0],
+          totalAmount: Number(b.totalAmount),
+          paidAmount: Number(b.paidAmount),
+          bookingStatus: b.status,
+          paymentStatus: b.paymentStatus,
+          paymentMethod: b.paymentMethod || "PAY_AT_HOTEL",
+          createdAt: b.createdAt.toISOString()
+        }))
+      };
+    }, 10000);
 
-    // Today's departures (Check-out date is today)
-    const todayDepartures = await prisma.booking.count({
-      where: {
-        checkOutDate: {
-          gte: today,
-          lt: tomorrow
-        },
-        status: "CHECKED_IN"
-      }
-    });
-
-    // Total Revenue (Sum of totalAmount from non-cancelled bookings)
-    const revenueAgg = await prisma.booking.aggregate({
-      where: {
-        status: { in: ["CONFIRMED", "CHECKED_IN", "CHECKED_OUT"] }
-      },
-      _sum: {
-        totalAmount: true,
-        paidAmount: true
-      }
-    });
-
-    // Recent 6 bookings
-    const recentBookings = await prisma.booking.findMany({
-      take: 6,
-      orderBy: { createdAt: "desc" },
-      include: { room: true }
-    });
-
-    res.json({
-      success: true,
-      stats: {
-        totalRooms,
-        occupancyRate,
-        occupiedRooms: roomCounts.occupied,
-        availableRooms: roomCounts.available,
-        cleaningRooms: roomCounts.cleaning,
-        maintenanceRooms: roomCounts.maintenance,
-        todayArrivals,
-        todayDepartures,
-        totalRevenue: Number(revenueAgg._sum.totalAmount || 0),
-        totalPaid: Number(revenueAgg._sum.paidAmount || 0),
-        roomCounts
-      },
-      recentBookings: recentBookings.map((b) => ({
-        id: b.id,
-        guestName: b.guestName,
-        guestEmail: b.guestEmail,
-        guestPhone: b.guestPhone,
-        roomType: b.room.slug,
-        roomNumber: b.roomNumber,
-        checkInDate: b.checkInDate.toISOString().split("T")[0],
-        checkOutDate: b.checkOutDate.toISOString().split("T")[0],
-        totalAmount: Number(b.totalAmount),
-        paidAmount: Number(b.paidAmount),
-        bookingStatus: b.status,
-        paymentStatus: b.paymentStatus,
-        paymentMethod: b.paymentMethod || "PAY_AT_HOTEL",
-        createdAt: b.createdAt.toISOString()
-      }))
-    });
+    res.json(data);
   } catch (err: any) {
     console.error("Dashboard stats error:", err);
     res.status(500).json({ success: false, error: err.message });
@@ -154,61 +145,66 @@ export async function getDashboardStats(req: Request, res: Response): Promise<vo
 export async function getBookings(req: Request, res: Response): Promise<void> {
   try {
     const { status, roomType, search } = req.query;
+    const cacheKey = `admin:bookings:${status || "all"}:${roomType || "all"}:${search || "none"}`;
 
-    const whereClause: any = {};
-    if (status && status !== "ALL") {
-      whereClause.status = status;
-    }
-    if (roomType && roomType !== "ALL") {
-      whereClause.room = { slug: String(roomType) };
-    }
-    if (search) {
-      const q = String(search).trim();
-      whereClause.OR = [
-        { id: { contains: q, mode: "insensitive" } },
-        { guestName: { contains: q, mode: "insensitive" } },
-        { guestEmail: { contains: q, mode: "insensitive" } },
-        { guestPhone: { contains: q, mode: "insensitive" } },
-        { roomNumber: { contains: q, mode: "insensitive" } }
-      ];
-    }
+    const data = await cacheGet(cacheKey, async () => {
+      const whereClause: any = {};
+      if (status && status !== "ALL") {
+        whereClause.status = status;
+      }
+      if (roomType && roomType !== "ALL") {
+        whereClause.room = { slug: String(roomType) };
+      }
+      if (search) {
+        const q = String(search).trim();
+        whereClause.OR = [
+          { id: { contains: q, mode: "insensitive" } },
+          { guestName: { contains: q, mode: "insensitive" } },
+          { guestEmail: { contains: q, mode: "insensitive" } },
+          { guestPhone: { contains: q, mode: "insensitive" } },
+          { roomNumber: { contains: q, mode: "insensitive" } }
+        ];
+      }
 
-    const bookings = await prisma.booking.findMany({
-      where: whereClause,
-      orderBy: { createdAt: "desc" },
-      include: { room: true }
-    });
+      const bookings = await prisma.booking.findMany({
+        where: whereClause,
+        orderBy: { createdAt: "desc" },
+        include: { room: true }
+      });
 
-    res.json({
-      success: true,
-      total: bookings.length,
-      bookings: bookings.map((b) => ({
-        id: b.id,
-        guestName: b.guestName,
-        guestEmail: b.guestEmail,
-        guestPhone: b.guestPhone,
-        roomType: b.room.slug,
-        roomNumber: b.roomNumber,
-        checkInDate: b.checkInDate.toISOString().split("T")[0],
-        checkOutDate: b.checkOutDate.toISOString().split("T")[0],
-        nights: b.nights,
-        adults: b.adults,
-        children: b.children,
-        baseAmount: Number(b.baseAmount),
-        taxAmount: Number(b.taxAmount),
-        discountAmount: Number(b.discountAmount),
-        totalAmount: Number(b.totalAmount),
-        paidAmount: Number(b.paidAmount),
-        paymentStatus: b.paymentStatus,
-        bookingStatus: b.status,
-        paymentMethod: b.paymentMethod || "PAY_AT_HOTEL",
-        transactionId: b.transactionId,
-        specialRequests: b.specialRequests,
-        cancellationReason: b.cancellationReason,
-        refundAmount: b.refundAmount ? Number(b.refundAmount) : undefined,
-        createdAt: b.createdAt.toISOString()
-      }))
-    });
+      return {
+        success: true,
+        total: bookings.length,
+        bookings: bookings.map((b) => ({
+          id: b.id,
+          guestName: b.guestName,
+          guestEmail: b.guestEmail,
+          guestPhone: b.guestPhone,
+          roomType: b.room.slug,
+          roomNumber: b.roomNumber,
+          checkInDate: b.checkInDate.toISOString().split("T")[0],
+          checkOutDate: b.checkOutDate.toISOString().split("T")[0],
+          nights: b.nights,
+          adults: b.adults,
+          children: b.children,
+          baseAmount: Number(b.baseAmount),
+          taxAmount: Number(b.taxAmount),
+          discountAmount: Number(b.discountAmount),
+          totalAmount: Number(b.totalAmount),
+          paidAmount: Number(b.paidAmount),
+          paymentStatus: b.paymentStatus,
+          bookingStatus: b.status,
+          paymentMethod: b.paymentMethod || "PAY_AT_HOTEL",
+          transactionId: b.transactionId,
+          specialRequests: b.specialRequests,
+          cancellationReason: b.cancellationReason,
+          refundAmount: b.refundAmount ? Number(b.refundAmount) : undefined,
+          createdAt: b.createdAt.toISOString()
+        }))
+      };
+    }, 10000);
+
+    res.json(data);
   } catch (err: any) {
     console.error("Get bookings error:", err);
     res.status(500).json({ success: false, error: err.message });
@@ -217,6 +213,7 @@ export async function getBookings(req: Request, res: Response): Promise<void> {
 
 export async function createAdminBooking(req: Request, res: Response): Promise<void> {
   try {
+    cacheInvalidate("admin:");
     const data = req.body;
     const adminUser = (req as any).user?.name || "Admin";
 
@@ -494,44 +491,48 @@ export async function updateAdminBooking(req: Request, res: Response): Promise<v
 // ----------------------------------------------------
 export async function getRooms(req: Request, res: Response): Promise<void> {
   try {
-    const roomUnits = await prisma.roomUnit.findMany({
-      orderBy: [{ floor: "asc" }, { roomNumber: "asc" }],
-      include: { room: true }
-    });
+    const data = await cacheGet("admin:rooms", async () => {
+      const roomUnits = await prisma.roomUnit.findMany({
+        orderBy: [{ floor: "asc" }, { roomNumber: "asc" }],
+        include: { room: true }
+      });
 
-    const counts = {
-      available: 0,
-      occupied: 0,
-      reserved: 0,
-      cleaning: 0,
-      maintenance: 0
-    };
+      const counts = {
+        available: 0,
+        occupied: 0,
+        reserved: 0,
+        cleaning: 0,
+        maintenance: 0
+      };
 
-    roomUnits.forEach((u) => {
-      const s = u.status.toUpperCase();
-      if (s === "AVAILABLE") counts.available++;
-      else if (s === "OCCUPIED") counts.occupied++;
-      else if (s === "RESERVED") counts.reserved++;
-      else if (s === "CLEANING") counts.cleaning++;
-      else if (s === "MAINTENANCE") counts.maintenance++;
-    });
+      roomUnits.forEach((u) => {
+        const s = u.status.toUpperCase();
+        if (s === "AVAILABLE") counts.available++;
+        else if (s === "OCCUPIED") counts.occupied++;
+        else if (s === "RESERVED") counts.reserved++;
+        else if (s === "CLEANING") counts.cleaning++;
+        else if (s === "MAINTENANCE") counts.maintenance++;
+      });
 
-    res.json({
-      success: true,
-      total: roomUnits.length,
-      counts,
-      rooms: roomUnits.map((u) => ({
-        id: u.id,
-        roomNumber: u.roomNumber,
-        roomType: u.room.slug,
-        categoryName: u.room.name,
-        floor: u.floor,
-        status: u.status,
-        currentBookingId: u.currentBookingId,
-        assignedGuest: u.assignedGuest,
-        notes: u.notes
-      }))
-    });
+      return {
+        success: true,
+        total: roomUnits.length,
+        counts,
+        rooms: roomUnits.map((u) => ({
+          id: u.id,
+          roomNumber: u.roomNumber,
+          roomType: u.room.slug,
+          categoryName: u.room.name,
+          floor: u.floor,
+          status: u.status,
+          currentBookingId: u.currentBookingId,
+          assignedGuest: u.assignedGuest,
+          notes: u.notes
+        }))
+      };
+    }, 10000);
+
+    res.json(data);
   } catch (err: any) {
     console.error("Get rooms error:", err);
     res.status(500).json({ success: false, error: err.message });
@@ -540,6 +541,7 @@ export async function getRooms(req: Request, res: Response): Promise<void> {
 
 export async function updateRoomStatus(req: Request, res: Response): Promise<void> {
   try {
+    cacheInvalidate("admin:");
     const { roomNumber, status, notes } = req.body;
     const adminUser = (req as any).user?.name || "Admin";
 
@@ -601,36 +603,42 @@ export async function updateRoomStatus(req: Request, res: Response): Promise<voi
 // ----------------------------------------------------
 export async function getPricing(req: Request, res: Response): Promise<void> {
   try {
-    const roomPricing = await prisma.roomPricing.findMany();
-    const seasonalRules = await prisma.seasonRule.findMany({
-      orderBy: { createdAt: "desc" }
-    });
+    const data = await cacheGet("admin:pricing", async () => {
+      const [roomPricing, seasonalRules] = await Promise.all([
+        prisma.roomPricing.findMany(),
+        prisma.seasonRule.findMany({
+          orderBy: { createdAt: "desc" }
+        })
+      ]);
 
-    const prices: Record<string, any> = {};
-    roomPricing.forEach((p) => {
-      prices[p.roomSlug] = {
-        base: Number(p.base),
-        weekend: Number(p.weekend),
-        peak: Number(p.peak),
-        extraAdult: Number(p.extraAdult),
-        extraBed: Number(p.extraBed)
+      const prices: Record<string, any> = {};
+      roomPricing.forEach((p) => {
+        prices[p.roomSlug] = {
+          base: Number(p.base),
+          weekend: Number(p.weekend),
+          peak: Number(p.peak),
+          extraAdult: Number(p.extraAdult),
+          extraBed: Number(p.extraBed)
+        };
+      });
+
+      return {
+        success: true,
+        prices,
+        seasonalRules: seasonalRules.map((s) => ({
+          id: s.id,
+          name: s.name,
+          startDate: s.startDate,
+          endDate: s.endDate,
+          multiplier: Number(s.multiplier),
+          minNights: s.minNights,
+          applicableRooms: s.applicableRooms,
+          isActive: s.isActive
+        }))
       };
-    });
+    }, 10000);
 
-    res.json({
-      success: true,
-      prices,
-      seasonalRules: seasonalRules.map((s) => ({
-        id: s.id,
-        name: s.name,
-        startDate: s.startDate,
-        endDate: s.endDate,
-        multiplier: Number(s.multiplier),
-        minNights: s.minNights,
-        applicableRooms: s.applicableRooms,
-        isActive: s.isActive
-      }))
-    });
+    res.json(data);
   } catch (err: any) {
     console.error("Get pricing error:", err);
     res.status(500).json({ success: false, error: err.message });
@@ -639,6 +647,7 @@ export async function getPricing(req: Request, res: Response): Promise<void> {
 
 export async function updatePricing(req: Request, res: Response): Promise<void> {
   try {
+    cacheInvalidate("admin:pricing");
     const { roomSlug, prices } = req.body;
     const adminUser = (req as any).user?.name || "Admin";
 
@@ -1243,14 +1252,17 @@ export async function updateNotification(req: Request, res: Response): Promise<v
 export async function getCmsContent(req: Request, res: Response): Promise<void> {
   try {
     const { sectionId } = req.params;
-    const content = await prisma.cmsContent.findUnique({
-      where: { id: sectionId }
-    });
+    const data = await cacheGet(`admin:cms:${sectionId}`, async () => {
+      const content = await prisma.cmsContent.findUnique({
+        where: { id: sectionId }
+      });
+      return {
+        success: true,
+        content: content ? content.data : null
+      };
+    }, 15000);
 
-    res.json({
-      success: true,
-      content: content ? content.data : null
-    });
+    res.json(data);
   } catch (err: any) {
     console.error("Get CMS error:", err);
     res.status(500).json({ success: false, error: err.message });
@@ -1260,6 +1272,8 @@ export async function getCmsContent(req: Request, res: Response): Promise<void> 
 export async function updateCmsContent(req: Request, res: Response): Promise<void> {
   try {
     const { sectionId } = req.params;
+    cacheInvalidate(`admin:cms:${sectionId}`);
+    cacheInvalidate("admin:");
     const data = req.body;
 
     const updated = await prisma.cmsContent.upsert({

@@ -49,7 +49,12 @@ export async function PUT(request: Request) {
         }
       })
     });
-    return NextResponse.json(res.data, { status: res.status });
+    const refreshed = await forwardToBackend("/admin/pricing", { method: "GET" });
+    return NextResponse.json({
+      success: true,
+      prices: refreshed.data?.prices || {},
+      updated: res.data?.updated
+    }, { status: res.status });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }

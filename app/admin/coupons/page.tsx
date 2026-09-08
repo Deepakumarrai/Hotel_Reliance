@@ -9,52 +9,29 @@ import { CouponRecord } from "@/lib/admin/store";
 
 export default function AdminCouponsPage() {
   const { showToast } = useToast();
-  const [coupons, setCoupons] = useState<CouponRecord[]>([
-    {
-      id: "coup-1",
-      code: "WELCOME10",
-      discountType: "PERCENTAGE",
-      discountValue: 10,
-      minBookingAmount: 2000,
-      maxDiscount: 1000,
-      startDate: "2026-09-01",
-      endDate: "2026-12-31",
-      usageLimit: 500,
-      usedCount: 42,
-      isActive: true,
-    },
-    {
-      id: "coup-2",
-      code: "FESTIVE15",
-      discountType: "PERCENTAGE",
-      discountValue: 15,
-      minBookingAmount: 5000,
-      maxDiscount: 2500,
-      startDate: "2026-10-01",
-      endDate: "2026-11-30",
-      usageLimit: 200,
-      usedCount: 18,
-      isActive: true,
-    },
-  ]);
-  const [loading, setLoading] = useState(false);
+  const [coupons, setCoupons] = useState<CouponRecord[]>([]);
+  const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
-  const [newCoupon, setNewCoupon] = useState({
-    code: "",
-    discountType: "PERCENTAGE" as CouponRecord["discountType"],
-    discountValue: 15,
-    minBookingAmount: 3000,
-    maxDiscount: 1500,
-    startDate: "2026-09-01",
-    endDate: "2026-12-31",
-    usageLimit: 100,
+  const [newCoupon, setNewCoupon] = useState(() => {
+    const today = new Date();
+    const endOfYear = new Date(today.getFullYear(), 11, 31);
+    return {
+      code: "",
+      discountType: "PERCENTAGE" as CouponRecord["discountType"],
+      discountValue: 15,
+      minBookingAmount: 3000,
+      maxDiscount: 1500,
+      startDate: today.toISOString().split("T")[0],
+      endDate: endOfYear.toISOString().split("T")[0],
+      usageLimit: 100,
+    };
   });
 
   const fetchCoupons = async () => {
     try {
       const res = await fetch("/api/admin/offers");
       const data = await res.json();
-      if (data.coupons && data.coupons.length > 0) setCoupons(data.coupons);
+      if (data.coupons) setCoupons(data.coupons);
     } catch (err) {
       console.error(err);
     } finally {

@@ -15,36 +15,20 @@ interface StaffMember {
   status: string;
 }
 
-const defaultStaff: StaffMember[] = [
-  {
-    id: "staff-1",
-    name: "Vikramaditya Roy",
-    role: "General Manager",
-    department: "OPERATIONS",
-    image: "/images/staff/vikramaditya-roy.png",
-    experience: "",
-    bio: "Hospitality veteran leading operations and guest luxury standards at Hotel Reliance.",
-    status: "ACTIVE",
-  },
-];
-
 export default function AdminStaffPage() {
-  const [staffList, setStaffList] = useState<StaffMember[]>(defaultStaff);
+  const [staffList, setStaffList] = useState<StaffMember[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     fetch("/api/admin/staff")
       .then((r) => r.json())
       .then((data) => {
-        if (data?.staff && data.staff.length > 0) {
+        if (data?.staff) {
           setStaffList(data.staff);
-        } else {
-          setStaffList(defaultStaff);
         }
       })
       .catch((err) => {
         console.error("Failed to load staff:", err);
-        setStaffList(defaultStaff);
       })
       .finally(() => setIsLoading(false));
   }, []);

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -31,61 +31,63 @@ interface ScheduledEvent {
 
 export default function BanquetCalendarPage() {
   const { showToast } = useToast();
-  const [currentDate, setCurrentDate] = useState(() => new Date("2026-09-07T00:00:00"));
+  const [currentDate, setCurrentDate] = useState(() => new Date());
   const [modalOpen, setModalOpen] = useState(false);
-
-  const [scheduledEvents, setScheduledEvents] = useState<ScheduledEvent[]>([
-    {
-      id: "EVT-101",
-      title: "SAIL Bokaro Leadership Conference",
-      client: "Bokaro Steel Plant (SAIL)",
-      venue: "AC Banquet Hall",
-      date: "2026-09-08",
-      timeSlot: "Full Day",
-      guests: 180,
-      status: "CONFIRMED",
-      notes: "Projector, stage podium & high-tea buffet",
-    },
-    {
-      id: "EVT-102",
-      title: "Agarwal Family Silver Jubilee",
-      client: "Rajesh Agarwal",
-      venue: "Wedding Lawn",
-      date: "2026-09-11",
-      timeSlot: "Evening",
-      guests: 150,
-      status: "CONFIRMED",
-      notes: "Outdoor lighting, cocktail bar & buffet",
-    },
-    {
-      id: "EVT-103",
-      title: "Deshmukh Sangeet & Reception",
-      client: "Ananya Deshmukh",
-      venue: "Grand Ballroom",
-      date: "2026-09-12",
-      timeSlot: "Evening",
-      guests: 450,
-      status: "CONFIRMED",
-      notes: "Grand stage, DJ console & flower decor",
-    },
-    {
-      id: "EVT-104",
-      title: "Rotary Club Bokaro Meeting",
-      client: "Rotary International",
-      venue: "AC Banquet Hall",
-      date: "2026-09-13",
-      timeSlot: "Morning",
-      guests: 80,
-      status: "TENTATIVE",
-      notes: "Breakfast buffet & podium mic",
-    },
+  const [scheduledEvents, setScheduledEvents] = useState<ScheduledEvent[]>([]);
+  const [venues, setVenues] = useState([
+    { name: "Grand AC Banquet Hall", capacity: "350 Guests", floor: "1st Floor" },
+    { name: "Executive Meeting Boardroom", capacity: "30 Guests", floor: "2nd Floor" },
+    { name: "Celebration Open Lawn", capacity: "500 Guests", floor: "Outdoor Lawn" },
   ]);
 
-  const venues = [
-    { name: "Grand Ballroom", capacity: "500 Guests", floor: "Ground Floor" },
-    { name: "AC Banquet Hall", capacity: "250 Guests", floor: "1st Floor" },
-    { name: "Wedding Lawn", capacity: "800 Guests", floor: "Outdoor Lawn" },
-  ];
+  const loadEvents = async () => {
+    try {
+      const [contentRes, banquetRes, venueRes] = await Promise.all([
+        fetch("/api/admin/content/banquet_events").then((r) => r.json()).catch(() => null),
+        fetch("/api/admin/banquet").then((r) => r.json()).catch(() => null),
+        fetch("/api/admin/content/banquet_venues").then((r) => r.json()).catch(() => null),
+      ]);
+
+      if (venueRes?.content?.venues && venueRes.content.venues.length > 0) {
+        setVenues(
+          venueRes.content.venues.map((v: any) => ({
+            name: v.name,
+            capacity: v.capacity || "100+ Guests",
+            floor: v.size || v.location || "Hotel Campus",
+          }))
+        );
+      }
+
+      const storedEvents: ScheduledEvent[] = contentRes?.content?.events || [];
+      const banquetEvents: ScheduledEvent[] = (banquetRes?.enquiries || [])
+        .filter((e: any) => e.status === "CONFIRMED" && e.eventDate)
+        .map((e: any) => ({
+          id: `ENQ-${e.id.slice(0, 6)}`,
+          title: e.eventType || `Event for ${e.name}`,
+          client: e.name,
+          venue: e.venue || "Grand AC Banquet Hall",
+          date: e.eventDate,
+          timeSlot: "Evening" as const,
+          guests: e.guestCount || 100,
+          status: "CONFIRMED" as const,
+          notes: e.notes || "",
+        }));
+
+      const allEvents = [...storedEvents];
+      banquetEvents.forEach((be) => {
+        if (!allEvents.some((e) => e.id === be.id || (e.date === be.date && e.venue === be.venue))) {
+          allEvents.push(be);
+        }
+      });
+      setScheduledEvents(allEvents);
+    } catch {
+      // keep current state
+    }
+  };
+
+  useEffect(() => {
+    loadEvents();
+  }, []);
 
   // Generate 7 days for the weekly slot view
   const days = Array.from({ length: 7 }).map((_, i) => {
@@ -105,20 +107,20 @@ export default function BanquetCalendarPage() {
     setCurrentDate(next);
   };
 
-  const [newEvent, setNewEvent] = useState({
+  const [newEvent, setNewEvent] = useState(() => ({
     title: "",
     client: "",
-    venue: "Grand Ballroom",
-    date: "2026-09-08",
+    venue: "Grand AC Banquet Hall",
+    date: new Date().toISOString().split("T")[0],
     timeSlot: "Evening" as "Morning" | "Evening" | "Full Day",
     guests: 200,
     notes: "",
-  });
+  }));
 
-  const handleBookSlot = (e: React.FormEvent) => {
+  const handleBookSlot = async (e: React.FormEvent) => {
     e.preventDefault();
     const created: ScheduledEvent = {
-      id: `EVT-${Date.now().toString().slice(-4)}`,
+      id: `EVT-${Date.now().toString().slice(-6)}`,
       title: newEvent.title,
       client: newEvent.client,
       venue: newEvent.venue,
@@ -128,14 +130,26 @@ export default function BanquetCalendarPage() {
       status: "CONFIRMED",
       notes: newEvent.notes,
     };
-    setScheduledEvents([...scheduledEvents, created]);
+    const updated = [...scheduledEvents, created];
+    setScheduledEvents(updated);
     showToast(`Event '${newEvent.title}' scheduled on ${newEvent.date}!`, "success");
     setModalOpen(false);
+
+    try {
+      await fetch("/api/admin/content/banquet_events", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ events: updated }),
+      });
+    } catch (err) {
+      console.error("Failed to persist banquet event to backend:", err);
+    }
+
     setNewEvent({
       title: "",
       client: "",
       venue: "Grand Ballroom",
-      date: "2026-09-08",
+      date: new Date().toISOString().split("T")[0],
       timeSlot: "Evening",
       guests: 200,
       notes: "",
@@ -370,9 +384,11 @@ export default function BanquetCalendarPage() {
                       }
                       className="w-full bg-white border border-[#E8DFD2] rounded-xl px-3.5 py-2.5 text-xs text-[#111923] focus:outline-none focus:border-[#B8893E] shadow-2xs"
                     >
-                      <option value="Grand Ballroom">Grand Ballroom</option>
-                      <option value="AC Banquet Hall">AC Banquet Hall</option>
-                      <option value="Wedding Lawn">Wedding Lawn</option>
+                      {venues.map((v) => (
+                        <option key={v.name} value={v.name}>
+                          {v.name}
+                        </option>
+                      ))}
                     </select>
                   </div>
                 </div>

@@ -21,12 +21,7 @@ interface RoomPriceEntry {
 
 export default function AdminPricingPage() {
   const { showToast } = useToast();
-  const [prices, setPrices] = useState<Record<string, RoomPriceEntry>>({
-    deluxe: { base: 2499, weekend: 2799, peak: 3499, extraAdult: 800, extraBed: 1000 },
-    executive: { base: 3499, weekend: 3899, peak: 4499, extraAdult: 1000, extraBed: 1200 },
-    premium: { base: 4499, weekend: 4999, peak: 5999, extraAdult: 1200, extraBed: 1500 },
-    family: { base: 5999, weekend: 6499, peak: 7499, extraAdult: 1500, extraBed: 1800 },
-  });
+  const [prices, setPrices] = useState<Record<string, RoomPriceEntry>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<string | null>(null);
   const [savingAll, setSavingAll] = useState(false);
@@ -130,6 +125,21 @@ export default function AdminPricingPage() {
     { key: "family", name: "Family Suite", desc: "Multi-Guest 4-Bed Luxury Room" },
   ];
 
+  if (loading) {
+    return (
+      <AdminLayout>
+        <div className="space-y-6 max-w-[1540px] mx-auto pb-12 font-sans text-[#111923] animate-in fade-in duration-200">
+          <div className="h-32 w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-2xl p-6 shadow-xs animate-pulse" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="h-64 bg-white border border-[#E8DFD2] rounded-2xl animate-pulse" />
+            ))}
+          </div>
+        </div>
+      </AdminLayout>
+    );
+  }
+
   return (
     <AdminLayout>
       <div className="space-y-6 max-w-[1540px] mx-auto pb-12 font-sans text-[#111923]">
@@ -196,8 +206,24 @@ export default function AdminPricingPage() {
         </div>
 
         {/* 3. Pricing Cards 2-Column Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {categories.map(({ key, name, desc }) => {
+        {loading ? (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="bg-white border border-[#E8DFD2] rounded-2xl p-6 h-72 animate-pulse flex flex-col justify-between">
+                <div className="space-y-2">
+                  <div className="h-6 w-48 bg-[#FAF7F2] rounded" />
+                  <div className="h-4 w-32 bg-[#FAF7F2] rounded" />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="h-10 bg-[#FCFAF6] rounded-xl border border-[#E8DFD2]/60" />
+                  <div className="h-10 bg-[#FCFAF6] rounded-xl border border-[#E8DFD2]/60" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {categories.map(({ key, name, desc }) => {
             const p = prices[key] || { base: 0, weekend: 0, peak: 0, extraAdult: 0, extraBed: 0 };
             const isSaving = saving === key;
 
@@ -335,6 +361,7 @@ export default function AdminPricingPage() {
             );
           })}
         </div>
+        )}
       </div>
     </AdminLayout>
   );

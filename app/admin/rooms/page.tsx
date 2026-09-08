@@ -32,99 +32,18 @@ export default function AdminRoomsInventoryPage() {
   const [assignedGuest, setAssignedGuest] = useState("");
   const [roomNotes, setRoomNotes] = useState("");
 
-  // Default standard 45+ rooms matching reference screenshot
-  const defaultRooms = useMemo(() => {
-    const list: any[] = [];
-    // Floor 1: 1001 - 1012
-    for (let i = 1; i <= 12; i++) {
-      const num = 1000 + i;
-      let status = "AVAILABLE";
-      let guest = "";
-      if (num === 1003) {
-        status = "OCCUPIED";
-        guest = "Rahul Verma";
-      } else if (num === 1006) {
-        status = "CLEANING";
-      } else if (num === 1009) {
-        status = "RESERVED";
-      }
-      list.push({
-        id: `room-${num}`,
-        roomNumber: `${num}`,
-        floor: 1,
-        roomType: i <= 8 ? "deluxe" : "executive",
-        status,
-        assignedGuest: guest,
-      });
-    }
-
-    // Floor 2: 2001 - 2012
-    for (let i = 1; i <= 12; i++) {
-      const num = 2000 + i;
-      let status = "AVAILABLE";
-      let guest = "";
-      if (num === 2002) {
-        status = "OCCUPIED";
-        guest = "Amit Sharma";
-      } else if (num === 2008) {
-        status = "MAINTENANCE";
-      }
-      list.push({
-        id: `room-${num}`,
-        roomNumber: `${num}`,
-        floor: 2,
-        roomType: i <= 6 ? "deluxe" : "executive",
-        status,
-        assignedGuest: guest,
-      });
-    }
-
-    // Floor 3: 3001 - 3012
-    for (let i = 1; i <= 12; i++) {
-      const num = 3000 + i;
-      let status = "AVAILABLE";
-      let guest = "";
-      if (num === 3004) {
-        status = "OCCUPIED";
-        guest = "Sneha Roy";
-      }
-      list.push({
-        id: `room-${num}`,
-        roomNumber: `${num}`,
-        floor: 3,
-        roomType: i <= 6 ? "executive" : "premium",
-        status,
-        assignedGuest: guest,
-      });
-    }
-
-    // Floor 4: 4001 - 4009
-    for (let i = 1; i <= 9; i++) {
-      const num = 4000 + i;
-      list.push({
-        id: `room-${num}`,
-        roomNumber: `${num}`,
-        floor: 4,
-        roomType: i <= 4 ? "premium" : "family",
-        status: "AVAILABLE",
-        assignedGuest: "",
-      });
-    }
-
-    return list;
-  }, []);
-
   const fetchRooms = async () => {
     try {
       const res = await fetch("/api/admin/rooms");
       const data = await res.json();
-      if (data.rooms && data.rooms.length > 0) {
+      if (Array.isArray(data?.rooms)) {
         setRooms(data.rooms);
       } else {
-        setRooms(defaultRooms);
+        setRooms([]);
       }
-    } catch {
-      setRooms(defaultRooms);
+    } catch (err) {
+      console.error("Failed to load live rooms:", err);
+      setRooms([]);
     } finally {
       setLoading(false);
     }
@@ -132,9 +51,9 @@ export default function AdminRoomsInventoryPage() {
 
   useEffect(() => {
     fetchRooms();
-  }, [defaultRooms]);
+  }, []);
 
-  const activeRoomsList = rooms.length > 0 ? rooms : defaultRooms;
+  const activeRoomsList = rooms;
 
   // Exact Summary Counts
   const availableCount = activeRoomsList.filter((r) => r.status === "AVAILABLE").length;
@@ -146,22 +65,27 @@ export default function AdminRoomsInventoryPage() {
   const handleUpdateStatus = async () => {
     if (!editingRoom) return;
     try {
-      const updated = activeRoomsList.map((r) => {
-        if (r.roomNumber === editingRoom.roomNumber) {
-          return {
-            ...r,
-            status: newStatus,
-            assignedGuest: newStatus === "OCCUPIED" ? (assignedGuest || editingRoom.assignedGuest || "Guest") : "",
-            notes: roomNotes,
-          };
-        }
-        return r;
+      const res = await fetch("/api/admin/rooms", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          roomNumber: editingRoom.roomNumber,
+          status: newStatus,
+          notes: roomNotes,
+          assignedGuest: newStatus === "OCCUPIED" ? (assignedGuest || editingRoom.assignedGuest || "Guest") : null,
+        }),
       });
-      setRooms(updated);
-      showToast(`Room ${editingRoom.roomNumber} updated to ${newStatus}`, "success");
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        showToast(`✓ Room ${editingRoom.roomNumber} updated to ${newStatus} in database`, "success");
+        fetchRooms();
+      } else {
+        throw new Error(data.error || "Failed to update room");
+      }
       setEditingRoom(null);
-    } catch {
-      showToast("Failed to update room status", "error");
+    } catch (err: any) {
+      showToast(err.message || "Failed to update room status", "error");
     }
   };
 
@@ -185,6 +109,26 @@ export default function AdminRoomsInventoryPage() {
         return "DEL";
     }
   };
+
+  if (loading) {
+    return (
+      <AdminLayout>
+        <div className="space-y-6 max-w-[1520px] mx-auto pb-10 font-sans text-[#111923] animate-in fade-in duration-200">
+          <div className="h-32 w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-2xl p-6 shadow-xs animate-pulse" />
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="h-24 bg-white border border-[#E8DFD2] rounded-xl animate-pulse" />
+            ))}
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3.5">
+            {[...Array(18)].map((_, i) => (
+              <div key={i} className="h-32 bg-white border border-[#E8DFD2] rounded-xl animate-pulse" />
+            ))}
+          </div>
+        </div>
+      </AdminLayout>
+    );
+  }
 
   return (
     <AdminLayout>

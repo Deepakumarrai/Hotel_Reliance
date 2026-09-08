@@ -31,17 +31,10 @@ export const prisma: PrismaClient = basePrisma.$extends({
             error?.message?.includes("Can't reach database server");
 
           if (isConnectionError && attempt < maxRetries) {
-            const delay = attempt * 800;
+            const delay = 100;
             console.warn(
-              `[Prisma Connection Retry] Model: ${model || "raw"}, Operation: ${operation}, Attempt ${attempt}/${maxRetries} in ${delay}ms...`
+              `[Prisma Connection Retry] Model: ${model || "raw"}, Operation: ${operation}, Attempt ${attempt}/${maxRetries}...`
             );
-            // Reconnect to flush any stalled/closed socket in the connection pool
-            try {
-              await basePrisma.$disconnect().catch(() => {});
-              await basePrisma.$connect().catch(() => {});
-            } catch {
-              // Ignore reconnection error, retry will handle
-            }
             await new Promise((resolve) => setTimeout(resolve, delay));
             continue;
           }

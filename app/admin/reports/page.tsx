@@ -1,16 +1,69 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Download, TrendingUp, Calendar, BedDouble, CircleDollarSign, ChevronDown } from "lucide-react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
+import { AdminBooking } from "@/lib/admin/store";
 
 export default function AdminReportsPage() {
-  const roomTypePerformance = [
-    { type: "DELUXE ROOMS", stays: "1 Stays", revenue: "₹5,597.76", avgRate: "₹5,598", rank: "RANK #1" },
-    { type: "EXECUTIVE ROOMS", stays: "1 Stays", revenue: "₹3,358.88", avgRate: "₹3,359", rank: "RANK #2" },
-    { type: "PREMIUM ROOMS", stays: "1 Stays", revenue: "₹10,756.64", avgRate: "₹10,757", rank: "RANK #3" },
-    { type: "FAMILY ROOMS", stays: "0 Stays", revenue: "₹0", avgRate: "₹0", rank: "RANK #4" },
-  ];
+  const [bookings, setBookings] = useState<AdminBooking[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/admin/bookings")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.bookings) setBookings(d.bookings);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  const validBookings = useMemo(() => {
+    return bookings.filter((b) => b.bookingStatus !== "CANCELLED");
+  }, [bookings]);
+
+  const totalRevenue = useMemo(() => {
+    return validBookings.reduce((acc, b) => acc + (b.totalAmount || b.paidAmount || 0), 0);
+  }, [validBookings]);
+
+  const totalNights = useMemo(() => {
+    return validBookings.reduce((acc, b) => acc + (b.nights || 1), 0);
+  }, [validBookings]);
+
+  const roomTypePerformance = useMemo(() => {
+    const categories = [
+      { key: "deluxe", label: "DELUXE ROOMS" },
+      { key: "executive", label: "EXECUTIVE ROOMS" },
+      { key: "premium", label: "PREMIUM ROOMS" },
+      { key: "family", label: "FAMILY ROOMS" },
+    ];
+
+    const stats = categories.map((cat) => {
+      const catBookings = validBookings.filter((b) => b.roomType?.toLowerCase().includes(cat.key));
+      const staysCount = catBookings.length;
+      const rev = catBookings.reduce((sum, b) => sum + (b.totalAmount || b.paidAmount || 0), 0);
+      const avg = staysCount > 0 ? Math.round(rev / staysCount) : 0;
+
+      return {
+        type: cat.label,
+        stays: `${staysCount} Stays`,
+        rawStays: staysCount,
+        revenue: `₹${rev.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+        rawRevenue: rev,
+        avgRate: `₹${avg.toLocaleString("en-IN")}`,
+        rank: "RANK #0",
+      };
+    });
+
+    // Sort by revenue descending to assign true rank
+    const sorted = [...stats].sort((a, b) => b.rawRevenue - a.rawRevenue);
+    sorted.forEach((item, idx) => {
+      item.rank = `RANK #${idx + 1}`;
+    });
+
+    return stats;
+  }, [validBookings]);
 
   const exportReportCSV = () => {
     const headers = "Category,Completed Stays,Gross Revenue,Average Stay Value,Rank\n";
@@ -21,7 +74,8 @@ export default function AdminReportsPage() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `hotel-reliance-revenue-report-2026-09-07.csv`;
+    const todayStr = new Date().toISOString().split("T")[0];
+    link.download = `hotel-reliance-revenue-report-${todayStr}.csv`;
     link.click();
   };
 
@@ -76,7 +130,7 @@ export default function AdminReportsPage() {
                   TOTAL HOTEL REVENUE
                 </span>
                 <div className="text-[28px] font-serif font-bold text-[#111923] leading-tight mt-1">
-                  ₹19,713.28
+                  ₹{totalRevenue.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </div>
                 <span className="text-xs font-medium text-[#10B981] block mt-1">
                   Verified collections (MTD)
@@ -97,7 +151,7 @@ export default function AdminReportsPage() {
                   TOTAL BOOKED NIGHTS
                 </span>
                 <div className="text-[28px] font-serif font-bold text-[#111923] leading-tight mt-1">
-                  6
+                  {totalNights}
                 </div>
                 <span className="text-xs font-medium text-[#10B981] block mt-1">
                   Across 45 physical rooms

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import {
   CreditCard,
@@ -16,6 +16,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
+import { AdminBooking } from "@/lib/admin/store";
 
 interface TransactionRecord {
   id: string;
@@ -30,43 +31,47 @@ interface TransactionRecord {
 
 export default function AdminPaymentsPage() {
   const [selectedTrx, setSelectedTrx] = useState<TransactionRecord | null>(null);
+  const [bookings, setBookings] = useState<AdminBooking[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Exact data from the reference screenshot
-  const transactions: TransactionRecord[] = useMemo(
-    () => [
-      {
-        id: "BK-90214",
-        date: "2026-09-07",
-        guestName: "Rahul Verma",
-        guestPhone: "+91 98351 22441",
-        method: "RAZORPAY",
-        amount: 5597.76,
-        status: "SUCCESS",
-        gatewayRefId: "pay_rzp_994821",
-      },
-      {
-        id: "BK-88412",
-        date: "2026-09-07",
-        guestName: "Sneha Gupta",
-        guestPhone: "+91 94311 88210",
-        method: "UPI",
-        amount: 3358.88,
-        status: "SUCCESS",
-        gatewayRefId: "upi_449102",
-      },
-      {
-        id: "BK-77219",
-        date: "2026-09-06",
-        guestName: "Vikram Malhotra",
-        guestPhone: "+91 91223 44556",
-        method: "RAZORPAY",
-        amount: 10756.64,
-        status: "SUCCESS",
-        gatewayRefId: "OFFLINE_CASH_POS",
-      },
-    ],
-    []
-  );
+  useEffect(() => {
+    fetch("/api/admin/bookings")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.bookings) setBookings(d.bookings);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  const transactions: TransactionRecord[] = useMemo(() => {
+    return bookings.map((b) => {
+      const isPaid = b.paymentStatus === "SUCCESS" || b.paymentStatus === "PAID";
+      const isRefunded = b.bookingStatus === "CANCELLED" || b.paymentStatus === "REFUNDED" || b.paymentStatus === "PARTIALLY_REFUNDED";
+      return {
+        id: b.id,
+        date: b.createdAt ? b.createdAt.split("T")[0] : b.checkInDate,
+        guestName: b.guestName || "Guest",
+        guestPhone: b.guestPhone || "+91 98000 00000",
+        method: (b.paymentMethod || "RAZORPAY").toUpperCase(),
+        amount: b.totalAmount || b.paidAmount || 0,
+        status: isRefunded ? "REFUNDED" : isPaid ? "SUCCESS" : "PENDING",
+        gatewayRefId: (b as any).razorpayPaymentId || b.transactionId || `PAY_${b.id.replace(/[^A-Z0-9]/gi, "").slice(-8)}`,
+      };
+    });
+  }, [bookings]);
+
+  const totalSettledRevenue = useMemo(() => {
+    return transactions
+      .filter((t) => t.status === "SUCCESS")
+      .reduce((sum, t) => sum + t.amount, 0);
+  }, [transactions]);
+
+  const pendingCollections = useMemo(() => {
+    return transactions
+      .filter((t) => t.status === "PENDING")
+      .reduce((sum, t) => sum + t.amount, 0);
+  }, [transactions]);
 
   return (
     <AdminLayout>
@@ -116,7 +121,7 @@ export default function AdminPaymentsPage() {
                   TOTAL SETTLED REVENUE
                 </span>
                 <div className="text-[28px] font-serif font-bold text-[#111923] leading-tight mt-1">
-                  ₹19,713.28
+                  ₹{totalSettledRevenue.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </div>
                 <span className="text-xs font-medium text-[#10B981] block mt-1">
                   Verified in bank account
@@ -137,7 +142,7 @@ export default function AdminPaymentsPage() {
                   PENDING COLLECTIONS
                 </span>
                 <div className="text-[28px] font-serif font-bold text-[#111923] leading-tight mt-1">
-                  ₹0
+                  ₹{pendingCollections.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </div>
                 <span className="text-xs font-medium text-[#B91C1C] block mt-1">
                   Pay-at-hotel bookings

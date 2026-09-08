@@ -27,66 +27,17 @@ export default function BanquetEnquiriesPage() {
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [venueFilter, setVenueFilter] = useState("ALL");
 
-  // Standard demo inquiries matching Hotel Reliance events
-  const standardEnquiries: BanquetEnquiryRecord[] = useMemo(
-    () => [
-      {
-        id: "ENQ-4029",
-        name: "Ananya Deshmukh",
-        email: "ananya.d@example.com",
-        phone: "+91 98351 99281",
-        eventType: "Wedding Reception",
-        eventDate: "2026-11-18",
-        guestCount: 450,
-        venue: "Grand Kohinoor Ballroom & Lawn",
-        budget: "₹3,50,000",
-        notes: "Looking for complete wedding decor, stage setup, multi-cuisine catering for 450 guests.",
-        status: "NEW",
-        createdAt: "2026-09-07T12:00:00Z",
-      },
-      {
-        id: "ENQ-4028",
-        name: "Bokaro Steel Plant (SAIL)",
-        email: "csr.events@sailbokaro.in",
-        phone: "+91 94311 55210",
-        eventType: "Annual Corporate Summit",
-        eventDate: "2026-10-24",
-        guestCount: 200,
-        venue: "AC Banquet Hall & Conference Suite",
-        budget: "₹1,80,000",
-        notes: "Audio-visual podium, projector setup, high tea and corporate buffet dinner.",
-        status: "QUOTED",
-        createdAt: "2026-09-06T15:30:00Z",
-      },
-      {
-        id: "ENQ-4027",
-        name: "Rajesh & Sunita Agarwal",
-        email: "rajesh.agarwal@example.com",
-        phone: "+91 91223 77812",
-        eventType: "25th Silver Jubilee Anniversary",
-        eventDate: "2026-10-12",
-        guestCount: 150,
-        venue: "Royal Wedding Lawn",
-        budget: "₹1,25,000",
-        notes: "Evening outdoor cocktail dinner, live acoustic music, premium buffet.",
-        status: "CONFIRMED",
-        createdAt: "2026-09-05T09:45:00Z",
-      },
-    ],
-    []
-  );
-
   const fetchEnquiries = async () => {
     try {
       const res = await fetch("/api/admin/banquet");
       const data = await res.json();
-      if (data.enquiries && data.enquiries.length > 0) {
+      if (data.enquiries) {
         setEnquiries(data.enquiries);
       } else {
-        setEnquiries(standardEnquiries);
+        setEnquiries([]);
       }
     } catch {
-      setEnquiries(standardEnquiries);
+      setEnquiries([]);
     } finally {
       setLoading(false);
     }
@@ -105,19 +56,13 @@ export default function BanquetEnquiriesPage() {
       });
       const data = await res.json();
       if (data.success) {
-        showToast(`Inquiry #${id} updated to ${status}`, "success");
+        showToast(`Inquiry #${id.slice(0, 8)} updated to ${status}`, "success");
         fetchEnquiries();
       } else {
-        setEnquiries((prev) =>
-          prev.map((e) => (e.id === id ? { ...e, status } : e))
-        );
-        showToast(`Inquiry #${id} updated to ${status}`, "success");
+        showToast(data.error || `Failed to update inquiry status`, "error");
       }
     } catch {
-      setEnquiries((prev) =>
-        prev.map((e) => (e.id === id ? { ...e, status } : e))
-      );
-      showToast(`Inquiry #${id} updated to ${status}`, "success");
+      showToast(`Network error updating inquiry status`, "error");
     }
   };
 
@@ -133,13 +78,14 @@ export default function BanquetEnquiriesPage() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);
-    link.setAttribute("download", `banquet-inquiries-2026-09-07.csv`);
+    const todayStr = new Date().toISOString().split("T")[0];
+    link.setAttribute("download", `banquet-inquiries-${todayStr}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
 
-  const displayList = enquiries.length > 0 ? enquiries : standardEnquiries;
+  const displayList = enquiries;
 
   const filteredEnquiries = displayList.filter((e) => {
     const q = searchQuery.toLowerCase().trim();

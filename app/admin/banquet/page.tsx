@@ -51,7 +51,17 @@ export default function AdminBanquetPage() {
       .then(([bData, vData]) => {
         if (bData?.enquiries) setEnquiries(bData.enquiries);
         if (vData?.content?.venues && vData.content.venues.length > 0) {
-          setVenues(vData.content.venues);
+          const mapped = vData.content.venues.map((v: any, idx: number) => ({
+            id: v.id || `venue-${idx + 1}`,
+            name: v.name,
+            type: v.type || v.name,
+            capacity: v.capacity || "100+ Guests",
+            location: v.location || "Hotel Reliance Campus",
+            size: v.size || "Spacious",
+            amenities: v.amenities || ["Air Conditioned", "AV System", "Power Backup"],
+            status: v.status || "AVAILABLE",
+          }));
+          setVenues(mapped);
         } else {
           setVenues([]);
         }
@@ -64,7 +74,7 @@ export default function AdminBanquetPage() {
     loadData();
   }, []);
 
-  const handleAddVenue = (e: React.FormEvent) => {
+  const handleAddVenue = async (e: React.FormEvent) => {
     e.preventDefault();
     const created: VenueRecord = {
       id: `venue-${Date.now()}`,
@@ -76,9 +86,21 @@ export default function AdminBanquetPage() {
       amenities: ["Central AC", "Stage & Podium", "HD Projector", "Sound System"],
       status: newVenue.status,
     };
-    setVenues([...venues, created]);
+    const updated = [...venues, created];
+    setVenues(updated);
     showToast(`Venue '${newVenue.name}' created successfully!`, "success");
     setModalOpen(false);
+
+    try {
+      await fetch("/api/admin/content/banquet_venues", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ venues: updated }),
+      });
+    } catch (err) {
+      console.error("Failed to persist venue to backend:", err);
+    }
+
     setNewVenue({
       name: "",
       type: "Grand Ballroom",
@@ -89,9 +111,20 @@ export default function AdminBanquetPage() {
     });
   };
 
-  const handleDeleteVenue = (id: string) => {
-    setVenues(venues.filter((v) => v.id !== id));
+  const handleDeleteVenue = async (id: string) => {
+    const updated = venues.filter((v) => v.id !== id);
+    setVenues(updated);
     showToast("Venue removed from registry", "info");
+
+    try {
+      await fetch("/api/admin/content/banquet_venues", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ venues: updated }),
+      });
+    } catch (err) {
+      console.error("Failed to persist venue deletion to backend:", err);
+    }
   };
 
   const filteredVenues = venues.filter((v) => {

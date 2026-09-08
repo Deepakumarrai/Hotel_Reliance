@@ -9,43 +9,17 @@ import { CouponRecord } from "@/lib/admin/store";
 
 export default function AdminOffersPage() {
   const { showToast } = useToast();
-  const [coupons, setCoupons] = useState<CouponRecord[]>([
-    {
-      id: "coup-1",
-      code: "WELCOME10",
-      discountType: "PERCENTAGE",
-      discountValue: 10,
-      minBookingAmount: 2000,
-      maxDiscount: 1000,
-      startDate: "2026-09-01",
-      endDate: "2026-12-31",
-      usageLimit: 500,
-      usedCount: 42,
-      isActive: true,
-    },
-    {
-      id: "coup-2",
-      code: "FESTIVE15",
-      discountType: "PERCENTAGE",
-      discountValue: 15,
-      minBookingAmount: 5000,
-      maxDiscount: 2500,
-      startDate: "2026-10-01",
-      endDate: "2026-11-30",
-      usageLimit: 200,
-      usedCount: 18,
-      isActive: true,
-    },
-  ]);
-  const [loading, setLoading] = useState(false);
+  const [coupons, setCoupons] = useState<CouponRecord[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch("/api/admin/offers")
       .then((r) => r.json())
       .then((d) => {
-        if (d.coupons && d.coupons.length > 0) setCoupons(d.coupons);
+        if (d.coupons) setCoupons(d.coupons);
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
   return (

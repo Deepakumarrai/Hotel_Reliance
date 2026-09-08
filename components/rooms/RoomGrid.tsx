@@ -1,16 +1,49 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Room } from "@/types";
 import { RoomCard } from "./RoomCard";
 import { Button } from "@/components/ui/Button";
 
 interface RoomGridProps {
-  rooms: Room[];
+  rooms?: Room[];
 }
 
-export function RoomGrid({ rooms }: RoomGridProps) {
+export function RoomGrid({ rooms: initialRooms }: RoomGridProps) {
   const [activeFilter, setActiveFilter] = useState<"all" | "couple" | "family">("all");
+  const [rooms, setRooms] = useState<Room[]>(initialRooms || []);
+  const [loading, setLoading] = useState(!initialRooms || initialRooms.length === 0);
+
+  useEffect(() => {
+    async function loadDbRooms() {
+      try {
+        const res = await fetch("/api/rooms");
+        const data = await res.json();
+        if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+          const mapped: Room[] = data.data.map((cat: any) => ({
+            id: cat.id || cat.slug,
+            slug: cat.slug || cat.id,
+            name: cat.name,
+            description: cat.description || "",
+            longDescription: cat.description || "",
+            images: cat.images && cat.images.length > 0 ? cat.images : [cat.image || `/images/rooms/${cat.slug || cat.id}/main.jpg`],
+            amenities: cat.amenities || [],
+            occupancy: parseInt(cat.maxGuests || "2") || (cat.maxGuests?.includes("4") ? 4 : 2),
+            bedType: cat.bedding || "King Bed",
+            price: Number(cat.price) || 2499,
+            size: cat.roomArea || "300 sq. ft.",
+            view: "City View",
+          }));
+          setRooms(mapped);
+        }
+      } catch (err) {
+        console.error("Failed to load room categories from database:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadDbRooms();
+  }, []);
 
   const filteredRooms = rooms.filter((room) => {
     if (activeFilter === "couple") return room.occupancy === 2;

@@ -12,11 +12,14 @@ import {
   Users,
   Bed,
   Maximize2,
+  Plus,
+  Trash2,
 } from "lucide-react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { useToast } from "@/components/admin/ToastContext";
 import { RoomConfigModal } from "@/components/admin/RoomConfigModal";
 import { RoomPreviewModal } from "@/components/admin/RoomPreviewModal";
+import { AddCategoryModal } from "@/components/admin/AddCategoryModal";
 import { api } from "@/lib/api";
 
 interface CategoryData {
@@ -43,151 +46,84 @@ export default function RoomCategoriesManagerPage() {
   // Modals state
   const [configuringRoom, setConfiguringRoom] = useState<any | null>(null);
   const [previewingRoom, setPreviewingRoom] = useState<any | null>(null);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-  // Exact 4 standard categories matching reference screenshot
-  const standardCategories: CategoryData[] = [
-    {
-      id: "deluxe",
-      slug: "deluxe",
-      name: "Deluxe Room",
-      badge: "DELUXE",
-      price: 2499,
-      image: "/images/rooms/deluxe/main.jpg",
-      description:
-        "Elegant comfort with modern amenities, designed for a relaxing business or leisure stay in Bokaro.",
-      maxGuests: "2 Adults",
-      bedding: "King Bed",
-      roomArea: "280 sq. ft.",
-      amenitiesCount: 9,
-      amenities: [
-        "King Size Bed",
-        "High-Speed Wi-Fi",
-        "Air Conditioning",
-        "Flat Screen TV",
-        "Tea/Coffee Maker",
-        "Mini Fridge",
-      ],
-      moreAmenitiesCount: 3,
-    },
-    {
-      id: "executive",
-      slug: "executive",
-      name: "Executive Room",
-      badge: "EXECUTIVE",
-      price: 3499,
-      image: "/images/rooms/executive/main.jpg",
-      description:
-        "Spacious layout with enhanced services and executive desk for premium business guests.",
-      maxGuests: "2 Adults",
-      bedding: "King Bed",
-      roomArea: "350 sq. ft.",
-      amenitiesCount: 10,
-      amenities: [
-        "King Size Bed",
-        "High-Speed Wi-Fi",
-        "Air Conditioning",
-        "Smart LED TV",
-        "Executive Work Desk",
-        "Tea/Coffee Maker",
-      ],
-      moreAmenitiesCount: 4,
-    },
-    {
-      id: "premium",
-      slug: "premium",
-      name: "Premium Room",
-      badge: "PREMIUM",
-      price: 4499,
-      image: "/images/rooms/premium/main.jpg",
-      description:
-        "A perfect blend of luxury and comfort with premium interiors and extended space.",
-      maxGuests: "2 Adults",
-      bedding: "King Bed",
-      roomArea: "420 sq. ft.",
-      amenitiesCount: 12,
-      amenities: [
-        "King Size Bed",
-        "High-Speed Wi-Fi",
-        "Air Conditioning",
-        "Smart LED TV",
-        "Luxury Sofa Set",
-        "Balcony View",
-      ],
-      moreAmenitiesCount: 6,
-    },
-    {
-      id: "family",
-      slug: "family",
-      name: "Family Room",
-      badge: "FAMILY",
-      price: 5999,
-      image: "/images/rooms/family/main.jpg",
-      description:
-        "Thoughtfully designed for families with extra space and added conveniences.",
-      maxGuests: "4 Adults",
-      bedding: "2 Queen Beds",
-      roomArea: "520 sq. ft.",
-      amenitiesCount: 11,
-      amenities: [
-        "2 Queen Beds",
-        "High-Speed Wi-Fi",
-        "Air Conditioning",
-        "2 Smart TVs",
-        "Mini Dining Area",
-        "Microwave",
-      ],
-      moreAmenitiesCount: 5,
-    },
-  ];
+  const handleDeleteCategory = async (id: string, name: string) => {
+    if (!confirm(`Are you sure you want to delete category "${name}"? It will also be removed from website.`)) return;
+    try {
+      const res = await fetch(`/api/rooms?id=${id}`, { method: "DELETE" });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        showToast(`Category "${name}" deleted from database & website.`, "success");
+        fetchRoomCategories();
+      } else {
+        showToast(data.error || "Failed to delete category.", "error");
+      }
+    } catch (err) {
+      showToast("Error deleting category.", "error");
+    }
+  };
 
-  const fetchRoomCategories = () => {
+  const fetchRoomCategories = async () => {
     setIsLoading(true);
-    api.rooms
-      .getAll()
-      .then((res) => {
-        if (res?.data && res.data.length > 0) {
-          let localPricing: any = {};
-          if (typeof window !== "undefined") {
-            try {
-              localPricing = JSON.parse(
-                localStorage.getItem("hr_room_pricing") || "{}"
-              );
-            } catch {}
-          }
+    try {
+      const [roomsRes, pricingRes] = await Promise.all([
+        fetch("/api/rooms").then((r) => r.json()).catch(() => ({ data: [] })),
+        fetch("/api/admin/pricing").then((r) => r.json()).catch(() => ({ prices: {} })),
+      ]);
 
-          const mapped = standardCategories.map((std) => {
-            const live = res.data.find(
-              (r: any) =>
-                r.slug === std.slug ||
-                r.name?.toLowerCase().includes(std.slug)
-            );
-            if (!live) return std;
-            return {
-              ...std,
-              id: live.id || std.id,
-              price:
-                localPricing[std.slug]?.base ||
-                Number(live.pricePerNight) ||
-                std.price,
-            };
-          });
-          setCategories(mapped);
-        } else {
-          setCategories(standardCategories);
-        }
-      })
-      .catch(() => {
-        setCategories(standardCategories);
-      })
-      .finally(() => setIsLoading(false));
+      const liveRooms = roomsRes?.data || [];
+      const livePrices = pricingRes?.prices || {};
+
+      if (liveRooms.length > 0) {
+        const mapped: CategoryData[] = liveRooms.map((r: any) => {
+          const slug = r.slug || r.id;
+          const liveBasePrice = livePrices[slug]?.base || Number(r.pricePerNight) || 2499;
+          return {
+            id: r.id,
+            slug: r.slug,
+            name: r.name,
+            badge: r.category || slug.toUpperCase(),
+            price: liveBasePrice,
+            image: r.images?.[0] || `/images/rooms/${slug}/main.jpg`,
+            description: r.description || r.shortDesc || "",
+            maxGuests: `${r.capacityAdults || 2} Adults`,
+            bedding: r.bedType || "King Bed",
+            roomArea: `${r.roomSizeSqFt || 300} sq. ft.`,
+            amenitiesCount: r.amenities?.length || 8,
+            amenities: r.amenities || [],
+            moreAmenitiesCount: Math.max(0, (r.amenities?.length || 0) - 6),
+          };
+        });
+        setCategories(mapped);
+      }
+    } catch (err) {
+      console.error("Failed to load room categories:", err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
     fetchRoomCategories();
   }, []);
 
-  const displayCategories =
-    categories.length > 0 ? categories : standardCategories;
+  const displayCategories = categories;
+
+  if (isLoading) {
+    return (
+      <AdminLayout>
+        <div className="space-y-6 max-w-[1540px] mx-auto pb-12 font-sans text-[#111923] animate-in fade-in duration-200">
+          <div className="h-32 w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-2xl p-6 shadow-xs animate-pulse" />
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="h-64 bg-white border border-[#E8DFD2] rounded-2xl animate-pulse" />
+            ))}
+          </div>
+        </div>
+      </AdminLayout>
+    );
+  }
 
   return (
     <AdminLayout>
@@ -225,15 +161,25 @@ export default function RoomCategoriesManagerPage() {
             </p>
           </div>
 
-          {/* Right Action Button & Decorative Motto */}
-          <div className="flex flex-col items-start md:items-end space-y-2 z-10 flex-shrink-0">
-            <Link
-              href="/admin/rooms"
-              className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-[#FCFAF6] hover:bg-[#F3EDE4] border border-[#E2D8CA] text-xs font-semibold text-[#B8893E] shadow-[0_2px_8px_rgba(40,30,20,0.03)] transition-all"
-            >
-              <Layers className="w-4 h-4 text-[#B8893E]" />
-              <span>Physical Rooms Grid (101-412)</span>
-            </Link>
+          {/* Right Action Buttons & Decorative Motto */}
+          <div className="flex flex-col items-start md:items-end space-y-2.5 z-10 flex-shrink-0">
+            <div className="flex items-center space-x-2.5">
+              <button
+                onClick={() => setIsAddModalOpen(true)}
+                className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#9E712E] to-[#C4984F] hover:from-[#8C6326] hover:to-[#B38740] text-xs font-bold uppercase tracking-wider text-white shadow-[0_4px_14px_rgba(158,113,46,0.25)] transition-all cursor-pointer active:scale-95"
+              >
+                <Plus className="w-4 h-4" />
+                <span>ADD ROOM CATEGORY</span>
+              </button>
+
+              <Link
+                href="/admin/rooms"
+                className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-[#FCFAF6] hover:bg-[#F3EDE4] border border-[#E2D8CA] text-xs font-semibold text-[#B8893E] shadow-[0_2px_8px_rgba(40,30,20,0.03)] transition-all"
+              >
+                <Layers className="w-4 h-4 text-[#B8893E]" />
+                <span>Physical Rooms Grid (101-412)</span>
+              </Link>
+            </div>
 
             <div className="hidden md:flex flex-col items-center justify-center text-center pt-0.5 select-none w-full">
               <div className="flex items-center space-x-2 text-[#B8893E]/50">
@@ -369,14 +315,14 @@ export default function RoomCategoriesManagerPage() {
                       <span>Preview Card</span>
                     </button>
 
-                    {/* Availability */}
-                    <Link
-                      href="/admin/availability"
-                      className="px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg border border-[#E2D8CA] bg-[#FAF7F2] hover:bg-[#F3EDE4] text-[#111923] text-[11px] sm:text-xs font-semibold flex items-center space-x-1.5 transition-colors shadow-2xs whitespace-nowrap"
+                    {/* Delete Category */}
+                    <button
+                      onClick={() => handleDeleteCategory(cat.id, cat.name)}
+                      className="px-2 py-1.5 sm:py-2 rounded-lg border border-red-200 bg-red-50 hover:bg-red-100 text-red-700 text-[11px] sm:text-xs font-semibold flex items-center space-x-1 transition-colors cursor-pointer whitespace-nowrap"
+                      title="Delete category from database & website"
                     >
-                      <Calendar className="w-3.5 h-3.5 text-[#B8893E] flex-shrink-0" />
-                      <span>Availability</span>
-                    </Link>
+                      <Trash2 className="w-3.5 h-3.5 text-red-600 flex-shrink-0" />
+                    </button>
                   </div>
 
                   {/* Configure Room */}
@@ -393,6 +339,14 @@ export default function RoomCategoriesManagerPage() {
           ))}
         </div>
       </div>
+
+      {/* Add Room Category Modal */}
+      {isAddModalOpen && (
+        <AddCategoryModal
+          onClose={() => setIsAddModalOpen(false)}
+          onSuccess={fetchRoomCategories}
+        />
+      )}
 
       {/* Room Configuration Modal */}
       {configuringRoom && (

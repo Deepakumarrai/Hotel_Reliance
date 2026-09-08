@@ -30,85 +30,46 @@ interface CustomerRecord {
 export default function AdminCustomersPage() {
   const [search, setSearch] = useState("");
   const [selectedGuest, setSelectedGuest] = useState<CustomerRecord | null>(null);
-
-  // Standard demo customer profiles matching the exact reference screenshot
-  const standardCustomers: CustomerRecord[] = useMemo(
-    () => [
-      {
-        id: "CUST-01",
-        name: "Rahul Verma",
-        phone: "+91 98351 22441",
-        email: "rahul.verma@example.com",
-        totalStays: 1,
-        totalSpent: 5597.76,
-        lastStayDate: "2026-09-07",
-        vipStatus: false,
-      },
-      {
-        id: "CUST-02",
-        name: "Sneha Gupta",
-        phone: "+91 94311 88210",
-        email: "sneha.gupta@example.com",
-        totalStays: 1,
-        totalSpent: 3358.88,
-        lastStayDate: "2026-09-07",
-        vipStatus: false,
-      },
-      {
-        id: "CUST-03",
-        name: "Vikram Malhotra",
-        phone: "+91 91223 44556",
-        email: "vikram.m@sailbokaro.in",
-        totalStays: 1,
-        totalSpent: 10756.64,
-        lastStayDate: "2026-09-07",
-        vipStatus: true,
-      },
-    ],
-    []
-  );
-
-  const [customers, setCustomers] = useState<CustomerRecord[]>(standardCustomers);
+  const [customers, setCustomers] = useState<CustomerRecord[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch("/api/admin/bookings")
       .then((r) => r.json())
       .then((data) => {
-        if (data.bookings && data.bookings.length > 0) {
+        if (data.bookings) {
           const map = new Map<string, CustomerRecord>();
           data.bookings.forEach((b: AdminBooking) => {
-            const phone = b.guestPhone || "N/A";
+            const phone = b.guestPhone || b.guestName || "N/A";
             const existing = map.get(phone);
             if (!existing) {
               map.set(phone, {
                 id: `cust-${Math.abs(phone.split("").reduce((a, b) => (a << 5) - a + b.charCodeAt(0), 0))}`,
-                name: b.guestName,
-                phone: b.guestPhone,
+                name: b.guestName || "Guest",
+                phone: b.guestPhone || "N/A",
                 email: b.guestEmail || "—",
                 totalStays: 1,
-                totalSpent: b.totalAmount,
-                lastStayDate: b.checkInDate,
-                vipStatus: b.totalAmount > 10000 || b.roomType === "premium" || b.roomType === "family",
+                totalSpent: b.totalAmount || b.paidAmount || 0,
+                lastStayDate: b.checkInDate || b.createdAt?.split("T")[0],
+                vipStatus: (b.totalAmount || 0) > 10000 || b.roomType === "premium" || b.roomType === "family",
               });
             } else {
               existing.totalStays += 1;
-              existing.totalSpent += b.totalAmount;
+              existing.totalSpent += (b.totalAmount || b.paidAmount || 0);
               if (b.checkInDate > existing.lastStayDate) {
                 existing.lastStayDate = b.checkInDate;
               }
               if (existing.totalSpent > 10000) existing.vipStatus = true;
             }
           });
-          const parsed = Array.from(map.values());
-          if (parsed.length > 0) {
-            setCustomers(parsed);
-          }
+          setCustomers(Array.from(map.values()));
         }
       })
       .catch(() => {
-        setCustomers(standardCustomers);
-      });
-  }, [standardCustomers]);
+        setCustomers([]);
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
   const filtered = customers.filter(
     (c) =>

@@ -3,12 +3,16 @@
 import React, { useState } from "react";
 import { ChevronDown, TrendingUp, Calendar, ArrowUpRight } from "lucide-react";
 
-export function RevenueChart() {
-  const [timeRange, setTimeRange] = useState("This Week");
+interface RevenueChartProps {
+  totalRevenue?: number;
+  totalBookings?: number;
+}
 
-  // Revenue curve points normalized
-  // Mon: 38k, Tue: 68k, Wed: 62k, Thu: 54k, Fri: 98k, Sat: 86k, Sun: 145k
+export function RevenueChart({ totalRevenue = 0, totalBookings = 0 }: RevenueChartProps) {
+  const [timeRange, setTimeRange] = useState("Live Financials");
+
   const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  const avgBookingValue = totalBookings > 0 ? Math.round(totalRevenue / totalBookings) : 0;
 
   return (
     <div className="bg-white border border-[#EAE2D5] rounded-xl p-5 sm:p-6 shadow-xs flex flex-col justify-between h-full">
@@ -19,16 +23,14 @@ export function RevenueChart() {
             Revenue Summary
           </h2>
           <p className="text-[11px] text-[#78716C] font-light mt-0.5">
-            Total revenue and bookings
+            Total revenue and bookings from PostgreSQL
           </p>
         </div>
 
-        {/* Dropdown Filter */}
-        <div className="relative">
-          <button className="flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-[#FAF7F2] border border-[#EAE2D5] text-[11px] font-semibold text-[#111E31] hover:bg-[#F3EDE4] transition-colors cursor-pointer">
-            <span>{timeRange}</span>
-            <ChevronDown className="w-3.5 h-3.5 text-[#78716C]" />
-          </button>
+        {/* Live indicator */}
+        <div className="flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-[#FAF7F2] border border-[#EAE2D5] text-[11px] font-semibold text-[#111E31]">
+          <span className="w-2 h-2 rounded-full bg-[#10B981] animate-pulse" />
+          <span>Real-time</span>
         </div>
       </div>
 
@@ -37,13 +39,13 @@ export function RevenueChart() {
         {/* Y Axis Grid Lines */}
         <div className="absolute inset-0 flex flex-col justify-between pointer-events-none pl-8 pr-2 pt-4 pb-6">
           <div className="w-full border-b border-[#F0EBE1] flex items-center justify-start -ml-8">
-            <span className="text-[9px] text-[#A8A29E] w-7 text-right">150K</span>
+            <span className="text-[9px] text-[#A8A29E] w-7 text-right">Max</span>
           </div>
           <div className="w-full border-b border-[#F0EBE1] flex items-center justify-start -ml-8">
-            <span className="text-[9px] text-[#A8A29E] w-7 text-right">100K</span>
+            <span className="text-[9px] text-[#A8A29E] w-7 text-right">75%</span>
           </div>
           <div className="w-full border-b border-[#F0EBE1] flex items-center justify-start -ml-8">
-            <span className="text-[9px] text-[#A8A29E] w-7 text-right">50K</span>
+            <span className="text-[9px] text-[#A8A29E] w-7 text-right">50%</span>
           </div>
           <div className="w-full border-b border-[#EAE2D5] flex items-center justify-start -ml-8">
             <span className="text-[9px] text-[#A8A29E] w-7 text-right">0</span>
@@ -99,7 +101,7 @@ export function RevenueChart() {
         </div>
       </div>
 
-      {/* Bottom 3 Mini Metric Cards */}
+      {/* Bottom 3 Mini Metric Cards using Live Data */}
       <div className="grid grid-cols-3 gap-2 sm:gap-2.5 pt-3 border-t border-[#EAE2D5]/70">
         <div className="p-2 sm:p-2.5 rounded-lg bg-[#FAF7F2] border border-[#EAE2D5] flex items-center space-x-2">
           <div className="w-6 h-6 rounded-md bg-white border border-[#EAE2D5] flex items-center justify-center text-[#9E712E] flex-shrink-0">
@@ -107,7 +109,7 @@ export function RevenueChart() {
           </div>
           <div className="min-w-0">
             <div className="text-[11px] sm:text-xs font-bold text-[#111E31] leading-tight truncate">
-              ₹4,12,300
+              ₹{totalRevenue.toLocaleString("en-IN")}
             </div>
             <div className="text-[9px] text-[#78716C] truncate">Total Revenue</div>
           </div>
@@ -119,7 +121,7 @@ export function RevenueChart() {
           </div>
           <div className="min-w-0">
             <div className="text-[11px] sm:text-xs font-bold text-[#111E31] leading-tight truncate">
-              48
+              {totalBookings}
             </div>
             <div className="text-[9px] text-[#78716C] truncate">Total Bookings</div>
           </div>
@@ -131,7 +133,7 @@ export function RevenueChart() {
           </div>
           <div className="min-w-0">
             <div className="text-[11px] sm:text-xs font-bold text-[#111E31] leading-tight truncate">
-              ₹8,589
+              ₹{avgBookingValue.toLocaleString("en-IN")}
             </div>
             <div className="text-[9px] text-[#78716C] truncate">Avg. Booking Value</div>
           </div>

@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
 export default function AdminRestaurantEnquiriesRedirect() {
-  redirect("/admin/dashboard");
+  redirect("/admin/restaurant");
 }

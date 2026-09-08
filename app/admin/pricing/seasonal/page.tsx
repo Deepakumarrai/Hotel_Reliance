@@ -24,13 +24,18 @@ export default function SeasonalPricingPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const [newSeason, setNewSeason] = useState({
-    name: "",
-    startDate: "2026-10-01",
-    endDate: "2026-10-15",
-    multiplier: 15,
-    minNights: 2,
-    applicableRooms: "All Categories",
+  const [newSeason, setNewSeason] = useState(() => {
+    const today = new Date();
+    const nextWeek = new Date(today);
+    nextWeek.setDate(nextWeek.getDate() + 14);
+    return {
+      name: "",
+      startDate: today.toISOString().split("T")[0],
+      endDate: nextWeek.toISOString().split("T")[0],
+      multiplier: 15,
+      minNights: 2,
+      applicableRooms: "All Categories",
+    };
   });
   const [modalOpen, setModalOpen] = useState(false);
 

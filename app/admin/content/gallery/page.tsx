@@ -15,52 +15,22 @@ interface GalleryItem {
   title: string;
 }
 
-const defaultGallery: GalleryItem[] = [
-  {
-    id: "gal-1",
-    url: "/images/hotel/facade.png",
-    alt: "Hotel Reliance Grand Facade",
-    category: "Architecture",
-    title: "Grand Exterior Facade",
-  },
-  {
-    id: "gal-2",
-    url: "/images/rooms/deluxe-hero.png",
-    alt: "Deluxe King Bed Suite",
-    category: "Rooms",
-    title: "Deluxe Suite & Interiors",
-  },
-  {
-    id: "gal-3",
-    url: "/images/restaurant/hero.png",
-    alt: "Zaffran Fine Dining Restaurant",
-    category: "Dining",
-    title: "Zaffran Fine Dining & Lounge",
-  },
-  {
-    id: "gal-4",
-    url: "/images/banquet/hero.png",
-    alt: "Grand Kohinoor Ballroom",
-    category: "Events",
-    title: "Grand Kohinoor Ballroom",
-  },
-];
-
 export default function GalleryCMSPage() {
   const { showToast } = useToast();
-  const [images, setImages] = useState<GalleryItem[]>(defaultGallery);
+  const [images, setImages] = useState<GalleryItem[]>([]);
   const [categoryFilter, setCategoryFilter] = useState("ALL");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch("/api/admin/content/gallery")
       .then((r) => r.json())
       .then((d) => {
-        if (d?.content?.images && d.content.images.length > 0) {
+        if (d?.content?.images) {
           setImages(d.content.images);
         }
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
   const categories = ["ALL", "Architecture", "Rooms", "Dining", "Events"];

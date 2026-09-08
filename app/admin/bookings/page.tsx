@@ -34,81 +34,7 @@ function BookingsContent() {
   const [cancelBooking, setCancelBooking] = useState<AdminBooking | null>(null);
   const [quickBookingOpen, setQuickBookingOpen] = useState(false);
 
-  // Standard sample data matching reference screenshot
-  const standardBookings: AdminBooking[] = useMemo(
-    () => [
-      {
-        id: "BK-90214",
-        guestName: "Rahul Verma",
-        guestPhone: "+91 98351 22441",
-        guestEmail: "rahul.verma@example.com",
-        roomType: "deluxe",
-        roomNumber: "103",
-        checkInDate: "2026-09-07",
-        checkOutDate: "2026-09-09",
-        nights: 2,
-        adults: 2,
-        children: 0,
-        baseAmount: 4998,
-        taxAmount: 599.76,
-        discountAmount: 0,
-        totalAmount: 5597.76,
-        paidAmount: 5597.76,
-        paymentStatus: "SUCCESS",
-        bookingStatus: "CHECKED_IN",
-        paymentMethod: "RAZORPAY",
-        source: "DIRECT_WALKIN",
-        createdAt: "2026-09-07T14:30:00Z",
-      },
-      {
-        id: "BK-88412",
-        guestName: "Sneha Gupta",
-        guestPhone: "+91 94311 88210",
-        guestEmail: "sneha.gupta@example.com",
-        roomType: "executive",
-        roomNumber: "202",
-        checkInDate: "2026-09-07",
-        checkOutDate: "2026-09-08",
-        nights: 1,
-        adults: 1,
-        children: 0,
-        baseAmount: 2999,
-        taxAmount: 359.88,
-        discountAmount: 0,
-        totalAmount: 3358.88,
-        paidAmount: 3358.88,
-        paymentStatus: "SUCCESS",
-        bookingStatus: "CHECKED_IN",
-        paymentMethod: "UPI",
-        source: "WEBSITE_ONLINE",
-        createdAt: "2026-09-06T18:20:00Z",
-      },
-      {
-        id: "BK-77219",
-        guestName: "Vikram Malhotra",
-        guestPhone: "+91 91223 44556",
-        guestEmail: "vikram.malhotra@example.com",
-        roomType: "premium",
-        roomNumber: "301",
-        checkInDate: "2026-09-07",
-        checkOutDate: "2026-09-10",
-        nights: 3,
-        adults: 2,
-        children: 0,
-        baseAmount: 9604.14,
-        taxAmount: 1152.5,
-        discountAmount: 0,
-        totalAmount: 10756.64,
-        paidAmount: 10756.64,
-        paymentStatus: "SUCCESS",
-        bookingStatus: "CONFIRMED",
-        paymentMethod: "CREDIT_CARD",
-        source: "WEBSITE_ONLINE",
-        createdAt: "2026-09-05T10:15:00Z",
-      },
-    ],
-    []
-  );
+  const todayStr = new Date().toISOString().split("T")[0];
 
   const fetchData = async () => {
     try {
@@ -118,14 +44,15 @@ function BookingsContent() {
       ]);
       const bData = await bRes.json();
       const rData = await rRes.json();
-      if (bData.bookings && bData.bookings.length > 0) {
+      if (Array.isArray(bData?.bookings)) {
         setBookings(bData.bookings);
       } else {
-        setBookings(standardBookings);
+        setBookings([]);
       }
-      if (rData.rooms) setRooms(rData.rooms);
-    } catch {
-      setBookings(standardBookings);
+      if (Array.isArray(rData?.rooms)) setRooms(rData.rooms);
+    } catch (err) {
+      console.error("Failed to load reservations:", err);
+      setBookings([]);
     } finally {
       setLoading(false);
     }
@@ -135,9 +62,7 @@ function BookingsContent() {
     fetchData();
   }, []);
 
-  const todayStr = "2026-09-07";
-
-  const displayBookings = bookings.length > 0 ? bookings : standardBookings;
+  const displayBookings = bookings;
 
   const filteredBookings = displayBookings.filter((b) => {
     const q = searchQuery.toLowerCase().trim();
@@ -209,6 +134,22 @@ function BookingsContent() {
     if (lower.includes("family")) return "Family Room";
     return `${type.charAt(0).toUpperCase() + type.slice(1)} Room`;
   };
+
+  if (loading) {
+    return (
+      <div className="space-y-6 max-w-[1540px] mx-auto pb-12 font-sans text-[#111923] animate-in fade-in duration-200">
+        <div className="h-32 w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-2xl p-6 shadow-xs animate-pulse" />
+        <div className="bg-white border border-[#E8DFD2] rounded-2xl p-6 space-y-4 shadow-xs">
+          <div className="h-10 w-full bg-[#FAF7F2] rounded-xl animate-pulse" />
+          <div className="space-y-3 pt-2">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="h-14 w-full bg-[#FAF7F2] rounded-xl border border-[#E8DFD2]/60 animate-pulse" />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 max-w-[1540px] mx-auto pb-12 font-sans text-[#111923]">

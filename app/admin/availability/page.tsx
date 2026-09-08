@@ -9,8 +9,8 @@ import { AdminBooking, PhysicalRoom } from "@/lib/admin/store";
 
 export default function AdminAvailabilityCalendarPage() {
   const { showToast } = useToast();
-  // Fixed base date matching reference screenshot (Mon, 7 Sept 2026)
-  const [startDate, setStartDate] = useState(() => new Date("2026-09-07T00:00:00"));
+  // Start date dynamically defaults to today
+  const [startDate, setStartDate] = useState(() => new Date());
   const [rooms, setRooms] = useState<PhysicalRoom[]>([]);
   const [bookings, setBookings] = useState<AdminBooking[]>([]);
 
@@ -43,66 +43,40 @@ export default function AdminAvailabilityCalendarPage() {
     setStartDate(next);
   };
 
-  // 4 standard categories matching reference screenshot
-  const standardMatrix = [
-    {
-      type: "deluxe",
-      name: "Deluxe Rooms (1001-1015)",
-      total: 15,
-      // overrides for specific days matching screenshot
-      dayData: [
-        { left: 14, soldPct: 7 },
-        { left: 14, soldPct: 7 },
-        { left: 15, soldPct: 0 },
-        { left: 15, soldPct: 0 },
-        { left: 15, soldPct: 0 },
-        { left: 15, soldPct: 0 },
-        { left: 15, soldPct: 0 },
-      ],
-    },
-    {
-      type: "executive",
-      name: "Executive Rooms (2001-2015)",
-      total: 15,
-      dayData: [
-        { left: 14, soldPct: 7 },
-        { left: 15, soldPct: 0 },
-        { left: 15, soldPct: 0 },
-        { left: 15, soldPct: 0 },
-        { left: 15, soldPct: 0 },
-        { left: 15, soldPct: 0 },
-        { left: 15, soldPct: 0 },
-      ],
-    },
-    {
-      type: "premium",
-      name: "Premium Suites (3001-3010)",
-      total: 10,
-      dayData: [
-        { left: 9, soldPct: 10 },
-        { left: 9, soldPct: 10 },
-        { left: 9, soldPct: 10 },
-        { left: 10, soldPct: 0 },
-        { left: 10, soldPct: 0 },
-        { left: 10, soldPct: 0 },
-        { left: 10, soldPct: 0 },
-      ],
-    },
-    {
-      type: "family",
-      name: "Family Suites (401-405)",
-      total: 5,
-      dayData: [
-        { left: 5, soldPct: 0 },
-        { left: 5, soldPct: 0 },
-        { left: 5, soldPct: 0 },
-        { left: 5, soldPct: 0 },
-        { left: 5, soldPct: 0 },
-        { left: 5, soldPct: 0 },
-        { left: 5, soldPct: 0 },
-      ],
-    },
+  // Categories computed dynamically from live room inventory and bookings
+  const categoriesDef = [
+    { type: "deluxe", name: "Deluxe Room", defaultTotal: 12 },
+    { type: "executive", name: "Executive Room", defaultTotal: 15 },
+    { type: "premium", name: "Premium Suite", defaultTotal: 10 },
+    { type: "family", name: "Family Suite", defaultTotal: 8 },
   ];
+
+  const categoryMatrix = categoriesDef.map((cat) => {
+    const catRooms = rooms.filter((r) => r.roomType?.toLowerCase() === cat.type);
+    const total = catRooms.length > 0 ? catRooms.length : cat.defaultTotal;
+    const roomNumbers = catRooms.map((r) => r.roomNumber).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+    const roomRangeText = roomNumbers.length > 0
+      ? `(${roomNumbers[0]}-${roomNumbers[roomNumbers.length - 1]})`
+      : "";
+    const displayName = `${cat.name}s ${roomRangeText}`.trim();
+
+    const dayData = days.map((day) => {
+      const bookedCount = bookings.filter((b) => {
+        if (!b.roomType?.toLowerCase().includes(cat.type) || b.bookingStatus === "CANCELLED") return false;
+        return b.checkInDate <= day.dateStr && b.checkOutDate > day.dateStr;
+      }).length;
+      const left = Math.max(0, total - bookedCount);
+      const soldPct = total > 0 ? Math.round((bookedCount / total) * 100) : 0;
+      return { left, soldPct, bookedCount };
+    });
+
+    return {
+      type: cat.type,
+      name: displayName,
+      total,
+      dayData,
+    };
+  });
 
   return (
     <AdminLayout>
@@ -202,7 +176,7 @@ export default function AdminAvailabilityCalendarPage() {
 
             {/* Stacked Category Cards for Selected Week */}
             <div className="space-y-3 pt-1">
-              {standardMatrix.map((cat) => {
+              {categoryMatrix.map((cat) => {
                 const day0 = cat.dayData[0] || { left: cat.total, soldPct: 0 };
                 const isSoldOut = day0.left === 0;
                 const isLimited = day0.left <= 3 && !isSoldOut;
@@ -267,7 +241,7 @@ export default function AdminAvailabilityCalendarPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#EDE6DB]">
-                {standardMatrix.map((cat) => {
+                {categoryMatrix.map((cat) => {
                   return (
                     <tr key={cat.type} className="hover:bg-[#FCFAF6]/60 transition-colors">
                       {/* Room Category Label */}
@@ -282,28 +256,9 @@ export default function AdminAvailabilityCalendarPage() {
 
                       {/* 7 Days Columns */}
                       {days.map((day, idx) => {
-                        // Look for dynamic bookings or use standard dayData
-                        const bookedCount = bookings.filter((b) => {
-                          if (
-                            !b.roomType?.toLowerCase().includes(cat.type) ||
-                            b.bookingStatus === "CANCELLED"
-                          )
-                            return false;
-                          return (
-                            b.checkInDate <= day.dateStr &&
-                            b.checkOutDate > day.dateStr
-                          );
-                        }).length;
-
-                        const override = cat.dayData[idx];
-                        const available =
-                          bookings.length > 0
-                            ? Math.max(0, cat.total - bookedCount)
-                            : override?.left ?? cat.total;
-                        const pct =
-                          bookings.length > 0
-                            ? Math.round((bookedCount / cat.total) * 100)
-                            : override?.soldPct ?? 0;
+                        const dData = cat.dayData[idx] || { left: cat.total, soldPct: 0 };
+                        const available = dData.left;
+                        const pct = dData.soldPct;
 
                         const isSoldOut = available === 0;
                         const isLimited = available <= 3 && !isSoldOut;

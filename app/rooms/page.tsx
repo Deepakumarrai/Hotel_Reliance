@@ -90,7 +90,7 @@ export default function RoomsPage() {
       {/* Grid listing section */}
       <section className="py-16 sm:py-24 bg-[#FAF8F5]">
         <Container className="max-w-7xl px-4 sm:px-6">
-          <RoomGrid rooms={roomsData} />
+          <RoomGrid />
         </Container>
       </section>
 

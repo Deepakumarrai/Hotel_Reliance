@@ -189,6 +189,28 @@ export function RoomConfigModal({
         }),
       });
 
+      // 2. Sync Room Category Details to Database (/api/rooms)
+      await fetch("/api/rooms", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          newCategory: {
+            id: category.id || slug,
+            slug,
+            name,
+            badge: category.id ? (category as any).badge || slug.toUpperCase() : slug.toUpperCase(),
+            price: basePrice,
+            image: images[0] || `/images/rooms/${slug}/main.jpg`,
+            images,
+            description: shortDesc || fullDesc,
+            maxGuests: `${occupancyAdults} Adults`,
+            bedding: bedType,
+            roomArea: roomSize,
+            amenities: selectedAmenities,
+          },
+        }),
+      });
+
       // Update local room pricing store
       if (typeof window !== "undefined") {
         const currentPricing = JSON.parse(localStorage.getItem("hr_room_pricing") || "{}");
