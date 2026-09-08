@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { X, LogOut, CheckCircle2, Receipt, BedDouble } from "lucide-react";
+import { X, LogOut, CheckCircle2, Receipt, BedDouble, AlertCircle } from "lucide-react";
 import { useToast } from "./ToastContext";
 import { AdminBooking } from "@/lib/admin/store";
 
@@ -39,7 +39,7 @@ export function CheckOutModal({
       const data = await res.json();
       if (data.success) {
         showToast(
-          `Guest ${booking.guestName} checked out! ${settlePayment ? "Payment settled." : ""} Room ${booking.roomNumber || ""} set to CLEANING.`,
+          `Guest ${booking.guestName} checked out! Room ${booking.roomNumber || ""} set to CLEANING.`,
           "success"
         );
         onSuccess();
@@ -55,56 +55,65 @@ export function CheckOutModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs">
-      <div className="bg-[#0B1423] border border-[#1B2A42] w-full max-w-lg rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-        <div className="p-5 border-b border-[#1B2A42] flex items-center justify-between bg-[#111E31]">
-          <div className="flex items-center space-x-2.5">
-            <div className="w-8 h-8 rounded-lg bg-blue-950 border border-blue-500/40 flex items-center justify-center text-blue-400">
-              <LogOut className="w-4 h-4" />
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/70 backdrop-blur-xs">
+      <div className="bg-[#FCFAF6] border border-[#E8DFD2] w-full sm:max-w-lg rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[92dvh] font-sans text-[#111923]">
+        {/* Header */}
+        <div className="p-5 sm:p-6 border-b border-[#EDE6DB] flex items-center justify-between bg-white">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 rounded-xl bg-[#DBEAFE] border border-[#BFDBFE] flex items-center justify-center text-[#1D4ED8] flex-shrink-0">
+              <LogOut className="w-5 h-5 text-[#1D4ED8]" />
             </div>
             <div>
-              <h3 className="font-serif text-base font-bold text-white">Guest Check-Out & Final Billing</h3>
-              <p className="text-[11px] text-[#E9DFD2]/60">Room {booking.roomNumber || "N/A"} • {booking.id}</p>
+              <span className="text-[10px] uppercase font-bold tracking-wider text-[#A97A38] block">
+                Folio Settlement & Housekeeping
+              </span>
+              <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#111923]">
+                Guest Check-Out
+              </h3>
             </div>
           </div>
-          <button onClick={onClose} className="text-white/60 hover:text-white p-1">
+          <button
+            onClick={onClose}
+            className="w-9 h-9 flex items-center justify-center rounded-xl bg-[#FAF7F2] hover:bg-[#F3EDE4] text-[#6B6255] hover:text-[#111923] transition-colors cursor-pointer"
+            aria-label="Close modal"
+          >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <div className="p-6 space-y-5">
-          {/* Billing Overview */}
-          <div className="p-4 bg-[#111E31] rounded-lg border border-[#1B2A42] space-y-2.5 text-xs">
+        {/* Content */}
+        <div className="p-5 sm:p-7 space-y-5 overflow-y-auto custom-scrollbar text-xs">
+          {/* Stay & Folio Overview */}
+          <div className="p-4 sm:p-5 bg-white rounded-2xl border border-[#E8DFD2] space-y-2.5 shadow-2xs">
+            <div className="flex justify-between items-center pb-2 border-b border-[#EDE6DB]">
+              <span className="font-bold text-[#111923] text-sm">{booking.guestName}</span>
+              <span className="font-mono font-bold text-xs text-[#A97A38]">
+                {booking.roomNumber ? `Room ${booking.roomNumber}` : "Room Assigned"}
+              </span>
+            </div>
+
             <div className="flex justify-between">
-              <span className="text-white/50">Guest Name:</span>
-              <span className="font-bold text-white">{booking.guestName}</span>
+              <span className="text-[#6B6255]">Stay Tariffs ({booking.nights} Nights):</span>
+              <span className="font-mono text-[#111923]">₹{booking.baseAmount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-white/50">Room Number:</span>
-              <span className="font-bold text-[#D8B875]">Room {booking.roomNumber || "Assigned"}</span>
+              <span className="text-[#6B6255]">Applicable Taxes (GST):</span>
+              <span className="font-mono text-[#111923]">₹{booking.taxAmount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
+            </div>
+            <div className="flex justify-between border-t border-[#EDE6DB] pt-2">
+              <span className="text-[#111923] font-bold">Total Stay Charges:</span>
+              <span className="font-mono font-bold text-[#111923]">₹{booking.totalAmount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-white/50">Base Stay Tariff ({booking.nights} Nights):</span>
-              <span>₹{booking.baseAmount.toLocaleString()}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-white/50">Applicable Taxes (GST):</span>
-              <span>₹{booking.taxAmount.toLocaleString()}</span>
-            </div>
-            <div className="flex justify-between border-t border-[#1B2A42] pt-2">
-              <span className="text-white/50">Total Stay Charges:</span>
-              <span className="font-bold text-white">₹{booking.totalAmount.toLocaleString()}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-white/50">Already Paid:</span>
-              <span className="font-semibold text-emerald-400">₹{booking.paidAmount.toLocaleString()}</span>
+              <span className="text-[#6B6255]">Already Paid:</span>
+              <span className="font-mono font-bold text-[#00A974]">₹{booking.paidAmount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
             </div>
           </div>
 
           {/* Incidental Charges */}
-          <div>
-            <label className="text-[10px] uppercase font-bold tracking-wider text-[#C4984F] block mb-1.5">
-              Incidentals / Kwality Dining Room Service (₹)
+          <div className="bg-white p-4 sm:p-5 rounded-2xl border border-[#E8DFD2] space-y-2 shadow-2xs">
+            <label className="text-[10px] uppercase font-bold tracking-wider text-[#A97A38] block">
+              Incidentals / Dining Room Service (₹)
             </label>
             <input
               type="number"
@@ -112,52 +121,54 @@ export function CheckOutModal({
               value={additionalCharges}
               onChange={(e) => setAdditionalCharges(Number(e.target.value))}
               placeholder="0"
-              className="w-full bg-[#111E31] border border-[#1B2A42] rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-[#C4984F]"
+              className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl px-4 py-3 min-h-[46px] text-xs font-mono font-bold text-[#111923] focus:outline-none focus:border-[#B8893E] shadow-2xs"
             />
           </div>
 
-          {/* Pending Due */}
-          <div className="p-3.5 bg-[#070D17] rounded-lg border border-[#1B2A42] flex items-center justify-between">
-            <span className="text-xs text-white/70">Pending Settlement Balance:</span>
-            <span className={`text-base font-bold ${pendingAmount > 0 ? "text-amber-400" : "text-emerald-400"}`}>
-              {pendingAmount > 0 ? `₹${pendingAmount.toLocaleString()} DUE` : "SETTLED (₹0)"}
+          {/* Pending Due Banner */}
+          <div className="p-4 bg-[#FAF7F2] rounded-2xl border border-[#EAE2D5] flex items-center justify-between">
+            <span className="text-xs font-semibold text-[#6B6255]">Settlement Balance:</span>
+            <span className={`text-base font-serif font-bold ${pendingAmount > 0 ? "text-[#E7A31B]" : "text-[#00A974]"}`}>
+              {pendingAmount > 0
+                ? `₹${pendingAmount.toLocaleString("en-IN", { minimumFractionDigits: 2 })} DUE`
+                : "SETTLED (₹0.00)"}
             </span>
           </div>
 
           {/* Settle Payment Option */}
           {pendingAmount > 0 && (
-            <div className="p-3.5 bg-[#111E31] rounded-lg border border-[#1B2A42] space-y-2.5">
-              <label className="flex items-center space-x-2.5 cursor-pointer select-none">
+            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-[#E8DFD2] space-y-3 shadow-2xs">
+              <label className="flex items-center space-x-3 cursor-pointer select-none min-h-[40px]">
                 <input
                   type="checkbox"
                   checked={settlePayment}
                   onChange={(e) => setSettlePayment(e.target.checked)}
-                  className="w-4 h-4 rounded text-emerald-500 focus:ring-0 cursor-pointer"
+                  className="rounded border-[#E8DFD2] text-[#A97A38] focus:ring-0 w-5 h-5 cursor-pointer"
                 />
-                <span className="text-xs font-semibold text-white">
-                  Collect & Settle Full Payment upon Check-Out
+                <span className="text-xs font-bold text-[#111923]">
+                  Collect & Settle Full Folio Payment Now
                 </span>
               </label>
 
               {settlePayment && (
                 <div className="space-y-1.5 pt-1">
-                  <span className="text-[10px] uppercase font-bold tracking-wider text-[#C4984F] block">
+                  <span className="text-[10px] uppercase font-bold tracking-wider text-[#A97A38] block">
                     Payment Collection Method:
                   </span>
                   <div className="grid grid-cols-3 gap-2">
                     {[
                       { id: "CASH", label: "Cash" },
                       { id: "CARD", label: "Card / POS" },
-                      { id: "UPI", label: "UPI / QR" },
+                      { id: "UPI", label: "UPI" },
                     ].map((m) => (
                       <button
                         key={m.id}
                         type="button"
                         onClick={() => setPaymentMethod(m.id)}
-                        className={`py-1.5 px-2 text-[11px] rounded font-semibold border transition-all ${
+                        className={`py-2.5 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
                           paymentMethod === m.id
-                            ? "bg-emerald-950 text-emerald-300 border-emerald-500/60 shadow-xs"
-                            : "bg-[#070D17] text-white/70 border-[#1B2A42] hover:border-white/20"
+                            ? "bg-[#A97A38] text-white border-[#A97A38] shadow-xs"
+                            : "bg-[#FCFAF6] border-[#E8DFD2] text-[#6B6255] hover:bg-[#F3EDE4]"
                         }`}
                       >
                         {m.label}
@@ -169,17 +180,12 @@ export function CheckOutModal({
             </div>
           )}
 
-          {/* Note about room status */}
-          <p className="text-[11px] text-[#E9DFD2]/50 italic">
-            * Completing check-out will transition Room {booking.roomNumber || ""} status to <strong>CLEANING</strong> so housekeeping staff can sanitize and prepare the room.
-          </p>
-
           {/* Actions */}
-          <div className="flex items-center justify-end space-x-3 pt-3 border-t border-[#1B2A42]">
+          <div className="flex items-center justify-end space-x-3 pt-3 border-t border-[#EDE6DB]">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded bg-[#1B2A42] hover:bg-[#253755] text-xs font-semibold text-white/80 transition-colors"
+              className="px-5 py-2.5 min-h-[44px] rounded-xl bg-[#FAF7F2] border border-[#E8DFD2] text-xs font-bold text-[#6B6255] hover:text-[#111923] hover:bg-[#F3EDE4] transition-all cursor-pointer"
             >
               Cancel
             </button>
@@ -187,9 +193,10 @@ export function CheckOutModal({
               type="button"
               disabled={loading}
               onClick={handleCheckOut}
-              className="px-6 py-2 rounded bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-xs font-bold uppercase tracking-wider text-white shadow-lg transition-all disabled:opacity-50"
+              className="px-6 py-3 min-h-[46px] rounded-xl bg-[#18232F] hover:bg-[#253241] text-white font-bold text-xs uppercase tracking-wider shadow-md transition-all active:scale-95 disabled:opacity-50 cursor-pointer flex items-center space-x-2"
             >
-              {loading ? "Processing..." : "Finalize Check-Out"}
+              <CheckCircle2 className="w-4 h-4 text-[#00A974]" />
+              <span>{loading ? "Checking Out..." : "CONFIRM CHECK-OUT"}</span>
             </button>
           </div>
         </div>

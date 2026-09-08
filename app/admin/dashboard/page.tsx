@@ -334,8 +334,8 @@ export default function AdminDashboardPage() {
             </Link>
           </div>
 
-          {/* Table Data Container */}
-          <div className="overflow-x-auto">
+          {/* Table Data Container - Desktop */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead>
                 <tr className="border-b border-[#EAE2D5] text-[10px] uppercase tracking-wider text-[#78716C]">
@@ -486,6 +486,103 @@ export default function AdminDashboardPage() {
                 })}
               </tbody>
             </table>
+          </div>
+
+          {/* Mobile Reservation Cards - Screen < 768px */}
+          <div className="block md:hidden space-y-3">
+            {displayBookings.slice(0, 5).map((booking: any) => {
+              const initials = getGuestInitials(booking.guestName || "Guest");
+              const isPaid = booking.paymentStatus === "PAID";
+
+              return (
+                <div
+                  key={booking.id}
+                  className="bg-[#FCFAF6] border border-[#EAE2D5] rounded-xl p-4 space-y-3"
+                >
+                  <div className="flex justify-between items-start">
+                    <div className="flex items-center space-x-2.5">
+                      <div className="w-8 h-8 rounded-full bg-[#E5DEC9] text-[#8C6527] font-bold text-xs flex items-center justify-center flex-shrink-0">
+                        {initials}
+                      </div>
+                      <div>
+                        <span className="font-semibold text-[#111E31] text-sm block leading-tight">
+                          {booking.guestName}
+                        </span>
+                        <span className="font-mono text-[11px] text-[#8C6527] font-bold">
+                          {booking.id}
+                        </span>
+                      </div>
+                    </div>
+
+                    <span
+                      className={`inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-medium ${
+                        booking.bookingStatus === "CHECKED_IN"
+                          ? "bg-[#EFF6FF] text-[#2563EB] border border-[#BFDBFE]"
+                          : booking.bookingStatus === "CHECKED_OUT"
+                          ? "bg-[#F3F4F6] text-[#4B5563] border border-[#E5E7EB]"
+                          : booking.bookingStatus === "PENDING"
+                          ? "bg-[#FFFBEB] text-[#D97706] border border-[#FDE68A]"
+                          : "bg-[#ECFDF5] text-[#059669] border border-[#A7F3D0]"
+                      }`}
+                    >
+                      {booking.bookingStatus === "CHECKED_IN"
+                        ? "Checked In"
+                        : booking.bookingStatus === "CHECKED_OUT"
+                        ? "Checked Out"
+                        : booking.bookingStatus === "PENDING"
+                        ? "Pending"
+                        : "Confirmed"}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 text-xs text-[#57534E] bg-white p-2.5 rounded-lg border border-[#EAE2D5]">
+                    <div>
+                      <span className="text-[10px] text-[#78716C] uppercase font-bold block">Room</span>
+                      <span className="font-medium text-[#111E31]">{getRoomTypeLabel(booking.roomType)}</span>
+                    </div>
+                    <div>
+                      <span className="text-[10px] text-[#78716C] uppercase font-bold block">Stay Dates</span>
+                      <span className="font-mono text-[11px] text-[#111E31]">{booking.checkInDate} → {booking.checkOutDate}</span>
+                    </div>
+                    <div>
+                      <span className="text-[10px] text-[#78716C] uppercase font-bold block">Amount</span>
+                      <span className="font-bold text-[#111E31]">₹{booking.totalAmount?.toLocaleString() || "4,998"}</span>
+                    </div>
+                    <div>
+                      <span className="text-[10px] text-[#78716C] uppercase font-bold block">Payment</span>
+                      <span className={`font-semibold ${isPaid ? "text-[#10B981]" : "text-[#D97706]"}`}>
+                        {isPaid ? "Paid" : "Pending"}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-1 gap-2">
+                    <Link
+                      href={`/admin/bookings/${booking.id}`}
+                      className="flex-1 py-2 rounded-lg border border-[#EAE2D5] bg-white hover:bg-[#FAF7F2] text-[#111E31] text-xs font-semibold text-center transition-colors shadow-2xs"
+                    >
+                      View Details
+                    </Link>
+                    {booking.bookingStatus === "CONFIRMED" && (
+                      <button
+                        onClick={() => setCheckInBooking(booking)}
+                        className="flex-1 py-2 rounded-lg bg-[#0AA878] hover:bg-[#088c64] text-white text-xs font-bold transition-all shadow-xs"
+                      >
+                        Check-In
+                      </button>
+                    )}
+                    {booking.bookingStatus === "CHECKED_IN" && (
+                      <button
+                        onClick={() => setCheckOutBooking(booking)}
+                        className="flex-1 py-2 rounded-lg bg-[#9E712E] hover:bg-[#8A6124] text-white text-xs font-bold transition-all shadow-xs"
+                      >
+                        Check-Out
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
 

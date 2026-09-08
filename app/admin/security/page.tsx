@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { ShieldCheck, ShieldAlert, KeyRound, Lock, User, Clock, AlertTriangle } from "lucide-react";
+import Link from "next/link";
+import { ShieldCheck, ShieldAlert, KeyRound, Lock, User, Clock, AlertTriangle, ArrowLeft } from "lucide-react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { AuditLogEntry } from "@/lib/admin/store";
 
@@ -19,84 +20,204 @@ export default function AdminSecurityPage() {
       .then((d) => {
         if (d.auditLogs) setLogs(d.auditLogs);
         if (d.stats) setStats(d.stats);
-      });
+      })
+      .catch(() => {});
   }, []);
 
   return (
     <AdminLayout>
-      <div className="space-y-6 max-w-6xl mx-auto">
-        <div className="border-b border-[#1B2A42] pb-5">
-          <span className="text-[11px] uppercase tracking-[0.2em] font-bold text-[#C4984F] block">
-            System Integrity & Access Control
-          </span>
-          <h1 className="text-2xl sm:text-3xl font-serif font-bold text-white mt-1">
-            Admin Security & Audit Trail
-          </h1>
-          <p className="text-xs text-[#E9DFD2]/60 mt-1">
-            Monitor login attempt rate limits (4-attempt / 2-hour lockout policy), active sessions, and administrative action logs.
-          </p>
-        </div>
+      <div className="space-y-6 max-w-[1540px] mx-auto pb-12 font-sans text-[#111923]">
+        {/* 1. Page Header */}
+        <div className="relative rounded-2xl border border-[#E8DFD2] bg-[#FCFAF6] p-6 sm:p-8 shadow-[0_2px_12px_rgba(40,30,20,0.03)] flex flex-col md:flex-row md:items-center justify-between gap-6 overflow-hidden">
+          <div className="absolute right-0 top-0 bottom-0 w-96 opacity-10 pointer-events-none bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#B8893E] via-transparent to-transparent" />
 
-        {/* Security Metric Badges */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          <div className="p-5 rounded-xl border border-emerald-500/30 bg-[#0c1f1f] shadow-lg">
-            <span className="text-[10px] uppercase font-bold text-emerald-400 block mb-1">Active Sessions</span>
-            <div className="text-2xl font-serif font-bold text-white">{stats.activeSessionCount} Valid Token</div>
-            <span className="text-[10px] text-white/50">HTTP-Only Signed Cookie</span>
-          </div>
-
-          <div className="p-5 rounded-xl border border-amber-500/30 bg-[#1f190e] shadow-lg">
-            <span className="text-[10px] uppercase font-bold text-amber-400 block mb-1">Brute Force Protection</span>
-            <div className="text-2xl font-serif font-bold text-white">4 Attempt Limit</div>
-            <span className="text-[10px] text-white/50">2-Hour IP Lockout Enforced</span>
-          </div>
-
-          <div className="p-5 rounded-xl border border-blue-500/30 bg-[#111E31] shadow-lg">
-            <span className="text-[10px] uppercase font-bold text-blue-400 block mb-1">Locked IP Addresses</span>
-            <div className="text-2xl font-serif font-bold text-white">{stats.lockedIpCount} Locked</div>
-            <span className="text-[10px] text-white/50">Auto-clears after 2 hours</span>
-          </div>
-        </div>
-
-        {/* Audit Log Stream */}
-        <div className="bg-[#0B1423] border border-[#1B2A42] rounded-2xl p-6 shadow-xl space-y-4">
-          <div className="flex justify-between items-center border-b border-[#1B2A42] pb-3">
-            <div className="flex items-center space-x-2">
-              <ShieldCheck className="w-5 h-5 text-[#C4984F]" />
-              <h2 className="font-serif text-base font-bold text-white">Administrative Action Audit Stream</h2>
+          {/* Left: Eyebrow, Back Arrow & Title */}
+          <div className="space-y-2 z-10">
+            <div className="flex items-center space-x-3">
+              <span className="text-[10px] uppercase tracking-[0.25em] font-bold text-[#B8893E] block">
+                System Integrity & Access Control
+              </span>
+              <span className="w-12 h-[1px] bg-[#B8893E]/40" />
             </div>
-            <span className="text-xs text-white/40 font-mono">{logs.length} Logged Events</span>
+
+            <div className="flex items-center space-x-3.5 pt-0.5">
+              <Link
+                href="/admin/settings"
+                className="w-8 h-8 rounded-lg bg-[#0E151D] text-white flex items-center justify-center hover:bg-[#B8893E] transition-colors shadow-2xs flex-shrink-0"
+                title="Back to Settings"
+              >
+                <ArrowLeft className="w-4 h-4" />
+              </Link>
+
+              <h1 className="text-2xl sm:text-[34px] font-serif font-bold text-[#111923] tracking-tight leading-tight">
+                Admin Security & Audit Trail
+              </h1>
+            </div>
+
+            <p className="text-xs sm:text-[13px] text-[#6B6255] font-normal pl-11.5 leading-relaxed">
+              Monitor login attempt rate limits (4-attempt / 2-hour lockout policy), active sessions, and administrative action logs.
+            </p>
           </div>
 
-          <div className="overflow-x-auto custom-scrollbar">
+          {/* Right Status Badge */}
+          <div className="bg-white border border-[#E8DFD2] rounded-2xl px-6 py-4 shadow-xs flex items-center space-x-3 self-start md:self-auto flex-shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-[#ECFDF5] border border-[#A7F3D0] flex items-center justify-center text-[#059669]">
+              <ShieldCheck className="w-5 h-5" />
+            </div>
+            <div>
+              <span className="text-[10px] uppercase tracking-wider text-[#059669] font-bold block">
+                POLICY ACTIVE
+              </span>
+              <div className="text-sm font-bold text-[#111923]">
+                Zero Trust Protection
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 2. Security Metric Badges */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+          <div className="p-5 rounded-2xl border border-[#E8DFD2] bg-white shadow-[0_4px_18px_rgba(40,30,20,0.04)] space-y-1">
+            <span className="text-[10px] uppercase font-bold tracking-wider text-[#059669] block">
+              ACTIVE SESSIONS
+            </span>
+            <div className="text-2xl font-serif font-bold text-[#111923]">
+              {stats.activeSessionCount} Valid Token
+            </div>
+            <span className="text-xs text-[#78716C] block">
+              HTTP-Only Signed Cookie
+            </span>
+          </div>
+
+          <div className="p-5 rounded-2xl border border-[#E8DFD2] bg-white shadow-[0_4px_18px_rgba(40,30,20,0.04)] space-y-1">
+            <span className="text-[10px] uppercase font-bold tracking-wider text-[#D97706] block">
+              BRUTE FORCE PROTECTION
+            </span>
+            <div className="text-2xl font-serif font-bold text-[#111923]">
+              4 Attempt Limit
+            </div>
+            <span className="text-xs text-[#78716C] block">
+              2-Hour IP Lockout Enforced
+            </span>
+          </div>
+
+          <div className="p-5 rounded-2xl border border-[#E8DFD2] bg-white shadow-[0_4px_18px_rgba(40,30,20,0.04)] space-y-1">
+            <span className="text-[10px] uppercase font-bold tracking-wider text-[#2563EB] block">
+              LOCKED IP ADDRESSES
+            </span>
+            <div className="text-2xl font-serif font-bold text-[#111923]">
+              {stats.lockedIpCount} Locked
+            </div>
+            <span className="text-xs text-[#78716C] block">
+              Auto-clears after 2 hours
+            </span>
+          </div>
+        </div>
+
+        {/* 3. Audit Log Stream */}
+        <div className="bg-white border border-[#E8DFD2] rounded-2xl p-6 sm:p-7 shadow-[0_4px_18px_rgba(40,30,20,0.04)] space-y-4">
+          <div className="flex justify-between items-center border-b border-[#EDE6DB] pb-3.5">
+            <div className="flex items-center space-x-2">
+              <ShieldCheck className="w-5 h-5 text-[#A97A38]" />
+              <h2 className="font-serif text-base font-bold text-[#111923]">
+                Administrative Action Audit Stream
+              </h2>
+            </div>
+            <span className="text-xs text-[#78716C] font-mono">{logs.length} Logged Events</span>
+          </div>
+
+          {/* Desktop Table View */}
+          <div className="hidden md:block overflow-x-auto custom-scrollbar">
             <table className="w-full text-left text-xs">
               <thead>
-                <tr className="border-b border-[#1B2A42] text-[10px] uppercase tracking-wider text-[#C4984F]">
-                  <th className="py-3 font-bold">Timestamp</th>
-                  <th className="py-3 font-bold">Operator</th>
-                  <th className="py-3 font-bold">Action</th>
-                  <th className="py-3 font-bold">Target Entity</th>
-                  <th className="py-3 font-bold">Event Details</th>
+                <tr className="bg-[#FAF7F2] border-b border-[#E8DFD2] text-[10px] uppercase font-bold tracking-wider text-[#A97A38]">
+                  <th className="py-3 px-4 font-bold">TIMESTAMP</th>
+                  <th className="py-3 px-4 font-bold">OPERATOR</th>
+                  <th className="py-3 px-4 font-bold">ACTION</th>
+                  <th className="py-3 px-4 font-bold">TARGET ENTITY</th>
+                  <th className="py-3 px-4 font-bold">EVENT DETAILS</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#1B2A42]/60 text-white/90">
-                {logs.map((log) => (
-                  <tr key={log.id} className="hover:bg-[#111E31]/50 transition-colors">
-                    <td className="py-3 font-mono text-[11px] text-white/50">
-                      {new Date(log.timestamp).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit" })} • {new Date(log.timestamp).toLocaleDateString("en-IN", { month: "short", day: "numeric" })}
+              <tbody className="divide-y divide-[#EDE6DB] text-[#111923]">
+                {logs.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="py-8 text-center text-[#78716C]">
+                      No administrative audit events recorded yet.
                     </td>
-                    <td className="py-3 font-semibold text-[#D8B875]">{log.adminUser}</td>
-                    <td className="py-3 font-mono font-bold text-xs text-white">{log.action}</td>
-                    <td className="py-3 text-white/70">
-                      <span className="px-2 py-0.5 rounded bg-[#111E31] border border-[#1B2A42] text-[10px]">
-                        {log.entity} #{log.entityId}
-                      </span>
-                    </td>
-                    <td className="py-3 text-white/80 max-w-xs truncate">{log.newValue || log.oldValue || "—"}</td>
                   </tr>
-                ))}
+                ) : (
+                  logs.map((log) => (
+                    <tr key={log.id} className="hover:bg-[#FAF7F2]/60 transition-colors">
+                      <td className="py-3 px-4 font-mono text-[11px] text-[#78716C]">
+                        {new Date(log.timestamp).toLocaleTimeString("en-IN", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          second: "2-digit",
+                        })}{" "}
+                        •{" "}
+                        {new Date(log.timestamp).toLocaleDateString("en-IN", {
+                          month: "short",
+                          day: "numeric",
+                        })}
+                      </td>
+                      <td className="py-3 px-4 font-bold text-[#A97A38]">
+                        {log.adminUser}
+                      </td>
+                      <td className="py-3 px-4 font-mono font-bold text-xs text-[#111923]">
+                        {log.action}
+                      </td>
+                      <td className="py-3 px-4">
+                        <span className="px-2 py-0.5 rounded bg-[#FAF7F2] border border-[#E8DFD2] text-[10px] font-mono">
+                          {log.entity} #{log.entityId}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4 text-[#6B6255] max-w-xs truncate">
+                        {log.newValue || log.oldValue || "—"}
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
+          </div>
+
+          {/* Mobile Card List View */}
+          <div className="block md:hidden space-y-3">
+            {logs.length === 0 ? (
+              <div className="py-6 text-center text-xs text-[#78716C]">
+                No administrative audit events recorded yet.
+              </div>
+            ) : (
+              logs.map((log) => (
+                <div
+                  key={log.id}
+                  className="p-4 rounded-xl bg-[#FCFAF6] border border-[#E8DFD2] space-y-2 text-xs"
+                >
+                  <div className="flex justify-between items-start">
+                    <span className="font-mono font-bold text-[#111923]">
+                      {log.action}
+                    </span>
+                    <span className="text-[10px] text-[#78716C] font-mono">
+                      {new Date(log.timestamp).toLocaleTimeString("en-IN", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center text-[11px]">
+                    <span className="text-[#A97A38] font-semibold">{log.adminUser}</span>
+                    <span className="px-2 py-0.5 rounded bg-white border border-[#E8DFD2] text-[10px] font-mono">
+                      {log.entity} #{log.entityId}
+                    </span>
+                  </div>
+                  {(log.newValue || log.oldValue) && (
+                    <div className="text-[11px] text-[#6B6255] bg-white p-2 rounded-lg border border-[#EDE6DB] truncate">
+                      {log.newValue || log.oldValue}
+                    </div>
+                  )}
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>

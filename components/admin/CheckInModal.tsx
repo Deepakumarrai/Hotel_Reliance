@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { X, CheckCircle2, BedDouble, User, Calendar, ShieldCheck } from "lucide-react";
+import { X, CheckCircle2, BedDouble, User, Calendar, ShieldCheck, DoorOpen } from "lucide-react";
 import { useToast } from "./ToastContext";
 import { AdminBooking, PhysicalRoom } from "@/lib/admin/store";
 
@@ -56,59 +56,84 @@ export function CheckInModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs">
-      <div className="bg-[#0B1423] border border-[#1B2A42] w-full max-w-lg rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-        <div className="p-5 border-b border-[#1B2A42] flex items-center justify-between bg-[#111E31]">
-          <div className="flex items-center space-x-2.5">
-            <div className="w-8 h-8 rounded-lg bg-emerald-950 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
-              <CheckCircle2 className="w-4 h-4" />
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/70 backdrop-blur-xs">
+      <div className="bg-[#FCFAF6] border border-[#E8DFD2] w-full sm:max-w-lg rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[92dvh] font-sans text-[#111923]">
+        {/* Header */}
+        <div className="p-5 sm:p-6 border-b border-[#EDE6DB] flex items-center justify-between bg-white">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 rounded-xl bg-[#DCFCE7] border border-[#86EFAC] flex items-center justify-center text-[#15803D] flex-shrink-0">
+              <DoorOpen className="w-5 h-5 text-[#15803D]" />
             </div>
             <div>
-              <h3 className="font-serif text-base font-bold text-white">Guest Check-In</h3>
-              <p className="text-[11px] text-[#E9DFD2]/60">Booking ID: {booking.id}</p>
+              <span className="text-[10px] uppercase font-bold tracking-wider text-[#A97A38] block">
+                Front Desk Operations
+              </span>
+              <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#111923]">
+                Guest Check-In
+              </h3>
             </div>
           </div>
-          <button onClick={onClose} className="text-white/60 hover:text-white p-1">
+          <button
+            onClick={onClose}
+            className="w-9 h-9 flex items-center justify-center rounded-xl bg-[#FAF7F2] hover:bg-[#F3EDE4] text-[#6B6255] hover:text-[#111923] transition-colors cursor-pointer"
+            aria-label="Close modal"
+          >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <div className="p-6 space-y-5">
-          {/* Guest Summary */}
-          <div className="p-4 bg-[#111E31] rounded-lg border border-[#1B2A42] space-y-2 text-xs">
+        {/* Content */}
+        <div className="p-5 sm:p-7 space-y-5 overflow-y-auto custom-scrollbar text-xs">
+          {/* Guest Stay Summary Box */}
+          <div className="p-4 sm:p-5 bg-white rounded-2xl border border-[#E8DFD2] space-y-2.5 shadow-2xs">
+            <div className="flex justify-between items-center pb-2 border-b border-[#EDE6DB]">
+              <span className="font-mono font-bold text-sm text-[#A97A38]">{booking.id}</span>
+              <span
+                className={`px-2.5 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider ${
+                  booking.paymentStatus === "SUCCESS"
+                    ? "bg-[#DCFCE7] text-[#15803D] border border-[#86EFAC]"
+                    : "bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A]"
+                }`}
+              >
+                {booking.paymentStatus === "SUCCESS" ? "PAID" : "PAYMENT PENDING"}
+              </span>
+            </div>
+
             <div className="flex justify-between">
-              <span className="text-white/50">Guest:</span>
-              <span className="font-bold text-white">{booking.guestName}</span>
+              <span className="text-[#6B6255]">Guest Name:</span>
+              <span className="font-bold text-[#111923]">{booking.guestName}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-white/50">Contact:</span>
-              <span className="text-[#D8B875]">{booking.guestPhone}</span>
+              <span className="text-[#6B6255]">Contact Phone:</span>
+              <span className="font-mono text-[#111923]">{booking.guestPhone}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-white/50">Room Category:</span>
-              <span className="capitalize text-[#C4984F] font-semibold">{booking.roomType} Room</span>
+              <span className="text-[#6B6255]">Room Category:</span>
+              <span className="capitalize text-[#A97A38] font-bold">{booking.roomType} Room</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-white/50">Stay Duration:</span>
-              <span>{booking.checkInDate} → {booking.checkOutDate} ({booking.nights} {booking.nights === 1 ? "Night" : "Nights"})</span>
+              <span className="text-[#6B6255]">Stay Dates:</span>
+              <span className="font-medium text-[#111923]">
+                {booking.checkInDate} → {booking.checkOutDate} ({booking.nights} {booking.nights === 1 ? "Night" : "Nights"})
+              </span>
             </div>
-            <div className="flex justify-between border-t border-[#1B2A42] pt-2">
-              <span className="text-white/50">Payment Status:</span>
-              <span className={`font-bold ${booking.paymentStatus === "SUCCESS" ? "text-emerald-400" : "text-amber-400"}`}>
-                {booking.paymentStatus === "SUCCESS" ? "PAID (₹" + booking.totalAmount.toLocaleString() + ")" : "PAYMENT PENDING (₹" + booking.totalAmount.toLocaleString() + ")"}
+            <div className="flex justify-between pt-2 border-t border-[#EDE6DB] font-bold">
+              <span className="text-[#111923]">Total Folio Amount:</span>
+              <span className="font-mono text-sm text-[#111923]">
+                ₹{booking.totalAmount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
               </span>
             </div>
           </div>
 
-          {/* Physical Room Selection */}
-          <div>
-            <label className="text-[10px] uppercase font-bold tracking-wider text-[#C4984F] block mb-2">
+          {/* Physical Room Assignment */}
+          <div className="bg-white p-4 sm:p-5 rounded-2xl border border-[#E8DFD2] space-y-3 shadow-2xs">
+            <label className="text-[10px] uppercase font-bold tracking-wider text-[#A97A38] block">
               Assign Physical Room (101 - 412) *
             </label>
             <select
               value={selectedRoom}
               onChange={(e) => setSelectedRoom(e.target.value)}
-              className="w-full bg-[#111E31] border border-[#1B2A42] rounded-lg p-3 text-sm text-white focus:outline-none focus:border-[#C4984F]"
+              className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl px-4 py-3 min-h-[46px] text-xs font-mono font-bold text-[#111923] focus:outline-none focus:border-[#B8893E] shadow-2xs cursor-pointer"
             >
               {displayRooms.map((r) => (
                 <option key={r.roomNumber} value={r.roomNumber}>
@@ -119,17 +144,17 @@ export function CheckInModal({
                 <option value="">No available rooms for this category</option>
               )}
             </select>
-            <p className="text-[11px] text-white/40 mt-1.5">
-              Assigning this room will update its live status to <strong className="text-amber-300">OCCUPIED</strong> in the hotel inventory.
+            <p className="text-[11px] text-[#6B6255] leading-relaxed">
+              Assigning this room will update its live inventory status to <strong className="text-[#A97A38]">OCCUPIED</strong> in the Hotel Reliance master matrix.
             </p>
           </div>
 
           {/* Actions */}
-          <div className="flex items-center justify-end space-x-3 pt-3 border-t border-[#1B2A42]">
+          <div className="flex items-center justify-end space-x-3 pt-3 border-t border-[#EDE6DB]">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded bg-[#1B2A42] hover:bg-[#253755] text-xs font-semibold text-white/80 transition-colors"
+              className="px-5 py-2.5 min-h-[44px] rounded-xl bg-[#FAF7F2] border border-[#E8DFD2] text-xs font-bold text-[#6B6255] hover:text-[#111923] hover:bg-[#F3EDE4] transition-all cursor-pointer"
             >
               Cancel
             </button>
@@ -137,9 +162,10 @@ export function CheckInModal({
               type="button"
               disabled={loading || !selectedRoom}
               onClick={handleCheckIn}
-              className="px-6 py-2 rounded bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-xs font-bold uppercase tracking-wider text-white shadow-lg transition-all disabled:opacity-50"
+              className="px-6 py-3 min-h-[46px] rounded-xl bg-[#A97A38] hover:bg-[#966C30] text-white font-bold text-xs uppercase tracking-wider shadow-md transition-all active:scale-95 disabled:opacity-50 cursor-pointer flex items-center space-x-2"
             >
-              {loading ? "Processing..." : "Complete Check-In"}
+              <CheckCircle2 className="w-4 h-4" />
+              <span>{loading ? "Checking In..." : "CONFIRM CHECK-IN"}</span>
             </button>
           </div>
         </div>

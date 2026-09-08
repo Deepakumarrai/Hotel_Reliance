@@ -1,0 +1,63 @@
+:root {
+  /* Main Brand Colors */
+  --hr-navy-950: #07111d;
+  --hr-navy-900: #0b1626;
+  --hr-navy-850: #101d2e;
+  --hr-navy-800: #15253a;
+
+  /* Gold Palette */
+  --hr-gold-700: #9f6f24;
+  --hr-gold-600: #b37d28;
+  --hr-gold-500: #c18d3a;
+  --hr-gold-400: #d2a75f;
+  --hr-champagne: #d8b875;
+
+  /* Surfaces & Backgrounds */
+  --hr-ivory: #f8f5ef;
+  --hr-warm-white: #fdfbf8;
+  --hr-white: #ffffff;
+  --hr-soft-cream: #f2ece3;
+
+  /* Typography Colors */
+  --hr-text: #101827;
+  --hr-text-secondary: #677080;
+  --hr-text-muted: #8a909a;
+
+  /* Borders */
+  --hr-border: #e6ded2;
+  --hr-border-soft: #eee8df;
+
+  /* Semantic Statuses */
+  --hr-success: #00a974;
+  --hr-success-soft: #e7f8f1;
+
+  --hr-warning: #e7a31b;
+  --hr-warning-soft: #fff5dc;
+
+  --hr-danger: #d74856;
+  --hr-danger-soft: #feecef;
+
+  --hr-info: #2f8be6;
+  --hr-info-soft: #e8f3ff;
+
+  /* Shadows */
+  --hr-shadow-card: 0 4px 18px rgba(16, 24, 39, 0.04);
+  --hr-shadow-elevated: 0 14px 36px rgba(16, 24, 39, 0.10);
+  --hr-shadow-modal: 0 20px 50px rgba(7, 17, 29, 0.25);
+}
+
+/* Custom Admin Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(179, 125, 40, 0.25);
+  border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(179, 125, 40, 0.55);
+}
