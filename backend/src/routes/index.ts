@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, Request, Response } from "express";
 import authRoutes from "./auth.routes";
 import roomsRoutes from "./rooms.routes";
 import bookingsRoutes from "./bookings.routes";
@@ -10,7 +10,7 @@ import adminRoutes from "./admin.routes";
 const router = Router();
 
 // Health check endpoint
-router.get("/health", (req, res) => {
+router.get("/health", (req: Request, res: Response) => {
   res.status(200).json({
     status: "healthy",
     timestamp: new Date().toISOString(),
