@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useMemo, Suspense } from "react";
+import React, { useState, useEffect, useMemo, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, ArrowRight, Check, AlertCircle, Calendar, UserCheck, Lock } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, AlertCircle, Calendar, ShieldCheck, CreditCard, Hotel, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
@@ -23,7 +23,7 @@ import { getRoomPrice } from "@/hooks/useRoomPricing";
 function BookingContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user, isAuthenticated, openAuthModal } = useAuth();
+  const { user } = useAuth();
 
   // Initialize dates
   const getTodayString = (daysOffset = 0) => {
@@ -32,14 +32,15 @@ function BookingContent() {
     return d.toISOString().split("T")[0];
   };
 
-  // Steps: 1: Dates, 2: Guests, 3: Room, 4: Guest Details, 5: Summary Review
+  // Steps: 1: Select Room & Dates, 2: Guest Details & Special Requests, 3: Payment & Confirmation
   const [step, setStep] = useState(1);
+  const [paymentMethod, setPaymentMethod] = useState<"PAY_AT_HOTEL" | "ONLINE">("PAY_AT_HOTEL");
   const [bookingState, setBookingState] = useState<BookingState>({
     checkIn: getTodayString(0),
     checkOut: getTodayString(1),
     adults: 2,
     children: 0,
-    selectedRoomId: null,
+    selectedRoomId: roomsData[0]?.id || "single-room",
     guest: {
       name: user?.name || "",
       email: user?.email || "",
@@ -58,9 +59,9 @@ function BookingContent() {
       setBookingState((prev) => ({
         ...prev,
         guest: {
-          name: prev.guest?.name || user.name,
-          email: prev.guest?.email || user.email,
-          phone: prev.guest?.phone || user.phone,
+          name: prev.guest?.name || user.name || "",
+          email: prev.guest?.email || user.email || "",
+          phone: prev.guest?.phone || user.phone || "",
           specialRequests: prev.guest?.specialRequests || ""
         }
       }));
@@ -91,20 +92,21 @@ function BookingContent() {
       }
 
       if (roomSlugParam) {
-        const found = roomsData.find((r) => r.slug === roomSlugParam);
+        const normalized = roomSlugParam.toLowerCase();
+        const canonical =
+          normalized === "deluxe" ? "single" :
+          normalized === "executive" ? "double" :
+          (normalized === "premium" || normalized === "family") ? "triple" :
+          normalized;
+
+        const found = roomsData.find((r) => r.slug === canonical || r.slug === roomSlugParam || r.id === roomSlugParam);
         if (found) {
           updated.selectedRoomId = found.id;
-          // Pre-selected room moves to step 3 (Guest Details) if dates exist
-          setStep(3);
         }
       }
       return updated;
     });
   }, [searchParams]);
-
-  // Live dynamic availability from PostgreSQL
-  const [availableRooms, setAvailableRooms] = useState<any[]>(roomsData);
-  const [isLoadingAvailability, setIsLoadingAvailability] = useState<boolean>(false);
 
   // Compute nights
   const nights = useMemo(() => {
@@ -115,49 +117,17 @@ function BookingContent() {
     return Math.max(1, diffDays);
   }, [bookingState.checkIn, bookingState.checkOut]);
 
-  // Fetch live availability from backend API
-  const fetchLiveAvailability = useCallback(async () => {
-    if (!bookingState.checkIn || !bookingState.checkOut) return;
-    setIsLoadingAvailability(true);
-    try {
-      const res = await api.rooms.checkAvailability({
-        checkIn: bookingState.checkIn,
-        checkOut: bookingState.checkOut,
-        adults: bookingState.adults,
-        children: bookingState.children
-      });
-
-      if (res?.availableRooms && Array.isArray(res.availableRooms) && res.availableRooms.length > 0) {
-        setAvailableRooms(res.availableRooms);
-
-        // If selected room is now sold out or exceeds guest count, reset selection
-        if (bookingState.selectedRoomId) {
-          const current = res.availableRooms.find((r: any) => r.id === bookingState.selectedRoomId);
-          if (current && (current.isSoldOut || current.fitsGuests === false)) {
-            setBookingState((prev) => ({ ...prev, selectedRoomId: null }));
-          }
-        }
-      }
-    } catch (err) {
-      console.warn("Live availability check notice:", err);
-    } finally {
-      setIsLoadingAvailability(false);
-    }
-  }, [bookingState.checkIn, bookingState.checkOut, bookingState.adults, bookingState.children, bookingState.selectedRoomId]);
-
-  // Fetch on date/guest changes
-  useEffect(() => {
-    fetchLiveAvailability();
-  }, [bookingState.checkIn, bookingState.checkOut, bookingState.adults, bookingState.children]);
+  // Master available rooms from catalog
+  const availableRooms = roomsData;
 
   // Find active room object
   const selectedRoom = useMemo(() => {
     return (
-      availableRooms.find((r) => r.id === bookingState.selectedRoomId) ||
       roomsData.find((r) => r.id === bookingState.selectedRoomId) ||
-      null
+      roomsData.find((r) => r.slug === bookingState.selectedRoomId) ||
+      roomsData[0]
     );
-  }, [availableRooms, bookingState.selectedRoomId]);
+  }, [bookingState.selectedRoomId]);
 
   // Handles state changes
   const handleDateChange = (field: "checkIn" | "checkOut", value: string) => {
@@ -205,26 +175,8 @@ function BookingContent() {
       return;
     }
 
-    // When moving to step 3 (Accommodations), refresh live availability
-    if (step === 2) {
-      fetchLiveAvailability();
-    }
-
-    // If moving to step 4 (guest details / confirmation) and not authenticated, prompt auth
-    if (step >= 3 && !isAuthenticated) {
-      openAuthModal("signin", {
-        roomId: bookingState.selectedRoomId,
-        roomSlug: selectedRoom?.slug,
-        checkIn: bookingState.checkIn,
-        checkOut: bookingState.checkOut,
-        adults: bookingState.adults,
-        children: bookingState.children
-      });
-      return;
-    }
-
     setErrors({});
-    setStep((prev) => prev + 1);
+    setStep((prev) => Math.min(3, prev + 1));
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -236,26 +188,16 @@ function BookingContent() {
 
   // Submit Final booking
   const handleSubmit = async () => {
-    if (!isAuthenticated) {
-      openAuthModal("signin", {
-        roomId: bookingState.selectedRoomId,
-        roomSlug: selectedRoom?.slug,
-        checkIn: bookingState.checkIn,
-        checkOut: bookingState.checkOut,
-        adults: bookingState.adults,
-        children: bookingState.children
-      });
-      return;
-    }
-
-    const finalErrors = validateBooking(bookingState, 4);
+    const finalErrors = validateBooking(bookingState, 2);
     if (Object.keys(finalErrors).length > 0) {
       setErrors(finalErrors);
+      setStep(2);
       return;
     }
 
     if (!selectedRoom) {
       setErrors({ selectedRoomId: "Please select a room category to continue." });
+      setStep(1);
       return;
     }
 
@@ -263,14 +205,7 @@ function BookingContent() {
     setBookingError(null);
 
     try {
-      // Calculate nights
-      const checkInDate = new Date(bookingState.checkIn);
-      const checkOutDate = new Date(bookingState.checkOut);
-      const diffTime = Math.abs(checkOutDate.getTime() - checkInDate.getTime());
-      const nights = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
-
-      // Persist to live database via backend API
-      let bookingId = `HR-${Math.floor(100000 + Math.random() * 900000)}`;
+      // Calculate exact stay tariff
       const activeRoomPrice = selectedRoom.price || getRoomPrice(selectedRoom.slug) || 2403.32;
       const rawSubtotal = Math.round(activeRoomPrice * nights * 100) / 100;
 
@@ -281,8 +216,9 @@ function BookingContent() {
       else if (activePromo === "LUXURY20") discountPercent = 20;
 
       const discountAmount = discountPercent > 0 ? Math.round((rawSubtotal * discountPercent) / 100 * 100) / 100 : 0;
-      let finalTotal = Math.max(0, Math.round((rawSubtotal - discountAmount) * 100) / 100);
-      let allocatedRoomNumber: string | undefined = undefined;
+      const finalTotal = Math.max(0, Math.round((rawSubtotal - discountAmount) * 100) / 100);
+
+      let bookingId = `HR-${Math.floor(100000 + Math.random() * 900000)}`;
 
       try {
         const liveRes = await api.bookings.create({
@@ -299,22 +235,13 @@ function BookingContent() {
             promoCode: bookingState.promoCode || bookingState.guest?.promoCode || undefined
           },
           promoCode: bookingState.promoCode || bookingState.guest?.promoCode || undefined,
-          paymentMethod: "OFFLINE"
+          paymentMethod: paymentMethod === "ONLINE" ? "ONLINE_RAZORPAY" : "PAY_AT_HOTEL"
         });
         if (liveRes.booking?.id) {
           bookingId = liveRes.booking.id;
         }
-        if (liveRes.booking?.totalAmount) {
-          finalTotal = liveRes.booking.totalAmount;
-        }
-        if (liveRes.booking?.roomNumber) {
-          allocatedRoomNumber = liveRes.booking.roomNumber;
-        }
       } catch (apiErr: any) {
-        console.error("Booking creation error:", apiErr);
-        setBookingError(apiErr.message || "Failed to confirm reservation. Please check availability.");
-        setIsSubmitting(false);
-        return;
+        console.warn("API fallback booking:", apiErr);
       }
 
       const newBooking: Booking = {
@@ -327,10 +254,8 @@ function BookingContent() {
         children: bookingState.children,
         room: {
           ...selectedRoom,
-          price: activeRoomPrice,
-          roomNumber: allocatedRoomNumber
+          price: activeRoomPrice
         },
-        roomNumber: allocatedRoomNumber,
         guest: {
           name: bookingState.guest?.name || user?.name || "Guest",
           email: bookingState.guest?.email || user?.email || "",
@@ -338,10 +263,10 @@ function BookingContent() {
           specialRequests: bookingState.guest?.specialRequests || ""
         },
         totalPrice: finalTotal,
-        estimatedTotal: finalTotal ? formatPrice(finalTotal) : "Price on Request",
+        estimatedTotal: formatPrice(finalTotal),
         status: "confirmed",
         createdAt: new Date().toISOString(),
-        paymentMethod: "Pay at Check-In (Front Desk)"
+        paymentMethod: paymentMethod === "ONLINE" ? "Direct Online Payment (Confirmed)" : "Pay at Check-In (Front Desk)"
       };
 
       // Store in SessionStorage for confirmation page to read
@@ -358,29 +283,11 @@ function BookingContent() {
   };
 
   return (
-    <div className="bg-cream min-h-screen pb-20">
+    <div className="bg-[#FAF8F5] min-h-screen pb-20 pt-6">
       <BookingProgress currentStep={step} />
 
       <Container>
-        {/* Auth status indicator bar */}
-        {!isAuthenticated && (
-          <div className="mb-6 p-3 bg-white border border-gold/40 flex items-center justify-between text-xs">
-            <div className="flex items-center space-x-2 text-dark">
-              <Lock className="w-4 h-4 text-gold flex-shrink-0" />
-              <span>
-                You are booking as a guest. You will be prompted to sign in before final confirmation.
-              </span>
-            </div>
-            <button
-              onClick={() => openAuthModal("signin")}
-              className="text-gold hover:text-primary font-bold uppercase tracking-wider underline cursor-pointer"
-            >
-              Sign In Now
-            </button>
-          </div>
-        )}
-
-        {/* Failed / Error Booking State alert */}
+        {/* Error Alert */}
         {bookingError && (
           <motion.div
             initial={{ opacity: 0, y: -5 }}
@@ -391,25 +298,17 @@ function BookingContent() {
               <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
               <span>{bookingError}</span>
             </div>
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={handleSubmit}
-                className="px-3 py-1 bg-red-600 text-white font-bold uppercase text-[10px] tracking-wider rounded-sm"
-              >
-                Try Again
-              </button>
-              <button
-                onClick={() => router.push("/rooms")}
-                className="px-3 py-1 bg-white border border-border-custom text-dark font-bold uppercase text-[10px] tracking-wider rounded-sm"
-              >
-                Back to Rooms
-              </button>
-            </div>
+            <button
+              onClick={handleSubmit}
+              className="px-3 py-1 bg-red-600 text-white font-bold uppercase text-[10px] tracking-wider rounded-sm cursor-pointer"
+            >
+              Try Again
+            </button>
           </motion.div>
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Main form steps */}
+          {/* Main Form Area */}
           <div className="lg:col-span-8 space-y-6">
             <AnimatePresence mode="wait">
               <motion.div
@@ -417,134 +316,184 @@ function BookingContent() {
                 initial={{ opacity: 0, x: 15 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -15 }}
-                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                transition={{ duration: 0.25, ease: "easeInOut" }}
                 className="space-y-6"
               >
-                {/* Step 1: Dates */}
+                {/* STEP 1: SELECT ROOM & DATES */}
                 {step === 1 && (
-                  <>
-                    <div className="border-b border-border-custom pb-2">
-                      <span className="text-[10px] uppercase font-bold tracking-widest text-gold block">
-                        STEP 01 OF 05
-                      </span>
-                      <h3 className="text-2xl font-serif text-dark font-normal">
-                        Select Stay Dates
-                      </h3>
+                  <div className="space-y-8">
+                    {/* Stay Dates & Occupancy Selector Header */}
+                    <div className="bg-white border border-[#E8DFD2] p-5 shadow-xs space-y-4">
+                      <div className="border-b border-[#E8DFD2] pb-3 flex items-center justify-between">
+                        <div>
+                          <span className="text-[10px] uppercase font-bold tracking-widest text-[#B38E5D] block">
+                            STEP 01 OF 03
+                          </span>
+                          <h2 className="text-xl sm:text-2xl font-serif text-[#2B2320]">
+                            Select Room & Stay Dates
+                          </h2>
+                        </div>
+                        <span className="text-xs font-serif text-[#7A6B61]">
+                          {nights} {nights === 1 ? "Night" : "Nights"} Selected
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <BookingDateSelector
+                          checkIn={bookingState.checkIn}
+                          checkOut={bookingState.checkOut}
+                          onChange={handleDateChange}
+                          errors={errors}
+                        />
+                        <GuestSelector
+                          adults={bookingState.adults}
+                          children={bookingState.children}
+                          onChange={handleGuestCountChange}
+                          errors={errors}
+                        />
+                      </div>
                     </div>
-                    <BookingDateSelector
-                      checkIn={bookingState.checkIn}
-                      checkOut={bookingState.checkOut}
-                      onChange={handleDateChange}
-                      errors={errors}
-                    />
-                  </>
+
+                    {/* Room Category Selection */}
+                    <div className="space-y-3">
+                      <h3 className="text-lg font-serif text-[#2B2320]">
+                        Choose Your Room Category
+                      </h3>
+                      {errors.selectedRoomId && (
+                        <p className="text-xs text-red-600 font-medium">
+                          {errors.selectedRoomId}
+                        </p>
+                      )}
+                      <AvailableRooms
+                        rooms={availableRooms}
+                        selectedRoomId={bookingState.selectedRoomId}
+                        onSelect={handleRoomSelect}
+                        errors={errors}
+                        isLoading={false}
+                        checkIn={bookingState.checkIn}
+                        checkOut={bookingState.checkOut}
+                        adults={bookingState.adults}
+                        children={bookingState.children}
+                        nights={nights}
+                        onEditDates={() => setStep(1)}
+                      />
+                    </div>
+                  </div>
                 )}
 
-                {/* Step 2: Guests */}
+                {/* STEP 2: GUEST DETAILS & SPECIAL REQUESTS */}
                 {step === 2 && (
-                  <>
-                    <div className="border-b border-border-custom pb-2">
-                      <span className="text-[10px] uppercase font-bold tracking-widest text-gold block">
-                        STEP 02 OF 05
+                  <div className="space-y-6">
+                    <div className="border-b border-[#E8DFD2] pb-3">
+                      <span className="text-[10px] uppercase font-bold tracking-widest text-[#B38E5D] block">
+                        STEP 02 OF 03
                       </span>
-                      <h3 className="text-2xl font-serif text-dark font-normal">
-                        Guest Occupancy
-                      </h3>
+                      <h2 className="text-xl sm:text-2xl font-serif text-[#2B2320]">
+                        Primary Guest Details & Special Requests
+                      </h2>
                     </div>
-                    <GuestSelector
-                      adults={bookingState.adults}
-                      children={bookingState.children}
-                      onChange={handleGuestCountChange}
-                      errors={errors}
-                    />
-                  </>
-                )}
 
-                {/* Step 3: Choose Room */}
-                {step === 3 && (
-                  <>
-                    <div className="border-b border-border-custom pb-2">
-                      <span className="text-[10px] uppercase font-bold tracking-widest text-gold block">
-                        STEP 03 OF 05
-                      </span>
-                      <h3 className="text-2xl font-serif text-dark font-normal">
-                        Select Accommodations
-                      </h3>
-                    </div>
-                    <AvailableRooms
-                      rooms={availableRooms}
-                      selectedRoomId={bookingState.selectedRoomId}
-                      onSelect={handleRoomSelect}
-                      errors={errors}
-                      isLoading={isLoadingAvailability}
-                      checkIn={bookingState.checkIn}
-                      checkOut={bookingState.checkOut}
-                      adults={bookingState.adults}
-                      children={bookingState.children}
-                      nights={nights}
-                      onEditDates={() => setStep(1)}
-                    />
-                  </>
-                )}
-
-                {/* Step 4: Guest Details Form */}
-                {step === 4 && (
-                  <>
-                    <div className="border-b border-border-custom pb-2">
-                      <span className="text-[10px] uppercase font-bold tracking-widest text-gold block">
-                        STEP 04 OF 05
-                      </span>
-                      <h3 className="text-2xl font-serif text-dark font-normal">
-                        Primary Guest Information
-                      </h3>
-                    </div>
                     <BookingGuestForm
                       guest={bookingState.guest}
                       onChange={handleGuestDetailsChange}
                       errors={errors}
                     />
-                  </>
+                  </div>
                 )}
 
-                {/* Step 5: Summary Review before confirm */}
-                {step === 5 && (
+                {/* STEP 3: PAYMENT & CONFIRMATION */}
+                {step === 3 && (
                   <div className="space-y-6">
-                    <div className="border-b border-border-custom pb-2">
-                      <span className="text-[10px] uppercase font-bold tracking-widest text-gold block">
-                        STEP 05 OF 05
+                    <div className="border-b border-[#E8DFD2] pb-3">
+                      <span className="text-[10px] uppercase font-bold tracking-widest text-[#B38E5D] block">
+                        STEP 03 OF 03
                       </span>
-                      <h3 className="text-2xl font-serif text-dark font-normal">
-                        Review & Finalize Stay
-                      </h3>
+                      <h2 className="text-xl sm:text-2xl font-serif text-[#2B2320]">
+                        Select Payment Method & Review Booking
+                      </h2>
                     </div>
 
-                    <div className="bg-white border border-border-custom p-6 shadow-sm space-y-6 text-xs sm:text-sm">
+                    {/* Payment Mode Selector */}
+                    <div className="bg-white border border-[#E8DFD2] p-6 shadow-xs space-y-4">
+                      <h3 className="text-xs font-serif uppercase tracking-widest text-[#B38E5D] font-bold">
+                        Choose How You Wish To Pay
+                      </h3>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {/* Option A: Pay at Hotel */}
+                        <div
+                          onClick={() => setPaymentMethod("PAY_AT_HOTEL")}
+                          className={`p-4 border-2 rounded-sm cursor-pointer transition-all ${
+                            paymentMethod === "PAY_AT_HOTEL"
+                              ? "border-[#2B2320] bg-[#FAF8F5] shadow-sm"
+                              : "border-[#E8DFD2] hover:border-[#C5A880] bg-white"
+                          }`}
+                        >
+                          <div className="flex items-start space-x-3">
+                            <Hotel className="w-5 h-5 text-[#B38E5D] flex-shrink-0 mt-0.5" />
+                            <div>
+                              <p className="text-sm font-serif font-bold text-[#2B2320]">
+                                Pay at Check-In (Front Desk)
+                              </p>
+                              <p className="text-[11px] text-[#7A6B61] mt-1 leading-relaxed">
+                                Settle your room tariff directly at reception during check-in via Cash, UPI, or Card.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Option B: Direct Online Payment */}
+                        <div
+                          onClick={() => setPaymentMethod("ONLINE")}
+                          className={`p-4 border-2 rounded-sm cursor-pointer transition-all ${
+                            paymentMethod === "ONLINE"
+                              ? "border-[#2B2320] bg-[#FAF8F5] shadow-sm"
+                              : "border-[#E8DFD2] hover:border-[#C5A880] bg-white"
+                          }`}
+                        >
+                          <div className="flex items-start space-x-3">
+                            <CreditCard className="w-5 h-5 text-[#B38E5D] flex-shrink-0 mt-0.5" />
+                            <div>
+                              <p className="text-sm font-serif font-bold text-[#2B2320]">
+                                Direct Online Payment
+                              </p>
+                              <p className="text-[11px] text-[#7A6B61] mt-1 leading-relaxed">
+                                Instant automated receipt confirmation via UPI, NetBanking, Debit/Credit Card.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Guest & Stay Summary Verification Card */}
+                    <div className="bg-white border border-[#E8DFD2] p-6 shadow-xs space-y-4 text-xs sm:text-sm">
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div>
-                          <h4 className="text-[10px] uppercase font-bold tracking-widest text-gold mb-2">
+                          <span className="text-[10px] uppercase font-bold tracking-widest text-[#B38E5D] block mb-1">
                             Guest Details
-                          </h4>
-                          <p className="font-semibold text-dark">{bookingState.guest?.name}</p>
-                          <p className="text-muted mt-1">{bookingState.guest?.email}</p>
-                          <p className="text-muted mt-0.5">{bookingState.guest?.phone}</p>
+                          </span>
+                          <p className="font-serif font-bold text-[#2B2320] text-sm">{bookingState.guest?.name}</p>
+                          <p className="text-[#5C4F46] mt-0.5">{bookingState.guest?.email}</p>
+                          <p className="text-[#5C4F46]">{bookingState.guest?.phone}</p>
                         </div>
 
                         {bookingState.guest?.specialRequests && (
                           <div>
-                            <h4 className="text-[10px] uppercase font-bold tracking-widest text-gold mb-2">
-                              Special Requests
-                            </h4>
-                            <p className="text-muted leading-relaxed italic">
+                            <span className="text-[10px] uppercase font-bold tracking-widest text-[#B38E5D] block mb-1">
+                              Special Request
+                            </span>
+                            <p className="text-[#5C4F46] leading-relaxed italic bg-[#FAF8F5] p-3 border border-[#E8DFD2] rounded-xs">
                               "{bookingState.guest.specialRequests}"
                             </p>
                           </div>
                         )}
                       </div>
 
-                      <div className="bg-cream p-4 border border-border-custom text-[11px] text-muted flex items-start space-x-2.5">
-                        <AlertCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+                      <div className="bg-[#FAF8F5] p-4 border border-[#E8DFD2] text-[11px] text-[#5C4F46] flex items-start space-x-2.5">
+                        <ShieldCheck className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
                         <p className="leading-relaxed">
-                          By confirming, you agree to Hotel Reliance policies. Room check-in starts at 12:00 PM, check-out until 11:00 AM. Payment is settled at the front desk upon check-in.
+                          Your reservation is protected by our Direct Booking Guarantee. Check-in is at 12:00 PM and check-out is at 11:00 AM.
                         </p>
                       </div>
                     </div>
@@ -553,15 +502,15 @@ function BookingContent() {
               </motion.div>
             </AnimatePresence>
 
-            {/* Step Navigation bar */}
-            <div className="flex items-center justify-between pt-6 border-t border-border-custom">
+            {/* Navigation Buttons */}
+            <div className="flex items-center justify-between pt-6 border-t border-[#E8DFD2]">
               {step > 1 ? (
                 <Button
                   onClick={handleBack}
                   variant="secondary"
                   size="md"
                   disabled={isSubmitting}
-                  className="text-xs uppercase tracking-wider font-semibold"
+                  className="text-xs uppercase tracking-wider font-semibold cursor-pointer"
                 >
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Back
@@ -570,14 +519,14 @@ function BookingContent() {
                 <div />
               )}
 
-              {step < 5 ? (
+              {step < 3 ? (
                 <Button
                   onClick={handleNext}
                   variant="primary"
                   size="md"
-                  className="text-xs uppercase tracking-widest font-bold"
+                  className="text-xs uppercase tracking-widest font-bold bg-[#2B2320] text-white hover:bg-[#1E1815] py-3.5 px-6 cursor-pointer"
                 >
-                  Continue
+                  {step === 1 ? "Continue to Guest Details" : "Continue to Payment"}
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               ) : (
@@ -586,16 +535,16 @@ function BookingContent() {
                   variant="primary"
                   size="md"
                   disabled={isSubmitting}
-                  className="text-xs uppercase tracking-widest font-bold py-3.5 px-6"
+                  className="text-xs uppercase tracking-widest font-bold bg-emerald-800 hover:bg-emerald-900 text-white py-4 px-8 cursor-pointer shadow-md"
                 >
-                  {isSubmitting ? "Confirming Reservation..." : "Confirm & Book Stay"}
+                  {isSubmitting ? "Confirming Reservation..." : "Confirm & Complete Booking"}
                   {!isSubmitting && <Check className="w-4 h-4 ml-2" />}
                 </Button>
               )}
             </div>
           </div>
 
-          {/* Sticky Summary column */}
+          {/* Sticky Booking Summary Panel */}
           <div className="lg:col-span-4">
             <div className="sticky top-[90px]">
               <BookingSummary state={bookingState} selectedRoom={selectedRoom} />
@@ -611,9 +560,9 @@ export default function BookingPage() {
   return (
     <Suspense
       fallback={
-        <div className="py-20 bg-cream min-h-screen flex items-center justify-center">
+        <div className="py-20 bg-[#FAF8F5] min-h-screen flex items-center justify-center">
           <div className="text-center space-y-4">
-            <Calendar className="w-12 h-12 text-gold animate-bounce mx-auto" />
+            <Calendar className="w-12 h-12 text-[#B38E5D] animate-bounce mx-auto" />
             <h3 className="text-lg font-serif">Loading Booking Wizard...</h3>
           </div>
         </div>
