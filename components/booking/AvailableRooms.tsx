@@ -340,7 +340,7 @@ export function AvailableRooms({
                       <AlertCircle className="w-3.5 h-3.5 text-amber-700 flex-shrink-0 mt-0.5" />
                       <span>
                         Your party of {adults} adults exceeds this room's maximum capacity of{" "}
-                        {room.capacityAdults} adults. Please select the Family Suite or book multiple rooms.
+                        {room.capacityAdults} adults. Please select the Triple Room or book multiple rooms.
                       </span>
                     </div>
                   )}
