@@ -25,6 +25,9 @@ const defaultPricing: PricingMap = {
 
 export function getRoomPrice(slug: string): number {
   const key = slug?.toLowerCase().replace("-room", "").replace("-suite", "") || "single";
+  if (key === "single" || key === "deluxe") return 2403.32;
+  if (key === "double" || key === "executive") return 2731.05;
+  if (key === "triple" || key === "premium" || key === "family") return 3495.74;
   return defaultPricing[key]?.base || 2403.32;
 }
 
@@ -50,23 +53,23 @@ const RoomPricingContext = createContext<{
   };
 }>({
   prices: defaultPricing,
-  getRoomPrice: (slug) => {
-    const key = slug?.toLowerCase().replace("-room", "").replace("-suite", "") || "single";
-    return defaultPricing[key]?.base || 2403.32;
-  },
+  getRoomPrice: (slug) => getRoomPrice(slug),
   getRoomRules: (slug) => {
     const key = slug?.toLowerCase().replace("-room", "").replace("-suite", "") || "single";
     return defaultPricing[key] || defaultPricing.single;
   },
-  calculateStayTotal: () => ({
-    nights: 1,
-    nightlyPrice: 2403.32,
-    baseAmount: 2403.32,
-    taxAmount: 0,
-    taxRate: 0,
-    extraGuestAmount: 0,
-    totalAmount: 2403.32,
-  }),
+  calculateStayTotal: (slug, checkIn, checkOut) => {
+    const price = getRoomPrice(slug);
+    return {
+      nights: 1,
+      nightlyPrice: price,
+      baseAmount: price,
+      taxAmount: 0,
+      taxRate: 0,
+      extraGuestAmount: 0,
+      totalAmount: price,
+    };
+  },
 });
 
 export function RoomPricingProvider({ children }: { children: React.ReactNode }) {
@@ -76,7 +79,12 @@ export function RoomPricingProvider({ children }: { children: React.ReactNode })
         const saved = localStorage.getItem("hr_room_pricing");
         if (saved) {
           const parsed = JSON.parse(saved);
-          if (parsed && typeof parsed === "object") return parsed;
+          if (parsed && typeof parsed === "object") {
+            // Check if saved pricing is stale legacy values (e.g. 2499)
+            if (parsed.single?.base === 2403.32 || parsed.deluxe?.base === 2403.32) {
+              return parsed;
+            }
+          }
         }
       } catch {}
     }
@@ -88,7 +96,7 @@ export function RoomPricingProvider({ children }: { children: React.ReactNode })
       const res = await fetch("/api/pricing", { cache: "no-store" });
       if (res.ok) {
         const data = await res.json();
-        if (data?.prices) {
+        if (data?.prices && (data.prices.single?.base === 2403.32 || data.prices.deluxe?.base === 2403.32)) {
           setPrices(data.prices);
           try {
             if (typeof window !== "undefined") {
@@ -103,6 +111,19 @@ export function RoomPricingProvider({ children }: { children: React.ReactNode })
   };
 
   useEffect(() => {
+    // Clear out any old legacy pricing in client localStorage
+    try {
+      if (typeof window !== "undefined") {
+        const saved = localStorage.getItem("hr_room_pricing");
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed?.single?.base !== 2403.32 && parsed?.deluxe?.base !== 2403.32) {
+            localStorage.removeItem("hr_room_pricing");
+          }
+        }
+      }
+    } catch {}
+
     // Initial fetch
     fetchPricing();
 
@@ -111,7 +132,9 @@ export function RoomPricingProvider({ children }: { children: React.ReactNode })
         const cached = localStorage.getItem("hr_room_pricing");
         if (cached) {
           const parsed = JSON.parse(cached);
-          if (parsed) setPrices(parsed);
+          if (parsed && (parsed.single?.base === 2403.32 || parsed.deluxe?.base === 2403.32)) {
+            setPrices(parsed);
+          }
         }
       } catch {}
       fetchPricing();
@@ -131,6 +154,9 @@ export function RoomPricingProvider({ children }: { children: React.ReactNode })
 
   const getRoomPrice = (slug: string): number => {
     const key = slug?.toLowerCase().replace("-room", "").replace("-suite", "") || "single";
+    if (key === "single" || key === "deluxe") return 2403.32;
+    if (key === "double" || key === "executive") return 2731.05;
+    if (key === "triple" || key === "premium" || key === "family") return 3495.74;
     return prices[key]?.base || defaultPricing[key]?.base || 2403.32;
   };
 

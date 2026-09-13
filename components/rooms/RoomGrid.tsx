@@ -6,6 +6,7 @@ import { RoomCard } from "./RoomCard";
 import { Button } from "@/components/ui/Button";
 
 import { roomsData } from "@/data/rooms";
+import { getRoomPrice } from "@/hooks/useRoomPricing";
 
 interface RoomGridProps {
   rooms?: Room[];
@@ -23,20 +24,24 @@ export function RoomGrid({ rooms: initialRooms }: RoomGridProps) {
         const res = await fetch("/api/rooms");
         const data = await res.json();
         if (data.success && Array.isArray(data.data) && data.data.length > 0) {
-          const mapped: Room[] = data.data.map((cat: any) => ({
-            id: cat.id || cat.slug,
-            slug: cat.slug || cat.id,
-            name: cat.name,
-            description: cat.description || "",
-            longDescription: cat.description || "",
-            images: cat.images && cat.images.length > 0 ? cat.images : [cat.image || `/images/rooms/${cat.slug || cat.id}/main.jpg`],
-            amenities: cat.amenities || [],
-            occupancy: parseInt(cat.maxGuests || "2") || 2,
-            bedType: cat.bedding || "King Bed",
-            price: Number(cat.price) || 2403.32,
-            size: cat.roomArea || "300 sq. ft.",
-            view: "City View",
-          }));
+          const mapped: Room[] = data.data.map((cat: any) => {
+            const slug = cat.slug || cat.id;
+            const officialPrice = getRoomPrice(slug);
+            return {
+              id: cat.id || slug,
+              slug: slug,
+              name: cat.name,
+              description: cat.description || "",
+              longDescription: cat.description || "",
+              images: cat.images && cat.images.length > 0 ? cat.images : [cat.image || `/images/rooms/${slug}/main.jpg`],
+              amenities: cat.amenities || [],
+              occupancy: parseInt(cat.maxGuests || "2") || 2,
+              bedType: cat.bedding || "King Bed",
+              price: officialPrice || Number(cat.price) || 2403.32,
+              size: cat.roomArea || "300 sq. ft.",
+              view: "City View",
+            };
+          });
           setRooms(mapped);
         }
       } catch (err) {

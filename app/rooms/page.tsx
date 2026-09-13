@@ -11,7 +11,7 @@ import { HomeCTA } from "@/components/home/HomeCTA";
 export const metadata: Metadata = {
   title: "Luxury Rooms & Suites — Tariffs, Amenities & Online Booking",
   description:
-    "Explore our Deluxe, Executive, Premium, and Family Suites in Bokaro Steel City starting from ₹2,499/night. Enjoy King-size beds, high-speed Wi-Fi, AC climate control, and 24/7 room service.",
+    "Explore our Single, Double, and Triple Rooms in Bokaro Steel City starting from ₹2,403.32/night. Enjoy King-size beds, high-speed Wi-Fi, AC climate control, and 24/7 room service.",
   keywords: [
     "Rooms in Bokaro",
     "Hotel Reliance Rooms",

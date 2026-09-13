@@ -197,13 +197,12 @@ export function AvailableRooms({
             const isLowInventory = availableUnits > 0 && availableUnits <= 3;
 
             // Pricing metrics
-            const activePrice = getRoomPrice(room.slug) || room.pricePerNight || room.price || 2499;
+            const activePrice = getRoomPrice(room.slug) || room.price || room.pricePerNight || 2403.32;
             const displayNightly = `${formatPrice(activePrice)}`;
 
             // Total stay price if nights > 0
-            const totalStayBase = room.totalStayPrice || activePrice * nights;
-            const totalStayTax = room.tax || Math.round(totalStayBase * 0.12);
-            const totalStayGrand = room.grandTotal || totalStayBase + totalStayTax;
+            const totalStayBase = Math.round(activePrice * nights * 100) / 100;
+            const totalStayGrand = room.grandTotal || room.totalStayPrice || totalStayBase;
 
             // Determine if selectable
             const isSelectable = !isSoldOut && fitsGuests;
