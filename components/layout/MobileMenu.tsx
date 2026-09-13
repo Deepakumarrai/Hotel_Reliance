@@ -116,7 +116,7 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
             </div>
           )}
 
-          {/* Navigation Links */}
+          {/* Navigation Links with 44px+ touch targets */}
           <motion.nav
             initial="hidden"
             animate={isOpen ? "show" : "hidden"}
@@ -124,11 +124,11 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
               hidden: {},
               show: {
                 transition: {
-                  staggerChildren: 0.04
+                  staggerChildren: 0.03
                 }
               }
             }}
-            className="flex flex-col space-y-2 py-4 max-h-[42vh] overflow-y-auto"
+            className="flex flex-col py-3 max-h-[44vh] overflow-y-auto"
           >
             {navigation.map((item) => {
               const isActive = pathname === item.path;
@@ -142,8 +142,8 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
                 >
                   <Link
                     href={item.path}
-                    className={`text-sm sm:text-[15px] font-bold tracking-[0.14em] uppercase transition-colors py-2.5 border-b border-cream hover:text-gold block ${
-                      isActive ? "text-gold pl-2 border-l-2 border-l-gold" : "text-dark"
+                    className={`text-[13.5px] sm:text-[14.5px] font-bold tracking-[0.14em] uppercase transition-colors min-h-[44px] flex items-center border-b border-[#FAF8F5] hover:text-[#BA8B32] touch-press ${
+                      isActive ? "text-[#BA8B32] pl-2 border-l-2 border-l-[#BA8B32]" : "text-[#2B2320]"
                     }`}
                     onClick={onClose}
                   >
@@ -156,31 +156,31 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
             {/* Authenticated user links */}
             {isAuthenticated && (
               <>
-                <div className="pt-2 border-t border-border-custom">
-                  <span className="text-[9px] uppercase font-bold text-gold tracking-widest block py-1">
+                <div className="pt-2 border-t border-[#E8DFD2]">
+                  <span className="text-[9px] uppercase font-bold text-[#BA8B32] tracking-widest block py-1">
                     My Account
                   </span>
                   <Link
                     href="/profile"
                     onClick={onClose}
-                    className="flex items-center text-xs font-semibold py-1.5 text-dark hover:text-gold"
+                    className="flex items-center text-xs font-semibold py-2.5 text-[#2B2320] hover:text-[#BA8B32] min-h-[44px]"
                   >
-                    <UserIcon className="w-3.5 h-3.5 mr-2 text-gold" />
+                    <UserIcon className="w-4 h-4 mr-2 text-[#BA8B32]" />
                     Guest Profile
                   </Link>
                   <Link
                     href="/my-bookings"
                     onClick={onClose}
-                    className="flex items-center text-xs font-semibold py-1.5 text-dark hover:text-gold"
+                    className="flex items-center text-xs font-semibold py-2.5 text-[#2B2320] hover:text-[#BA8B32] min-h-[44px]"
                   >
-                    <Calendar className="w-3.5 h-3.5 mr-2 text-gold" />
+                    <Calendar className="w-4 h-4 mr-2 text-[#BA8B32]" />
                     My Bookings
                   </Link>
                   <button
                     onClick={handleLogout}
-                    className="flex items-center text-xs font-semibold py-1.5 text-red-600 hover:text-red-700 w-full text-left"
+                    className="flex items-center text-xs font-semibold py-2.5 text-red-600 hover:text-red-700 w-full text-left min-h-[44px] cursor-pointer"
                   >
-                    <LogOut className="w-3.5 h-3.5 mr-2" />
+                    <LogOut className="w-4 h-4 mr-2" />
                     Sign Out
                   </button>
                 </div>
@@ -189,24 +189,24 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
           </motion.nav>
         </div>
 
-        {/* Bottom Drawer Actions */}
-        <div className="pt-4 border-t border-border-custom space-y-3 bg-cream -mx-6 -mb-6 p-6">
+        {/* Bottom Drawer Actions with iOS Safe Area support */}
+        <div className="pt-4 border-t border-[#E8DFD2] space-y-3 bg-[#FAF8F5] -mx-6 -mb-6 p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))]">
           <Link href="/booking" onClick={onClose} className="block w-full">
-            <button className="w-full bg-[#BA8B32] hover:bg-[#A67B22] text-white font-bold text-xs tracking-[0.18em] uppercase py-3 rounded-sm shadow-md transition-all duration-300 flex items-center justify-center cursor-pointer border border-[#BA8B32]">
+            <button className="w-full min-h-[46px] bg-[#BA8B32] hover:bg-[#A67B22] text-white font-bold text-xs tracking-[0.18em] uppercase py-3 rounded-xs shadow-md transition-all duration-300 flex items-center justify-center cursor-pointer border border-[#BA8B32] touch-press active:scale-[0.98]">
               <Calendar className="w-4 h-4 mr-2 text-white" />
               BOOK A STAY
             </button>
           </Link>
-          <div className="text-[11px] text-muted space-y-1">
+          <div className="text-xs text-[#7A6B61] space-y-1.5">
             <div className="flex items-center">
-              <Phone className="w-3.5 h-3.5 mr-1.5 text-gold flex-shrink-0" />
-              <a href={`tel:${hotelSettings.primaryPhone}`} className="hover:text-gold transition-colors">
+              <Phone className="w-3.5 h-3.5 mr-2 text-[#BA8B32] flex-shrink-0" />
+              <a href={`tel:${hotelSettings.primaryPhone}`} className="hover:text-[#BA8B32] transition-colors font-medium">
                 {hotelSettings.primaryPhone}
               </a>
             </div>
             <div className="flex items-center">
-              <Mail className="w-3.5 h-3.5 mr-1.5 text-gold flex-shrink-0" />
-              <a href={`mailto:${hotelSettings.primaryEmail}`} className="truncate hover:text-gold transition-colors">
+              <Mail className="w-3.5 h-3.5 mr-2 text-[#BA8B32] flex-shrink-0" />
+              <a href={`mailto:${hotelSettings.primaryEmail}`} className="truncate hover:text-[#BA8B32] transition-colors font-medium">
                 {hotelSettings.primaryEmail}
               </a>
             </div>

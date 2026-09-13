@@ -502,44 +502,41 @@ function BookingContent() {
               </motion.div>
             </AnimatePresence>
 
-            {/* Navigation Buttons */}
-            <div className="flex items-center justify-between pt-6 border-t border-[#E8DFD2]">
+            {/* Navigation Buttons with 46px+ touch targets */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-6 border-t border-[#E8DFD2]">
               {step > 1 ? (
-                <Button
+                <button
+                  type="button"
                   onClick={handleBack}
-                  variant="secondary"
-                  size="md"
                   disabled={isSubmitting}
-                  className="text-xs uppercase tracking-wider font-semibold cursor-pointer"
+                  className="min-h-[46px] px-6 text-xs uppercase tracking-wider font-semibold border border-[#E8DFD2] bg-white hover:bg-[#FAF8F5] text-[#2B2320] rounded-xs cursor-pointer flex items-center justify-center touch-press"
                 >
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Back
-                </Button>
+                </button>
               ) : (
-                <div />
+                <div className="hidden sm:block" />
               )}
 
               {step < 3 ? (
-                <Button
+                <button
+                  type="button"
                   onClick={handleNext}
-                  variant="primary"
-                  size="md"
-                  className="text-xs uppercase tracking-widest font-bold bg-[#2B2320] text-white hover:bg-[#1E1815] py-3.5 px-6 cursor-pointer"
+                  className="min-h-[46px] px-8 text-xs uppercase tracking-widest font-bold bg-[#2B2320] text-white hover:bg-[#1E1815] rounded-xs cursor-pointer flex items-center justify-center shadow-md touch-press active:scale-[0.98]"
                 >
-                  {step === 1 ? "Continue to Guest Details" : "Continue to Payment"}
+                  <span>{step === 1 ? "Continue to Guest Details" : "Continue to Payment"}</span>
                   <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
+                </button>
               ) : (
-                <Button
+                <button
+                  type="button"
                   onClick={handleSubmit}
-                  variant="primary"
-                  size="md"
                   disabled={isSubmitting}
-                  className="text-xs uppercase tracking-widest font-bold bg-emerald-800 hover:bg-emerald-900 text-white py-4 px-8 cursor-pointer shadow-md"
+                  className="min-h-[48px] px-8 text-xs uppercase tracking-widest font-bold bg-emerald-800 hover:bg-emerald-900 text-white rounded-xs cursor-pointer shadow-md flex items-center justify-center touch-press active:scale-[0.98]"
                 >
-                  {isSubmitting ? "Confirming Reservation..." : "Confirm & Complete Booking"}
+                  <span>{isSubmitting ? "Confirming Reservation..." : "Confirm & Complete Booking"}</span>
                   {!isSubmitting && <Check className="w-4 h-4 ml-2" />}
-                </Button>
+                </button>
               )}
             </div>
           </div>

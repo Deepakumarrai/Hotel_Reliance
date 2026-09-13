@@ -109,29 +109,16 @@ export function Footer() {
               </div>
 
               <div className="space-y-2">
-                <span className="text-xs sm:text-[13px] font-mono tracking-[0.2em] text-[#C5A880] uppercase font-bold block opacity-0 hidden sm:block">
-                  Email
+                <span className="text-xs sm:text-[13px] font-mono tracking-[0.2em] text-[#C5A880] uppercase font-bold block">
+                  Customer Support & Email
                 </span>
                 <a
                   href={`mailto:${hotelSettings.primaryEmail}`}
-                  className="text-xs sm:text-sm font-sans text-[#E5DFD7] hover:text-[#D8B875] transition-colors block break-all pt-0 sm:pt-6 font-medium"
+                  className="text-sm font-sans text-[#E5DFD7] hover:text-[#D8B875] transition-colors block font-medium"
                 >
                   {hotelSettings.primaryEmail}
                 </a>
               </div>
-            </div>
-
-            {/* Customer Support */}
-            <div className="space-y-1.5">
-              <span className="text-xs sm:text-[13px] font-mono tracking-[0.2em] text-[#C5A880] uppercase font-bold block">
-                Customer Support
-              </span>
-              <a
-                href={`mailto:${hotelSettings.primaryEmail}`}
-                className="text-sm font-sans text-[#E5DFD7] hover:text-[#D8B875] transition-colors block font-medium"
-              >
-                {hotelSettings.primaryEmail}
-              </a>
             </div>
           </div>
 

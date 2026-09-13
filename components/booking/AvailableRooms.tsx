@@ -366,18 +366,18 @@ export function AvailableRooms({
                       type="button"
                       disabled={!isSelectable}
                       className={cn(
-                        "px-4 py-2 text-[10px] font-bold uppercase tracking-wider border transition-all select-none",
+                        "min-h-[44px] px-5 py-2.5 text-xs font-bold uppercase tracking-wider border transition-all select-none rounded-xs touch-press flex items-center justify-center",
                         isSelected
-                          ? "bg-gold border-gold text-white shadow-sm"
+                          ? "bg-[#BA8B32] border-[#BA8B32] text-white shadow-sm"
                           : isSoldOut
                           ? "bg-stone-800 text-stone-300 border-stone-700 cursor-not-allowed"
                           : !fitsGuests
                           ? "bg-stone-200 border-stone-300 text-stone-500 cursor-not-allowed"
-                          : "bg-transparent border-primary text-primary hover:bg-primary hover:text-white cursor-pointer"
+                          : "bg-transparent border-[#2B2320] text-[#2B2320] hover:bg-[#2B2320] hover:text-white cursor-pointer active:scale-95"
                       )}
                     >
                       {isSelected
-                        ? "Selected"
+                        ? "✓ Selected"
                         : isSoldOut
                         ? "Unavailable"
                         : !fitsGuests
