@@ -16,48 +16,48 @@ export function RoomInfo({ room }: RoomInfoProps) {
         <div className="w-12 h-[2px] bg-gold" />
       </div>
 
-      <p className="text-sm text-muted leading-relaxed font-light whitespace-pre-line">
+      <p className="text-[14.5px] sm:text-base text-[#3D332D] leading-[1.75] font-normal whitespace-pre-line">
         {room.longDescription || room.description}
       </p>
 
       {/* Meta Specs Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 bg-white border border-border-custom p-6 shadow-sm">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 bg-white border border-[#E8DFD2] p-6 shadow-xs">
         <div className="flex flex-col items-center text-center">
-          <Users className="w-5 h-5 text-gold mb-2" />
-          <span className="text-[9px] uppercase tracking-widest text-muted font-bold">
+          <Users className="w-5 h-5 text-[#BA8B32] mb-2" />
+          <span className="text-[10px] uppercase tracking-widest text-[#7A6B61] font-bold">
             Capacity
           </span>
-          <span className="text-xs font-semibold text-dark mt-1">
+          <span className="text-[13px] font-bold text-[#2B2320] mt-1">
             Max {room.occupancy} Guests
           </span>
         </div>
 
-        <div className="flex flex-col items-center text-center border-l sm:border-l border-border-custom">
-          <Bed className="w-5 h-5 text-gold mb-2" />
-          <span className="text-[9px] uppercase tracking-widest text-muted font-bold">
+        <div className="flex flex-col items-center text-center border-l sm:border-l border-[#E8DFD2]">
+          <Bed className="w-5 h-5 text-[#BA8B32] mb-2" />
+          <span className="text-[10px] uppercase tracking-widest text-[#7A6B61] font-bold">
             Bed Type
           </span>
-          <span className="text-xs font-semibold text-dark mt-1">
+          <span className="text-[13px] font-bold text-[#2B2320] mt-1">
             {room.bedType}
           </span>
         </div>
 
-        <div className="flex flex-col items-center text-center border-t md:border-t-0 md:border-l border-border-custom pt-4 md:pt-0">
-          <Expand className="w-5 h-5 text-gold mb-2" />
-          <span className="text-[9px] uppercase tracking-widest text-muted font-bold">
+        <div className="flex flex-col items-center text-center border-t md:border-t-0 md:border-l border-[#E8DFD2] pt-4 md:pt-0">
+          <Expand className="w-5 h-5 text-[#BA8B32] mb-2" />
+          <span className="text-[10px] uppercase tracking-widest text-[#7A6B61] font-bold">
             Room Size
           </span>
-          <span className="text-xs font-semibold text-dark mt-1">
+          <span className="text-[13px] font-bold text-[#2B2320] mt-1">
             {room.size || "Standard"}
           </span>
         </div>
 
-        <div className="flex flex-col items-center text-center border-t md:border-t-0 border-l border-border-custom pt-4 md:pt-0">
-          <Eye className="w-5 h-5 text-gold mb-2" />
-          <span className="text-[9px] uppercase tracking-widest text-muted font-bold">
+        <div className="flex flex-col items-center text-center border-t md:border-t-0 border-l border-[#E8DFD2] pt-4 md:pt-0">
+          <Eye className="w-5 h-5 text-[#BA8B32] mb-2" />
+          <span className="text-[10px] uppercase tracking-widest text-[#7A6B61] font-bold">
             Room View
           </span>
-          <span className="text-xs font-semibold text-dark mt-1">
+          <span className="text-[13px] font-bold text-[#2B2320] mt-1">
             {room.view || "City View"}
           </span>
         </div>

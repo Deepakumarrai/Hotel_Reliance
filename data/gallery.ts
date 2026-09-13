@@ -108,10 +108,24 @@ export const galleryData: GalleryImage[] = [
   },
   {
     id: "g-rooms-3",
-    url: "/images/rooms/premium/main.jpg",
-    alt: "Triple Room Layout",
+    url: "/images/rooms/triple/1.png",
+    alt: "Triple Room Luxury Accommodation",
     category: "rooms",
-    title: "Triple Room Lounge"
+    title: "Triple Room Multi-Bed Suite"
+  },
+  {
+    id: "g-rooms-3-b",
+    url: "/images/rooms/triple/2.png",
+    alt: "Triple Room Arrangement",
+    category: "rooms",
+    title: "Triple Room Bed Arrangement"
+  },
+  {
+    id: "g-rooms-3-c",
+    url: "/images/rooms/triple/3.png",
+    alt: "Triple Room Sitting Area",
+    category: "rooms",
+    title: "Triple Room Sitting Space"
   },
   {
     id: "g-restaurant-1",

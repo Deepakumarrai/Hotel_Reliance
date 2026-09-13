@@ -72,8 +72,10 @@ export const roomsData: Room[] = [
     description: "Generous multi-bed accommodation with upscale decor and lounge seating for families and groups.",
     longDescription: "Our Triple Room offers expansive comfort for up to three guests, featuring plush bedding arrangements, a sitting lounge, panoramic window views, and full hospitality amenities for a memorable stay in Bokaro.",
     images: [
-      "/images/rooms/premium/main.jpg",
-      "/images/rooms/premium/room.jpg"
+      "/images/rooms/triple/1.png",
+      "/images/rooms/triple/2.png",
+      "/images/rooms/triple/3.png",
+      "/images/rooms/triple/4.png"
     ],
     amenities: [
       "King + Single Bed",

@@ -58,7 +58,7 @@ const officialCategories = [
     name: "Triple Room",
     badge: "TRIPLE",
     price: 3495.74,
-    image: "/images/rooms/premium/main.jpg",
+    image: "/images/rooms/triple/1.png",
     description: "Generous multi-bed accommodation with upscale decor and lounge seating for families and groups.",
     maxGuests: "3 Guests",
     bedding: "King + Single Bed",
