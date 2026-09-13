@@ -153,7 +153,7 @@ export function Navbar() {
             </span>
           </Link>
 
-          {/* Desktop Navigation links: Home, Rooms, About Us, Banquet, Restaurant + MORE (Enlarged by ~10% for crisp visibility) */}
+          {/* Desktop Navigation links: Home, Rooms, About Us, Banquet, Restaurant + MORE (Enlarged by 5% and golden on scroll) */}
           <nav className="hidden lg:flex items-center space-x-6 xl:space-x-8">
             {mainHeaderNavigation.map((item) => {
               const isActive = pathname === item.path;
@@ -161,13 +161,11 @@ export function Navbar() {
                 <Link
                   key={item.name}
                   href={item.path}
-                  className={`text-[13.5px] xl:text-[14px] font-bold tracking-[0.14em] uppercase transition-all duration-200 hover:text-[#BA8B32] relative py-2 whitespace-nowrap ${
-                    isActive
-                      ? "text-[#BA8B32] font-extrabold"
-                      : isScrolled
-                      ? "text-dark"
-                      : "text-white"
-                  }`}
+                  className={`font-bold tracking-[0.14em] uppercase transition-all duration-300 relative py-2 whitespace-nowrap inline-block ${
+                    isScrolled
+                      ? "text-[#BA8B32] hover:text-[#A67B22] text-[14.2px] xl:text-[14.7px] scale-[1.05] origin-center"
+                      : "text-white hover:text-[#BA8B32] text-[13.5px] xl:text-[14px] scale-100"
+                  } ${isActive ? "font-extrabold text-[#BA8B32]" : ""}`}
                 >
                   {item.name}
                   {isActive && (
@@ -182,13 +180,11 @@ export function Navbar() {
               <button
                 onClick={() => setIsMoreMenuOpen(!isMoreMenuOpen)}
                 onMouseEnter={() => setIsMoreMenuOpen(true)}
-                className={`text-[13.5px] xl:text-[14px] font-bold tracking-[0.14em] uppercase transition-all duration-200 hover:text-[#BA8B32] relative py-2 flex items-center space-x-1.5 cursor-pointer ${
-                  isMoreActive
-                    ? "text-[#BA8B32] font-extrabold"
-                    : isScrolled
-                    ? "text-dark"
-                    : "text-white"
-                }`}
+                className={`font-bold tracking-[0.14em] uppercase transition-all duration-300 relative py-2 flex items-center space-x-1.5 cursor-pointer ${
+                  isScrolled
+                    ? "text-[#BA8B32] hover:text-[#A67B22] text-[14.2px] xl:text-[14.7px] scale-[1.05] origin-center"
+                    : "text-white hover:text-[#BA8B32] text-[13.5px] xl:text-[14px] scale-100"
+                } ${isMoreActive ? "font-extrabold text-[#BA8B32]" : ""}`}
                 aria-expanded={isMoreMenuOpen}
                 aria-label="More navigation links"
               >
