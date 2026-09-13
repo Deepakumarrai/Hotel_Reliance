@@ -80,8 +80,8 @@ export const galleryData: GalleryImage[] = [
   },
   {
     id: "g-rooms-1",
-    url: "/images/rooms/deluxe/main.jpg",
-    alt: "Single Room Interior",
+    url: "/images/rooms/single/1.png",
+    alt: "Single Room Luxury Interior",
     category: "rooms",
     title: "Single Room Luxury Comfort"
   },

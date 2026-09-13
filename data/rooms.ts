@@ -8,8 +8,12 @@ export const roomsData: Room[] = [
     description: "Comfortable, well-appointed room with modern amenities, designed for solo corporate or leisure travelers.",
     longDescription: "Our Single Room offers a relaxing and cozy environment with premium bedding, a work desk, high-speed Wi-Fi, air conditioning, and 24/7 in-room dining service. Perfect for solo executives and visitors in Bokaro Steel City.",
     images: [
-      "/images/rooms/deluxe/main.jpg",
-      "/images/rooms/deluxe/room.jpg"
+      "/images/rooms/single/1.png",
+      "/images/rooms/single/2.png",
+      "/images/rooms/single/3.png",
+      "/images/rooms/single/4.png",
+      "/images/rooms/single/5.png",
+      "/images/rooms/single/6.png"
     ],
     amenities: [
       "Queen / Single Bed",

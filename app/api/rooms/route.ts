@@ -8,7 +8,7 @@ const officialCategories = [
     name: "Single Room",
     badge: "SINGLE",
     price: 2403.32,
-    image: "/images/rooms/deluxe/main.jpg",
+    image: "/images/rooms/single/1.png",
     description: "Comfortable, well-appointed room with modern amenities, designed for solo corporate or leisure travelers.",
     maxGuests: "1 Guest",
     bedding: "Single / Queen Bed",
