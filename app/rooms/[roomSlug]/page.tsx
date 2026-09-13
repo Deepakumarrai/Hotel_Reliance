@@ -218,20 +218,20 @@ export default async function RoomDetailPage({ params }: RoomPageProps) {
           </Container>
         </section>
       )}
-      {/* Mobile Sticky Bottom CTA Bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-30 lg:hidden bg-white/95 backdrop-blur-xl border-t border-[#E8E1D7] p-3 shadow-[0_-8px_25px_rgba(17,30,49,0.12)]">
+      {/* Mobile Sticky Bottom CTA Bar with iOS Safe Area support */}
+      <div className="fixed bottom-0 left-0 right-0 z-30 lg:hidden bg-white/95 backdrop-blur-xl border-t border-[#E8DFD2] px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] shadow-[0_-8px_25px_rgba(17,30,49,0.12)]">
         <div className="flex items-center justify-between max-w-md mx-auto">
           <div>
-            <span className="text-[10px] uppercase font-serif text-[#7A6B61] tracking-wider block">From</span>
+            <span className="text-[9.5px] uppercase tracking-wider text-[#7A6B61] font-bold block">All-Inclusive</span>
             <div className="flex items-baseline space-x-1">
-              <span className="text-base sm:text-lg font-serif font-bold text-[#111E31]">{formatPrice(room.price)}</span>
-              <span className="text-[10px] text-[#7A6B61]">/ night</span>
+              <span className="text-base sm:text-lg font-serif font-bold text-[#2B2320]">{formatPrice(room.price)}</span>
+              <span className="text-[10px] text-[#7A6B61] lowercase">/ night</span>
             </div>
           </div>
           <Link href={`/booking?room=${room.slug}`}>
-            <Button variant="primary" size="sm" className="uppercase tracking-wider font-serif text-xs px-5 py-2.5 bg-[#9E712E] hover:bg-[#B38E5D] text-white shadow-md">
-              Book Suite Now
-            </Button>
+            <button className="min-h-[44px] px-6 uppercase tracking-widest font-sans font-bold text-xs bg-[#2B2320] hover:bg-[#BA8B32] text-white shadow-md rounded-xs touch-press active:scale-[0.98] border border-[#2B2320] cursor-pointer flex items-center justify-center">
+              Book Now
+            </button>
           </Link>
         </div>
       </div>

@@ -21,10 +21,10 @@ export function BookingDateSelector({
   };
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 bg-white border border-border-custom p-6 shadow-sm">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-white border border-[#E8DFD2] p-4 sm:p-5 shadow-xs">
       <div className="space-y-1.5">
-        <label className="text-[10px] uppercase tracking-widest text-muted font-bold flex items-center">
-          <Calendar className="w-4 h-4 mr-2 text-primary" />
+        <label className="text-[10px] uppercase tracking-widest text-[#7A6B61] font-bold flex items-center">
+          <Calendar className="w-3.5 h-3.5 mr-2 text-[#BA8B32]" />
           Arrival Date (Check-In)
         </label>
         <input
@@ -32,19 +32,19 @@ export function BookingDateSelector({
           value={checkIn}
           min={getTodayString(0)}
           onChange={(e) => onChange("checkIn", e.target.value)}
-          className={`w-full bg-cream border p-3 text-xs focus:border-gold focus:outline-none transition-colors ${
-            errors?.checkIn ? "border-primary" : "border-border-custom"
+          className={`w-full bg-[#FAF8F5] border p-3.5 text-base sm:text-sm text-[#2B2320] focus:border-[#BA8B32] focus:outline-none transition-colors rounded-xs ${
+            errors?.checkIn ? "border-red-600 ring-1 ring-red-600" : "border-[#E8DFD2]"
           }`}
           required
         />
         {errors?.checkIn && (
-          <span className="text-[10px] text-primary block mt-1">{errors.checkIn}</span>
+          <span className="text-xs text-red-600 font-medium block mt-1">{errors.checkIn}</span>
         )}
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-[10px] uppercase tracking-widest text-muted font-bold flex items-center">
-          <Calendar className="w-4 h-4 mr-2 text-primary" />
+        <label className="text-[10px] uppercase tracking-widest text-[#7A6B61] font-bold flex items-center">
+          <Calendar className="w-3.5 h-3.5 mr-2 text-[#BA8B32]" />
           Departure Date (Check-Out)
         </label>
         <input
@@ -52,13 +52,13 @@ export function BookingDateSelector({
           value={checkOut}
           min={checkIn || getTodayString(1)}
           onChange={(e) => onChange("checkOut", e.target.value)}
-          className={`w-full bg-cream border p-3 text-xs focus:border-gold focus:outline-none transition-colors ${
-            errors?.checkOut ? "border-primary" : "border-border-custom"
+          className={`w-full bg-[#FAF8F5] border p-3.5 text-base sm:text-sm text-[#2B2320] focus:border-[#BA8B32] focus:outline-none transition-colors rounded-xs ${
+            errors?.checkOut ? "border-red-600 ring-1 ring-red-600" : "border-[#E8DFD2]"
           }`}
           required
         />
         {errors?.checkOut && (
-          <span className="text-[10px] text-primary block mt-1">{errors.checkOut}</span>
+          <span className="text-xs text-red-600 font-medium block mt-1">{errors.checkOut}</span>
         )}
       </div>
     </div>

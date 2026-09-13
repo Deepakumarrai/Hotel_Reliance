@@ -18,8 +18,14 @@ export function FloatingWhatsApp() {
   );
   const waLink = `https://wa.me/${hotelSettings.whatsappNumber}?text=${message}`;
 
+  const isRoomDetailPage = pathname?.startsWith("/rooms/") && pathname !== "/rooms";
+
   return (
-    <div className="fixed bottom-5 right-4 sm:bottom-6 sm:right-6 z-40 flex items-center group">
+    <div
+      className={`fixed ${
+        isRoomDetailPage ? "bottom-20 sm:bottom-6" : "bottom-5 sm:bottom-6"
+      } right-4 sm:right-6 z-40 flex items-center group transition-all duration-300`}
+    >
       {/* Floating Tooltip positioned to the left of the icon on the right side */}
       <span className="mr-3 bg-dark/95 backdrop-blur-md text-white text-[11px] tracking-wider uppercase font-bold py-1.5 px-3.5 border border-white/15 shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none rounded-sm hidden sm:block">
         Chat With Us
