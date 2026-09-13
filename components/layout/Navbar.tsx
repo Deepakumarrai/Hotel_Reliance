@@ -308,14 +308,16 @@ export function Navbar() {
                 </AnimatePresence>
               </div>
             ) : (
-              /* Unauthenticated: Sign In Button (Enlarged) */
+              /* Unauthenticated: Sign In Button */
               <button
                 onClick={() => openAuthModal("signin")}
-                className={`hidden sm:inline-flex items-center text-[13px] sm:text-[14px] font-bold tracking-wider uppercase px-3 py-2 transition-colors cursor-pointer ${
-                  isScrolled ? "text-dark hover:text-[#BA8B32]" : "text-white hover:text-[#BA8B32]"
+                className={`hidden sm:inline-flex items-center font-bold tracking-wider uppercase px-3 py-2 transition-all duration-300 cursor-pointer ${
+                  isScrolled
+                    ? "text-[#BA8B32] hover:text-[#A67B22] text-[14.2px] xl:text-[14.7px] scale-[1.05] origin-center"
+                    : "text-white hover:text-[#BA8B32] text-[13.5px] xl:text-[14px] scale-100"
                 }`}
               >
-                <UserIcon className="w-4 h-4 mr-1.5" />
+                <UserIcon className="w-4 h-4 mr-1.5 text-[#BA8B32]" />
                 Sign In
               </button>
             )}
@@ -333,8 +335,8 @@ export function Navbar() {
             {/* Mobile Menu Hamburger */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className={`p-2 lg:hidden transition-colors rounded-sm focus:outline-none ${
-                isScrolled ? "text-dark hover:text-primary" : "text-white hover:text-[#BA8B32]"
+              className={`p-2 lg:hidden transition-all duration-300 rounded-sm focus:outline-none ${
+                isScrolled ? "text-[#BA8B32] hover:text-[#A67B22] scale-[1.05]" : "text-white hover:text-[#BA8B32]"
               }`}
               aria-label="Toggle Navigation Menu"
               aria-expanded={isMobileMenuOpen}
