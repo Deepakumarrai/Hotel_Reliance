@@ -14,7 +14,7 @@ interface RoomCardProps {
 
 export function RoomCard({ room }: RoomCardProps) {
   const { getRoomPrice } = useRoomPricing();
-  const activePrice = getRoomPrice(room.slug) || room.price;
+  const activePrice = room.price || getRoomPrice(room.slug) || 2403.32;
   const displayPrice = activePrice ? `${formatPrice(activePrice)}` : "Price on request";
 
   return (
@@ -73,7 +73,7 @@ export function RoomCard({ room }: RoomCardProps) {
         {/* Action Link matching Offers & Restaurant */}
         <div className="pt-1">
           <span className="inline-flex items-center text-xs font-serif font-semibold text-[#9E712E] group-hover:translate-x-1 transition-transform">
-            Explore Suite & Complete Tariffs <span className="ml-1 text-[#C5A880]">»</span>
+            View Room Details & Book Now <span className="ml-1 text-[#C5A880]">»</span>
           </span>
         </div>
       </div>

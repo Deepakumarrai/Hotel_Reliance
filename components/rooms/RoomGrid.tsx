@@ -14,42 +14,7 @@ interface RoomGridProps {
 
 export function RoomGrid({ rooms: initialRooms }: RoomGridProps) {
   const [activeFilter, setActiveFilter] = useState<"all" | "single" | "double" | "triple">("all");
-  const defaultRooms = roomsData.filter((r) => r.featured);
-  const [rooms, setRooms] = useState<Room[]>(initialRooms && initialRooms.length > 0 ? initialRooms : defaultRooms);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    async function loadDbRooms() {
-      try {
-        const res = await fetch("/api/rooms");
-        const data = await res.json();
-        if (data.success && Array.isArray(data.data) && data.data.length > 0) {
-          const mapped: Room[] = data.data.map((cat: any) => {
-            const slug = cat.slug || cat.id;
-            const officialPrice = getRoomPrice(slug);
-            return {
-              id: cat.id || slug,
-              slug: slug,
-              name: cat.name,
-              description: cat.description || "",
-              longDescription: cat.description || "",
-              images: cat.images && cat.images.length > 0 ? cat.images : [cat.image || `/images/rooms/${slug}/main.jpg`],
-              amenities: cat.amenities || [],
-              occupancy: parseInt(cat.maxGuests || "2") || 2,
-              bedType: cat.bedding || "King Bed",
-              price: officialPrice || Number(cat.price) || 2403.32,
-              size: cat.roomArea || "300 sq. ft.",
-              view: "City View",
-            };
-          });
-          setRooms(mapped);
-        }
-      } catch (err) {
-        // Keep default rooms
-      }
-    }
-    loadDbRooms();
-  }, []);
+  const rooms = initialRooms && initialRooms.length > 0 ? initialRooms : roomsData;
 
   const filteredRooms = rooms.filter((room) => {
     if (activeFilter === "single") return room.occupancy === 1 || room.slug === "single";
