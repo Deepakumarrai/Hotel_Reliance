@@ -45,21 +45,12 @@ export function validateBooking(
         errors.checkOut = "Check-out date must be after check-in date";
       }
     }
+    if (!state.selectedRoomId) {
+      errors.selectedRoomId = "Please select a room to proceed";
+    }
   }
 
   if (currentStep >= 2) {
-    if (state.adults < 1) {
-      errors.adults = "At least 1 adult is required";
-    }
-  }
-
-  if (currentStep >= 3) {
-    if (!state.selectedRoomId) {
-      errors.selectedRoomId = "Please select a room to continue";
-    }
-  }
-
-  if (currentStep >= 4) {
     if (!state.guest) {
       errors.guest = "Guest details are missing";
     } else {

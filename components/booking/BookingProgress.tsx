@@ -7,10 +7,10 @@ interface BookingProgressProps {
 }
 
 const steps = [
-  { step: 1, name: "Stay Details" },
-  { step: 2, name: "Choose Room" },
-  { step: 3, name: "Guest Details" },
-  { step: 4, name: "Confirm" }
+  { step: 1, name: "Select Room" },
+  { step: 2, name: "Guest Details" },
+  { step: 3, name: "Payment" },
+  { step: 4, name: "Confirmation" }
 ];
 
 export function BookingProgress({ currentStep }: BookingProgressProps) {
