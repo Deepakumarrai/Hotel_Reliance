@@ -1,13 +1,93 @@
 import { NextResponse } from "next/server";
 import { forwardToBackend } from "@/lib/admin/backendClient";
 
+const officialCategories = [
+  {
+    id: "single-room",
+    slug: "single",
+    name: "Single Room",
+    badge: "SINGLE",
+    price: 2403.32,
+    image: "/images/rooms/deluxe/main.jpg",
+    description: "Comfortable, well-appointed room with modern amenities, designed for solo corporate or leisure travelers.",
+    maxGuests: "1 Guest",
+    bedding: "Single / Queen Bed",
+    roomArea: "240 sq. ft.",
+    amenitiesCount: 9,
+    amenities: [
+      "Queen / Single Bed",
+      "High-Speed Wi-Fi",
+      "Air Conditioning",
+      "Flat Screen TV",
+      "Tea/Coffee Maker",
+      "Mini Fridge",
+      "24/7 Room Service",
+      "Electronic Safe",
+      "Complimentary Bottled Water"
+    ],
+    moreAmenitiesCount: 3,
+  },
+  {
+    id: "double-room",
+    slug: "double",
+    name: "Double Room",
+    badge: "DOUBLE",
+    price: 2731.05,
+    image: "/images/rooms/executive/main.jpg",
+    description: "Spacious layout with a plush king bed and executive amenities for couples and business professionals.",
+    maxGuests: "2 Guests",
+    bedding: "King Bed",
+    roomArea: "320 sq. ft.",
+    amenitiesCount: 9,
+    amenities: [
+      "King Size Bed",
+      "High-Speed Wi-Fi",
+      "Air Conditioning",
+      "Smart LED TV",
+      "Executive Work Desk",
+      "Tea/Coffee Maker",
+      "Mini Fridge",
+      "Luxury Toiletries",
+      "24/7 Room Service"
+    ],
+    moreAmenitiesCount: 3,
+  },
+  {
+    id: "triple-room",
+    slug: "triple",
+    name: "Triple Room",
+    badge: "TRIPLE",
+    price: 3495.74,
+    image: "/images/rooms/premium/main.jpg",
+    description: "Generous multi-bed accommodation with upscale decor and lounge seating for families and groups.",
+    maxGuests: "3 Guests",
+    bedding: "King + Single Bed",
+    roomArea: "420 sq. ft.",
+    amenitiesCount: 8,
+    amenities: [
+      "King + Single Bed",
+      "High-Speed Wi-Fi",
+      "Climate Control",
+      "55-inch Smart TV",
+      "In-room Lounge Seating",
+      "Premium Tea/Coffee Setup",
+      "Mini Fridge",
+      "24/7 Room Service"
+    ],
+    moreAmenitiesCount: 2,
+  },
+];
+
 export async function GET() {
   try {
     const res = await forwardToBackend("/admin/content/room_categories", { method: "GET" });
-    const categories = res.data?.content?.categories || [];
-    return NextResponse.json({ success: true, data: categories });
+    const categories = res.data?.content?.categories;
+    if (Array.isArray(categories) && categories.length > 0 && categories.some(c => c.slug === "single" || c.name === "Single Room")) {
+      return NextResponse.json({ success: true, data: categories });
+    }
+    return NextResponse.json({ success: true, data: officialCategories });
   } catch (err: any) {
-    return NextResponse.json({ success: false, error: err.message, data: [] }, { status: 500 });
+    return NextResponse.json({ success: true, data: officialCategories });
   }
 }
 

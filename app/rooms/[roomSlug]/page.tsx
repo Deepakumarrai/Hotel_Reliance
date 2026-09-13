@@ -21,14 +21,27 @@ interface RoomPageProps {
 }
 
 export function generateStaticParams() {
-  return roomsData.map((room) => ({
-    roomSlug: room.slug,
-  }));
+  return [
+    { roomSlug: "single" },
+    { roomSlug: "double" },
+    { roomSlug: "triple" },
+    { roomSlug: "deluxe" },
+    { roomSlug: "executive" },
+    { roomSlug: "premium" },
+    { roomSlug: "family" },
+  ];
 }
 
 export async function generateMetadata({ params }: RoomPageProps): Promise<Metadata> {
   const { roomSlug } = await params;
-  const room = roomsData.find((r) => r.slug === roomSlug);
+  const normalized = roomSlug.toLowerCase();
+  const canonical =
+    normalized === "deluxe" ? "single" :
+    normalized === "executive" ? "double" :
+    (normalized === "premium" || normalized === "family") ? "triple" :
+    normalized;
+
+  const room = roomsData.find((r) => r.slug === canonical || r.slug === roomSlug || r.id === roomSlug);
   if (!room) {
     return { title: "Room Not Found | Hotel Reliance" };
   }
@@ -67,7 +80,14 @@ export async function generateMetadata({ params }: RoomPageProps): Promise<Metad
 
 export default async function RoomDetailPage({ params }: RoomPageProps) {
   const { roomSlug } = await params;
-  const room = roomsData.find((r) => r.slug === roomSlug);
+  const normalized = roomSlug.toLowerCase();
+  const canonical =
+    normalized === "deluxe" ? "single" :
+    normalized === "executive" ? "double" :
+    (normalized === "premium" || normalized === "family") ? "triple" :
+    normalized;
+
+  const room = roomsData.find((r) => r.slug === canonical || r.slug === roomSlug || r.id === roomSlug);
 
   if (!room) {
     notFound();
