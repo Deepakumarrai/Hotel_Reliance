@@ -10,7 +10,7 @@ export const faqsData: FAQ[] = [
   {
     id: "faq-2",
     question: "How can I book a room directly through the website?",
-    answer: "You can easily select your stay dates and preferred suite (Deluxe, Executive, Premium, or Family) on our Rooms or Booking page, click 'Book Now', sign in or register with your details, and complete your reservation. No online pre-payment is mandatory—you can settle your bill at the front desk upon check-in.",
+    answer: "You can easily select your stay dates and preferred accommodation (Single Room, Double Room, or Triple Room) on our Rooms or Booking page, click 'Book Now', sign in or enter your details, and complete your reservation. No online pre-payment is mandatory—you can settle your bill at the front desk upon check-in.",
     category: "Booking & Tariff"
   },
   {

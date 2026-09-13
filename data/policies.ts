@@ -45,9 +45,8 @@ export const policiesData: PolicySection[] = [
     summary: "Guidelines for families traveling with children and additional guests.",
     rules: [
       "Up to two children under 6 years of age can stay complimentary sharing existing parent bedding.",
-      "Children aged 6 to 12 years are charged at ₹500/night for extra mattress/bedding.",
-      "Guests aged 12 years and above are treated as adult occupants and require an extra rollaway bed at ₹800/night.",
-      "Maximum occupancy per room category: Deluxe (2 Adults + 1 Child), Executive (2 Adults + 1 Child), Premium (2 Adults + 1 Child), Family Room (4 Adults + 1 Extra Bed)."
+      "Extra bed or additional guest services requested via Special Request are handled at ₹300/night directly with the hotel.",
+      "Maximum occupancy per room category: Single Room (1 Guest), Double Room (2 Guests), Triple Room (3 Guests)."
     ]
   },
   {
@@ -57,7 +56,7 @@ export const policiesData: PolicySection[] = [
     summary: "Transparent billing, payment options, and tax compliance.",
     rules: [
       "We accept Cash, UPI (Google Pay, PhonePe, Paytm), Major Credit/Debit Cards (Visa, MasterCard, RuPay), and NEFT/IMPS corporate bank transfers.",
-      "Room tariffs displayed on the website are exclusive of applicable Goods & Services Tax (GST: 12% for tariffs up to ₹7,500/night).",
+      "Room tariffs displayed on the website represent the complete final payable amount per night.",
       "A preliminary security deposit or card pre-authorization may be requested at check-in for incidentals and room dining service."
     ]
   },

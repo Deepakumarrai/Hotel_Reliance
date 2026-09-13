@@ -81,16 +81,16 @@ export const galleryData: GalleryImage[] = [
   {
     id: "g-rooms-1",
     url: "/images/rooms/deluxe/main.jpg",
-    alt: "Deluxe Room Interior",
+    alt: "Single Room Interior",
     category: "rooms",
-    title: "Deluxe Room Luxury Comfort"
+    title: "Single Room Luxury Comfort"
   },
   {
     id: "g-rooms-2",
     url: "/images/rooms/premium/main.jpg",
-    alt: "Premium Suite Layout",
+    alt: "Triple Room Layout",
     category: "rooms",
-    title: "Premium Suite Lounge"
+    title: "Triple Room Lounge"
   },
   {
     id: "g-restaurant-1",

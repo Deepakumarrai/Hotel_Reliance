@@ -16,18 +16,18 @@ export const metadata: Metadata = {
     "Rooms in Bokaro",
     "Hotel Reliance Rooms",
     "Bokaro Hotel Booking",
-    "Deluxe Room Bokaro",
-    "Executive Suite Bokaro",
-    "Family Suite Hotel Bokaro",
+    "Single Room Bokaro",
+    "Double Room Bokaro",
+    "Triple Room Bokaro",
     "Hotel Room Tariff Bokaro",
   ],
   alternates: {
     canonical: "https://www.hotelreliance.com/rooms",
   },
   openGraph: {
-    title: "Luxury Rooms & Suites | Hotel Reliance Bokaro",
+    title: "Luxury Rooms & Accommodations | Hotel Reliance Bokaro",
     description:
-      "Explore deluxe, executive, premium, and family guest rooms in Bokaro Steel City. Enjoy top amenities, elegant interiors, and quality room service.",
+      "Explore Single Room, Double Room, and Triple Room accommodations in Bokaro Steel City. Enjoy top amenities, elegant interiors, and quality room service.",
     url: "https://www.hotelreliance.com/rooms",
     type: "website",
     images: [
@@ -35,14 +35,14 @@ export const metadata: Metadata = {
         url: "/images/rooms/executive/main.jpg",
         width: 1200,
         height: 800,
-        alt: "Hotel Reliance Rooms & Suites in Bokaro Steel City",
+        alt: "Hotel Reliance Rooms in Bokaro Steel City",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Luxury Rooms & Suites | Hotel Reliance Bokaro",
-    description: "Deluxe, Executive, and Premium suites in Bokaro Steel City.",
+    title: "Luxury Rooms & Accommodations | Hotel Reliance Bokaro",
+    description: "Single Room, Double Room, and Triple Room accommodations in Bokaro Steel City.",
     images: ["/images/rooms/executive/main.jpg"],
   },
 };

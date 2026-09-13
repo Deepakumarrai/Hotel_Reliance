@@ -52,9 +52,9 @@ export function RoomGrid({ rooms: initialRooms }: RoomGridProps) {
   }, []);
 
   const filteredRooms = rooms.filter((room) => {
-    if (activeFilter === "single") return room.occupancy === 1 || room.slug === "single" || room.slug === "deluxe";
-    if (activeFilter === "double") return room.occupancy === 2 || room.slug === "double" || room.slug === "executive";
-    if (activeFilter === "triple") return room.occupancy >= 3 || room.slug === "triple" || room.slug === "premium" || room.slug === "family";
+    if (activeFilter === "single") return room.occupancy === 1 || room.slug === "single";
+    if (activeFilter === "double") return room.occupancy === 2 || room.slug === "double";
+    if (activeFilter === "triple") return room.occupancy >= 3 || room.slug === "triple";
     return true;
   });
 
