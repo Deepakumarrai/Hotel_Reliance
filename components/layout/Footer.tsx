@@ -309,18 +309,33 @@ export function Footer() {
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono uppercase tracking-wider text-[#B0A79E]">
-            <Link href="/policies" className="hover:text-[#D8B875] transition-colors">
-              Policies
-            </Link>
-            <span>•</span>
-            <Link href="/privacy-policy" className="hover:text-[#D8B875] transition-colors">
-              Privacy
-            </Link>
-            <span>•</span>
-            <Link href="/terms-and-conditions" className="hover:text-[#D8B875] transition-colors">
-              Terms
-            </Link>
+          {/* Designer Credit & Legal Links */}
+          <div className="flex flex-col md:items-end gap-2 text-center md:text-right">
+            <div className="flex flex-wrap items-center justify-center md:justify-end gap-3 text-xs font-mono uppercase tracking-wider text-[#B0A79E]">
+              <Link href="/policies" className="hover:text-[#D8B875] transition-colors">
+                Policies
+              </Link>
+              <span>•</span>
+              <Link href="/privacy-policy" className="hover:text-[#D8B875] transition-colors">
+                Privacy
+              </Link>
+              <span>•</span>
+              <Link href="/terms-and-conditions" className="hover:text-[#D8B875] transition-colors">
+                Terms
+              </Link>
+            </div>
+
+            <p className="text-[11px] font-sans tracking-wide text-[#8C847C]">
+              Designed by{" "}
+              <a
+                href="https://hypekimedia.myquro.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#C5A880] hover:text-[#D8B875] font-medium transition-colors underline underline-offset-2"
+              >
+                hypekimedia.myquro.com
+              </a>
+            </p>
           </div>
         </div>
       </Container>
