@@ -5,6 +5,7 @@ export interface GuestDetails {
   email: string;
   phone: string;
   specialRequests?: string;
+  promoCode?: string;
 }
 
 export interface BookingState {
@@ -13,6 +14,7 @@ export interface BookingState {
   adults: number;
   children: number;
   selectedRoomId: string | null;
+  promoCode?: string;
   guest: GuestDetails | null;
 }
 

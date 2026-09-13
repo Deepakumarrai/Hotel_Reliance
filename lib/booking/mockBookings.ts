@@ -8,17 +8,17 @@ export const INITIAL_MOCK_BOOKINGS: Booking[] = [
     checkIn: "2026-09-18",
     checkOut: "2026-09-21",
     nights: 3,
-    adults: 2,
+    adults: 1,
     children: 0,
-    room: roomsData[0], // Deluxe Room
+    room: roomsData[0], // Single Room
     guest: {
       name: "Dr. Rajesh Sharma",
       email: "demo@example.com",
       phone: "+91 92629 97777",
-      specialRequests: "Quiet corner room on higher floor if available, extra feather pillows."
+      specialRequests: "Quiet corner room on higher floor if available."
     },
-    totalPrice: 8397,
-    estimatedTotal: "₹8,397 (₹2,499/night × 3 + 12% GST)",
+    totalPrice: 7209.96,
+    estimatedTotal: "₹7,209.96 (₹2,403.32/night × 3)",
     status: "confirmed",
     createdAt: "2026-08-28T09:15:00Z",
     paymentMethod: "Pay at Check-In"
@@ -30,16 +30,16 @@ export const INITIAL_MOCK_BOOKINGS: Booking[] = [
     checkOut: "2026-07-13",
     nights: 3,
     adults: 2,
-    children: 1,
-    room: roomsData[1], // Executive Room
+    children: 0,
+    room: roomsData[1], // Double Room
     guest: {
       name: "Dr. Rajesh Sharma",
       email: "demo@example.com",
       phone: "+91 92629 97777",
       specialRequests: "Late check-in requested."
     },
-    totalPrice: 10077,
-    estimatedTotal: "₹10,077 (₹2,999/night × 3 + 12% GST)",
+    totalPrice: 8193.15,
+    estimatedTotal: "₹8,193.15 (₹2,731.05/night × 3)",
     status: "completed",
     createdAt: "2026-06-25T11:45:00Z",
     paymentMethod: "Settled at Check-Out"

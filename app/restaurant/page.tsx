@@ -8,6 +8,7 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Button } from "@/components/ui/Button";
 import { HomeCTA } from "@/components/home/HomeCTA";
 import { hotelData } from "@/data/hotel";
+import { RestaurantPageClient } from "@/components/restaurant/RestaurantPageClient";
 
 export const metadata: Metadata = {
   title: "Kwality Restaurant & Fine Dining — North Indian, Tandoor & Chinese",
@@ -379,6 +380,9 @@ export default function RestaurantPage() {
           </div>
         </Container>
       </section>
+
+      {/* Interactive Reservation Bar & Digital A La Carte Menu */}
+      <RestaurantPageClient phone={hotelData.phones[0]} />
 
       {/* Dining details */}
       <section className="py-20 bg-[#FAF8F5] border-t border-[#E8E1D7] text-center">

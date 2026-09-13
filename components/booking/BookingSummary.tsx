@@ -103,36 +103,47 @@ export function BookingSummary({ state, selectedRoom }: BookingSummaryProps) {
         <div className="border-t border-border-custom pt-4 space-y-2">
           <div className="flex items-center space-x-2 text-dark font-semibold">
             <Wallet className="w-4 h-4 text-gold" />
-            <span className="text-[10px] uppercase tracking-wider text-gold font-bold">Estimated Bill Breakdown</span>
+            <span className="text-[10px] uppercase tracking-wider text-gold font-bold">Total Tariff & Bill Summary</span>
           </div>
 
-          {calculation && nights > 0 ? (
-            <div className="space-y-1.5 pt-1 text-[11px]">
-              <div className="flex justify-between text-muted">
-                <span>Room Tariff ({nights} {nights === 1 ? "night" : "nights"}):</span>
-                <span className="font-medium text-dark">{formatPrice(calculation.baseAmount - calculation.extraGuestAmount)}</span>
-              </div>
-              {calculation.extraGuestAmount > 0 && (
+          {calculation && nights > 0 ? (() => {
+            const activePromo = (state.promoCode || state.guest?.promoCode || "").toUpperCase().trim();
+            let discountPercent = 0;
+            if (activePromo === "RELIANCE15" || activePromo === "LUXURY15") discountPercent = 15;
+            else if (activePromo === "WELCOME10" || activePromo === "KWALITY10" || activePromo === "CORPSTAY" || activePromo === "WEEKENDSPL") discountPercent = 10;
+            else if (activePromo === "LUXURY20") discountPercent = 20;
+
+            const roomSubtotal = calculation.baseAmount;
+            const discountAmount = discountPercent > 0 ? Math.round((roomSubtotal * discountPercent) / 100 * 100) / 100 : 0;
+            const finalTotal = Math.max(0, Math.round((roomSubtotal - discountAmount) * 100) / 100);
+
+            return (
+              <div className="space-y-2 pt-1 text-[11px]">
                 <div className="flex justify-between text-muted">
-                  <span>Extra Adult Surcharge:</span>
-                  <span className="font-medium text-dark">{formatPrice(calculation.extraGuestAmount)}</span>
+                  <span>Room Tariff ({nights} {nights === 1 ? "night" : "nights"}):</span>
+                  <span className="font-semibold text-dark">{formatPrice(roomSubtotal)}</span>
                 </div>
-              )}
-              <div className="flex justify-between text-muted">
-                <span>Estimated GST ({calculation.taxRate}%):</span>
-                <span className="font-medium text-dark">{formatPrice(calculation.taxAmount)}</span>
+                {discountAmount > 0 && (
+                  <div className="flex justify-between text-emerald-700 font-semibold bg-emerald-50 px-2 py-1 border border-emerald-200">
+                    <span className="flex items-center">
+                      <Sparkles className="w-3 h-3 mr-1 text-emerald-600" />
+                      Privilege Savings ({activePromo} - {discountPercent}%):
+                    </span>
+                    <span>-{formatPrice(discountAmount)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-xs font-bold text-dark border-t border-border-custom/80 pt-2 mt-1">
+                  <span>Total Payable:</span>
+                  <span className="text-base font-serif text-primary font-bold">{formatPrice(finalTotal)}</span>
+                </div>
+                <span className="text-[9.5px] text-emerald-700 font-semibold block pt-0.5">
+                  ✓ Final all-inclusive payable amount (No hidden charges)
+                </span>
               </div>
-              <div className="flex justify-between text-xs font-bold text-dark border-t border-border-custom/80 pt-2 mt-2">
-                <span>Total Payable:</span>
-                <span className="text-sm font-serif text-primary font-bold">{formatPrice(calculation.totalAmount)}</span>
-              </div>
-              <span className="text-[9px] text-muted italic block pt-0.5">
-                Pay upon arrival at front desk.
-              </span>
-            </div>
-          ) : (
+            );
+          })() : (
             <div className="text-muted text-[11px] pt-1 italic">
-              Select room & stay dates to see bill estimate.
+              Select suite & stay dates to see total.
             </div>
           )}
         </div>

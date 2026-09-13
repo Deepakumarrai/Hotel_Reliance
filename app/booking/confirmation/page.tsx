@@ -137,14 +137,14 @@ export default function BookingConfirmationPage() {
           <div className="bg-cream p-5 border border-border-custom flex items-center justify-between text-xs sm:text-sm">
             <div className="space-y-1">
               <span className="text-[10px] uppercase font-bold tracking-widest text-muted block">
-                Total Estimated Bill
+                Total Final Tariff (All-Inclusive)
               </span>
               <span className="text-2xl font-serif text-primary font-bold">
                 {booking.totalPrice ? formatPrice(booking.totalPrice) : "Price on request"}
               </span>
             </div>
-            <div className="text-right text-[10px] text-muted italic leading-relaxed max-w-[200px]">
-              *Payable at the front lobby desk upon arrival. Taxes excluded.
+            <div className="text-right text-[10px] text-emerald-800 font-semibold italic leading-relaxed max-w-[200px]">
+              ✓ All-inclusive final payable amount at check-in.
             </div>
           </div>
 

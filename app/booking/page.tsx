@@ -17,6 +17,8 @@ import { roomsData } from "@/data/rooms";
 import { validateBooking } from "@/lib/validations";
 import { useAuth } from "@/hooks/useAuth";
 import { api } from "@/lib/api";
+import { formatPrice } from "@/lib/utils";
+import { getRoomPrice } from "@/hooks/useRoomPricing";
 
 function BookingContent() {
   const router = useRouter();
@@ -72,6 +74,7 @@ function BookingContent() {
     const adultsParam = searchParams.get("adults");
     const childrenParam = searchParams.get("children");
     const roomSlugParam = searchParams.get("room");
+    const offerParam = searchParams.get("offer") || searchParams.get("promo") || searchParams.get("code");
 
     setBookingState((prev) => {
       const updated = { ...prev };
@@ -79,6 +82,13 @@ function BookingContent() {
       if (checkOutParam) updated.checkOut = checkOutParam;
       if (adultsParam) updated.adults = Math.max(1, parseInt(adultsParam) || 2);
       if (childrenParam) updated.children = Math.max(0, parseInt(childrenParam) || 0);
+      if (offerParam) {
+        const code = offerParam.toUpperCase().trim();
+        updated.promoCode = code;
+        if (updated.guest) {
+          updated.guest = { ...updated.guest, promoCode: code };
+        }
+      }
 
       if (roomSlugParam) {
         const found = roomsData.find((r) => r.slug === roomSlugParam);
@@ -259,9 +269,19 @@ function BookingContent() {
       const diffTime = Math.abs(checkOutDate.getTime() - checkInDate.getTime());
       const nights = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
 
-      // Persist to live PostgreSQL database via backend API
+      // Persist to live database via backend API
       let bookingId = `HR-${Math.floor(100000 + Math.random() * 900000)}`;
-      let finalTotal = selectedRoom.grandTotal || (selectedRoom.price ? Math.round(selectedRoom.price * nights * 1.12) : null);
+      const activeRoomPrice = selectedRoom.price || getRoomPrice(selectedRoom.slug) || 2403.32;
+      const rawSubtotal = Math.round(activeRoomPrice * nights * 100) / 100;
+
+      const activePromo = (bookingState.promoCode || bookingState.guest?.promoCode || "").toUpperCase().trim();
+      let discountPercent = 0;
+      if (activePromo === "RELIANCE15" || activePromo === "LUXURY15") discountPercent = 15;
+      else if (activePromo === "WELCOME10" || activePromo === "KWALITY10" || activePromo === "CORPSTAY" || activePromo === "WEEKENDSPL") discountPercent = 10;
+      else if (activePromo === "LUXURY20") discountPercent = 20;
+
+      const discountAmount = discountPercent > 0 ? Math.round((rawSubtotal * discountPercent) / 100 * 100) / 100 : 0;
+      let finalTotal = Math.max(0, Math.round((rawSubtotal - discountAmount) * 100) / 100);
       let allocatedRoomNumber: string | undefined = undefined;
 
       try {
@@ -275,15 +295,17 @@ function BookingContent() {
             name: bookingState.guest?.name || user?.name || "Guest",
             email: bookingState.guest?.email || user?.email || "",
             phone: bookingState.guest?.phone || user?.phone || "",
-            specialRequests: bookingState.guest?.specialRequests || ""
+            specialRequests: bookingState.guest?.specialRequests || "",
+            promoCode: bookingState.promoCode || bookingState.guest?.promoCode || undefined
           },
+          promoCode: bookingState.promoCode || bookingState.guest?.promoCode || undefined,
           paymentMethod: "OFFLINE"
         });
         if (liveRes.booking?.id) {
           bookingId = liveRes.booking.id;
         }
-        if (liveRes.booking?.totalAmount || liveRes.booking?.grandTotal) {
-          finalTotal = liveRes.booking.totalAmount || liveRes.booking.grandTotal;
+        if (liveRes.booking?.totalAmount) {
+          finalTotal = liveRes.booking.totalAmount;
         }
         if (liveRes.booking?.roomNumber) {
           allocatedRoomNumber = liveRes.booking.roomNumber;
@@ -305,6 +327,7 @@ function BookingContent() {
         children: bookingState.children,
         room: {
           ...selectedRoom,
+          price: activeRoomPrice,
           roomNumber: allocatedRoomNumber
         },
         roomNumber: allocatedRoomNumber,
@@ -315,9 +338,7 @@ function BookingContent() {
           specialRequests: bookingState.guest?.specialRequests || ""
         },
         totalPrice: finalTotal,
-        estimatedTotal: finalTotal
-          ? `₹${finalTotal.toLocaleString("en-IN")} (incl. 12% GST)`
-          : "Price on Request",
+        estimatedTotal: finalTotal ? formatPrice(finalTotal) : "Price on Request",
         status: "confirmed",
         createdAt: new Date().toISOString(),
         paymentMethod: "Pay at Check-In (Front Desk)"

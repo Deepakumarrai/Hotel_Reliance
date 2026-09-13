@@ -346,38 +346,20 @@ export function AvailableRooms({
                     </div>
                   )}
 
-                  {/* Rate structure breakdown */}
-                  {rules && (
-                    <div className="bg-cream/70 border border-border-custom p-2 rounded-xs text-[10px] space-y-1">
-                      <div className="flex items-center justify-between text-muted">
-                        <span>Weekend Rate (Fri–Sun):</span>
-                        <span className="font-semibold text-dark">{formatPrice(rules.weekend)}/nt</span>
-                      </div>
-                      <div className="flex items-center justify-between text-muted">
-                        <span className="text-amber-800 font-medium">Festive Peak Surge:</span>
-                        <span className="font-bold text-amber-800">{formatPrice(rules.peak)}/nt</span>
-                      </div>
-                      <div className="flex items-center justify-between text-muted">
-                        <span>Extra Bed Supplement:</span>
-                        <span className="font-semibold text-dark">+{formatPrice(rules.extraBed)}/nt</span>
-                      </div>
-                    </div>
-                  )}
-
                   {/* Dynamic Pricing and Action Row */}
                   <div className="pt-2 border-t border-border-custom flex items-end justify-between gap-2">
                     <div className="flex flex-col">
                       <span className="text-[9px] uppercase tracking-widest text-muted font-bold block">
-                        {nights > 1 ? `Stay Total (${nights} Nights)` : "Rate per Night"}
+                        {nights > 1 ? `Stay Total (${nights} Nights)` : "Final Price"}
                       </span>
                       <span className="text-base font-bold text-primary block mt-0.5">
-                        {nights > 1 ? formatPrice(totalStayBase) : displayNightly}
+                        {nights > 1 ? formatPrice(activePrice * nights) : displayNightly}
                         {nights === 1 && (
                           <span className="text-[10px] font-normal text-muted"> / night</span>
                         )}
                       </span>
-                      <span className="text-[9px] text-muted">
-                        + {formatPrice(totalStayTax)} (12% GST) = <strong className="text-dark font-semibold">{formatPrice(totalStayGrand)}</strong>
+                      <span className="text-[9.5px] text-emerald-700 font-semibold">
+                        ✓ All-Inclusive Final Price
                       </span>
                     </div>
 

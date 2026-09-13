@@ -1,5 +1,6 @@
 import React from "react";
 import { Hero } from "@/components/home/Hero";
+import { BookingWidget } from "@/components/home/BookingWidget";
 import { HotelIntroduction } from "@/components/home/HotelIntroduction";
 import { HotelStats } from "@/components/home/HotelStats";
 import { FeaturedRooms } from "@/components/home/FeaturedRooms";
@@ -15,6 +16,7 @@ export default function Home() {
   return (
     <>
       <Hero />
+      <BookingWidget />
       <HotelIntroduction />
       <HotelStats />
       <FeaturedRooms />

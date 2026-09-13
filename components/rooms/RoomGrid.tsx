@@ -5,14 +5,17 @@ import { Room } from "@/types";
 import { RoomCard } from "./RoomCard";
 import { Button } from "@/components/ui/Button";
 
+import { roomsData } from "@/data/rooms";
+
 interface RoomGridProps {
   rooms?: Room[];
 }
 
 export function RoomGrid({ rooms: initialRooms }: RoomGridProps) {
-  const [activeFilter, setActiveFilter] = useState<"all" | "couple" | "family">("all");
-  const [rooms, setRooms] = useState<Room[]>(initialRooms || []);
-  const [loading, setLoading] = useState(!initialRooms || initialRooms.length === 0);
+  const [activeFilter, setActiveFilter] = useState<"all" | "single" | "double" | "triple">("all");
+  const defaultRooms = roomsData.filter((r) => r.featured);
+  const [rooms, setRooms] = useState<Room[]>(initialRooms && initialRooms.length > 0 ? initialRooms : defaultRooms);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     async function loadDbRooms() {
@@ -28,26 +31,25 @@ export function RoomGrid({ rooms: initialRooms }: RoomGridProps) {
             longDescription: cat.description || "",
             images: cat.images && cat.images.length > 0 ? cat.images : [cat.image || `/images/rooms/${cat.slug || cat.id}/main.jpg`],
             amenities: cat.amenities || [],
-            occupancy: parseInt(cat.maxGuests || "2") || (cat.maxGuests?.includes("4") ? 4 : 2),
+            occupancy: parseInt(cat.maxGuests || "2") || 2,
             bedType: cat.bedding || "King Bed",
-            price: Number(cat.price) || 2499,
+            price: Number(cat.price) || 2403.32,
             size: cat.roomArea || "300 sq. ft.",
             view: "City View",
           }));
           setRooms(mapped);
         }
       } catch (err) {
-        console.error("Failed to load room categories from database:", err);
-      } finally {
-        setLoading(false);
+        // Keep default rooms
       }
     }
     loadDbRooms();
   }, []);
 
   const filteredRooms = rooms.filter((room) => {
-    if (activeFilter === "couple") return room.occupancy === 2;
-    if (activeFilter === "family") return room.occupancy >= 4;
+    if (activeFilter === "single") return room.occupancy === 1 || room.slug === "single" || room.slug === "deluxe";
+    if (activeFilter === "double") return room.occupancy === 2 || room.slug === "double" || room.slug === "executive";
+    if (activeFilter === "triple") return room.occupancy >= 3 || room.slug === "triple" || room.slug === "premium" || room.slug === "family";
     return true;
   });
 
@@ -60,16 +62,17 @@ export function RoomGrid({ rooms: initialRooms }: RoomGridProps) {
             CURATED SPACES
           </span>
           <h2 className="text-xl sm:text-2xl font-serif text-[#2B2320] mt-0.5">
-            Select Your Suite Category
+            Select Your Accommodation
           </h2>
         </div>
 
         {/* Filter Category Tabs */}
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           {[
-            { id: "all" as const, label: "All Suites" },
-            { id: "couple" as const, label: "Couples & Business (2 Guests)" },
-            { id: "family" as const, label: "Family Suites (4+ Guests)" },
+            { id: "all" as const, label: "All Rooms" },
+            { id: "single" as const, label: "Single Room (1 Guest)" },
+            { id: "double" as const, label: "Double Room (2 Guests)" },
+            { id: "triple" as const, label: "Triple Room (3 Guests)" },
           ].map((cat) => (
             <button
               key={cat.id}

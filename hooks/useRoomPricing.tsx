@@ -13,11 +13,21 @@ export interface RoomPriceRules {
 export type PricingMap = Record<string, RoomPriceRules>;
 
 const defaultPricing: PricingMap = {
-  deluxe: { base: 2499, weekend: 2799, peak: 3199, extraAdult: 600, extraBed: 800 },
-  executive: { base: 3499, weekend: 3899, peak: 4299, extraAdult: 800, extraBed: 1000 },
-  premium: { base: 4999, weekend: 5499, peak: 6199, extraAdult: 1000, extraBed: 1200 },
-  family: { base: 5999, weekend: 6599, peak: 7499, extraAdult: 1000, extraBed: 1200 },
+  single: { base: 2403.32, weekend: 2403.32, peak: 2403.32, extraAdult: 0, extraBed: 300 },
+  double: { base: 2731.05, weekend: 2731.05, peak: 2731.05, extraAdult: 0, extraBed: 300 },
+  triple: { base: 3495.74, weekend: 3495.74, peak: 3495.74, extraAdult: 0, extraBed: 300 },
+  // Backward compatible aliases
+  deluxe: { base: 2403.32, weekend: 2403.32, peak: 2403.32, extraAdult: 0, extraBed: 300 },
+  executive: { base: 2731.05, weekend: 2731.05, peak: 2731.05, extraAdult: 0, extraBed: 300 },
+  premium: { base: 3495.74, weekend: 3495.74, peak: 3495.74, extraAdult: 0, extraBed: 300 },
+  family: { base: 3495.74, weekend: 3495.74, peak: 3495.74, extraAdult: 0, extraBed: 300 },
 };
+
+export function getRoomPrice(slug: string): number {
+  const key = slug?.toLowerCase().replace("-room", "").replace("-suite", "") || "single";
+  return defaultPricing[key]?.base || 2403.32;
+}
+
 
 const RoomPricingContext = createContext<{
   prices: PricingMap;
@@ -31,6 +41,7 @@ const RoomPricingContext = createContext<{
     children?: number
   ) => {
     nights: number;
+    nightlyPrice: number;
     baseAmount: number;
     taxAmount: number;
     taxRate: number;
@@ -39,15 +50,22 @@ const RoomPricingContext = createContext<{
   };
 }>({
   prices: defaultPricing,
-  getRoomPrice: (slug) => defaultPricing[slug]?.base || 2499,
-  getRoomRules: (slug) => defaultPricing[slug] || defaultPricing.deluxe,
+  getRoomPrice: (slug) => {
+    const key = slug?.toLowerCase().replace("-room", "").replace("-suite", "") || "single";
+    return defaultPricing[key]?.base || 2403.32;
+  },
+  getRoomRules: (slug) => {
+    const key = slug?.toLowerCase().replace("-room", "").replace("-suite", "") || "single";
+    return defaultPricing[key] || defaultPricing.single;
+  },
   calculateStayTotal: () => ({
     nights: 1,
-    baseAmount: 2499,
-    taxAmount: 299.88,
-    taxRate: 12,
+    nightlyPrice: 2403.32,
+    baseAmount: 2403.32,
+    taxAmount: 0,
+    taxRate: 0,
     extraGuestAmount: 0,
-    totalAmount: 2798.88,
+    totalAmount: 2403.32,
   }),
 });
 
@@ -112,13 +130,13 @@ export function RoomPricingProvider({ children }: { children: React.ReactNode })
 
 
   const getRoomPrice = (slug: string): number => {
-    const key = slug.toLowerCase().replace("-room", "").replace("-suite", "");
-    return prices[key]?.base || defaultPricing[key]?.base || 2499;
+    const key = slug?.toLowerCase().replace("-room", "").replace("-suite", "") || "single";
+    return prices[key]?.base || defaultPricing[key]?.base || 2403.32;
   };
 
   const getRoomRules = (slug: string): RoomPriceRules => {
-    const key = slug.toLowerCase().replace("-room", "").replace("-suite", "");
-    return prices[key] || defaultPricing[key] || defaultPricing.deluxe;
+    const key = slug?.toLowerCase().replace("-room", "").replace("-suite", "") || "single";
+    return prices[key] || defaultPricing[key] || defaultPricing.single;
   };
 
   const calculateStayTotal = (
@@ -134,36 +152,17 @@ export function RoomPricingProvider({ children }: { children: React.ReactNode })
     const diffTime = end.getTime() - start.getTime();
     const nights = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
 
-    let roomBaseTotal = 0;
-
-    for (let i = 0; i < nights; i++) {
-      const currentNight = new Date(start.getTime() + i * 86400000);
-      const dayOfWeek = currentNight.getDay();
-      // Friday (5), Saturday (6), Sunday (0) are Weekend Surge rates
-      const isWeekend = dayOfWeek === 5 || dayOfWeek === 6 || dayOfWeek === 0;
-      roomBaseTotal += isWeekend ? rules.weekend : rules.base;
-    }
-
-    // Extra adult surcharge (standard base includes 2 adults)
-    const extraAdults = Math.max(0, adults - 2);
-    const extraGuestAmount = extraAdults * rules.extraAdult * nights;
-
-    const baseAmount = roomBaseTotal + extraGuestAmount;
-
-    // Indian Hospitality GST Slab Rule:
-    // Tariffs <= ₹7,500/night apply 12% GST
-    // Tariffs > ₹7,500 apply 18% GST
-    const perNightAverage = baseAmount / nights;
-    const taxRate = perNightAverage > 7500 ? 18 : 12;
-    const taxAmount = Math.round((baseAmount * (taxRate / 100)) * 100) / 100;
-    const totalAmount = Math.round((baseAmount + taxAmount) * 100) / 100;
+    // Exact single final price per room type * nights
+    const nightlyPrice = rules.base;
+    const totalAmount = Math.round(nightlyPrice * nights * 100) / 100;
 
     return {
       nights,
-      baseAmount,
-      taxAmount,
-      taxRate,
-      extraGuestAmount,
+      nightlyPrice,
+      baseAmount: totalAmount,
+      taxAmount: 0,
+      taxRate: 0,
+      extraGuestAmount: 0,
       totalAmount,
     };
   };

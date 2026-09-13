@@ -6,6 +6,7 @@ import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { VenueCard, Venue } from "@/components/banquet/VenueCard";
 import { DynamicVenuesList } from "@/components/banquet/DynamicVenuesList";
+import { BanquetCostEstimator } from "@/components/banquet/BanquetCostEstimator";
 import { BanquetEnquiry } from "@/components/banquet/BanquetEnquiry";
 import { Banquet3DPlaceholder } from "@/components/banquet/Banquet3DPlaceholder";
 import { HomeCTA } from "@/components/home/HomeCTA";
@@ -266,8 +267,15 @@ export default function BanquetPage() {
         </Container>
       </section>
 
+      {/* Interactive Banquet Cost Estimator */}
+      <section className="py-16 sm:py-20 bg-white border-t border-[#E8E1D7]">
+        <Container className="max-w-7xl px-4 sm:px-6">
+          <BanquetCostEstimator />
+        </Container>
+      </section>
+
       {/* Enquiry Form */}
-      <section id="enquiry-form-section" className="py-16 sm:py-20 bg-[#FAF8F5] border-t border-[#E8E1D7] scroll-mt-20">
+      <section id="enquiry-form" className="py-16 sm:py-20 bg-[#FAF8F5] border-t border-[#E8E1D7] scroll-mt-20">
         <Container className="max-w-7xl px-4 sm:px-6">
           <BanquetEnquiry />
         </Container>

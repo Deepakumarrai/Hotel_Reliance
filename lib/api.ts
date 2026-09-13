@@ -370,8 +370,9 @@ export const api = {
       checkOut: string;
       adults?: number;
       children?: number;
-      guest: { name: string; email: string; phone: string; specialRequests?: string };
+      guest: { name: string; email: string; phone: string; specialRequests?: string; promoCode?: string };
       discountCode?: string;
+      promoCode?: string;
       paymentMethod?: string;
     }) => {
       try {
@@ -381,6 +382,12 @@ export const api = {
         });
       } catch (err: any) {
         const matchingRoom = roomsData.find((r) => r.id === body.roomId || r.slug === body.roomId) || roomsData[0];
+        const checkInDate = new Date(body.checkIn);
+        const checkOutDate = new Date(body.checkOut);
+        const diffNights = Math.max(1, Math.ceil(Math.abs(checkOutDate.getTime() - checkInDate.getTime()) / (1000 * 60 * 60 * 24)));
+        const nightlyRate = matchingRoom.price || 2403.32;
+        const finalCalculatedTotal = Math.round(nightlyRate * diffNights * 100) / 100;
+
         const newBooking = {
           id: `BK-${Date.now().toString().slice(-6)}`,
           roomType: matchingRoom.name,
@@ -398,7 +405,7 @@ export const api = {
           status: "CONFIRMED",
           paymentStatus: body.paymentMethod === "PAY_AT_HOTEL" ? "PENDING" : "PAID",
           paymentMethod: body.paymentMethod || "PAY_AT_HOTEL",
-          totalAmount: (matchingRoom.price || 2499) * 1.12,
+          totalAmount: finalCalculatedTotal,
           createdAt: new Date().toISOString()
         };
         saveStoredBooking(newBooking);

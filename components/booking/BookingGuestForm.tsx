@@ -88,6 +88,57 @@ export function BookingGuestForm({
           </div>
         </div>
 
+        {/* Promo Code / Privilege Voucher Section */}
+        <div className="space-y-2 pt-2 border-t border-border-custom">
+          <label className="text-[10px] uppercase tracking-wider text-muted font-bold block flex items-center justify-between">
+            <span className="flex items-center">
+              <span className="w-2 h-2 rounded-full bg-gold mr-2" />
+              Privilege Promo Code / Voucher (Optional)
+            </span>
+            {values.promoCode && (
+              <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-wider">
+                Code Active: {values.promoCode}
+              </span>
+            )}
+          </label>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={values.promoCode || ""}
+              onChange={(e) => onChange("promoCode", e.target.value.toUpperCase().trim())}
+              placeholder="e.g. RELIANCE15, WEEKENDSPL, CORPSTAY"
+              className="flex-1 bg-cream border border-border-custom p-3 text-xs uppercase font-mono font-bold tracking-wider focus:border-gold focus:outline-none"
+            />
+            {values.promoCode && (
+              <button
+                type="button"
+                onClick={() => onChange("promoCode", "")}
+                className="px-3 py-2 text-xs text-muted hover:text-primary font-bold border border-border-custom bg-white hover:bg-cream transition-colors"
+              >
+                Clear
+              </button>
+            )}
+          </div>
+          {/* Quick Apply Popular Codes */}
+          <div className="flex flex-wrap items-center gap-2 pt-1">
+            <span className="text-[10px] text-muted font-medium">Available Offers:</span>
+            {["RELIANCE15", "WEEKENDSPL", "CORPSTAY"].map((code) => (
+              <button
+                key={code}
+                type="button"
+                onClick={() => onChange("promoCode", code)}
+                className={`text-[10px] font-mono px-2 py-0.5 border rounded-xs transition-colors cursor-pointer ${
+                  values.promoCode === code
+                    ? "bg-gold text-primary font-bold border-gold"
+                    : "bg-cream text-dark border-border-custom hover:border-gold"
+                }`}
+              >
+                {code}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Notes */}
         <div className="space-y-1">
           <label className="text-[10px] uppercase tracking-wider text-muted font-bold block flex items-center">

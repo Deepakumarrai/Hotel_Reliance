@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: RoomPageProps): Promise<Metad
 
   return {
     title: `${room.name} — Luxury Stay & Tariff`,
-    description: `${room.description} Book ${room.name} at Hotel Reliance Bokaro starting at ₹${room.price}/night. Includes king bedding, high-speed Wi-Fi, AC, and room service.`,
+    description: `${room.description} Book ${room.name} at Hotel Reliance Bokaro at ${formatPrice(room.price)}/night. Includes king bedding, high-speed Wi-Fi, AC, and room service.`,
     alternates: {
       canonical: pageUrl,
     },

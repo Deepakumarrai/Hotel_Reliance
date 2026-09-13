@@ -13,8 +13,7 @@ interface RoomCardProps {
 }
 
 export function RoomCard({ room }: RoomCardProps) {
-  const { getRoomPrice, getRoomRules } = useRoomPricing();
-  const rules = getRoomRules(room.slug);
+  const { getRoomPrice } = useRoomPricing();
   const activePrice = getRoomPrice(room.slug) || room.price;
   const displayPrice = activePrice ? `${formatPrice(activePrice)}` : "Price on request";
 
@@ -40,14 +39,8 @@ export function RoomCard({ room }: RoomCardProps) {
         </div>
 
         {/* Top Right Tariff Pill */}
-        <div className="absolute top-3 right-3 bg-black/70 backdrop-blur-md px-2.5 py-1 text-[9.5px] font-serif uppercase tracking-widest text-[#D8B875] border border-white/15 shadow-md rounded-sm">
-          Starts {displayPrice}
-        </div>
-
-        {/* Bottom Left Peak Pill */}
-        <div className="absolute bottom-3 left-3 bg-black/65 backdrop-blur-md px-2 py-0.5 text-[8.5px] font-serif tracking-wider text-emerald-400 border border-white/10 flex items-center space-x-1 rounded-sm">
-          <Sparkles className="w-2.5 h-2.5 text-[#C4984F]" />
-          <span>Peak: {formatPrice(rules.peak)}</span>
+        <div className="absolute top-3 right-3 bg-black/80 backdrop-blur-md px-2.5 py-1 text-[9.5px] font-serif uppercase tracking-widest text-[#D8B875] border border-white/15 shadow-md rounded-sm font-bold">
+          {displayPrice} / night
         </div>
       </div>
 
