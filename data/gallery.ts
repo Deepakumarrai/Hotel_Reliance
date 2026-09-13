@@ -87,10 +87,24 @@ export const galleryData: GalleryImage[] = [
   },
   {
     id: "g-rooms-2",
-    url: "/images/rooms/double room/image.png",
+    url: "/images/rooms/double/1.png",
     alt: "Double Room Modern Elegance",
     category: "rooms",
     title: "Double Room Executive Comfort"
+  },
+  {
+    id: "g-rooms-2-b",
+    url: "/images/rooms/double/2.png",
+    alt: "Double Room King Bed View",
+    category: "rooms",
+    title: "Double Room Plush Bedding"
+  },
+  {
+    id: "g-rooms-2-c",
+    url: "/images/rooms/double/3.png",
+    alt: "Double Room Interior & Lighting",
+    category: "rooms",
+    title: "Double Room Ambient Interior"
   },
   {
     id: "g-rooms-3",

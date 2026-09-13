@@ -33,7 +33,7 @@ const officialCategories = [
     name: "Double Room",
     badge: "DOUBLE",
     price: 2731.05,
-    image: "/images/rooms/double room/image.png",
+    image: "/images/rooms/double-room.png",
     description: "Spacious layout with a plush king bed and executive amenities for couples and business professionals.",
     maxGuests: "2 Guests",
     bedding: "King Bed",

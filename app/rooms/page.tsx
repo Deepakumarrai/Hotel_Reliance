@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/images/rooms/executive/main.jpg",
+        url: "/images/rooms/double-room.png",
         width: 1200,
         height: 800,
         alt: "Hotel Reliance Rooms in Bokaro Steel City",
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Luxury Rooms & Accommodations | Hotel Reliance Bokaro",
     description: "Single Room, Double Room, and Triple Room accommodations in Bokaro Steel City.",
-    images: ["/images/rooms/executive/main.jpg"],
+    images: ["/images/rooms/double-room.png"],
   },
 };
 
