@@ -87,6 +87,13 @@ export const galleryData: GalleryImage[] = [
   },
   {
     id: "g-rooms-2",
+    url: "/images/rooms/double room/image.png",
+    alt: "Double Room Modern Elegance",
+    category: "rooms",
+    title: "Double Room Executive Comfort"
+  },
+  {
+    id: "g-rooms-3",
     url: "/images/rooms/premium/main.jpg",
     alt: "Triple Room Layout",
     category: "rooms",

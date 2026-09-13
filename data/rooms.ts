@@ -36,8 +36,8 @@ export const roomsData: Room[] = [
     description: "Spacious layout with a plush king bed and executive amenities for couples and business professionals.",
     longDescription: "The Double Room is thoughtfully designed with modern elegance. Featuring a comfortable king-size bed, executive work desk, smart TV, fast Wi-Fi, and premium bathroom amenities, it provides the ideal balance of luxury and comfort.",
     images: [
-      "/images/rooms/executive/main.jpg",
-      "/images/rooms/executive/room.jpg"
+      "/images/rooms/double room/image.png",
+      "/images/rooms/double-room.png"
     ],
     amenities: [
       "King Size Bed",

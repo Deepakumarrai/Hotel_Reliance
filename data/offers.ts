@@ -43,7 +43,7 @@ export const offersData: Offer[] = [
     discountCode: "CORPSTAY",
     discountValue: "Special Corporate Tariff",
     expiryDate: "Ongoing 2026",
-    image: "/images/rooms/executive/main.jpg",
+    image: "/images/rooms/double room/image.png",
     featured: true,
     category: "Corporate",
     inclusions: [
