@@ -243,7 +243,7 @@ export default function RestaurantPage() {
             <div className="space-y-4">
               <div className="relative aspect-[16/10] w-full overflow-hidden border border-white/20 shadow-2xl bg-black group">
                 <Image
-                  src="/images/restaurant/image.png"
+                  src="/images/restaurant/dining-area.jpg"
                   alt="Kwality Grand Palace Dining Room"
                   fill
                   quality={100}

@@ -38,8 +38,8 @@ export function AboutStorySection() {
             <div className="lg:col-span-6 relative">
               <div className="relative aspect-[4/3] w-full overflow-hidden border-2 border-[#C5A880] shadow-xl bg-[#1E1815]">
                 <Image
-                  src="/images/hotel/building-dusk.png"
-                  alt="Hotel Reliance Property"
+                  src="/images/gallery/hotel-ext.jpg"
+                  alt="Hotel Reliance Property Facade"
                   fill
                   sizes="(max-width: 1024px) 100vw, 50vw"
                   className="object-cover"

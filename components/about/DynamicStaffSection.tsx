@@ -38,19 +38,39 @@ export function DynamicStaffSection() {
               key={staff.id}
               className="bg-cream border border-border-custom shadow-sm flex flex-col justify-between group overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-gold"
             >
-              {/* Staff Portrait Image with Natural Uncropped Aspect Ratio */}
-              <div className="relative aspect-[4/5] w-full bg-dark overflow-hidden">
-                <Image
-                  src={staff.image || "/images/staff/vikramaditya-gm.jpg"}
-                  alt={staff.name}
-                  fill
-                  unoptimized
-                  quality={100}
-                  sizes="(max-width: 768px) 100vw, 25vw"
-                  className="object-cover object-top group-hover:scale-105 transition-transform duration-500"
-                />
+              {/* Staff Portrait or Authentic Leadership Crest Placeholder */}
+              <div className="relative aspect-[4/5] w-full bg-[#181512] overflow-hidden flex items-center justify-center">
+                {staff.image ? (
+                  <Image
+                    src={staff.image}
+                    alt={staff.name}
+                    fill
+                    unoptimized
+                    quality={100}
+                    sizes="(max-width: 768px) 100vw, 25vw"
+                    className="object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                  />
+                ) : (
+                  <div className="w-full h-full p-6 flex flex-col items-center justify-center text-center bg-gradient-to-b from-[#26201C] to-[#120F0D] border-b border-[#3D332C]">
+                    <div className="w-16 h-16 rounded-full border-2 border-[#C5A880]/40 flex items-center justify-center bg-[#1A1614] mb-3 shadow-inner group-hover:border-[#D8B875] transition-colors">
+                      <span className="font-serif font-bold text-xl text-[#D8B875] tracking-wider">
+                        {staff.name
+                          .split(" ")
+                          .map((n) => n[0])
+                          .slice(0, 2)
+                          .join("")}
+                      </span>
+                    </div>
+                    <span className="text-[10px] uppercase tracking-[0.2em] text-[#C5A880] font-bold">
+                      Hotel Reliance
+                    </span>
+                    <span className="text-[9px] text-white/50 tracking-widest uppercase mt-0.5">
+                      Executive Leadership
+                    </span>
+                  </div>
+                )}
                 {staff.experience && (
-                  <div className="absolute bottom-3 left-3 z-10 bg-dark/85 backdrop-blur-sm px-2.5 py-1 text-[9px] uppercase font-bold tracking-widest text-gold border border-gold/30">
+                  <div className="absolute bottom-3 left-3 z-10 bg-dark/90 backdrop-blur-sm px-2.5 py-1 text-[9px] uppercase font-bold tracking-widest text-[#D8B875] border border-[#C5A880]/30">
                     {staff.experience}
                   </div>
                 )}

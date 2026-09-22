@@ -69,7 +69,7 @@ const venuesList: Venue[] = [
     name: "Executive Meeting Rooms",
     description: "Configured for professional business conventions. Features high-speed connectivity, boards, and digital projection facilities for boardroom discussions.",
     capacity: "Up to 30 Guests",
-    image: "/images/gallery/hotel-lobby.jpg", // Lobby is elegant placeholder
+    image: "/images/banquet/meetings-boardroom.jpg",
     amenities: [
       "Digital Projection & LED Screens",
       "High-Speed Wi-Fi",
