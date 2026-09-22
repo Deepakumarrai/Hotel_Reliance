@@ -14,7 +14,6 @@ export interface BookingState {
   adults: number;
   children: number;
   selectedRoomId: string | null;
-  includeMapPlan?: boolean;
   promoCode?: string;
   guest: GuestDetails | null;
 }
@@ -34,8 +33,6 @@ export interface Booking {
   roomName?: string;
   roomImage?: string;
   basePrice?: number;
-  includeMapPlan?: boolean;
-  mapPlanPrice?: number;
   discount?: number;
   taxes?: number;
   paymentStatus?: "paid" | "pending" | "refunded" | string;
@@ -47,4 +44,3 @@ export interface Booking {
   createdAt: string;
   paymentMethod?: string;
 }
-

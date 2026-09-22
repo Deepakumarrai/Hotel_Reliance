@@ -4,7 +4,7 @@ export const offersData: Offer[] = [
   {
     id: "offer-weekend",
     title: "Weekend Leisure Staycation",
-    description: "Recharge over the weekend in Bokaro with complimentary buffet breakfast, late check-out till 2 PM, and a complimentary room upgrade (subject to availability).",
+    description: "Recharge over the weekend in Bokaro with complimentary buffet breakfast, late check-out till 2 PM, and a complimentary suite upgrade (subject to availability).",
     discountCode: "WEEKENDSPL",
     discountValue: "Free Breakfast + Upgrade",
     expiryDate: "Dec 31, 2026",
@@ -22,7 +22,7 @@ export const offersData: Offer[] = [
   {
     id: "offer-early-bird",
     title: "Advance Purchase Early Bird",
-    description: "Plan your trip to Bokaro Steel City at least 7 days ahead and enjoy special savings on Double Occupancy and Family Rooms.",
+    description: "Plan your trip to Bokaro Steel City at least 7 days ahead and enjoy special savings on Executive and Premium suites.",
     discountCode: "RELIANCE15",
     discountValue: "15% Special Tariff",
     expiryDate: "Dec 31, 2026",
@@ -57,7 +57,7 @@ export const offersData: Offer[] = [
   {
     id: "offer-family",
     title: "Family Holiday Celebration",
-    description: "Spacious Family Rooms with child-friendly meal plans and discounted local sightseeing cab arrangements.",
+    description: "Spacious multi-bed Family Suites with child-friendly meal plans and discounted local sightseeing cab arrangements.",
     discountCode: "FAMILYFUN",
     discountValue: "Kids Stay Complimentary",
     expiryDate: "Dec 31, 2026",
@@ -76,13 +76,13 @@ export const offersData: Offer[] = [
     title: "Grand Wedding & Banquet Package",
     description: "Host memorable wedding celebrations across our grand AC Banquet Hall and Outdoor Celebration Lawn with bespoke catering.",
     discountCode: "WEDDING2026",
-    discountValue: "Complimentary Bride/Groom Room",
+    discountValue: "Complimentary Bridal Suite",
     expiryDate: "Dec 31, 2026",
     image: "/images/banquet/hall-main.jpg",
     featured: true,
     category: "Wedding & Banquet",
     inclusions: [
-      "Complimentary 1-Night stay in Double Occupancy Room for Bride/Groom",
+      "Complimentary 1-Night stay in Premium Suite for Bride/Groom",
       "Dedicated banquet event manager & audio/visual coordinator",
       "Custom multi-cuisine buffet menu consultation by Executive Chef",
       "Special room tariff discounts for wedding guests"

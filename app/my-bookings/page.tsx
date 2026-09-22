@@ -54,6 +54,7 @@ function MyBookingsContent() {
                 images: [b.room?.images?.[0] || "/images/rooms/deluxe.png"],
                 heroImage: b.room?.images?.[0] || "/images/rooms/deluxe.png",
                 bedType: "King Bed",
+                size: "350 sq.ft",
                 view: "City View",
                 rating: 4.8,
                 reviewCount: 120,
@@ -323,7 +324,7 @@ function MyBookingsContent() {
               </h2>
               <p className="text-xs text-muted leading-relaxed font-light">
                 {activeTab === "upcoming"
-                  ? "You don't have any active reservations scheduled. Explore our 42 premier rooms in Bokaro Steel City and plan your stay."
+                  ? "You don't have any active reservations scheduled. Explore our 45+ premier suites in Bokaro Steel City and plan your stay."
                   : "You have not completed any past stays at Hotel Reliance yet."}
               </p>
             </div>
@@ -331,7 +332,7 @@ function MyBookingsContent() {
             <div className="pt-2">
               <Link href="/rooms">
                 <Button variant="primary" size="md" className="uppercase text-xs tracking-widest font-bold">
-                  Explore Rooms & Accommodation
+                  Explore Rooms & Suites
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </Link>

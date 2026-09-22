@@ -59,7 +59,7 @@ export function Hero() {
         <video
           ref={videoRef}
           src="/videos/hero.mp4"
-          poster="/images/gallery/hotel-ext.jpg"
+          poster="/images/hotel/building-dusk.png"
           autoPlay
           loop
           muted

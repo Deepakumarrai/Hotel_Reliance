@@ -9,16 +9,16 @@ import { HomeCTA } from "@/components/home/HomeCTA";
 
 
 export const metadata: Metadata = {
-  title: "Luxury Rooms & Accommodations — Tariffs, Amenities & Online Booking",
+  title: "Luxury Rooms & Suites — Tariffs, Amenities & Online Booking",
   description:
-    "Explore our Single Occupancy (₹2,310/-), Double Occupancy (₹2,625/-), and Family Room (₹3,360/-) accommodations in Bokaro Steel City. Enjoy plush bedding, high-speed Wi-Fi, AC climate control, and 24/7 room service.",
+    "Explore our Single, Double, and Triple Rooms in Bokaro Steel City starting from ₹2,403.32/night. Enjoy King-size beds, high-speed Wi-Fi, AC climate control, and 24/7 room service.",
   keywords: [
     "Rooms in Bokaro",
     "Hotel Reliance Rooms",
     "Bokaro Hotel Booking",
-    "Single Occupancy Bokaro",
-    "Double Occupancy Bokaro",
-    "Family Room Bokaro",
+    "Single Room Bokaro",
+    "Double Room Bokaro",
+    "Triple Room Bokaro",
     "Hotel Room Tariff Bokaro",
   ],
   alternates: {
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Luxury Rooms & Accommodations | Hotel Reliance Bokaro",
     description:
-      "Explore Single Occupancy, Double Occupancy, and Family Room accommodations in Bokaro Steel City. Enjoy top amenities, elegant interiors, and quality room service.",
+      "Explore Single Room, Double Room, and Triple Room accommodations in Bokaro Steel City. Enjoy top amenities, elegant interiors, and quality room service.",
     url: "https://www.hotelreliance.com/rooms",
     type: "website",
     images: [
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Luxury Rooms & Accommodations | Hotel Reliance Bokaro",
-    description: "Single Occupancy, Double Occupancy, and Family Room accommodations in Bokaro Steel City.",
+    description: "Single Room, Double Room, and Triple Room accommodations in Bokaro Steel City.",
     images: ["/images/rooms/double-room.png"],
   },
 };
@@ -56,7 +56,7 @@ export default function RoomsPage() {
         <div className="absolute inset-0 z-0">
           <Image
             src="/images/hotel/image copy 3.png"
-            alt="Hotel Reliance Rooms & Accommodations"
+            alt="Hotel Reliance Rooms & Suites"
             fill
             priority
             unoptimized
@@ -75,7 +75,7 @@ export default function RoomsPage() {
               <div className="w-8 sm:w-16 h-[2px] bg-[#C5A880] mt-4 sm:mt-5 flex-shrink-0" />
               <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-normal tracking-[0.1em] sm:tracking-[0.14em] text-white uppercase leading-tight drop-shadow-lg">
                 Rooms
-                <span className="block">& Accommodations</span>
+                <span className="block">& Suites</span>
               </h1>
             </div>
 

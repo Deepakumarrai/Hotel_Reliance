@@ -12,7 +12,7 @@ const diningExperiences = [
     id: "fine-dining",
     title: "KWALITY FINE DINING",
     subtitle: "Authentic North Indian & Multi-Cuisine Feasts",
-    image: "/images/restaurant/dining-area.jpg",
+    image: "/images/restaurant/image.png",
     link: "/restaurant#menu"
   },
   {
@@ -56,7 +56,7 @@ export function RestaurantPreview() {
     : displayedDining;
 
   return (
-    <section id="dining" className="py-16 sm:py-24 bg-white text-[#2B2320] border-t border-[#E8E1D7] overflow-hidden select-none">
+    <section className="py-16 sm:py-24 bg-white text-[#2B2320] border-t border-[#E8E1D7] overflow-hidden select-none">
       <Container className="max-w-7xl px-4 sm:px-6">
         {/* Top Header Row matching Taj Reference Layout */}
         <FadeUp className="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6 mb-12 sm:mb-16 pb-6 sm:pb-8 border-b border-[#E8E1D7]">

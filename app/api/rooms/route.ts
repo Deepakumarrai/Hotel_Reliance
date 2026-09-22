@@ -3,18 +3,16 @@ import { forwardToBackend } from "@/lib/admin/backendClient";
 
 const officialCategories = [
   {
-    id: "single-occupancy",
+    id: "single-room",
     slug: "single",
-    name: "Single Occupancy",
-    badge: "SINGLE OCCUPANCY",
-    price: 2310,
-    basePrice: 2200,
-    gstRate: 5,
-    gstAmount: 110,
+    name: "Single Room",
+    badge: "SINGLE",
+    price: 2403.32,
     image: "/images/rooms/single/1.png",
     description: "Comfortable, well-appointed room with modern amenities, designed for solo corporate or leisure travelers.",
     maxGuests: "1 Guest",
     bedding: "Single / Queen Bed",
+    roomArea: "240 sq. ft.",
     amenitiesCount: 9,
     amenities: [
       "Queen / Single Bed",
@@ -30,18 +28,16 @@ const officialCategories = [
     moreAmenitiesCount: 3,
   },
   {
-    id: "double-occupancy",
+    id: "double-room",
     slug: "double",
-    name: "Double Occupancy",
-    badge: "DOUBLE OCCUPANCY",
-    price: 2625,
-    basePrice: 2500,
-    gstRate: 5,
-    gstAmount: 125,
+    name: "Double Room",
+    badge: "DOUBLE",
+    price: 2731.05,
     image: "/images/rooms/double-room.png",
     description: "Spacious layout with a plush king bed and executive amenities for couples and business professionals.",
     maxGuests: "2 Guests",
     bedding: "King Bed",
+    roomArea: "320 sq. ft.",
     amenitiesCount: 9,
     amenities: [
       "King Size Bed",
@@ -57,18 +53,16 @@ const officialCategories = [
     moreAmenitiesCount: 3,
   },
   {
-    id: "family-room",
+    id: "triple-room",
     slug: "triple",
-    name: "Family Room",
-    badge: "FAMILY ROOM",
-    price: 3360,
-    basePrice: 3200,
-    gstRate: 5,
-    gstAmount: 160,
+    name: "Triple Room",
+    badge: "TRIPLE",
+    price: 3495.74,
     image: "/images/rooms/triple/1.png",
     description: "Generous multi-bed accommodation with upscale decor and lounge seating for families and groups.",
     maxGuests: "3 Guests",
     bedding: "King + Single Bed",
+    roomArea: "420 sq. ft.",
     amenitiesCount: 8,
     amenities: [
       "King + Single Bed",
@@ -88,7 +82,7 @@ export async function GET() {
   try {
     const res = await forwardToBackend("/admin/content/room_categories", { method: "GET" });
     const categories = res.data?.content?.categories;
-    if (Array.isArray(categories) && categories.length > 0 && categories.some(c => c.slug === "single" || c.name === "Single Occupancy")) {
+    if (Array.isArray(categories) && categories.length > 0 && categories.some(c => c.slug === "single" || c.name === "Single Room")) {
       return NextResponse.json({ success: true, data: categories });
     }
     return NextResponse.json({ success: true, data: officialCategories });

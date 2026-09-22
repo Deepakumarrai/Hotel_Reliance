@@ -10,7 +10,7 @@ export interface Venue {
   name: string;
   description: string;
   capacity: string; // e.g. "Up to 300 guests"
-  size?: string;
+  size: string; // e.g. "4,000 sq. ft."
   image: string;
   amenities: string[];
 }
@@ -63,12 +63,10 @@ export function VenueCard({ venue }: VenueCardProps) {
               <Users className="w-3.5 h-3.5 mr-1.5 text-[#BA8B32]" />
               {venue.capacity}
             </span>
-            {venue.size && (
-              <span className="flex items-center px-3 py-1.5 bg-[#FAF8F5] border border-[#E8E1D7]">
-                <Expand className="w-3.5 h-3.5 mr-1.5 text-[#BA8B32]" />
-                {venue.size}
-              </span>
-            )}
+            <span className="flex items-center px-3 py-1.5 bg-[#FAF8F5] border border-[#E8E1D7]">
+              <Expand className="w-3.5 h-3.5 mr-1.5 text-[#BA8B32]" />
+              {venue.size}
+            </span>
           </div>
 
           {/* Venue Specific Amenities list */}

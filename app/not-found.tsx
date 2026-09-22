@@ -18,7 +18,7 @@ export default function NotFound() {
             404
           </div>
           <h1 className="text-2xl sm:text-3xl font-serif text-dark font-normal">
-            Page or Room Not Found
+            Page or Suite Not Found
           </h1>
           <div className="w-16 h-[2px] bg-gold mx-auto mt-3" />
           <p className="text-xs sm:text-sm text-muted max-w-md mx-auto font-light leading-relaxed">
@@ -41,7 +41,7 @@ export default function NotFound() {
             className="p-4 bg-white border border-border-custom hover:border-gold hover:shadow-md transition-all flex flex-col items-center space-y-2 group"
           >
             <Bed className="w-5 h-5 text-gold group-hover:scale-110 transition-transform" />
-            <span className="text-xs font-semibold text-dark">Rooms & Accommodation</span>
+            <span className="text-xs font-semibold text-dark">Rooms & Suites</span>
           </Link>
 
           <Link

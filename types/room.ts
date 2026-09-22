@@ -9,9 +9,6 @@ export interface Room {
   occupancy: number;
   bedType: string;
   price: number | null; // Null representing Price on Request
-  basePrice?: number;
-  gstRate?: number;
-  gstAmount?: number;
   featured?: boolean;
   size?: string;
   view?: string;

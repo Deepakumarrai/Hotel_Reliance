@@ -132,7 +132,7 @@ export function Footer() {
               <ul className="space-y-3.5 text-sm sm:text-[15px] font-serif text-[#DFD7CF]">
                 <li>
                   <Link href="/rooms" className="hover:text-[#D8B875] transition-all hover:translate-x-1 duration-200 inline-block font-normal">
-                    Rooms & Accommodation
+                    Hotels & Suites
                   </Link>
                 </li>
                 <li>
@@ -202,11 +202,6 @@ export function Footer() {
                 <li>
                   <Link href="/terms-and-conditions" className="hover:text-[#D8B875] transition-all hover:translate-x-1 duration-200 inline-block font-normal">
                     Terms & Conditions
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/cancellation-policy" className="hover:text-[#D8B875] transition-all hover:translate-x-1 duration-200 inline-block font-normal">
-                    Cancellation Policy
                   </Link>
                 </li>
                 <li>
@@ -339,8 +334,7 @@ export function Footer() {
                 className="text-[#C5A880] hover:text-[#D8B875] font-medium transition-colors underline underline-offset-2"
               >
                 hypekimedia.myquro.com
-              </a>{" "}
-              • <span className="text-[#DFD7CF] font-medium">Deepak Kumar Rai</span>
+              </a>
             </p>
           </div>
         </div>

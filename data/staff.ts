@@ -7,7 +7,7 @@ export const staffData: StaffMember[] = [
     role: "General Manager",
     department: "Executive Management",
     bio: "With over 18 years in luxury hotel operations across Eastern India, Vikramaditya oversees guest excellence, operations, and cultural warmth at Hotel Reliance.",
-    image: "",
+    image: "/images/staff/vikramaditya-roy.png",
     experience: "18+ Years Hospitality"
   },
   {
@@ -16,7 +16,7 @@ export const staffData: StaffMember[] = [
     role: "Executive Head Chef",
     department: "Kwality Restaurant & Catering",
     bio: "Culinary mastermind specializing in authentic North Indian, Mughlai, and traditional Tandoor banquets, curating memorable dining experiences for over a decade.",
-    image: "",
+    image: "/images/staff/sanjeev-sengupta.png",
     experience: "14+ Years Culinary Arts"
   },
   {
@@ -25,7 +25,7 @@ export const staffData: StaffMember[] = [
     role: "Front Office & Guest Relations Manager",
     department: "Guest Services",
     bio: "Dedicated to ensuring swift check-ins, VIP personalized services, and warm local guidance for corporate executives and traveling families.",
-    image: "",
+    image: "/images/staff/pooja-deshmukh.png",
     experience: "9+ Years Guest Services"
   },
   {
@@ -34,7 +34,7 @@ export const staffData: StaffMember[] = [
     role: "Banquet & Event Operations Lead",
     department: "Conferences & Weddings",
     bio: "Expert coordinator managing sound, lighting, decor, and seamless logistics for weddings and corporate summits hosted in our AC banquet and open lawn.",
-    image: "",
+    image: "/images/staff/arun-mishra.png",
     experience: "11+ Years Event Planning"
   }
 ];

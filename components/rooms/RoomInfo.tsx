@@ -1,5 +1,5 @@
 import React from "react";
-import { Users, Bed, Wifi, Eye, Sparkles } from "lucide-react";
+import { Users, Bed, Expand, Eye } from "lucide-react";
 import { Room } from "@/types";
 
 interface RoomInfoProps {
@@ -20,19 +20,19 @@ export function RoomInfo({ room }: RoomInfoProps) {
         {room.longDescription || room.description}
       </p>
 
-      {/* Meta Specs Grid (No Room Size / Sq Ft) */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-6 bg-white border border-[#E8DFD2] p-6 shadow-xs">
+      {/* Meta Specs Grid */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 bg-white border border-[#E8DFD2] p-6 shadow-xs">
         <div className="flex flex-col items-center text-center">
           <Users className="w-5 h-5 text-[#BA8B32] mb-2" />
           <span className="text-[10px] uppercase tracking-widest text-[#7A6B61] font-bold">
             Capacity
           </span>
           <span className="text-[13px] font-bold text-[#2B2320] mt-1">
-            Max {room.occupancy} {room.occupancy === 1 ? "Guest" : "Guests"}
+            Max {room.occupancy} Guests
           </span>
         </div>
 
-        <div className="flex flex-col items-center text-center border-l border-[#E8DFD2]">
+        <div className="flex flex-col items-center text-center border-l sm:border-l border-[#E8DFD2]">
           <Bed className="w-5 h-5 text-[#BA8B32] mb-2" />
           <span className="text-[10px] uppercase tracking-widest text-[#7A6B61] font-bold">
             Bed Type
@@ -42,7 +42,17 @@ export function RoomInfo({ room }: RoomInfoProps) {
           </span>
         </div>
 
-        <div className="flex flex-col items-center text-center border-t md:border-t-0 md:border-l border-[#E8DFD2] pt-4 md:pt-0 col-span-2 md:col-span-1">
+        <div className="flex flex-col items-center text-center border-t md:border-t-0 md:border-l border-[#E8DFD2] pt-4 md:pt-0">
+          <Expand className="w-5 h-5 text-[#BA8B32] mb-2" />
+          <span className="text-[10px] uppercase tracking-widest text-[#7A6B61] font-bold">
+            Room Size
+          </span>
+          <span className="text-[13px] font-bold text-[#2B2320] mt-1">
+            {room.size || "Standard"}
+          </span>
+        </div>
+
+        <div className="flex flex-col items-center text-center border-t md:border-t-0 border-l border-[#E8DFD2] pt-4 md:pt-0">
           <Eye className="w-5 h-5 text-[#BA8B32] mb-2" />
           <span className="text-[10px] uppercase tracking-widest text-[#7A6B61] font-bold">
             Room View
@@ -55,4 +65,3 @@ export function RoomInfo({ room }: RoomInfoProps) {
     </div>
   );
 }
-

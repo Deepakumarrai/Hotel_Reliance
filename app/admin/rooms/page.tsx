@@ -148,7 +148,7 @@ export default function AdminRoomsInventoryPage() {
             </div>
 
             <h1 className="text-2xl sm:text-[34px] font-serif font-bold text-[#111923] tracking-tight leading-tight">
-              42 Physical Rooms (Floors 1 - 4)
+              45+ Physical Rooms (Floors 1 - 4)
             </h1>
 
             <p className="text-xs sm:text-[13px] text-[#6B6255] font-light">

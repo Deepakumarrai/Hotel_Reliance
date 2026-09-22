@@ -99,7 +99,7 @@ export function VRViewerPlaceholder({ roomName }: VRViewerPlaceholderProps) {
         >
           <div 
             className="absolute inset-0 bg-cover bg-center opacity-65 grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
-            style={{ backgroundImage: "url('/images/rooms/double/1.png')" }}
+            style={{ backgroundImage: "url('/images/rooms/executive/main.jpg')" }}
           />
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/20 text-white z-10">
             <Compass className="w-8 h-8 text-gold animate-pulse mb-1" />
@@ -137,7 +137,7 @@ export function VRViewerPlaceholder({ roomName }: VRViewerPlaceholderProps) {
             <div 
               className="absolute inset-y-0 w-[300%] h-full bg-cover transition-all"
               style={{
-                backgroundImage: "url('/images/rooms/double/1.png')",
+                backgroundImage: "url('/images/rooms/executive/main.jpg')",
                 backgroundPositionX: `${bgPos}%`,
                 backgroundSize: "cover",
                 backgroundRepeat: "repeat-x"

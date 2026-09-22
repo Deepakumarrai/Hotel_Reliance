@@ -94,7 +94,7 @@ const hospitalityStandards = [
 const videoStages = [
   { title: "Grand Facade & Entry", desc: "Co-Operative Colony main entrance and dedicated valet parking." },
   { title: "Warm Reception Lobby", desc: "Marble check-in counters and 24/7 guest concierge." },
-  { title: "Rooms & Accommodations", desc: "Single Occupancy, Double Occupancy, and Family Room walkthrough." },
+  { title: "Suites & Accommodations", desc: "Deluxe, Executive, Premium, and Family suite walkthrough." },
   { title: "Kwality Restaurant", desc: "Multi-cuisine live buffet and fine dining atmosphere." },
   { title: "Banquets & Open Lawn", desc: "AC banquet hall and 300+ guest celebration lawn." }
 ];
@@ -191,7 +191,7 @@ export default function AboutPage() {
             </h2>
             <div className="w-12 h-[2px] bg-gold mx-auto" />
             <p className="text-xs sm:text-sm text-white/70 max-w-xl mx-auto font-light">
-              Take an immersive visual journey from our property exterior and welcoming reception to luxury guest rooms, dining rooms, and celebration lawns.
+              Take an immersive visual journey from our property exterior and welcoming reception to luxury guest suites, dining rooms, and celebration lawns.
             </p>
           </div>
 

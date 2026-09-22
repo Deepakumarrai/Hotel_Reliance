@@ -3,10 +3,10 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Users, Bed, Check } from "lucide-react";
+import { Users, Bed, Expand, Sparkles } from "lucide-react";
 import { Room } from "@/types";
 import { formatPrice } from "@/lib/utils";
-import { useRoomPricing, getRoomBasePrice } from "@/hooks/useRoomPricing";
+import { useRoomPricing } from "@/hooks/useRoomPricing";
 
 interface RoomCardProps {
   room: Room;
@@ -14,13 +14,11 @@ interface RoomCardProps {
 
 export function RoomCard({ room }: RoomCardProps) {
   const { getRoomPrice } = useRoomPricing();
-  const activePrice = room.price || getRoomPrice(room.slug) || 2310;
-  const priceDetails = getRoomBasePrice(room.slug);
-  const baseRate = room.basePrice || priceDetails.base;
-  const finalRate = activePrice;
+  const activePrice = room.price || getRoomPrice(room.slug) || 2403.32;
+  const displayPrice = activePrice ? `${formatPrice(activePrice)}` : "Price on request";
 
   return (
-    <div className="group flex flex-col justify-between transition-all duration-300 bg-white p-4 sm:p-5 border border-[#E8DFD2] rounded-xs shadow-xs hover:shadow-lg hover:border-[#BA8B32]/60">
+    <div className="group flex flex-col justify-between transition-all duration-300 block bg-white p-3.5 sm:p-4 border border-[#E8DFD2] rounded-xs shadow-xs hover:shadow-md">
       <div>
         {/* Room Image Container with optimized responsive aspect ratio */}
         <Link
@@ -41,53 +39,41 @@ export function RoomCard({ room }: RoomCardProps) {
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
             <span className="font-bold">AVAILABLE</span>
           </div>
+
+          {/* Top Right Tariff Pill */}
+          <div className="absolute top-2.5 right-2.5 bg-black/85 backdrop-blur-md px-2.5 py-1 text-[10px] font-sans uppercase tracking-wider text-[#D8B875] border border-white/15 shadow-md rounded-xs font-bold">
+            {displayPrice}
+            <span className="text-[8.5px] font-normal text-white/80 lowercase"> / night</span>
+          </div>
         </Link>
 
         {/* Card Details Body */}
-        <div className="space-y-3 pt-3.5">
+        <div className="space-y-2.5 pt-3">
           <Link href={`/rooms/${room.slug}`} className="block">
-            <h3 className="font-serif text-lg sm:text-xl tracking-[0.04em] uppercase text-[#2B2320] font-bold group-hover:text-[#BA8B32] transition-colors flex items-center">
-              <span className="w-3.5 sm:w-4 h-[2px] bg-[#BA8B32] mr-2 flex-shrink-0" />
+            <h3 className="font-serif text-base sm:text-lg tracking-[0.06em] uppercase text-[#2B2320] font-bold group-hover:text-[#BA8B32] transition-colors flex items-center">
+              <span className="w-3.5 sm:w-4 h-[1.5px] bg-[#BA8B32] mr-2 flex-shrink-0" />
               <span className="truncate">{room.name}</span>
             </h3>
           </Link>
 
-          {/* Specs Highlights (No Sq. Ft.) */}
-          <div className="flex items-center space-x-4 text-xs text-[#5C4F46] font-medium border-b border-[#E8E1D7] pb-2.5">
+          {/* Specs Highlights */}
+          <div className="flex items-center space-x-4 text-[11px] sm:text-xs text-[#5C4F46] font-medium border-b border-[#E8E1D7] pb-2.5">
             <span className="flex items-center">
-              <Users className="w-3.5 h-3.5 mr-1 text-[#BA8B32] flex-shrink-0" /> Max {room.occupancy} {room.occupancy === 1 ? "Guest" : "Guests"}
+              <Users className="w-3.5 h-3.5 mr-1 text-[#BA8B32] flex-shrink-0" /> Max {room.occupancy}
             </span>
             <span className="flex items-center">
-              <Bed className="w-3.5 h-3.5 mr-1 text-[#BA8B32] flex-shrink-0" /> {room.bedType}
+              <Bed className="w-3.5 h-3.5 mr-1 text-[#BA8B32] flex-shrink-0" /> {room.bedType.split(" ")[0]} Bed
             </span>
+            {room.size && (
+              <span className="flex items-center">
+                <Expand className="w-3.5 h-3.5 mr-1 text-[#BA8B32] flex-shrink-0" /> {room.size}
+              </span>
+            )}
           </div>
 
           <p className="text-xs sm:text-[13px] text-[#4A3E37] leading-relaxed line-clamp-2 font-normal">
             {room.description}
           </p>
-
-          {/* Prominent Exact Pricing Display (Requirement 3 & 9) */}
-          <div className="bg-[#FAF8F5] border border-[#E8DFD2] p-3 rounded-xs space-y-0.5">
-            <div className="flex items-baseline justify-between">
-              <span className="text-[10px] uppercase tracking-widest text-[#7A6B61] font-bold">
-                Final Payable Price
-              </span>
-              <span className="text-[10px] text-emerald-700 font-bold">
-                All-Inclusive
-              </span>
-            </div>
-            <div className="flex items-baseline space-x-1.5 pt-0.5">
-              <span className="text-2xl sm:text-3xl font-serif font-extrabold text-[#2B2320] tracking-tight">
-                {formatPrice(finalRate)}
-              </span>
-              <span className="text-xs font-serif font-normal text-[#5C4F46]">
-                / night
-              </span>
-            </div>
-            <p className="text-[11px] font-sans font-medium text-[#7A6B61]">
-              ₹{baseRate.toLocaleString("en-IN")}/- + 5% GST
-            </p>
-          </div>
         </div>
       </div>
 
@@ -111,5 +97,4 @@ export function RoomCard({ room }: RoomCardProps) {
     </div>
   );
 }
-
 

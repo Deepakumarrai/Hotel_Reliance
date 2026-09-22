@@ -51,7 +51,7 @@ export default function VerificationPage() {
             </div>
             <Link href="/rooms" className="block pt-2">
               <Button variant="primary" fullWidth size="sm">
-                Explore Rooms & Accommodation
+                Explore Rooms & Suites
               </Button>
             </Link>
           </motion.div>

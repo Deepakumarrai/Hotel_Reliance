@@ -1,11 +1,11 @@
 "use client";
 
 import React from "react";
-import { Calendar, Users, Home, Moon, Wallet, ShieldCheck, Sparkles, Utensils } from "lucide-react";
+import { Calendar, Users, Home, Moon, Wallet, ShieldCheck, Sparkles } from "lucide-react";
 import { BookingState } from "@/types/booking";
 import { Room } from "@/types/room";
 import { formatDate, getNightsCount, formatPrice } from "@/lib/utils";
-import { useRoomPricing, MAP_PLAN_PRICE } from "@/hooks/useRoomPricing";
+import { useRoomPricing } from "@/hooks/useRoomPricing";
 
 interface BookingSummaryProps {
   state: BookingState;
@@ -15,10 +15,13 @@ interface BookingSummaryProps {
 export function BookingSummary({ state, selectedRoom }: BookingSummaryProps) {
   const { calculateStayTotal } = useRoomPricing();
   const calculation = selectedRoom && state.checkIn && state.checkOut
-    ? calculateStayTotal(selectedRoom.slug, state.checkIn, state.checkOut, state.adults, state.children, state.includeMapPlan)
+    ? calculateStayTotal(selectedRoom.slug, state.checkIn, state.checkOut, state.adults, state.children)
     : null;
 
   const nights = calculation?.nights || getNightsCount(state.checkIn, state.checkOut);
+  const baseRate = calculation?.baseAmount || null;
+  const estimatedTaxes = calculation?.taxAmount || null;
+  const estimatedTotal = calculation?.totalAmount || null;
 
   return (
     <div className="bg-white border border-border-custom shadow-md p-6 space-y-6">
@@ -83,12 +86,12 @@ export function BookingSummary({ state, selectedRoom }: BookingSummaryProps) {
           <Home className="w-4 h-4 text-gold flex-shrink-0 mt-0.5" />
           <div className="space-y-0.5 flex-1">
             <span className="font-bold uppercase tracking-wider text-muted block text-[9px]">
-              Selected Room
+              Selected Suite
             </span>
             {selectedRoom ? (
               <div className="space-y-0.5 text-dark">
                 <span className="font-semibold block text-sm">{selectedRoom.name}</span>
-                <span className="text-[10px] text-muted block">{selectedRoom.bedType}</span>
+                <span className="text-[10px] text-muted block">{selectedRoom.bedType} • {selectedRoom.size || "280 sq. ft."}</span>
               </div>
             ) : (
               <span className="text-muted italic block">Room not selected</span>
@@ -111,9 +114,8 @@ export function BookingSummary({ state, selectedRoom }: BookingSummaryProps) {
             else if (activePromo === "LUXURY20") discountPercent = 20;
 
             const roomSubtotal = calculation.baseAmount;
-            const mapPlanSubtotal = calculation.mapPlanAmount;
             const discountAmount = discountPercent > 0 ? Math.round((roomSubtotal * discountPercent) / 100 * 100) / 100 : 0;
-            const finalTotal = Math.max(0, Math.round((roomSubtotal + mapPlanSubtotal - discountAmount) * 100) / 100);
+            const finalTotal = Math.max(0, Math.round((roomSubtotal - discountAmount) * 100) / 100);
 
             return (
               <div className="space-y-2 pt-1 text-[11px]">
@@ -121,17 +123,6 @@ export function BookingSummary({ state, selectedRoom }: BookingSummaryProps) {
                   <span>Room Tariff ({nights} {nights === 1 ? "night" : "nights"}):</span>
                   <span className="font-semibold text-dark">{formatPrice(roomSubtotal)}</span>
                 </div>
-
-                {state.includeMapPlan && mapPlanSubtotal > 0 && (
-                  <div className="flex justify-between text-muted">
-                    <span className="flex items-center">
-                      <Utensils className="w-3 h-3 mr-1 text-[#BA8B32]" />
-                      Map Plan Add-On ({nights} {nights === 1 ? "night" : "nights"}):
-                    </span>
-                    <span className="font-semibold text-dark">+{formatPrice(mapPlanSubtotal)}</span>
-                  </div>
-                )}
-
                 {discountAmount > 0 && (
                   <div className="flex justify-between text-emerald-700 font-semibold bg-emerald-50 px-2 py-1 border border-emerald-200">
                     <span className="flex items-center">
@@ -141,7 +132,6 @@ export function BookingSummary({ state, selectedRoom }: BookingSummaryProps) {
                     <span>-{formatPrice(discountAmount)}</span>
                   </div>
                 )}
-
                 <div className="flex justify-between text-xs font-bold text-dark border-t border-border-custom/80 pt-2 mt-1">
                   <span>Total Payable:</span>
                   <span className="text-base font-serif text-primary font-bold">{formatPrice(finalTotal)}</span>
@@ -153,7 +143,7 @@ export function BookingSummary({ state, selectedRoom }: BookingSummaryProps) {
             );
           })() : (
             <div className="text-muted text-[11px] pt-1 italic">
-              Select room & stay dates to see total.
+              Select suite & stay dates to see total.
             </div>
           )}
         </div>
@@ -166,4 +156,3 @@ export function BookingSummary({ state, selectedRoom }: BookingSummaryProps) {
     </div>
   );
 }
-

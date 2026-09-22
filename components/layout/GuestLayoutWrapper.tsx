@@ -8,7 +8,6 @@ import { FloatingWhatsApp } from "@/components/layout/FloatingWhatsApp";
 import { CustomCursor } from "@/components/animation/CustomCursor";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { PageTransition } from "@/components/animation/PageTransition";
-import { CookieConsent } from "@/components/layout/CookieConsent";
 
 export function GuestLayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -28,7 +27,6 @@ export function GuestLayoutWrapper({ children }: { children: React.ReactNode }) 
       <FloatingWhatsApp />
       <CustomCursor />
       <AuthModal />
-      <CookieConsent />
     </>
   );
 }

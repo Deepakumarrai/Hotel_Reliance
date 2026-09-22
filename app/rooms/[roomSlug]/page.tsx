@@ -112,6 +112,10 @@ export default async function RoomDetailPage({ params }: RoomPageProps) {
       "@type": "BedDetails",
       typeOfBed: room.bedType,
     },
+    floorSize: {
+      "@type": "QuantitativeValue",
+      value: room.size,
+    },
     offers: {
       "@type": "Offer",
       price: room.price,
@@ -157,7 +161,7 @@ export default async function RoomDetailPage({ params }: RoomPageProps) {
 
               <div className="space-y-4">
                 <h2 className="text-2xl font-serif font-bold text-dark border-b border-border-custom pb-3">
-                  About {room.name}
+                  About the {room.name}
                 </h2>
                 <p className="text-muted leading-relaxed font-light text-sm sm:text-base">
                   {room.longDescription || room.description}
@@ -203,8 +207,8 @@ export default async function RoomDetailPage({ params }: RoomPageProps) {
         <section className="py-16 bg-white border-t border-border-custom">
           <Container>
             <SectionHeading
-              title="Explore Other Accommodations"
-              subtitle="MORE ROOMS"
+              title="Explore Other Suites"
+              subtitle="MORE ACCOMMODATIONS"
             />
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-6">
               {relatedRooms.map((r) => (

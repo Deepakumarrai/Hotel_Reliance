@@ -119,9 +119,10 @@ export default function AdminPricingPage() {
   };
 
   const categories = [
-    { key: "single", name: "Single Occupancy", desc: "Solo & Business Lodging (₹2,200 + 5% GST = ₹2,310)" },
-    { key: "double", name: "Double Occupancy", desc: "Spacious Double Lodging (₹2,500 + 5% GST = ₹2,625)" },
-    { key: "triple", name: "Family Room", desc: "Multi-Guest Family Accommodation (₹3,200 + 5% GST = ₹3,360)" },
+    { key: "deluxe", name: "Deluxe Room", desc: "Base Corporate & Couple Lodging" },
+    { key: "executive", name: "Executive Room", desc: "Spacious Business Suite" },
+    { key: "premium", name: "Premium Suite", desc: "Luxury Suite with Living Lounge" },
+    { key: "family", name: "Family Suite", desc: "Multi-Guest 4-Bed Luxury Room" },
   ];
 
   if (loading) {

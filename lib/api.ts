@@ -385,7 +385,7 @@ export const api = {
         const checkInDate = new Date(body.checkIn);
         const checkOutDate = new Date(body.checkOut);
         const diffNights = Math.max(1, Math.ceil(Math.abs(checkOutDate.getTime() - checkInDate.getTime()) / (1000 * 60 * 60 * 24)));
-        const nightlyRate = matchingRoom.price || 2310;
+        const nightlyRate = matchingRoom.price || 2403.32;
         const finalCalculatedTotal = Math.round(nightlyRate * diffNights * 100) / 100;
 
         const newBooking = {

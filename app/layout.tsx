@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     template: "%s | Hotel Reliance Bokaro",
   },
   description:
-    "Experience premier luxury hospitality at Hotel Reliance, Bokaro Steel City. Offering 42 premium rooms, Kwality multi-cuisine restaurant, AC banquet halls, 300+ guest wedding lawn, 24/7 room service & free Wi-Fi.",
+    "Experience premier luxury hospitality at Hotel Reliance, Bokaro Steel City. Offering 45+ premium rooms, Kwality multi-cuisine restaurant, AC banquet halls, 300+ guest wedding lawn, 24/7 room service & free Wi-Fi.",
   keywords: [
     "Hotel Reliance",
     "Hotel in Bokaro",
@@ -42,11 +42,8 @@ export const metadata: Metadata = {
     "Hotels near Bokaro Steel Plant",
     "Bokaro Hotels Booking",
   ],
-  authors: [
-    { name: "Deepak Kumar Rai", url: "https://hypekimedia.myquro.com" },
-    { name: "HypeKiMedia", url: "https://hypekimedia.myquro.com" },
-  ],
-  creator: "Deepak Kumar Rai (HypeKiMedia)",
+  authors: [{ name: "Hotel Reliance Hospitality Team", url: "https://www.hotelreliance.com" }],
+  creator: "Hotel Reliance",
   publisher: "Hotel Reliance Bokaro",
   formatDetection: {
     telephone: true,

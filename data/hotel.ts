@@ -1,8 +1,7 @@
 export const hotelData = {
   name: "Hotel Reliance",
   locationName: "Bokaro Steel City, Jharkhand, India",
-  description: "Hotel Reliance has 42 rooms in Bokaro Steel City with Kwality restaurant dining, banquet spaces, meeting rooms and outdoor celebration facilities.",
-  totalRooms: 42,
+  description: "Hotel Reliance is a 45+ room property in Bokaro Steel City with quality restaurant dining, banquet spaces, meeting rooms and outdoor celebration facilities.",
   address: {
     plotNo: "Plot No: NIHP-1",
     street: "West Side of Co-Operative Colony",

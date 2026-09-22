@@ -35,8 +35,6 @@ export interface DynamicRoomData {
   bedType: string;
   price?: number | null;
   pricePerNight?: number;
-  basePrice?: number;
-  gstAmount?: number;
   totalInventory?: number;
   availableUnits?: number;
   isSoldOut?: boolean;
@@ -138,7 +136,7 @@ export function AvailableRooms({
         <div className="flex items-center space-x-2">
           <Layers className="w-4 h-4 text-gold" />
           <span className="text-xs font-bold uppercase tracking-wider text-dark">
-            All Rooms & Accommodations
+            All Accommodations & Suites
           </span>
         </div>
 
@@ -181,7 +179,7 @@ export function AvailableRooms({
             No accommodations currently available
           </h4>
           <p className="text-xs text-muted max-w-md mx-auto leading-relaxed">
-            Please try selecting different stay dates to view available accommodations.
+            Please try selecting different stay dates to view available suites.
           </p>
         </div>
       ) : (
@@ -193,13 +191,18 @@ export function AvailableRooms({
 
             // Availability metrics
             const availableUnits = room.availableUnits !== undefined ? room.availableUnits : 10;
+            const totalInventory = room.totalInventory || 10;
             const isSoldOut = room.isSoldOut || availableUnits <= 0;
             const fitsGuests = room.fitsGuests !== undefined ? room.fitsGuests : true;
+            const isLowInventory = availableUnits > 0 && availableUnits <= 3;
 
             // Pricing metrics
-            const activePrice = getRoomPrice(room.slug) || room.price || 2310;
-            const baseRate = room.basePrice || (room.slug === "double" ? 2500 : room.slug === "triple" || room.slug === "family" ? 3200 : 2200);
+            const activePrice = getRoomPrice(room.slug) || room.price || room.pricePerNight || 2403.32;
             const displayNightly = `${formatPrice(activePrice)}`;
+
+            // Total stay price if nights > 0
+            const totalStayBase = Math.round(activePrice * nights * 100) / 100;
+            const totalStayGrand = room.grandTotal || room.totalStayPrice || totalStayBase;
 
             // Determine if selectable
             const isSelectable = !isSoldOut && fitsGuests;
@@ -226,7 +229,7 @@ export function AvailableRooms({
                 {/* Image Section with Black Shading for Unavailable */}
                 <div className="relative h-56 w-full overflow-hidden bg-black">
                   <Image
-                    src={room.images?.[0] || "/images/rooms/single/1.png"}
+                    src={room.images?.[0] || "/images/rooms/deluxe/main.jpg"}
                     alt={room.name}
                     fill
                     sizes="(max-width: 768px) 100vw, 40vw"
@@ -255,7 +258,7 @@ export function AvailableRooms({
                     </div>
                   )}
 
-                  {/* Top-Left Status Tag */}
+                  {/* Top-Left Status Tag: AVAILABLE vs UNAVAILABLE */}
                   <div className="absolute top-3 left-3 z-20 flex flex-col gap-1.5">
                     {isSoldOut ? (
                       <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 bg-red-950/95 text-red-200 backdrop-blur-md text-[10px] font-bold uppercase tracking-wider border border-red-600/70 shadow-lg rounded-xs">
@@ -301,7 +304,7 @@ export function AvailableRooms({
                 <div className="p-5 flex-grow flex flex-col justify-between space-y-4">
                   <div className="space-y-1">
                     <div className="flex items-center justify-between">
-                      <h4 className="text-lg font-serif font-bold text-dark">
+                      <h4 className="text-lg font-serif font-normal text-dark">
                         {room.name}
                       </h4>
                       <span className="text-[10px] text-gold uppercase tracking-wider font-bold">
@@ -313,17 +316,21 @@ export function AvailableRooms({
                     </p>
                   </div>
 
-                  {/* Room Specifications (No Sq Ft) */}
-                  <div className="grid grid-cols-2 gap-2 border-y border-border-custom py-2.5 text-[10px] text-muted uppercase tracking-wider font-semibold">
+                  {/* Room Specifications */}
+                  <div className="grid grid-cols-3 gap-2 border-y border-border-custom py-2.5 text-[10px] text-muted uppercase tracking-wider font-semibold">
                     <span className="flex items-center">
                       <Users className="w-3.5 h-3.5 mr-1.5 text-gold flex-shrink-0" />
                       <span>
-                        Max {room.capacityAdults ? `${room.capacityAdults} Guests` : `${room.occupancy} Guests`}
+                        Max {room.capacityAdults ? `${room.capacityAdults} Adults` : room.occupancy}
                       </span>
                     </span>
                     <span className="flex items-center">
                       <Bed className="w-3.5 h-3.5 mr-1.5 text-gold flex-shrink-0" />
-                      <span>{room.bedType}</span>
+                      <span>{room.bedType?.split(" ")?.[0] || "King"} Bed</span>
+                    </span>
+                    <span className="flex items-center">
+                      <Expand className="w-3.5 h-3.5 mr-1.5 text-gold flex-shrink-0" />
+                      <span>{room.size || `${room.roomSizeSqFt || 280} sq. ft.`}</span>
                     </span>
                   </div>
 
@@ -333,7 +340,7 @@ export function AvailableRooms({
                       <AlertCircle className="w-3.5 h-3.5 text-amber-700 flex-shrink-0 mt-0.5" />
                       <span>
                         Your party of {adults} adults exceeds this room's maximum capacity of{" "}
-                        {room.capacityAdults} adults. Please select the Family Room or book multiple rooms.
+                        {room.capacityAdults} adults. Please select the Triple Room or book multiple rooms.
                       </span>
                     </div>
                   )}
@@ -342,18 +349,16 @@ export function AvailableRooms({
                   <div className="pt-2 border-t border-border-custom flex items-end justify-between gap-2">
                     <div className="flex flex-col">
                       <span className="text-[9px] uppercase tracking-widest text-muted font-bold block">
-                        {nights > 1 ? `Stay Total (${nights} Nights)` : "Final Payable Price"}
+                        {nights > 1 ? `Stay Total (${nights} Nights)` : "Final Price"}
                       </span>
-                      <div className="flex items-baseline space-x-1 mt-0.5">
-                        <span className="text-xl sm:text-2xl font-serif font-extrabold text-primary block">
-                          {nights > 1 ? formatPrice(activePrice * nights) : displayNightly}
-                        </span>
+                      <span className="text-base font-bold text-primary block mt-0.5">
+                        {nights > 1 ? formatPrice(activePrice * nights) : displayNightly}
                         {nights === 1 && (
                           <span className="text-[10px] font-normal text-muted"> / night</span>
                         )}
-                      </div>
-                      <span className="text-[10px] text-[#7A6B61] font-medium">
-                        ₹{baseRate.toLocaleString("en-IN")}/- + 5% GST
+                      </span>
+                      <span className="text-[9.5px] text-emerald-700 font-semibold">
+                        ✓ All-Inclusive Final Price
                       </span>
                     </div>
 
@@ -377,7 +382,7 @@ export function AvailableRooms({
                         ? "Unavailable"
                         : !fitsGuests
                         ? "Capacity Exceeded"
-                        : "Select Room"}
+                        : "Select Suite"}
                     </button>
                   </div>
                 </div>
@@ -389,4 +394,3 @@ export function AvailableRooms({
     </div>
   );
 }
-

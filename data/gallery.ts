@@ -81,51 +81,51 @@ export const galleryData: GalleryImage[] = [
   {
     id: "g-rooms-1",
     url: "/images/rooms/single/1.png",
-    alt: "Single Occupancy Room Interior",
+    alt: "Single Room Luxury Interior",
     category: "rooms",
-    title: "Single Occupancy Luxury Comfort"
+    title: "Single Room Luxury Comfort"
   },
   {
     id: "g-rooms-2",
     url: "/images/rooms/double/1.png",
-    alt: "Double Occupancy Room Elegance",
+    alt: "Double Room Modern Elegance",
     category: "rooms",
-    title: "Double Occupancy Executive Comfort"
+    title: "Double Room Executive Comfort"
   },
   {
     id: "g-rooms-2-b",
     url: "/images/rooms/double/2.png",
-    alt: "Double Occupancy King Bed View",
+    alt: "Double Room King Bed View",
     category: "rooms",
-    title: "Double Occupancy Plush Bedding"
+    title: "Double Room Plush Bedding"
   },
   {
     id: "g-rooms-2-c",
     url: "/images/rooms/double/3.png",
-    alt: "Double Occupancy Room Lighting",
+    alt: "Double Room Interior & Lighting",
     category: "rooms",
-    title: "Double Occupancy Ambient Interior"
+    title: "Double Room Ambient Interior"
   },
   {
     id: "g-rooms-3",
     url: "/images/rooms/triple/1.png",
-    alt: "Family Room Luxury Accommodation",
+    alt: "Triple Room Luxury Accommodation",
     category: "rooms",
-    title: "Family Room Luxury Comfort"
+    title: "Triple Room Multi-Bed Suite"
   },
   {
     id: "g-rooms-3-b",
     url: "/images/rooms/triple/2.png",
-    alt: "Family Room Arrangement",
+    alt: "Triple Room Arrangement",
     category: "rooms",
-    title: "Family Room Bed Arrangement"
+    title: "Triple Room Bed Arrangement"
   },
   {
     id: "g-rooms-3-c",
     url: "/images/rooms/triple/3.png",
-    alt: "Family Room Sitting Area",
+    alt: "Triple Room Sitting Area",
     category: "rooms",
-    title: "Family Room Sitting Space"
+    title: "Triple Room Sitting Space"
   },
   {
     id: "g-restaurant-1",
