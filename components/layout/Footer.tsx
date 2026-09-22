@@ -205,6 +205,11 @@ export function Footer() {
                   </Link>
                 </li>
                 <li>
+                  <Link href="/cancellation-policy" className="hover:text-[#D8B875] transition-all hover:translate-x-1 duration-200 inline-block font-normal">
+                    Cancellation Policy
+                  </Link>
+                </li>
+                <li>
                   <Link href="/contact" className="hover:text-[#D8B875] transition-all hover:translate-x-1 duration-200 inline-block font-normal">
                     Contact Front Desk
                   </Link>

@@ -149,20 +149,7 @@ export function validateAdminSession(token?: string | null): AdminSession | null
     return session;
   }
 
-  // Auto-recover session if valid token string is present (e.g. after Next.js hot reload)
-  if (typeof token === "string" && token.length >= 8) {
-    const recoveredSession: AdminSession = {
-      token,
-      username: ADMIN_USERNAME,
-      name: "Vikramaditya Roy (GM)",
-      role: "SUPER_ADMIN",
-      createdAt: Date.now(),
-      expiresAt: Date.now() + 24 * 60 * 60 * 1000,
-    };
-    activeSessions.set(token, recoveredSession);
-    return recoveredSession;
-  }
-
+  // In production, invalid or unrecognized tokens must strictly return null
   return null;
 }
 
