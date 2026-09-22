@@ -339,7 +339,8 @@ export function Footer() {
                 className="text-[#C5A880] hover:text-[#D8B875] font-medium transition-colors underline underline-offset-2"
               >
                 hypekimedia.myquro.com
-              </a>
+              </a>{" "}
+              • <span className="text-[#DFD7CF] font-medium">Deepak Kumar Rai</span>
             </p>
           </div>
         </div>

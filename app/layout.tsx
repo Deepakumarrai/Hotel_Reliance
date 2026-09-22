@@ -42,8 +42,11 @@ export const metadata: Metadata = {
     "Hotels near Bokaro Steel Plant",
     "Bokaro Hotels Booking",
   ],
-  authors: [{ name: "Hotel Reliance Hospitality Team", url: "https://www.hotelreliance.com" }],
-  creator: "Hotel Reliance",
+  authors: [
+    { name: "Deepak Kumar Rai", url: "https://hypekimedia.myquro.com" },
+    { name: "HypeKiMedia", url: "https://hypekimedia.myquro.com" },
+  ],
+  creator: "Deepak Kumar Rai (HypeKiMedia)",
   publisher: "Hotel Reliance Bokaro",
   formatDetection: {
     telephone: true,

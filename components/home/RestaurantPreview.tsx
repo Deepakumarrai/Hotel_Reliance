@@ -31,7 +31,7 @@ const diningExperiences = [
   },
   {
     id: "private-dining",
-    title: "ROYAL PRIVATE DINING",
+    title: "PRIVATE DINING SUITES",
     subtitle: "Exclusive VIP Gatherings & Celebrations",
     image: "/images/restaurant/dining-private.jpg",
     link: "/restaurant#private-dining"
@@ -59,13 +59,13 @@ export function RestaurantPreview() {
     <section id="dining" className="py-16 sm:py-24 bg-white text-[#2B2320] border-t border-[#E8E1D7] overflow-hidden select-none">
       <Container className="max-w-7xl px-4 sm:px-6">
         {/* Top Header Row matching Taj Reference Layout */}
-        <FadeUp className="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6 mb-8 sm:mb-12 pb-6 sm:pb-8 border-b border-[#E8E1D7]">
+        <FadeUp className="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6 mb-12 sm:mb-16 pb-6 sm:pb-8 border-b border-[#E8E1D7]">
           {/* Left Two-Line Title with Dash */}
           <div className="flex items-start space-x-3 sm:space-x-4">
             <div className="w-8 sm:w-16 h-[1.5px] bg-[#C5A880] mt-3 sm:mt-4 flex-shrink-0" />
             <h2 className="text-2xl sm:text-4xl md:text-5xl font-serif font-normal tracking-[0.1em] sm:tracking-[0.14em] text-[#2B2320] uppercase leading-tight">
-              Kwality Restaurant
-              <span className="block">& Fine Dining</span>
+              Our Signature
+              <span className="block">Dining Experiences</span>
             </h2>
           </div>
 
@@ -74,33 +74,6 @@ export function RestaurantPreview() {
             Step into Kwality Restaurant where a symphony of rich North Indian flavours, authentic tandoori delights, oriental specialties, and genuine hospitality leaves you feeling truly indulged.
           </p>
         </FadeUp>
-
-        {/* Timings Highlight Bar (Requirement 10) */}
-        <div className="mb-10 p-4 sm:p-5 bg-[#FAF8F5] border border-[#E8DFD2] rounded-xs flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
-          <div className="space-y-0.5">
-            <span className="text-[10px] uppercase font-bold tracking-widest text-[#B38E5D] font-serif block">
-              RESTAURANT & BUFFET TIMINGS
-            </span>
-            <p className="text-xs sm:text-sm font-serif text-[#2B2320]">
-              Open daily for hotel guests and visiting diners in Bokaro Steel City.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-xs text-[#2B2320]">
-            <div className="bg-white px-3.5 py-2 border border-[#E8DFD2] shadow-xs">
-              <span className="text-[10px] uppercase text-[#7A6B61] font-bold block">Breakfast / Buffet</span>
-              <span className="font-bold text-[#2B2320] font-sans">8:30 AM – 10:30 AM</span>
-            </div>
-            <div className="bg-white px-3.5 py-2 border border-[#E8DFD2] shadow-xs">
-              <span className="text-[10px] uppercase text-[#7A6B61] font-bold block">Lunch Service</span>
-              <span className="font-bold text-[#2B2320] font-sans">12:00 PM – 4:00 PM</span>
-            </div>
-            <div className="bg-white px-3.5 py-2 border border-[#E8DFD2] shadow-xs">
-              <span className="text-[10px] uppercase text-[#7A6B61] font-bold block">Dinner Service</span>
-              <span className="font-bold text-[#2B2320] font-sans">7:00 PM – 10:30 PM</span>
-            </div>
-          </div>
-        </div>
 
         {/* Carousel & Cards Grid with Side Navigation Arrows */}
         <div className="relative px-0 sm:px-4">
@@ -172,4 +145,3 @@ export function RestaurantPreview() {
     </section>
   );
 }
-
