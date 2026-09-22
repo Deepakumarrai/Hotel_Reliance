@@ -205,9 +205,10 @@ function BookingContent() {
     setBookingError(null);
 
     try {
-      // Calculate exact stay tariff
-      const activeRoomPrice = selectedRoom.price || getRoomPrice(selectedRoom.slug) || 2403.32;
-      const rawSubtotal = Math.round(activeRoomPrice * nights * 100) / 100;
+      // Calculate exact stay tariff with new room rates
+      const activeRoomPrice = selectedRoom.price || getRoomPrice(selectedRoom.slug) || 2310;
+      const rawRoomSubtotal = Math.round(activeRoomPrice * nights * 100) / 100;
+      const mapPlanSubtotal = bookingState.includeMapPlan ? 735 * nights : 0;
 
       const activePromo = (bookingState.promoCode || bookingState.guest?.promoCode || "").toUpperCase().trim();
       let discountPercent = 0;
@@ -215,8 +216,8 @@ function BookingContent() {
       else if (activePromo === "WELCOME10" || activePromo === "KWALITY10" || activePromo === "CORPSTAY" || activePromo === "WEEKENDSPL") discountPercent = 10;
       else if (activePromo === "LUXURY20") discountPercent = 20;
 
-      const discountAmount = discountPercent > 0 ? Math.round((rawSubtotal * discountPercent) / 100 * 100) / 100 : 0;
-      const finalTotal = Math.max(0, Math.round((rawSubtotal - discountAmount) * 100) / 100);
+      const discountAmount = discountPercent > 0 ? Math.round((rawRoomSubtotal * discountPercent) / 100 * 100) / 100 : 0;
+      const finalTotal = Math.max(0, Math.round((rawRoomSubtotal + mapPlanSubtotal - discountAmount) * 100) / 100);
 
       let bookingId = `HR-${Math.floor(100000 + Math.random() * 900000)}`;
 
@@ -252,6 +253,8 @@ function BookingContent() {
         nights,
         adults: bookingState.adults,
         children: bookingState.children,
+        includeMapPlan: bookingState.includeMapPlan,
+        mapPlanPrice: mapPlanSubtotal,
         room: {
           ...selectedRoom,
           price: activeRoomPrice
@@ -377,6 +380,61 @@ function BookingContent() {
                         nights={nights}
                         onEditDates={() => setStep(1)}
                       />
+                    </div>
+
+                    {/* Map Plan Add-On Selector (Requirement 4) */}
+                    <div className="space-y-3 pt-2">
+                      <h3 className="text-base font-serif text-[#2B2320] flex items-center justify-between">
+                        <span>Dining Plan Options</span>
+                        <span className="text-[10px] text-[#7A6B61] font-sans font-normal uppercase tracking-wider">Optional Add-On</span>
+                      </h3>
+                      <div
+                        onClick={() => setBookingState((prev) => ({ ...prev, includeMapPlan: !prev.includeMapPlan }))}
+                        className={`p-4 sm:p-5 border-2 rounded-xs transition-all cursor-pointer ${
+                          bookingState.includeMapPlan
+                            ? "border-[#BA8B32] bg-[#FAF8F5] shadow-sm ring-1 ring-[#BA8B32]/30"
+                            : "border-[#E8DFD2] bg-white hover:border-[#BA8B32]/60"
+                        }`}
+                      >
+                        <div className="flex items-start sm:items-center justify-between gap-4">
+                          <div className="flex items-start space-x-3.5">
+                            <input
+                              type="checkbox"
+                              checked={!!bookingState.includeMapPlan}
+                              onChange={(e) => {
+                                e.stopPropagation();
+                                setBookingState((prev) => ({ ...prev, includeMapPlan: e.target.checked }));
+                              }}
+                              className="w-5 h-5 mt-0.5 sm:mt-0 text-[#BA8B32] accent-[#BA8B32] rounded-xs cursor-pointer"
+                            />
+                            <div>
+                              <div className="flex items-center space-x-2">
+                                <span className="font-serif font-bold text-sm sm:text-base text-[#2B2320]">
+                                  Map Plan
+                                </span>
+                                <span className="text-[10px] uppercase tracking-wider font-bold bg-[#BA8B32]/15 text-[#8C6418] px-2 py-0.5 rounded-xs">
+                                  ₹735/- per night
+                                </span>
+                              </div>
+                              <p className="text-xs text-[#5C4F46] mt-0.5 leading-relaxed font-light">
+                                Includes comprehensive breakfast buffet & dinner service (MAP) at Kwality Restaurant.
+                              </p>
+                              <p className="text-[11px] text-[#7A6B61] font-sans font-medium mt-1">
+                                ₹700/- + 5% GST = ₹735/- per night
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="text-right flex-shrink-0">
+                            <span className="text-xl font-serif font-bold text-[#2B2320] block">
+                              ₹735/-
+                            </span>
+                            <span className="text-[10px] text-[#7A6B61] block">
+                              ₹700 + 5% GST
+                            </span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 )}

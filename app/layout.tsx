@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     template: "%s | Hotel Reliance Bokaro",
   },
   description:
-    "Experience premier luxury hospitality at Hotel Reliance, Bokaro Steel City. Offering 45+ premium rooms, Kwality multi-cuisine restaurant, AC banquet halls, 300+ guest wedding lawn, 24/7 room service & free Wi-Fi.",
+    "Experience premier luxury hospitality at Hotel Reliance, Bokaro Steel City. Offering 42 premium rooms, Kwality multi-cuisine restaurant, AC banquet halls, 300+ guest wedding lawn, 24/7 room service & free Wi-Fi.",
   keywords: [
     "Hotel Reliance",
     "Hotel in Bokaro",

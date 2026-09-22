@@ -149,7 +149,7 @@ export function Navbar() {
             <span
               className={`text-[9px] tracking-[0.35em] font-sans font-bold uppercase -mt-1 text-center transition-colors text-[#BA8B32]`}
             >
-              Hotel & Suites
+              Hotel & Accommodation
             </span>
           </Link>
 

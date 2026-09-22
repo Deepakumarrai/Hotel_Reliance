@@ -1,12 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Room } from "@/types";
 import { RoomCard } from "./RoomCard";
-import { Button } from "@/components/ui/Button";
-
 import { roomsData } from "@/data/rooms";
-import { getRoomPrice } from "@/hooks/useRoomPricing";
 
 interface RoomGridProps {
   rooms?: Room[];
@@ -19,7 +16,7 @@ export function RoomGrid({ rooms: initialRooms }: RoomGridProps) {
   const filteredRooms = rooms.filter((room) => {
     if (activeFilter === "single") return room.occupancy === 1 || room.slug === "single";
     if (activeFilter === "double") return room.occupancy === 2 || room.slug === "double";
-    if (activeFilter === "triple") return room.occupancy >= 3 || room.slug === "triple";
+    if (activeFilter === "triple") return room.occupancy >= 3 || room.slug === "triple" || room.slug === "family";
     return true;
   });
 
@@ -39,10 +36,10 @@ export function RoomGrid({ rooms: initialRooms }: RoomGridProps) {
         {/* Filter Category Tabs */}
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           {[
-            { id: "all" as const, label: "All Rooms" },
-            { id: "single" as const, label: "Single Room (1 Guest)" },
-            { id: "double" as const, label: "Double Room (2 Guests)" },
-            { id: "triple" as const, label: "Triple Room (3 Guests)" },
+            { id: "all" as const, label: "All Accommodations" },
+            { id: "single" as const, label: "Single Occupancy (₹2,310)" },
+            { id: "double" as const, label: "Double Occupancy (₹2,625)" },
+            { id: "triple" as const, label: "Family Room (₹3,360)" },
           ].map((cat) => (
             <button
               key={cat.id}
@@ -59,7 +56,6 @@ export function RoomGrid({ rooms: initialRooms }: RoomGridProps) {
         </div>
       </div>
 
-
       {/* Rooms Presentation: Mobile Horizontal Swipe Carousel & Tablet/Desktop Grid */}
       {filteredRooms.length > 0 ? (
         <div>
@@ -69,7 +65,7 @@ export function RoomGrid({ rooms: initialRooms }: RoomGridProps) {
               {filteredRooms.map((room) => (
                 <div
                   key={room.id}
-                  className="w-[84vw] max-w-[330px] flex-shrink-0 snap-center"
+                  className="w-[88vw] max-w-[340px] flex-shrink-0 snap-center"
                 >
                   <RoomCard room={room} />
                 </div>
@@ -78,7 +74,7 @@ export function RoomGrid({ rooms: initialRooms }: RoomGridProps) {
 
             {/* Mobile Swipe Hint & Dots */}
             <div className="flex items-center justify-center space-x-2 pt-2 text-[#C5A880]">
-              <span className="text-[10px] uppercase font-serif tracking-widest text-[#7A6B61]">Swipe Suites →</span>
+              <span className="text-[10px] uppercase font-serif tracking-widest text-[#7A6B61]">Swipe Accommodations →</span>
             </div>
           </div>
 
@@ -93,9 +89,10 @@ export function RoomGrid({ rooms: initialRooms }: RoomGridProps) {
         </div>
       ) : (
         <div className="text-center py-16 bg-white border border-[#E8E1D7] max-w-md mx-auto">
-          <p className="text-sm text-muted">No rooms match your filter. Please choose another option.</p>
+          <p className="text-sm text-muted">No accommodations match your filter. Please choose another option.</p>
         </div>
       )}
     </div>
   );
 }
+

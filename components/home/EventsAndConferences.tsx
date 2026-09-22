@@ -51,6 +51,41 @@ export function EventsAndConferences() {
           </p>
         </FadeUp>
 
+        {/* Marriage Cost Featured Card (Requirement 5) */}
+        <div className="my-10 p-6 sm:p-8 bg-[#FAF8F5] border-2 border-[#BA8B32] shadow-lg rounded-xs">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-6 text-center lg:text-left">
+            <div className="space-y-2 max-w-2xl">
+              <div className="inline-flex items-center space-x-2 px-3 py-1 bg-[#BA8B32]/15 text-[#8C6418] text-[10px] uppercase font-bold tracking-widest rounded-xs">
+                <span>✦ Grand Wedding & Celebration Package</span>
+              </div>
+              <h3 className="text-2xl sm:text-3xl font-serif text-[#2B2320]">
+                Complete Marriage & Wedding Event Venue
+              </h3>
+              <p className="text-xs sm:text-sm text-[#5C4F46] font-light leading-relaxed">
+                Celebrate your most cherished moments across our grand AC Banquet Hall and manicured Celebration Lawn with complete decor, audio-visual setups, and dedicated bridal rooms.
+              </p>
+            </div>
+
+            <div className="bg-white border border-[#E8DFD2] p-5 sm:p-6 shadow-sm rounded-xs text-center flex-shrink-0 min-w-[260px]">
+              <span className="text-[10px] uppercase tracking-widest text-[#7A6B61] font-bold block">
+                Marriage Cost
+              </span>
+              <div className="text-3xl sm:text-4xl font-serif font-extrabold text-[#2B2320] my-1">
+                ₹2,25,000/-
+              </div>
+              <span className="text-[10px] text-emerald-700 font-bold block mb-3">
+                Full Venue Booking Package
+              </span>
+              <Link
+                href="/banquet"
+                className="inline-block w-full py-2.5 px-4 bg-[#2B2320] hover:bg-[#BA8B32] text-white text-xs font-serif uppercase tracking-widest font-bold transition-colors"
+              >
+                Enquire / Book Event
+              </Link>
+            </div>
+          </div>
+        </div>
+
         {/* 3 Signature Cards with Overlapping Floating White Title Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 lg:gap-8 pb-4">
           {eventItems.map((item) => (
@@ -73,7 +108,7 @@ export function EventsAndConferences() {
               </div>
 
               {/* Overlapping Floating White Card matching Reference */}
-              <div className="relative z-20 -mt-7 sm:-mt-10 w-[90%] sm:w-[88%] bg-white border border-[#E8E1D7] shadow-xl p-4 sm:p-6 text-center group-hover:border-[#C5A880] group-hover:shadow-2xl transition-all duration-300">
+              <div className="relative z-20 -mt-7 sm:-mt-10 w-[90%] sm:w-[88%] bg-white border border-[#E8DFD2] shadow-xl p-4 sm:p-6 text-center group-hover:border-[#C5A880] group-hover:shadow-2xl transition-all duration-300">
                 <h3 className="font-serif text-xs sm:text-sm tracking-[0.14em] sm:tracking-[0.16em] uppercase text-[#2B2320] font-normal group-hover:text-[#9E712E] transition-colors">
                   {item.title}
                 </h3>

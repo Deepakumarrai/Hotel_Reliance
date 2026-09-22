@@ -53,8 +53,8 @@ const exclusivelyData: ExclusivelyItem[] = [
   {
     id: "promotions",
     sideLabel: "OFFERS & PROMOTIONS",
-    title: "EXECUTIVE SUITES",
-    description: "Indulge in spacious residential suites with bespoke business perks, complimentary high-speed Wi-Fi and executive boardroom privileges.",
+    title: "BUSINESS ACCOMMODATIONS",
+    description: "Indulge in comfortable executive rooms with bespoke business perks, complimentary high-speed Wi-Fi and boardroom privileges.",
     image: "/images/banquet/meetings-boardroom.jpg",
     link: "/rooms"
   }

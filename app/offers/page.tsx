@@ -234,7 +234,7 @@ export default function OffersPage() {
               </div>
               <Link href="/rooms">
                 <Button variant="outline" size="md" className="uppercase text-xs tracking-wider flex-shrink-0 border-[#BA8B32] text-[#BA8B32] hover:bg-[#BA8B32] hover:text-white">
-                  Browse All Suites
+                  Browse All Rooms
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </Link>

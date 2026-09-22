@@ -11,7 +11,7 @@ export default function RoomNotFound() {
           Room Not Found
         </h2>
         <p className="text-xs text-muted leading-relaxed font-light">
-          The guest room category you requested does not exist in our hotel inventory. Please explore our other suites.
+          The guest room category you requested does not exist in our hotel inventory. Please explore our other available rooms.
         </p>
         <div className="pt-2">
           <Link href="/rooms">

@@ -14,7 +14,7 @@ type GalleryCategory = "all" | "hotel" | "rooms" | "restaurant" | "banquet" | "p
 const CATEGORIES: { id: GalleryCategory; label: string }[] = [
   { id: "all", label: "All Photographs" },
   { id: "hotel", label: "Hotel & Reception" },
-  { id: "rooms", label: "Rooms & Suites" },
+  { id: "rooms", label: "Rooms & Accommodations" },
   { id: "restaurant", label: "Kwality Restaurant" },
   { id: "banquet", label: "Banquets & Lawns" },
   { id: "places", label: "Local Attractions" }
@@ -81,7 +81,7 @@ export default function GalleryPage() {
 
             {/* Right Subtitle */}
             <p className="text-[15px] sm:text-[17px] md:text-[18.5px] font-serif italic text-white/90 max-w-lg leading-[1.6] text-left md:text-right font-normal drop-shadow-md">
-              Immerse yourself in authentic captures of Hotel Reliance, from our welcoming reception and luxury guest suites to celebratory banquet lawns and Bokaro landmarks.
+              Immerse yourself in authentic captures of Hotel Reliance, from our welcoming reception and luxury guest rooms to celebratory banquet lawns and Bokaro landmarks.
             </p>
           </div>
         </Container>

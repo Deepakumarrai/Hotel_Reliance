@@ -165,7 +165,7 @@ export function HotelIntroduction() {
               </Link>
               <Link href="/rooms" className="w-full sm:w-auto">
                 <Button variant="primary" size="md" className="w-full sm:w-auto uppercase text-xs tracking-wider">
-                  Explore Rooms & Suites
+                  Explore Rooms & Tariffs
                 </Button>
               </Link>
             </div>

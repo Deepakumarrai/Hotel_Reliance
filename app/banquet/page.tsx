@@ -55,7 +55,6 @@ const venuesList: Venue[] = [
     name: "AC Banquet Hall",
     description: "Our premium air-conditioned indoor banquet hall offers an elegant layout suitable for wedding ceremonies, ring exchanges, birthday celebrations, and corporate dinners.",
     capacity: "Up to 350 Guests",
-    size: "4,200 sq. ft.",
     image: "/images/banquet/hall-main.jpg",
     amenities: [
       "AC Climate Control",
@@ -70,7 +69,6 @@ const venuesList: Venue[] = [
     name: "Executive Meeting Rooms",
     description: "Configured for professional business conventions. Features high-speed connectivity, boards, and digital projection facilities for boardroom discussions.",
     capacity: "Up to 30 Guests",
-    size: "800 sq. ft.",
     image: "/images/gallery/hotel-lobby.jpg", // Lobby is elegant placeholder
     amenities: [
       "Digital Projection & LED Screens",
@@ -85,7 +83,6 @@ const venuesList: Venue[] = [
     name: "Celebration Lawn",
     description: "An expansive open-air manicured garden lawn designed for massive social gatherings, reception parties, exhibitions, and late-evening dinner gatherings under the stars.",
     capacity: "Up to 600 Guests",
-    size: "12,000 sq. ft.",
     image: "/images/banquet/lawn-main.jpg",
     amenities: [
       "Beautiful Green Landscaping",
@@ -119,14 +116,14 @@ export default function BanquetPage() {
   const venueSchema = {
     "@context": "https://schema.org",
     "@type": "EventVenue",
-    name: "Hotel Reliance Banquets & Event Lawns",
+    name: "Hotel Reliance Banquets & Event Spaces",
     parentOrganization: {
       "@type": "Hotel",
       name: "Hotel Reliance",
       url: "https://www.hotelreliance.com",
     },
     url: "https://www.hotelreliance.com/banquet",
-    maximumAttendeeCapacity: 350,
+    telephone: "+91 92629 97777",
     address: {
       "@type": "PostalAddress",
       streetAddress: "Plot No: NIHP-1, West Side of Co-Operative Colony",
@@ -184,6 +181,33 @@ export default function BanquetPage() {
       {/* Venues Grid Section */}
       <section className="py-16 sm:py-24 bg-[#FAF8F5]">
         <Container className="max-w-7xl px-4 sm:px-6 space-y-16">
+          {/* Marriage Cost Highlight Card (Requirement 5) */}
+          <div className="p-6 sm:p-8 bg-white border-2 border-[#BA8B32] shadow-xl rounded-xs flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="space-y-2 text-center md:text-left">
+              <div className="inline-flex items-center space-x-2 px-3 py-1 bg-[#BA8B32]/15 text-[#8C6418] text-[10px] uppercase font-bold tracking-widest rounded-xs">
+                <span>✦ Official Wedding Pricing</span>
+              </div>
+              <h3 className="text-2xl sm:text-3xl font-serif text-[#2B2320]">
+                Grand Marriage & Wedding Event Cost
+              </h3>
+              <p className="text-xs sm:text-sm text-[#5C4F46] font-light max-w-2xl leading-relaxed">
+                Full-day property booking package encompassing the grand AC Banquet Hall, Celebration Lawn, stage infrastructure, sound, and lighting.
+              </p>
+            </div>
+
+            <div className="bg-[#FAF8F5] border border-[#E8DFD2] p-5 sm:p-6 text-center rounded-xs flex-shrink-0 min-w-[240px]">
+              <span className="text-[10px] uppercase tracking-widest text-[#7A6B61] font-bold block">
+                Marriage Cost
+              </span>
+              <div className="text-3xl sm:text-4xl font-serif font-extrabold text-[#2B2320] my-1">
+                ₹2,25,000/-
+              </div>
+              <span className="text-[10px] text-emerald-700 font-bold block">
+                All-Inclusive Venue Package
+              </span>
+            </div>
+          </div>
+
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-[#E8E1D7]">
             <div>
               <span className="text-xs uppercase tracking-[0.2em] font-serif font-bold text-[#B38E5D] block">

@@ -132,7 +132,7 @@ export function Footer() {
               <ul className="space-y-3.5 text-sm sm:text-[15px] font-serif text-[#DFD7CF]">
                 <li>
                   <Link href="/rooms" className="hover:text-[#D8B875] transition-all hover:translate-x-1 duration-200 inline-block font-normal">
-                    Hotels & Suites
+                    Rooms & Accommodation
                   </Link>
                 </li>
                 <li>

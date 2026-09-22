@@ -132,7 +132,7 @@ function SignUpContent() {
               Join Hotel Reliance guest club for prioritized reservations, express check-in, and personalized accommodations in Bokaro Steel City.
             </p>
             <div className="text-[10px] text-gold tracking-widest uppercase font-semibold">
-              45+ Suites • Kwality Restaurant • Banquets
+              42 Premier Rooms • Kwality Restaurant • Banquets
             </div>
           </div>
         </div>

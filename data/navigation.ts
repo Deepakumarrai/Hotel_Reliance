@@ -24,7 +24,7 @@ export const headerNavigation: NavigationItem[] = [
 
 export const footerQuickLinks: NavigationItem[] = [
   { name: "About Hotel", path: "/about" },
-  { name: "Rooms & Suites", path: "/rooms" },
+  { name: "Rooms & Accommodation", path: "/rooms" },
   { name: "Photo Gallery", path: "/gallery" },
   { name: "Special Offers", path: "/offers" },
   { name: "Kwality Restaurant", path: "/restaurant" },

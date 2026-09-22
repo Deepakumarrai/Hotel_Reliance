@@ -71,7 +71,7 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
                 Reliance
               </span>
               <span className="text-[8px] tracking-[0.3em] font-sans font-bold uppercase text-gold -mt-1">
-                Hotel & Suites
+                Hotel & Accommodation
               </span>
             </div>
             <button

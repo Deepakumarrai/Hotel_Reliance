@@ -1,7 +1,8 @@
 export const HOTEL_INFO = {
   name: "Hotel Reliance",
-  shortDescription: "Quality restaurant dining, banquet spaces, meeting rooms, and premium accommodations in Bokaro Steel City.",
-  longDescription: "Hotel Reliance is a 45+ room property in Bokaro Steel City with quality restaurant dining, banquet spaces, meeting rooms and outdoor celebration facilities.",
+  shortDescription: "Kwality restaurant dining, banquet spaces, meeting rooms, and premium accommodations in Bokaro Steel City.",
+  longDescription: "Hotel Reliance has 42 rooms in Bokaro Steel City with quality restaurant dining, banquet spaces, meeting rooms and outdoor celebration facilities.",
+  totalRooms: 42,
   address: {
     street: "Plot No: NIHP-1, West Side of Co-Operative Colony",
     city: "Bokaro Steel City",

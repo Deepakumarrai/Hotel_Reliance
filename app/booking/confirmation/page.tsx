@@ -173,7 +173,7 @@ export default function BookingConfirmationPage() {
               </Link>
               <Link href="/rooms">
                 <Button variant="primary" size="sm">
-                  Browse Suites
+                  Browse Rooms
                 </Button>
               </Link>
             </div>

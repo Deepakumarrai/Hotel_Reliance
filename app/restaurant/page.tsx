@@ -50,9 +50,9 @@ export const metadata: Metadata = {
 };
 
 const diningHours = [
-  { meal: "Breakfast Buffet", hours: "07:30 AM - 10:30 AM" },
-  { meal: "Lunch Service", hours: "12:30 PM - 03:30 PM" },
-  { meal: "Dinner Service", hours: "07:00 PM - 10:45 PM" }
+  { meal: "Breakfast / Buffet", hours: "8:30 AM – 10:30 AM" },
+  { meal: "Lunch", hours: "12:00 PM – 4:00 PM" },
+  { meal: "Dinner", hours: "7:00 PM – 10:30 PM" }
 ];
 
 const chefSpecialties = [

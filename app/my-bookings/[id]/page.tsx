@@ -52,7 +52,6 @@ function BookingDetailContent({ params }: { params: Promise<{ id: string }> }) {
               images: [b.room?.images?.[0] || "/images/rooms/deluxe.png"],
               heroImage: b.room?.images?.[0] || "/images/rooms/deluxe.png",
               bedType: "King Bed",
-              size: "350 sq.ft",
               view: "City View",
               rating: 4.8,
               reviewCount: 120,

@@ -100,7 +100,7 @@ function SignInContent() {
           <div className="relative z-10 space-y-4 pt-6">
             <div className="w-12 h-[2px] bg-gold" />
             <p className="text-xs text-cream/80 leading-relaxed font-light">
-              "Experience timeless hospitality and tailored comfort across our 45+ premier guest suites."
+              "Experience timeless hospitality and tailored comfort across our 42 premier guest rooms."
             </p>
             <div className="text-[10px] text-gold tracking-widest uppercase font-semibold">
               Guest Services & Reservations

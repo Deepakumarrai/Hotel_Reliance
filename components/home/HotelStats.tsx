@@ -10,8 +10,8 @@ const stats = [
   {
     id: 1,
     icon: <Users className="w-8 h-8 text-gold" />,
-    value: "45+",
-    label: "Guest Rooms & Suites"
+    value: "42",
+    label: "Executive Guest Rooms"
   },
   {
     id: 2,

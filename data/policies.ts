@@ -46,7 +46,7 @@ export const policiesData: PolicySection[] = [
     rules: [
       "Up to two children under 6 years of age can stay complimentary sharing existing parent bedding.",
       "Extra bed or additional guest services requested via Special Request are handled at ₹300/night directly with the hotel.",
-      "Maximum occupancy per room category: Single Room (1 Guest), Double Room (2 Guests), Triple Room (3 Guests)."
+      "Maximum occupancy per room category: Single Occupancy (1 Guest), Double Occupancy (2 Guests), Family Room (3 Guests)."
     ]
   },
   {
@@ -91,7 +91,7 @@ export const policiesData: PolicySection[] = [
       "A 30% advance deposit is required to confirm banquet hall and celebration lawn date bookings.",
       "Loud music and outdoor DJ setups on the celebration lawn must adhere to local municipal sound curfew regulations (10:00 PM).",
       "Outside catering is subject to prior management approval; our in-house Kwality Restaurant catering provides customized multi-cuisine buffets.",
-      "Complimentary green rooms / dressing suites are provided with full-day wedding lawn reservations."
+      "Complimentary green rooms / dressing rooms are provided with full-day wedding lawn reservations."
     ]
   }
 ];
