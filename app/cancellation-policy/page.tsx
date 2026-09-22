@@ -158,13 +158,13 @@ export default function CancellationPolicyPage() {
                 For immediate assistance with existing reservations, please contact our Front Desk manager with your Booking ID:
               </p>
               <div className="flex flex-wrap gap-6 pt-2 text-dark font-medium">
-                <a href={`tel:${hotelData.contact.phone.replace(/[^0-9+]/g, '')}`} className="flex items-center hover:text-gold transition-colors">
+                <a href={`tel:${hotelData.phones[0].replace(/[^0-9+]/g, '')}`} className="flex items-center hover:text-gold transition-colors">
                   <Phone className="w-4 h-4 text-gold mr-2" />
-                  {hotelData.contact.phone}
+                  {hotelData.phones[0]}
                 </a>
-                <a href={`mailto:${hotelData.contact.email}`} className="flex items-center hover:text-gold transition-colors">
+                <a href={`mailto:${hotelData.emails[0]}`} className="flex items-center hover:text-gold transition-colors">
                   <Mail className="w-4 h-4 text-gold mr-2" />
-                  {hotelData.contact.email}
+                  {hotelData.emails[0]}
                 </a>
               </div>
             </div>
