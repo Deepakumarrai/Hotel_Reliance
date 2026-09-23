@@ -46,7 +46,7 @@ export const policiesData: PolicySection[] = [
     rules: [
       "Up to two children under 6 years of age can stay complimentary sharing existing parent bedding.",
       "Extra bed or additional guest services requested via Special Request are handled at ₹300/night directly with the hotel.",
-      "Maximum occupancy per room category: Single Room (1 Guest), Double Room (2 Guests), Triple Room (3 Guests)."
+      "Maximum occupancy per room category: Deluxe Room (2 Guests), Executive Room (2 Guests), Premium Suite (3 Guests), Family Suite (4 Guests)."
     ]
   },
   {

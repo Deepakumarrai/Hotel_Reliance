@@ -65,9 +65,12 @@ async function request<T = any>(
 
   const url = `${API_BASE_URL}${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`;
 
-  // Abort quickly if backend server is not running
+  // Use longer timeout for write operations (POST/PUT/DELETE) since they involve
+  // multiple DB queries (booking creation runs ~6 queries). GET stays fast.
+  const method = (options.method || "GET").toUpperCase();
+  const timeoutMs = method === "GET" ? 5000 : 15000;
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 2000);
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
     const res = await fetch(url, {
@@ -303,7 +306,11 @@ export const api = {
           method: "GET"
         });
       } catch (err: any) {
-        const found = roomsData.find((r) => r.slug === slug) || roomsData[0];
+        const norm = (slug || "").toLowerCase().trim();
+        const resolved = norm === "single" || norm === "single-room" ? "deluxe" :
+                         norm === "double" || norm === "double-room" ? "executive" :
+                         norm === "triple" || norm === "triple-room" ? "premium" : norm;
+        const found = roomsData.find((r) => r.slug === norm || r.id === norm || r.slug === resolved || r.id === `${resolved}-room` || r.id === `${resolved}-suite`) || roomsData[0];
         return {
           status: "success",
           data: {
@@ -375,45 +382,12 @@ export const api = {
       promoCode?: string;
       paymentMethod?: string;
     }) => {
-      try {
-        return await request<{ status: string; booking: any; razorpayOrder?: any }>("/bookings/create", {
-          method: "POST",
-          body: JSON.stringify(body)
-        });
-      } catch (err: any) {
-        const matchingRoom = roomsData.find((r) => r.id === body.roomId || r.slug === body.roomId) || roomsData[0];
-        const checkInDate = new Date(body.checkIn);
-        const checkOutDate = new Date(body.checkOut);
-        const diffNights = Math.max(1, Math.ceil(Math.abs(checkOutDate.getTime() - checkInDate.getTime()) / (1000 * 60 * 60 * 24)));
-        const nightlyRate = matchingRoom.price || 2403.32;
-        const finalCalculatedTotal = Math.round(nightlyRate * diffNights * 100) / 100;
-
-        const newBooking = {
-          id: `BK-${Date.now().toString().slice(-6)}`,
-          roomType: matchingRoom.name,
-          roomId: matchingRoom.id,
-          roomSlug: matchingRoom.slug,
-          roomImage: matchingRoom.images[0],
-          checkIn: body.checkIn,
-          checkOut: body.checkOut,
-          adults: body.adults || 2,
-          children: body.children || 0,
-          guestName: body.guest.name,
-          guestEmail: body.guest.email,
-          guestPhone: body.guest.phone,
-          specialRequests: body.guest.specialRequests || "",
-          status: "CONFIRMED",
-          paymentStatus: body.paymentMethod === "PAY_AT_HOTEL" ? "PENDING" : "PAID",
-          paymentMethod: body.paymentMethod || "PAY_AT_HOTEL",
-          totalAmount: finalCalculatedTotal,
-          createdAt: new Date().toISOString()
-        };
-        saveStoredBooking(newBooking);
-        return {
-          status: "success",
-          booking: newBooking
-        };
-      }
+      // No silent fallback — if the backend is unreachable, the error must
+      // surface to the user so they know the booking didn't go through.
+      return await request<{ status: string; booking: any; razorpayOrder?: any }>("/bookings/create", {
+        method: "POST",
+        body: JSON.stringify(body)
+      });
     },
 
     getMyBookings: async () => {
@@ -491,7 +465,7 @@ export const api = {
         return {
           status: "success",
           razorpayOrder: {
-            id: `order_${Date.now()}`,
+            id: `order_sim_${Date.now()}`,
             amount: body.amount * 100,
             currency: "INR"
           }

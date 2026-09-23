@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { roomsData } from "@/data/rooms";
+import { Room } from "@/types/room";
+import { forwardToBackend } from "@/lib/admin/backendClient";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { RoomCard } from "@/components/rooms/RoomCard";
@@ -16,42 +18,89 @@ import { VRViewerPlaceholder } from "@/components/rooms/VRViewerPlaceholder";
 import { Button } from "@/components/ui/Button";
 import { formatPrice } from "@/lib/utils";
 
+export const dynamic = "force-dynamic";
+
 interface RoomPageProps {
   params: Promise<{ roomSlug: string }>;
 }
 
+async function getLiveRooms(): Promise<Room[]> {
+  try {
+    const res = await forwardToBackend("/admin/content/room_categories", { method: "GET" });
+    const categories = res.data?.content?.categories;
+    if (Array.isArray(categories) && categories.length > 0) {
+      return categories.map((cat: any) => {
+        const slug = cat.slug || cat.id?.replace(/-room$/, "").replace(/-suite$/, "") || "deluxe";
+        const images = Array.isArray(cat.images) && cat.images.length > 0
+          ? cat.images
+          : (cat.image ? [cat.image] : [`/images/rooms/${slug}/main.jpg`, `/images/rooms/${slug}/1.png`]);
+        const occupancy = typeof cat.occupancy === "number" ? cat.occupancy : (parseInt(cat.maxGuests) || 2);
+        const bedType = cat.bedType || cat.bedding || "King Bed";
+        const size = cat.size || cat.roomArea || "300 sq. ft.";
+        const price = typeof cat.price === "number"
+          ? cat.price
+          : typeof cat.pricePerNight === "number"
+          ? cat.pricePerNight
+          : Number(cat.price) || Number(cat.pricePerNight) || null;
+
+        return {
+          id: cat.id || `${slug}-room`,
+          slug: slug,
+          name: cat.name,
+          description: cat.description || cat.shortDesc || "",
+          longDescription: cat.longDescription || cat.description || "",
+          images: images,
+          amenities: Array.isArray(cat.amenities) ? cat.amenities : [],
+          occupancy: occupancy,
+          bedType: bedType,
+          price: price,
+          featured: true,
+          size: size,
+          view: cat.view || "City View",
+        };
+      });
+    }
+  } catch {}
+  return roomsData;
+}
+
 export function generateStaticParams() {
   return [
-    { roomSlug: "single" },
-    { roomSlug: "double" },
-    { roomSlug: "triple" },
     { roomSlug: "deluxe" },
     { roomSlug: "executive" },
     { roomSlug: "premium" },
     { roomSlug: "family" },
+    { roomSlug: "single" },
+    { roomSlug: "double" },
+    { roomSlug: "triple" },
   ];
 }
 
 export async function generateMetadata({ params }: RoomPageProps): Promise<Metadata> {
   const { roomSlug } = await params;
-  const normalized = roomSlug.toLowerCase();
+  const normalized = roomSlug.toLowerCase().trim();
   const canonical =
-    normalized === "deluxe" ? "single" :
-    normalized === "executive" ? "double" :
-    (normalized === "premium" || normalized === "family") ? "triple" :
+    normalized === "single" || normalized === "single-room" ? "deluxe" :
+    normalized === "double" || normalized === "double-room" ? "executive" :
+    normalized === "triple" || normalized === "triple-room" ? "premium" :
     normalized;
 
-  const room = roomsData.find((r) => r.slug === canonical || r.slug === roomSlug || r.id === roomSlug);
+  const allRooms = await getLiveRooms();
+  const room = allRooms.find((r) => r.slug.toLowerCase() === normalized || r.id.toLowerCase() === normalized) ||
+               allRooms.find((r) => r.slug === canonical || r.id === canonical || r.id === `${canonical}-room` || r.id === `${canonical}-suite`) ||
+               roomsData.find((r) => r.slug.toLowerCase() === normalized || r.id.toLowerCase() === normalized) ||
+               roomsData.find((r) => r.slug === canonical || r.id === canonical || r.id === `${canonical}-room` || r.id === `${canonical}-suite`);
   if (!room) {
     return { title: "Room Not Found | Hotel Reliance" };
   }
 
   const pageUrl = `https://www.hotelreliance.com/rooms/${room.slug}`;
   const mainImage = room.images && room.images[0] ? room.images[0] : "/images/hero/hero-bg.jpg";
+  const priceDisplay = room.price && room.price > 0 ? `${formatPrice(room.price)}/night` : "Competitive Luxury Tariffs";
 
   return {
     title: `${room.name} — Luxury Stay & Tariff`,
-    description: `${room.description} Book ${room.name} at Hotel Reliance Bokaro at ${formatPrice(room.price)}/night. Includes king bedding, high-speed Wi-Fi, AC, and room service.`,
+    description: `${room.description} Book ${room.name} at Hotel Reliance Bokaro at ${priceDisplay}. Includes king bedding, high-speed Wi-Fi, AC, and room service.`,
     alternates: {
       canonical: pageUrl,
     },
@@ -80,21 +129,25 @@ export async function generateMetadata({ params }: RoomPageProps): Promise<Metad
 
 export default async function RoomDetailPage({ params }: RoomPageProps) {
   const { roomSlug } = await params;
-  const normalized = roomSlug.toLowerCase();
+  const normalized = roomSlug.toLowerCase().trim();
   const canonical =
-    normalized === "deluxe" ? "single" :
-    normalized === "executive" ? "double" :
-    (normalized === "premium" || normalized === "family") ? "triple" :
+    normalized === "single" || normalized === "single-room" ? "deluxe" :
+    normalized === "double" || normalized === "double-room" ? "executive" :
+    normalized === "triple" || normalized === "triple-room" ? "premium" :
     normalized;
 
-  const room = roomsData.find((r) => r.slug === canonical || r.slug === roomSlug || r.id === roomSlug);
+  const allRooms = await getLiveRooms();
+  const room = allRooms.find((r) => r.slug.toLowerCase() === normalized || r.id.toLowerCase() === normalized) ||
+               allRooms.find((r) => r.slug === canonical || r.id === canonical || r.id === `${canonical}-room` || r.id === `${canonical}-suite`) ||
+               roomsData.find((r) => r.slug.toLowerCase() === normalized || r.id.toLowerCase() === normalized) ||
+               roomsData.find((r) => r.slug === canonical || r.id === canonical || r.id === `${canonical}-room` || r.id === `${canonical}-suite`);
 
   if (!room) {
     notFound();
   }
 
   // Filter for related rooms (other than current room)
-  const relatedRooms = roomsData.filter((r) => r.id !== room.id).slice(0, 3);
+  const relatedRooms = allRooms.filter((r) => r.id !== room.id && r.slug !== room.slug).slice(0, 3);
 
   // Schema.org HotelRoom Structured Data
   const roomSchema = {

@@ -5,22 +5,20 @@ import { Room } from "@/types";
 import { RoomCard } from "./RoomCard";
 import { Button } from "@/components/ui/Button";
 
-import { roomsData } from "@/data/rooms";
-import { getRoomPrice } from "@/hooks/useRoomPricing";
+import { useRoomCategories } from "@/hooks/useRoomCategories";
 
 interface RoomGridProps {
   rooms?: Room[];
 }
 
 export function RoomGrid({ rooms: initialRooms }: RoomGridProps) {
-  const [activeFilter, setActiveFilter] = useState<"all" | "single" | "double" | "triple">("all");
-  const rooms = initialRooms && initialRooms.length > 0 ? initialRooms : roomsData;
+  const { categories } = useRoomCategories();
+  const rooms = initialRooms && initialRooms.length > 0 ? initialRooms : categories;
+  const [activeFilter, setActiveFilter] = useState<string>("all");
 
   const filteredRooms = rooms.filter((room) => {
-    if (activeFilter === "single") return room.occupancy === 1 || room.slug === "single";
-    if (activeFilter === "double") return room.occupancy === 2 || room.slug === "double";
-    if (activeFilter === "triple") return room.occupancy >= 3 || room.slug === "triple";
-    return true;
+    if (activeFilter === "all") return true;
+    return room.slug === activeFilter || room.id === activeFilter;
   });
 
   return (
@@ -36,24 +34,29 @@ export function RoomGrid({ rooms: initialRooms }: RoomGridProps) {
           </h2>
         </div>
 
-        {/* Filter Category Tabs */}
+        {/* Dynamic Filter Category Tabs */}
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-          {[
-            { id: "all" as const, label: "All Rooms" },
-            { id: "single" as const, label: "Single Room (1 Guest)" },
-            { id: "double" as const, label: "Double Room (2 Guests)" },
-            { id: "triple" as const, label: "Triple Room (3 Guests)" },
-          ].map((cat) => (
+          <button
+            onClick={() => setActiveFilter("all")}
+            className={`px-4 sm:px-5 py-2 sm:py-2.5 text-xs font-serif uppercase tracking-[0.12em] sm:tracking-[0.16em] transition-all duration-300 rounded-none cursor-pointer border ${
+              activeFilter === "all"
+                ? "bg-[#2B2320] text-white border-[#2B2320] shadow-sm font-semibold"
+                : "bg-white text-[#5C4F46] border-[#E8E1D7] hover:border-[#C5A880] hover:text-[#2B2320]"
+            }`}
+          >
+            All Rooms ({rooms.length})
+          </button>
+          {rooms.map((r) => (
             <button
-              key={cat.id}
-              onClick={() => setActiveFilter(cat.id)}
+              key={r.id || r.slug}
+              onClick={() => setActiveFilter(r.slug)}
               className={`px-4 sm:px-5 py-2 sm:py-2.5 text-xs font-serif uppercase tracking-[0.12em] sm:tracking-[0.16em] transition-all duration-300 rounded-none cursor-pointer border ${
-                activeFilter === cat.id
+                activeFilter === r.slug
                   ? "bg-[#2B2320] text-white border-[#2B2320] shadow-sm font-semibold"
                   : "bg-white text-[#5C4F46] border-[#E8E1D7] hover:border-[#C5A880] hover:text-[#2B2320]"
               }`}
             >
-              {cat.label}
+              {r.name} ({r.occupancy} {r.occupancy === 1 ? "Guest" : "Guests"})
             </button>
           ))}
         </div>

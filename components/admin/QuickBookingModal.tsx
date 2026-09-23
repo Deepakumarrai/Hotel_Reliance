@@ -15,9 +15,10 @@ export function QuickBookingModal({
   const [step, setStep] = useState<number>(1);
   const [loading, setLoading] = useState(false);
   const [roomPrices, setRoomPrices] = useState<Record<string, number>>({
-    single: 2403.32,
-    double: 2731.05,
-    triple: 3495.74,
+    deluxe: 2499,
+    executive: 3499,
+    premium: 4999,
+    family: 5999,
   });
   const [availableRooms, setAvailableRooms] = useState<Array<{ roomNumber: string; roomType: string }>>([]);
 
@@ -305,9 +306,10 @@ export function QuickBookingModal({
                       onChange={(e) => setFormData({ ...formData, roomType: e.target.value })}
                       className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl px-4 py-3 min-h-[46px] text-xs text-[#111923] font-medium focus:outline-none focus:border-[#B8893E] shadow-2xs cursor-pointer"
                     >
-                      <option value="single">Single Room (₹{roomPrices.single || 2403.32}/nt)</option>
-                      <option value="double">Double Room (₹{roomPrices.double || 2731.05}/nt)</option>
-                      <option value="triple">Triple Room (₹{roomPrices.triple || 3495.74}/nt)</option>
+                      <option value="deluxe">Deluxe Room {roomPrices.deluxe ? `(₹${roomPrices.deluxe}/nt)` : ''}</option>
+                      <option value="executive">Executive Room {roomPrices.executive ? `(₹${roomPrices.executive}/nt)` : ''}</option>
+                      <option value="premium">Premium Suite {roomPrices.premium ? `(₹${roomPrices.premium}/nt)` : ''}</option>
+                      <option value="family">Family Suite {roomPrices.family ? `(₹${roomPrices.family}/nt)` : ''}</option>
                     </select>
                   </div>
 

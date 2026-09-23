@@ -45,12 +45,19 @@ interface RoomConfigModalProps {
     slug: string;
     name: string;
     description: string;
+    longDescription?: string;
     price: number;
-    images: string[];
-    occupancy: number;
-    bedType: string;
-    size: string;
-    amenities: string[];
+    images?: string[];
+    image?: string;
+    occupancy?: number;
+    maxGuests?: string;
+    bedType?: string;
+    bedding?: string;
+    size?: string;
+    roomArea?: string;
+    amenities?: string[];
+    badge?: string;
+    view?: string;
   };
   onClose: () => void;
   onSaveSuccess?: () => void;
@@ -71,20 +78,23 @@ export function RoomConfigModal({
   const [slug, setSlug] = useState(category.slug);
   const [shortDesc, setShortDesc] = useState(category.description);
   const [fullDesc, setFullDesc] = useState(
-    category.description ||
+    category.longDescription ||
+      category.description ||
       "Designed for both business and leisure travelers seeking supreme comfort, refined decor, and attentive hospitality in Bokaro Steel City."
   );
   const [status, setStatus] = useState<"ACTIVE" | "INACTIVE" | "MAINTENANCE">("ACTIVE");
   const [isPublished, setIsPublished] = useState(true);
 
   // Specs & Capacity
-  const [occupancyAdults, setOccupancyAdults] = useState(category.occupancy || 2);
+  const [occupancyAdults, setOccupancyAdults] = useState(
+    category.occupancy || parseInt(category.maxGuests || "") || 2
+  );
   const [occupancyKids, setOccupancyKids] = useState(1);
   const [maxTotalGuests, setMaxTotalGuests] = useState(3);
-  const [bedType, setBedType] = useState(category.bedType || "King Bed");
+  const [bedType, setBedType] = useState(category.bedType || category.bedding || "King Bed");
   const [numberOfBeds, setNumberOfBeds] = useState(1);
-  const [roomSize, setRoomSize] = useState(category.size || "300 sq. ft.");
-  const [viewType, setViewType] = useState("City View");
+  const [roomSize, setRoomSize] = useState(category.size || category.roomArea || "300 sq. ft.");
+  const [viewType, setViewType] = useState(category.view || "City View");
   const [smokingPolicy, setSmokingPolicy] = useState("Non-Smoking");
   const [roomRange, setRoomRange] = useState("101-115");
 
@@ -100,7 +110,9 @@ export function RoomConfigModal({
   const [images, setImages] = useState<string[]>(
     category.images && category.images.length > 0
       ? category.images
-      : ["/images/hero/hero-bg.jpg"]
+      : category.image
+      ? [category.image]
+      : [`/images/rooms/${category.slug || "single"}/1.png`]
   );
   const [newImageUrl, setNewImageUrl] = useState("");
 
@@ -195,23 +207,28 @@ export function RoomConfigModal({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           newCategory: {
-            id: category.id || slug,
+            id: category.id || `${slug}-room`,
             slug,
             name,
-            badge: category.id ? (category as any).badge || slug.toUpperCase() : slug.toUpperCase(),
+            badge: (category as any).badge || slug.toUpperCase(),
             price: basePrice,
-            image: images[0] || `/images/rooms/${slug}/main.jpg`,
+            image: images[0] || `/images/rooms/${slug}/1.png`,
             images,
             description: shortDesc || fullDesc,
+            longDescription: fullDesc || shortDesc,
             maxGuests: `${occupancyAdults} Adults`,
+            occupancy: occupancyAdults,
             bedding: bedType,
+            bedType: bedType,
             roomArea: roomSize,
+            size: roomSize,
+            view: viewType,
             amenities: selectedAmenities,
           },
         }),
       });
 
-      // Update local room pricing store
+      // Update local room pricing store & categories
       if (typeof window !== "undefined") {
         const currentPricing = JSON.parse(localStorage.getItem("hr_room_pricing") || "{}");
         currentPricing[slug] = {
@@ -224,6 +241,7 @@ export function RoomConfigModal({
         localStorage.setItem("hr_room_pricing", JSON.stringify(currentPricing));
         localStorage.setItem("room_pricing_last_sync", Date.now().toString());
         window.dispatchEvent(new Event("room-pricing-updated"));
+        window.dispatchEvent(new Event("room-categories-updated"));
       }
 
       setIsPublished(publishLive);

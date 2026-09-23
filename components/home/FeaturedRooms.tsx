@@ -6,11 +6,12 @@ import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { RoomCard } from "@/components/rooms/RoomCard";
-import { roomsData } from "@/data/rooms";
+import { useRoomCategories } from "@/hooks/useRoomCategories";
 import { FadeUp } from "@/components/animation/FadeUp";
 
 export function FeaturedRooms() {
-  const rooms = roomsData;
+  const { categories } = useRoomCategories();
+  const rooms = categories;
 
   return (
     <section id="accommodations" className="py-16 sm:py-24 bg-[#FAF8F5] text-[#2B2320] border-t border-[#E8E1D7] select-none overflow-hidden">

@@ -14,8 +14,10 @@ interface RoomCardProps {
 
 export function RoomCard({ room }: RoomCardProps) {
   const { getRoomPrice } = useRoomPricing();
-  const activePrice = room.price || getRoomPrice(room.slug) || 2403.32;
-  const displayPrice = activePrice ? `${formatPrice(activePrice)}` : "Price on request";
+  const activePrice = getRoomPrice(room.slug) || room.price;
+  const displayPrice = activePrice && activePrice > 0 ? `${formatPrice(activePrice)}` : "Price on request";
+  const mainImage = (room.images && room.images[0]) || (room as any).image || "/images/rooms/single/1.png";
+  const bedDisplay = room.bedType ? (room.bedType.split(" ")[0] || "King") : "King";
 
   return (
     <div className="group flex flex-col justify-between transition-all duration-300 block bg-white p-3.5 sm:p-4 border border-[#E8DFD2] rounded-xs shadow-xs hover:shadow-md">
@@ -27,7 +29,7 @@ export function RoomCard({ room }: RoomCardProps) {
           aria-label={`View details for ${room.name}`}
         >
           <Image
-            src={room.images[0]}
+            src={mainImage}
             alt={room.name}
             fill
             sizes="(max-width: 640px) 92vw, (max-width: 1024px) 45vw, 33vw"
@@ -62,7 +64,7 @@ export function RoomCard({ room }: RoomCardProps) {
               <Users className="w-3.5 h-3.5 mr-1 text-[#BA8B32] flex-shrink-0" /> Max {room.occupancy}
             </span>
             <span className="flex items-center">
-              <Bed className="w-3.5 h-3.5 mr-1 text-[#BA8B32] flex-shrink-0" /> {room.bedType.split(" ")[0]} Bed
+              <Bed className="w-3.5 h-3.5 mr-1 text-[#BA8B32] flex-shrink-0" /> {bedDisplay} Bed
             </span>
             {room.size && (
               <span className="flex items-center">

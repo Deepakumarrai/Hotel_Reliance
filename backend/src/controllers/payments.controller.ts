@@ -93,13 +93,20 @@ export class PaymentsController {
 
   public static async handleWebhook(req: Request, res: Response): Promise<void> {
     const signature = req.headers["x-razorpay-signature"] as string;
-    const event = req.body;
+    const rawBody = (req as any).rawBody || JSON.stringify(req.body);
 
+    if (signature && !PaymentService.verifyWebhookSignature(rawBody, signature)) {
+      console.warn("Razorpay webhook signature verification failed.");
+      res.status(400).json({ status: "error", message: "Invalid webhook signature" });
+      return;
+    }
+
+    const event = req.body;
     console.log("Razorpay webhook event received:", event?.event);
 
     try {
-      if (event?.event === "payment.captured") {
-        const orderId = event?.payload?.payment?.entity?.order_id;
+      if (event?.event === "payment.captured" || event?.event === "order.paid") {
+        const orderId = event?.payload?.payment?.entity?.order_id || event?.payload?.order?.entity?.id;
         const paymentId = event?.payload?.payment?.entity?.id;
 
         if (orderId) {

@@ -15,7 +15,7 @@ interface BookingSummaryProps {
 export function BookingSummary({ state, selectedRoom }: BookingSummaryProps) {
   const { calculateStayTotal } = useRoomPricing();
   const calculation = selectedRoom && state.checkIn && state.checkOut
-    ? calculateStayTotal(selectedRoom.slug, state.checkIn, state.checkOut, state.adults, state.children)
+    ? calculateStayTotal(selectedRoom.slug, state.checkIn, state.checkOut, state.adults, state.children, selectedRoom.price)
     : null;
 
   const nights = calculation?.nights || getNightsCount(state.checkIn, state.checkOut);

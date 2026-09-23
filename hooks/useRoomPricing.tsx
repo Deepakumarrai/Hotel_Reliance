@@ -12,31 +12,96 @@ export interface RoomPriceRules {
 
 export type PricingMap = Record<string, RoomPriceRules>;
 
-const defaultPricing: PricingMap = {
-  single: { base: 2403.32, weekend: 2403.32, peak: 2403.32, extraAdult: 0, extraBed: 300 },
-  double: { base: 2731.05, weekend: 2731.05, peak: 2731.05, extraAdult: 0, extraBed: 300 },
-  triple: { base: 3495.74, weekend: 3495.74, peak: 3495.74, extraAdult: 0, extraBed: 300 },
+export const DEFAULT_PRICING: PricingMap = {
+  deluxe: { base: 2499, weekend: 2799, peak: 3199, extraAdult: 600, extraBed: 800 },
+  executive: { base: 3499, weekend: 3899, peak: 4299, extraAdult: 800, extraBed: 1000 },
+  premium: { base: 4999, weekend: 5499, peak: 6199, extraAdult: 1000, extraBed: 1200 },
+  family: { base: 5999, weekend: 6599, peak: 7499, extraAdult: 1000, extraBed: 1200 },
+  single: { base: 2499, weekend: 2799, peak: 3199, extraAdult: 600, extraBed: 800 },
+  double: { base: 3499, weekend: 3899, peak: 4299, extraAdult: 800, extraBed: 1000 },
+  triple: { base: 4999, weekend: 5499, peak: 6199, extraAdult: 1000, extraBed: 1200 },
 };
 
-export function getRoomPrice(slug: string): number {
-  const key = slug?.toLowerCase().replace("-room", "").replace("-suite", "") || "single";
-  if (key === "single" || key === "deluxe") return 2403.32;
-  if (key === "double" || key === "executive") return 2731.05;
-  if (key === "triple" || key === "premium" || key === "family") return 3495.74;
-  return defaultPricing[key]?.base || 2403.32;
+/**
+ * Finds room pricing rules for a given room slug, intelligently resolving
+ * exact slug matches, stripped slugs, and cross-reference fallbacks.
+ */
+export function findRulesForSlug(prices: PricingMap, slug: string): RoomPriceRules | null {
+  if (!slug) return null;
+  const targetMap = prices && typeof prices === "object" && Object.keys(prices).length > 0 ? prices : DEFAULT_PRICING;
+
+  const s = slug.toLowerCase().trim();
+  const stripped = s.replace(/-room$/, "").replace(/-suite$/, "");
+  const withRoom = stripped + "-room";
+
+  if (targetMap[s]?.base) return targetMap[s];
+  if (targetMap[stripped]?.base) return targetMap[stripped];
+  if (targetMap[withRoom]?.base) return targetMap[withRoom];
+
+  // Cross-reference fallbacks between legacy catalog slugs & database room slugs
+  if ((s === "single" || s === "single-room") && targetMap["deluxe"]?.base) return targetMap["deluxe"];
+  if ((s === "double" || s === "double-room") && targetMap["executive"]?.base) return targetMap["executive"];
+  if ((s === "triple" || s === "triple-room") && (targetMap["premium"]?.base || targetMap["family"]?.base)) {
+    return targetMap["premium"] || targetMap["family"];
+  }
+  if (s === "deluxe" && (targetMap["single"]?.base || targetMap["single-room"]?.base)) {
+    return targetMap["single"] || targetMap["single-room"];
+  }
+  if (s === "executive" && (targetMap["double"]?.base || targetMap["double-room"]?.base)) {
+    return targetMap["double"] || targetMap["double-room"];
+  }
+  if ((s === "premium" || s === "family") && (targetMap["triple"]?.base || targetMap["triple-room"]?.base)) {
+    return targetMap["triple"] || targetMap["triple-room"];
+  }
+
+  // Check DEFAULT_PRICING if targetMap was a custom object that missed this slug
+  if (targetMap !== DEFAULT_PRICING) {
+    return findRulesForSlug(DEFAULT_PRICING, slug);
+  }
+
+  // Fallback to first available pricing rule if any exist
+  const keys = Object.keys(targetMap);
+  if (keys.length > 0 && targetMap[keys[0]]?.base) {
+    return targetMap[keys[0]];
+  }
+
+  return null;
 }
 
+/**
+ * Standalone helper — reads cached pricing from localStorage or DEFAULT_PRICING.
+ */
+export function getRoomPrice(slug: string, fallbackPrice?: number | null): number {
+  if (typeof window !== "undefined") {
+    try {
+      const cached = localStorage.getItem("hr_room_pricing");
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed && typeof parsed === "object") {
+          const rules = findRulesForSlug(parsed, slug);
+          if (rules && Number(rules.base) > 0) return Number(rules.base);
+        }
+      }
+    } catch {}
+  }
+  const defaultRules = findRulesForSlug(DEFAULT_PRICING, slug);
+  if (defaultRules && Number(defaultRules.base) > 0) return Number(defaultRules.base);
+  if (typeof fallbackPrice === "number" && fallbackPrice > 0) return fallbackPrice;
+  return 0;
+}
 
 const RoomPricingContext = createContext<{
   prices: PricingMap;
-  getRoomPrice: (slug: string) => number;
-  getRoomRules: (slug: string) => RoomPriceRules;
+  loading: boolean;
+  getRoomPrice: (slug: string, fallbackPrice?: number | null) => number;
+  getRoomRules: (slug: string, fallbackPrice?: number | null) => RoomPriceRules;
   calculateStayTotal: (
     slug: string,
     checkIn: string,
     checkOut: string,
     adults?: number,
-    children?: number
+    children?: number,
+    fallbackPrice?: number | null
   ) => {
     nights: number;
     nightlyPrice: number;
@@ -47,22 +112,20 @@ const RoomPricingContext = createContext<{
     totalAmount: number;
   };
 }>({
-  prices: defaultPricing,
-  getRoomPrice: (slug) => getRoomPrice(slug),
-  getRoomRules: (slug) => {
-    const key = slug?.toLowerCase().replace("-room", "").replace("-suite", "") || "single";
-    return defaultPricing[key] || defaultPricing.single;
-  },
-  calculateStayTotal: (slug, checkIn, checkOut) => {
-    const price = getRoomPrice(slug);
+  prices: DEFAULT_PRICING,
+  loading: true,
+  getRoomPrice: (slug, fallback) => getRoomPrice(slug, fallback),
+  getRoomRules: (slug, fallback) => findRulesForSlug(DEFAULT_PRICING, slug) || { base: 2499, weekend: 2799, peak: 3199, extraAdult: 600, extraBed: 800 },
+  calculateStayTotal: (slug) => {
+    const rules = findRulesForSlug(DEFAULT_PRICING, slug) || DEFAULT_PRICING.single;
     return {
       nights: 1,
-      nightlyPrice: price,
-      baseAmount: price,
+      nightlyPrice: rules.base,
+      baseAmount: rules.base,
       taxAmount: 0,
       taxRate: 0,
       extraGuestAmount: 0,
-      totalAmount: price,
+      totalAmount: rules.base,
     };
   },
 });
@@ -74,52 +137,39 @@ export function RoomPricingProvider({ children }: { children: React.ReactNode })
         const saved = localStorage.getItem("hr_room_pricing");
         if (saved) {
           const parsed = JSON.parse(saved);
-          if (parsed && typeof parsed === "object") {
-            // Check if saved pricing is stale legacy values (e.g. 2499)
-            if (parsed.single?.base === 2403.32 || parsed.deluxe?.base === 2403.32) {
-              return parsed;
-            }
+          if (parsed && typeof parsed === "object" && Object.keys(parsed).length > 0) {
+            return { ...DEFAULT_PRICING, ...parsed };
           }
         }
       } catch {}
     }
-    return defaultPricing;
+    return DEFAULT_PRICING;
   });
+  const [loading, setLoading] = useState(true);
 
   const fetchPricing = async () => {
     try {
       const res = await fetch("/api/pricing", { cache: "no-store" });
       if (res.ok) {
         const data = await res.json();
-        if (data?.prices && (data.prices.single?.base === 2403.32 || data.prices.deluxe?.base === 2403.32)) {
-          setPrices(data.prices);
+        if (data?.success && data.prices && typeof data.prices === "object" && Object.keys(data.prices).length > 0) {
+          const merged = { ...DEFAULT_PRICING, ...data.prices };
+          setPrices(merged);
           try {
             if (typeof window !== "undefined") {
-              localStorage.setItem("hr_room_pricing", JSON.stringify(data.prices));
+              localStorage.setItem("hr_room_pricing", JSON.stringify(merged));
             }
           } catch {}
         }
       }
     } catch {
-      // Fallback silently
+      // Use cached prices silently
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    // Clear out any old legacy pricing in client localStorage
-    try {
-      if (typeof window !== "undefined") {
-        const saved = localStorage.getItem("hr_room_pricing");
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          if (parsed?.single?.base !== 2403.32 && parsed?.deluxe?.base !== 2403.32) {
-            localStorage.removeItem("hr_room_pricing");
-          }
-        }
-      }
-    } catch {}
-
-    // Initial fetch
     fetchPricing();
 
     const handleUpdate = () => {
@@ -127,8 +177,8 @@ export function RoomPricingProvider({ children }: { children: React.ReactNode })
         const cached = localStorage.getItem("hr_room_pricing");
         if (cached) {
           const parsed = JSON.parse(cached);
-          if (parsed && (parsed.single?.base === 2403.32 || parsed.deluxe?.base === 2403.32)) {
-            setPrices(parsed);
+          if (parsed && Object.keys(parsed).length > 0) {
+            setPrices((prev) => ({ ...prev, ...parsed }));
           }
         }
       } catch {}
@@ -146,18 +196,25 @@ export function RoomPricingProvider({ children }: { children: React.ReactNode })
     };
   }, []);
 
-
-  const getRoomPrice = (slug: string): number => {
-    const key = slug?.toLowerCase().replace("-room", "").replace("-suite", "") || "single";
-    if (key === "single" || key === "deluxe") return 2403.32;
-    if (key === "double" || key === "executive") return 2731.05;
-    if (key === "triple" || key === "premium" || key === "family") return 3495.74;
-    return prices[key]?.base || defaultPricing[key]?.base || 2403.32;
+  const getRoomPriceFromState = (slug: string, fallbackPrice?: number | null): number => {
+    const rules = findRulesForSlug(prices, slug);
+    if (rules && Number(rules.base) > 0) return Number(rules.base);
+    if (typeof fallbackPrice === "number" && fallbackPrice > 0) return fallbackPrice;
+    return 0;
   };
 
-  const getRoomRules = (slug: string): RoomPriceRules => {
-    const key = slug?.toLowerCase().replace("-room", "").replace("-suite", "") || "single";
-    return prices[key] || defaultPricing[key] || defaultPricing.single;
+  const getRoomRules = (slug: string, fallbackPrice?: number | null): RoomPriceRules => {
+    const rules = findRulesForSlug(prices, slug);
+    if (rules && Number(rules.base) > 0) return rules;
+
+    const base = typeof fallbackPrice === "number" && fallbackPrice > 0 ? fallbackPrice : 2499;
+    return {
+      base,
+      weekend: Math.round(base * 1.15),
+      peak: Math.round(base * 1.35),
+      extraAdult: 800,
+      extraBed: 1000,
+    };
   };
 
   const calculateStayTotal = (
@@ -165,15 +222,15 @@ export function RoomPricingProvider({ children }: { children: React.ReactNode })
     checkIn: string,
     checkOut: string,
     adults = 2,
-    children = 0
+    children = 0,
+    fallbackPrice?: number | null
   ) => {
-    const rules = getRoomRules(slug);
+    const rules = getRoomRules(slug, fallbackPrice);
     const start = new Date(checkIn);
     const end = new Date(checkOut);
     const diffTime = end.getTime() - start.getTime();
     const nights = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
 
-    // Exact single final price per room type * nights
     const nightlyPrice = rules.base;
     const totalAmount = Math.round(nightlyPrice * nights * 100) / 100;
 
@@ -192,7 +249,8 @@ export function RoomPricingProvider({ children }: { children: React.ReactNode })
     <RoomPricingContext.Provider
       value={{
         prices,
-        getRoomPrice,
+        loading,
+        getRoomPrice: getRoomPriceFromState,
         getRoomRules,
         calculateStayTotal,
       }}

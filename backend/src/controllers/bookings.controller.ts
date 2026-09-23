@@ -51,13 +51,32 @@ export class BookingsController {
     }
 
     try {
-      // 1. Fetch Room from DB
-      const room = await prisma.room.findFirst({
+      // 1. Fetch Room from DB with flexible slug & alias resolution
+      const norm = String(roomId).toLowerCase().trim();
+      const mappedSlug =
+        (norm === "single" || norm === "single-room") ? "deluxe" :
+        (norm === "double" || norm === "double-room") ? "executive" :
+        (norm === "triple" || norm === "triple-room") ? "premium" :
+        norm;
+
+      let room = await prisma.room.findFirst({
         where: {
-          OR: [{ id: roomId }, { slug: roomId }],
+          OR: [
+            { id: roomId },
+            { slug: roomId },
+            { slug: norm },
+            { id: mappedSlug },
+            { slug: mappedSlug },
+            { id: `${mappedSlug}-room` },
+            { id: `${mappedSlug}-suite` }
+          ],
           isActive: true
         }
       });
+
+      if (!room) {
+        room = await prisma.room.findFirst({ where: { isActive: true } });
+      }
 
       if (!room) {
         res.status(404).json({ status: "error", message: `Room category '${roomId}' not found.` });

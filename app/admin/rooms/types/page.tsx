@@ -29,10 +29,16 @@ interface CategoryData {
   badge: string;
   price: number;
   image: string;
+  images?: string[];
   description: string;
+  longDescription?: string;
   maxGuests: string;
+  occupancy?: number;
   bedding: string;
+  bedType?: string;
   roomArea: string;
+  size?: string;
+  view?: string;
   amenitiesCount: number;
   amenities: string[];
   moreAmenitiesCount: number;
@@ -55,6 +61,9 @@ export default function RoomCategoriesManagerPage() {
       const data = await res.json();
       if (res.ok && data.success) {
         showToast(`Category "${name}" deleted from database & website.`, "success");
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new Event("room-categories-updated"));
+        }
         fetchRoomCategories();
       } else {
         showToast(data.error || "Failed to delete category.", "error");
@@ -78,18 +87,33 @@ export default function RoomCategoriesManagerPage() {
       if (liveRooms.length > 0) {
         const mapped: CategoryData[] = liveRooms.map((r: any) => {
           const slug = r.slug || r.id;
-          const liveBasePrice = livePrices[slug]?.base || Number(r.pricePerNight) || 2499;
+          const liveBasePrice = livePrices[slug]?.base || Number(r.pricePerNight) || Number(r.price) || 2499;
+          const images = Array.isArray(r.images) && r.images.length > 0
+            ? r.images
+            : (r.image ? [r.image] : [`/images/rooms/${slug}/1.png`]);
+          const occupancy = typeof r.occupancy === "number"
+            ? r.occupancy
+            : (parseInt(r.maxGuests) || r.capacityAdults || 2);
+          const bedding = r.bedType || r.bedding || "King Bed";
+          const roomArea = r.roomArea || r.size || (r.roomSizeSqFt ? `${r.roomSizeSqFt} sq. ft.` : "300 sq. ft.");
+
           return {
             id: r.id,
             slug: r.slug,
             name: r.name,
-            badge: r.category || slug.toUpperCase(),
+            badge: r.badge || r.category || slug.toUpperCase(),
             price: liveBasePrice,
-            image: r.images?.[0] || `/images/rooms/${slug}/main.jpg`,
+            image: images[0] || `/images/rooms/${slug}/1.png`,
+            images: images,
             description: r.description || r.shortDesc || "",
-            maxGuests: `${r.capacityAdults || 2} Adults`,
-            bedding: r.bedType || "King Bed",
-            roomArea: `${r.roomSizeSqFt || 300} sq. ft.`,
+            longDescription: r.longDescription || r.description || r.shortDesc || "",
+            maxGuests: r.maxGuests || `${occupancy} Guests`,
+            occupancy: occupancy,
+            bedding: bedding,
+            bedType: bedding,
+            roomArea: roomArea,
+            size: roomArea,
+            view: r.view || "City View",
             amenitiesCount: r.amenities?.length || 8,
             amenities: r.amenities || [],
             moreAmenitiesCount: Math.max(0, (r.amenities?.length || 0) - 6),

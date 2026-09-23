@@ -197,7 +197,7 @@ export function AvailableRooms({
             const isLowInventory = availableUnits > 0 && availableUnits <= 3;
 
             // Pricing metrics
-            const activePrice = getRoomPrice(room.slug) || room.price || room.pricePerNight || 2403.32;
+            const activePrice = getRoomPrice(room.slug, room.price || room.pricePerNight) || room.price || room.pricePerNight || 0;
             const displayNightly = `${formatPrice(activePrice)}`;
 
             // Total stay price if nights > 0
@@ -340,7 +340,7 @@ export function AvailableRooms({
                       <AlertCircle className="w-3.5 h-3.5 text-amber-700 flex-shrink-0 mt-0.5" />
                       <span>
                         Your party of {adults} adults exceeds this room's maximum capacity of{" "}
-                        {room.capacityAdults} adults. Please select the Triple Room or book multiple rooms.
+                        {room.capacityAdults} adults. Please select a higher category suite or book multiple rooms.
                       </span>
                     </div>
                   )}

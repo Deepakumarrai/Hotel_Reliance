@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, ArrowRight, Check, AlertCircle, Calendar, ShieldCheck, CreditCard, Hotel, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, AlertCircle, Calendar, ShieldCheck, CreditCard, Hotel, Sparkles, Building2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
@@ -18,12 +18,17 @@ import { validateBooking } from "@/lib/validations";
 import { useAuth } from "@/hooks/useAuth";
 import { api } from "@/lib/api";
 import { formatPrice } from "@/lib/utils";
-import { getRoomPrice } from "@/hooks/useRoomPricing";
+import { useRoomPricing } from "@/hooks/useRoomPricing";
+import { useRoomCategories } from "@/hooks/useRoomCategories";
+import { openRazorpayCheckout } from "@/lib/razorpay";
 
 function BookingContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user } = useAuth();
+  const { getRoomPrice } = useRoomPricing();
+  const { categories } = useRoomCategories();
+  const availableRooms = categories && categories.length > 0 ? categories : roomsData;
 
   // Initialize dates
   const getTodayString = (daysOffset = 0) => {
@@ -40,7 +45,7 @@ function BookingContent() {
     checkOut: getTodayString(1),
     adults: 2,
     children: 0,
-    selectedRoomId: roomsData[0]?.id || "single-room",
+    selectedRoomId: availableRooms[0]?.id || "deluxe-room",
     guest: {
       name: user?.name || "",
       email: user?.email || "",
@@ -59,16 +64,17 @@ function BookingContent() {
       setBookingState((prev) => ({
         ...prev,
         guest: {
-          name: prev.guest?.name || user.name || "",
-          email: prev.guest?.email || user.email || "",
-          phone: prev.guest?.phone || user.phone || "",
-          specialRequests: prev.guest?.specialRequests || ""
+          ...prev.guest,
+          name: user.name || prev.guest?.name || "",
+          email: user.email || prev.guest?.email || "",
+          phone: user.phone || prev.guest?.phone || "",
+          specialRequests: prev.guest?.specialRequests || "",
         }
       }));
     }
   }, [user]);
 
-  // Prefill state from search parameters if present
+  // Read query params from URL (e.g., from room card click or hero widget)
   useEffect(() => {
     const checkInParam = searchParams.get("checkIn");
     const checkOutParam = searchParams.get("checkOut");
@@ -81,8 +87,8 @@ function BookingContent() {
       const updated = { ...prev };
       if (checkInParam) updated.checkIn = checkInParam;
       if (checkOutParam) updated.checkOut = checkOutParam;
-      if (adultsParam) updated.adults = Math.max(1, parseInt(adultsParam) || 2);
-      if (childrenParam) updated.children = Math.max(0, parseInt(childrenParam) || 0);
+      if (adultsParam) updated.adults = parseInt(adultsParam, 10) || 1;
+      if (childrenParam) updated.children = parseInt(childrenParam, 10) || 0;
       if (offerParam) {
         const code = offerParam.toUpperCase().trim();
         updated.promoCode = code;
@@ -92,21 +98,23 @@ function BookingContent() {
       }
 
       if (roomSlugParam) {
-        const normalized = roomSlugParam.toLowerCase();
+        const normalized = roomSlugParam.toLowerCase().trim();
         const canonical =
-          normalized === "deluxe" ? "single" :
-          normalized === "executive" ? "double" :
-          (normalized === "premium" || normalized === "family") ? "triple" :
+          normalized === "single" || normalized === "single-room" ? "deluxe" :
+          normalized === "double" || normalized === "double-room" ? "executive" :
+          normalized === "triple" || normalized === "triple-room" ? "premium" :
           normalized;
 
-        const found = roomsData.find((r) => r.slug === canonical || r.slug === roomSlugParam || r.id === roomSlugParam);
+        const found =
+          availableRooms.find((r) => r.slug === roomSlugParam || r.id === roomSlugParam || r.slug === canonical || r.id === canonical || r.id === `${canonical}-room` || r.id === `${canonical}-suite`) ||
+          roomsData.find((r) => r.slug === roomSlugParam || r.id === roomSlugParam || r.slug === canonical || r.id === canonical || r.id === `${canonical}-room` || r.id === `${canonical}-suite`);
         if (found) {
           updated.selectedRoomId = found.id;
         }
       }
       return updated;
     });
-  }, [searchParams]);
+  }, [searchParams, availableRooms]);
 
   // Compute nights
   const nights = useMemo(() => {
@@ -117,17 +125,15 @@ function BookingContent() {
     return Math.max(1, diffDays);
   }, [bookingState.checkIn, bookingState.checkOut]);
 
-  // Master available rooms from catalog
-  const availableRooms = roomsData;
-
   // Find active room object
   const selectedRoom = useMemo(() => {
     return (
-      roomsData.find((r) => r.id === bookingState.selectedRoomId) ||
-      roomsData.find((r) => r.slug === bookingState.selectedRoomId) ||
+      availableRooms.find((r) => r.id === bookingState.selectedRoomId) ||
+      availableRooms.find((r) => r.slug === bookingState.selectedRoomId) ||
+      availableRooms[0] ||
       roomsData[0]
     );
-  }, [bookingState.selectedRoomId]);
+  }, [availableRooms, bookingState.selectedRoomId]);
 
   // Handles state changes
   const handleDateChange = (field: "checkIn" | "checkOut", value: string) => {
@@ -206,7 +212,12 @@ function BookingContent() {
 
     try {
       // Calculate exact stay tariff
-      const activeRoomPrice = selectedRoom.price || getRoomPrice(selectedRoom.slug) || 2403.32;
+      const activeRoomPrice = getRoomPrice(selectedRoom.slug, selectedRoom.price) || selectedRoom.price || 0;
+      if (!activeRoomPrice || activeRoomPrice <= 0) {
+        setBookingError("Room pricing is currently unavailable. Please refresh the page and try again.");
+        setIsSubmitting(false);
+        return;
+      }
       const rawSubtotal = Math.round(activeRoomPrice * nights * 100) / 100;
 
       const activePromo = (bookingState.promoCode || bookingState.guest?.promoCode || "").toUpperCase().trim();
@@ -219,65 +230,123 @@ function BookingContent() {
       const finalTotal = Math.max(0, Math.round((rawSubtotal - discountAmount) * 100) / 100);
 
       let bookingId = `HR-${Math.floor(100000 + Math.random() * 900000)}`;
+      let allocatedRoomNumber: string | undefined = undefined;
+      let razorpayOrderData: any = null;
 
-      try {
-        const liveRes = await api.bookings.create({
-          roomId: selectedRoom.id,
-          checkIn: bookingState.checkIn,
-          checkOut: bookingState.checkOut,
-          adults: bookingState.adults,
-          children: bookingState.children,
-          guest: {
-            name: bookingState.guest?.name || user?.name || "Guest",
-            email: bookingState.guest?.email || user?.email || "",
-            phone: bookingState.guest?.phone || user?.phone || "",
-            specialRequests: bookingState.guest?.specialRequests || "",
-            promoCode: bookingState.promoCode || bookingState.guest?.promoCode || undefined
-          },
-          promoCode: bookingState.promoCode || bookingState.guest?.promoCode || undefined,
-          paymentMethod: paymentMethod === "ONLINE" ? "ONLINE_RAZORPAY" : "PAY_AT_HOTEL"
-        });
-        if (liveRes.booking?.id) {
-          bookingId = liveRes.booking.id;
-        }
-      } catch (apiErr: any) {
-        console.warn("API fallback booking:", apiErr);
-      }
-
-      const newBooking: Booking = {
-        id: bookingId,
-        userId: user?.id,
+      // No silent fallback — errors must surface to the user
+      const liveRes = await api.bookings.create({
+        roomId: selectedRoom.id,
         checkIn: bookingState.checkIn,
         checkOut: bookingState.checkOut,
-        nights,
         adults: bookingState.adults,
         children: bookingState.children,
-        room: {
-          ...selectedRoom,
-          price: activeRoomPrice
-        },
         guest: {
           name: bookingState.guest?.name || user?.name || "Guest",
           email: bookingState.guest?.email || user?.email || "",
           phone: bookingState.guest?.phone || user?.phone || "",
-          specialRequests: bookingState.guest?.specialRequests || ""
+          specialRequests: bookingState.guest?.specialRequests || "",
+          promoCode: bookingState.promoCode || bookingState.guest?.promoCode || undefined
         },
-        totalPrice: finalTotal,
-        estimatedTotal: formatPrice(finalTotal),
-        status: "confirmed",
-        createdAt: new Date().toISOString(),
-        paymentMethod: paymentMethod === "ONLINE" ? "Direct Online Payment (Confirmed)" : "Pay at Check-In (Front Desk)"
+        promoCode: bookingState.promoCode || bookingState.guest?.promoCode || undefined,
+        paymentMethod: paymentMethod === "ONLINE" ? "ONLINE_RAZORPAY" : "PAY_AT_HOTEL"
+      });
+
+      if (liveRes.booking?.id) {
+        bookingId = liveRes.booking.id;
+      }
+      if (liveRes.booking?.roomNumber) {
+        allocatedRoomNumber = liveRes.booking.roomNumber;
+      }
+      if (liveRes.razorpayOrder) {
+        razorpayOrderData = liveRes.razorpayOrder;
+      }
+
+      const finalizeAndRedirect = (pmLabel: string, txId?: string) => {
+        const newBooking: Booking = {
+          id: bookingId,
+          userId: user?.id,
+          checkIn: bookingState.checkIn,
+          checkOut: bookingState.checkOut,
+          nights,
+          adults: bookingState.adults,
+          children: bookingState.children,
+          room: {
+            ...selectedRoom,
+            price: activeRoomPrice
+          },
+          roomNumber: allocatedRoomNumber,
+          guest: {
+            name: bookingState.guest?.name || user?.name || "Guest",
+            email: bookingState.guest?.email || user?.email || "",
+            phone: bookingState.guest?.phone || user?.phone || "",
+            specialRequests: bookingState.guest?.specialRequests || ""
+          },
+          totalPrice: finalTotal,
+          estimatedTotal: formatPrice(finalTotal),
+          status: "confirmed",
+          createdAt: new Date().toISOString(),
+          paymentMethod: pmLabel,
+          transactionId: txId
+        };
+
+        sessionStorage.setItem("confirmedBooking", JSON.stringify(newBooking));
+        router.push("/booking/success");
       };
 
-      // Store in SessionStorage for confirmation page to read
-      sessionStorage.setItem("confirmedBooking", JSON.stringify(newBooking));
+      if (paymentMethod === "ONLINE") {
+        let orderObj = razorpayOrderData;
+        if (!orderObj?.orderId && !orderObj?.id) {
+          const orderRes = await api.payments.createOrder({
+            amount: finalTotal,
+            bookingId
+          });
+          orderObj = orderRes.razorpayOrder;
+        }
 
-      // Redirect to designated success route
-      router.push("/booking/success");
-    } catch (err) {
+        const rzpOrderId = orderObj?.orderId || orderObj?.id;
+        const rzpAmount = orderObj?.amount || Math.round(finalTotal * 100);
+
+        await openRazorpayCheckout({
+          orderId: rzpOrderId,
+          amount: rzpAmount,
+          currency: orderObj?.currency || "INR",
+          keyId: orderObj?.keyId,
+          name: "Hotel Reliance",
+          description: `Stay Reservation (${selectedRoom.name})`,
+          prefill: {
+            name: bookingState.guest?.name || user?.name || "",
+            email: bookingState.guest?.email || user?.email || "",
+            contact: bookingState.guest?.phone || user?.phone || ""
+          },
+          onSuccess: async (response) => {
+            try {
+              await api.payments.verify({
+                orderId: response.razorpay_order_id,
+                paymentId: response.razorpay_payment_id,
+                signature: response.razorpay_signature,
+                bookingId
+              });
+              finalizeAndRedirect("Razorpay Online Payment (Paid)", response.razorpay_payment_id);
+            } catch (err: any) {
+              setBookingError(err.message || "Payment verification failed.");
+              setIsSubmitting(false);
+            }
+          },
+          onFailure: (err) => {
+            setBookingError(err.description || "Payment failed or cancelled.");
+            setIsSubmitting(false);
+          },
+          onDismiss: () => {
+            setIsSubmitting(false);
+          }
+        });
+      } else {
+        finalizeAndRedirect("Pay at Check-In (Front Desk)");
+        setIsSubmitting(false);
+      }
+    } catch (err: any) {
       console.error("Booking error:", err);
-      setBookingError("Something went wrong while processing your booking. Please try again.");
-    } finally {
+      setBookingError(err.message || "Something went wrong while processing your booking. Please try again.");
       setIsSubmitting(false);
     }
   };
@@ -493,7 +562,7 @@ function BookingContent() {
                       <div className="bg-[#FAF8F5] p-4 border border-[#E8DFD2] text-[11px] text-[#5C4F46] flex items-start space-x-2.5">
                         <ShieldCheck className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
                         <p className="leading-relaxed">
-                          Your reservation is protected by our Direct Booking Guarantee. Check-in is at 12:00 PM and check-out is at 11:00 AM.
+                          Your reservation is protected by our Direct Booking Guarantee. Check-in is at 12:00 PM and check-out is at 11:00 AM. Free cancellation up to 24 hours prior to check-in.
                         </p>
                       </div>
                     </div>
@@ -534,7 +603,13 @@ function BookingContent() {
                   disabled={isSubmitting}
                   className="min-h-[48px] px-8 text-xs uppercase tracking-widest font-bold bg-emerald-800 hover:bg-emerald-900 text-white rounded-xs cursor-pointer shadow-md flex items-center justify-center touch-press active:scale-[0.98]"
                 >
-                  <span>{isSubmitting ? "Confirming Reservation..." : "Confirm & Complete Booking"}</span>
+                  <span>
+                    {isSubmitting
+                      ? "Processing..."
+                      : paymentMethod === "ONLINE"
+                      ? "Proceed to Online Payment"
+                      : "Confirm & Complete Booking"}
+                  </span>
                   {!isSubmitting && <Check className="w-4 h-4 ml-2" />}
                 </button>
               )}

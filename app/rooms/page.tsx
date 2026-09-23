@@ -11,14 +11,15 @@ import { HomeCTA } from "@/components/home/HomeCTA";
 export const metadata: Metadata = {
   title: "Luxury Rooms & Suites — Tariffs, Amenities & Online Booking",
   description:
-    "Explore our Single, Double, and Triple Rooms in Bokaro Steel City starting from ₹2,403.32/night. Enjoy King-size beds, high-speed Wi-Fi, AC climate control, and 24/7 room service.",
+    "Explore our Deluxe Rooms, Executive Rooms, Premium Suites, and Family Suites in Bokaro Steel City starting from ₹2,499/night. Enjoy King-size beds, high-speed Wi-Fi, AC climate control, and 24/7 room service.",
   keywords: [
     "Rooms in Bokaro",
     "Hotel Reliance Rooms",
     "Bokaro Hotel Booking",
-    "Single Room Bokaro",
-    "Double Room Bokaro",
-    "Triple Room Bokaro",
+    "Deluxe Room Bokaro",
+    "Executive Room Bokaro",
+    "Premium Suite Bokaro",
+    "Family Suite Bokaro",
     "Hotel Room Tariff Bokaro",
   ],
   alternates: {
@@ -27,12 +28,12 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Luxury Rooms & Accommodations | Hotel Reliance Bokaro",
     description:
-      "Explore Single Room, Double Room, and Triple Room accommodations in Bokaro Steel City. Enjoy top amenities, elegant interiors, and quality room service.",
+      "Explore Deluxe Room, Executive Room, Premium Suite, and Family Suite accommodations in Bokaro Steel City. Enjoy top amenities, elegant interiors, and quality room service.",
     url: "https://www.hotelreliance.com/rooms",
     type: "website",
     images: [
       {
-        url: "/images/rooms/double-room.png",
+        url: "/images/rooms/deluxe/main.jpg",
         width: 1200,
         height: 800,
         alt: "Hotel Reliance Rooms in Bokaro Steel City",
@@ -42,8 +43,8 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Luxury Rooms & Accommodations | Hotel Reliance Bokaro",
-    description: "Single Room, Double Room, and Triple Room accommodations in Bokaro Steel City.",
-    images: ["/images/rooms/double-room.png"],
+    description: "Deluxe Room, Executive Room, Premium Suite, and Family Suite accommodations in Bokaro Steel City.",
+    images: ["/images/rooms/deluxe/main.jpg"],
   },
 };
 

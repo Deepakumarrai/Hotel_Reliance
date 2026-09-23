@@ -10,7 +10,7 @@ export const INITIAL_MOCK_BOOKINGS: Booking[] = [
     nights: 3,
     adults: 1,
     children: 0,
-    room: roomsData[0], // Single Room
+    room: roomsData[0], // Deluxe Room
     guest: {
       name: "Dr. Rajesh Sharma",
       email: "demo@example.com",
@@ -31,7 +31,7 @@ export const INITIAL_MOCK_BOOKINGS: Booking[] = [
     nights: 3,
     adults: 2,
     children: 0,
-    room: roomsData[1], // Double Room
+    room: roomsData[1], // Executive Room
     guest: {
       name: "Dr. Rajesh Sharma",
       email: "demo@example.com",

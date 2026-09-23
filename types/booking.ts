@@ -43,4 +43,5 @@ export interface Booking {
   roomNumber?: string;
   createdAt: string;
   paymentMethod?: string;
+  transactionId?: string;
 }

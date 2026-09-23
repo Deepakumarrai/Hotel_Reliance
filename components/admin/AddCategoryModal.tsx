@@ -78,25 +78,67 @@ export function AddCategoryModal({ onClose, onSuccess }: AddCategoryModalProps) 
     setLoading(true);
     try {
       const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+      const numPrice = Number(price);
+      const img = image.trim() || `/images/rooms/${slug}/1.png`;
+      const occupancy = parseInt(maxGuests) || 2;
+      const desc = description.trim() || `${name} with modern amenities and luxury comfort.`;
 
+      // 1. Save Category
       const res = await fetch("/api/rooms", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           newCategory: {
+            id: `${slug}-room`,
             slug,
             name: name.trim(),
             badge: badge.trim() || slug.toUpperCase(),
-            price: Number(price),
-            image: image.trim() || `/images/rooms/${slug}/main.jpg`,
-            description: description.trim() || `${name} with modern amenities and luxury comfort.`,
-            maxGuests: maxGuests.trim() || "2 Adults",
+            price: numPrice,
+            image: img,
+            images: [img],
+            description: desc,
+            longDescription: desc,
+            maxGuests: maxGuests.trim() || `${occupancy} Guests`,
+            occupancy: occupancy,
             bedding: bedding.trim() || "King Bed",
+            bedType: bedding.trim() || "King Bed",
             roomArea: roomArea.trim() || "300 sq. ft.",
+            size: roomArea.trim() || "300 sq. ft.",
             amenities: amenities.length > 0 ? amenities : ["King Size Bed", "High-Speed Wi-Fi", "Air Conditioning"],
           },
         }),
       });
+
+      // 2. Register Pricing in Admin Pricing Engine
+      await fetch("/api/admin/pricing", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          roomType: slug,
+          base: numPrice,
+          weekend: Math.round(numPrice * 1.15),
+          peak: Math.round(numPrice * 1.35),
+          extraAdult: 800,
+          extraBed: 1000,
+        }),
+      }).catch(() => {});
+
+      // 3. Update localStorage & client events
+      if (typeof window !== "undefined") {
+        try {
+          const currentPricing = JSON.parse(localStorage.getItem("hr_room_pricing") || "{}");
+          currentPricing[slug] = {
+            base: numPrice,
+            weekend: Math.round(numPrice * 1.15),
+            peak: Math.round(numPrice * 1.35),
+            extraAdult: 800,
+            extraBed: 1000,
+          };
+          localStorage.setItem("hr_room_pricing", JSON.stringify(currentPricing));
+        } catch {}
+        window.dispatchEvent(new Event("room-pricing-updated"));
+        window.dispatchEvent(new Event("room-categories-updated"));
+      }
 
       const data = await res.json();
       if (res.ok && data.success) {
