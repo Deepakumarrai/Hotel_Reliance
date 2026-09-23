@@ -16,7 +16,7 @@ import { BookingState, Booking } from "@/types/booking";
 import { roomsData } from "@/data/rooms";
 import { validateBooking } from "@/lib/validations";
 import { useAuth } from "@/hooks/useAuth";
-import { api } from "@/lib/api";
+import { api, saveStoredBooking } from "@/lib/api";
 import { formatPrice } from "@/lib/utils";
 import { useRoomPricing } from "@/hooks/useRoomPricing";
 import { useRoomCategories } from "@/hooks/useRoomCategories";
@@ -254,9 +254,6 @@ function BookingContent() {
       if (liveRes.booking?.id) {
         bookingId = liveRes.booking.id;
       }
-      if (liveRes.booking?.roomNumber) {
-        allocatedRoomNumber = liveRes.booking.roomNumber;
-      }
       if (liveRes.razorpayOrder) {
         razorpayOrderData = liveRes.razorpayOrder;
       }
@@ -274,7 +271,7 @@ function BookingContent() {
             ...selectedRoom,
             price: activeRoomPrice
           },
-          roomNumber: allocatedRoomNumber,
+          roomNumber: undefined, // Allotment is done from admin when guest checks in
           guest: {
             name: bookingState.guest?.name || user?.name || "Guest",
             email: bookingState.guest?.email || user?.email || "",
@@ -289,6 +286,7 @@ function BookingContent() {
           transactionId: txId
         };
 
+        saveStoredBooking(newBooking);
         sessionStorage.setItem("confirmedBooking", JSON.stringify(newBooking));
         router.push("/booking/success");
       };

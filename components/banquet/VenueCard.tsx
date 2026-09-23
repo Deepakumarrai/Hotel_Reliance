@@ -3,7 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import { Users, Expand, Sparkles } from "lucide-react";
-import { Button } from "@/components/ui/Button";
+import { useHotelSettings } from "@/hooks/useHotelSettings";
 
 export interface Venue {
   id: string;
@@ -19,13 +19,37 @@ interface VenueCardProps {
   venue: Venue;
 }
 
+function getVenueWhatsAppMessage(venue: Venue, hotelName: string): string {
+  const id = (venue.id || "").toLowerCase();
+  const name = (venue.name || "").toLowerCase();
+
+  if (id.includes("hall") || id.includes("banquet") || name.includes("banquet") || name.includes("hall")) {
+    return `Hello! I am visiting the ${hotelName} website and would like to make an enquiry about booking the ${venue.name} for a wedding / grand celebration. Please share availability, pricing, and catering packages.`;
+  }
+
+  if (
+    id.includes("meeting") ||
+    id.includes("boardroom") ||
+    id.includes("conference") ||
+    name.includes("meeting") ||
+    name.includes("conference") ||
+    name.includes("boardroom")
+  ) {
+    return `Hello! I am visiting the ${hotelName} website and would like to make an enquiry about booking the ${venue.name} for a corporate meeting / conference. Please share availability, AV setup details, and delegate packages.`;
+  }
+
+  if (id.includes("lawn") || id.includes("garden") || id.includes("outdoor") || name.includes("lawn") || name.includes("garden") || name.includes("outdoor")) {
+    return `Hello! I am visiting the ${hotelName} website and would like to make an enquiry about booking the ${venue.name} for an outdoor event / wedding reception. Please share availability, guest capacity options, and lawn packages.`;
+  }
+
+  return `Hello! I am visiting the ${hotelName} website and would like to make an enquiry about booking the ${venue.name} (${venue.capacity || "Event Space"}) for an upcoming event. Please share availability and package details.`;
+}
+
 export function VenueCard({ venue }: VenueCardProps) {
-  const handleScrollToEnquiry = () => {
-    const formElement = document.getElementById("enquiry-form-section");
-    if (formElement) {
-      formElement.scrollIntoView({ behavior: "smooth" });
-    }
-  };
+  const hotelSettings = useHotelSettings();
+
+  const messageText = getVenueWhatsAppMessage(venue, hotelSettings.hotelName || "Hotel Reliance");
+  const whatsappUrl = `https://api.whatsapp.com/send/?phone=${hotelSettings.whatsappNumber || "919262997777"}&text=${encodeURIComponent(messageText)}`;
 
   return (
     <div className="bg-white border border-[#E8E1D7] shadow-sm grid grid-cols-1 lg:grid-cols-12 overflow-hidden group hover:border-[#BA8B32] hover:shadow-xl transition-all duration-300">
@@ -86,12 +110,14 @@ export function VenueCard({ venue }: VenueCardProps) {
         </div>
 
         <div className="pt-2">
-          <button
-            onClick={handleScrollToEnquiry}
-            className="px-6 py-2.5 text-xs font-serif uppercase tracking-[0.14em] bg-[#1E1815] text-white border border-[#1E1815] hover:bg-[#BA8B32] hover:border-[#BA8B32] transition-colors cursor-pointer shadow-sm"
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center px-6 py-2.5 text-xs font-serif uppercase tracking-[0.14em] bg-[#1E1815] text-white border border-[#1E1815] hover:bg-[#BA8B32] hover:border-[#BA8B32] transition-colors cursor-pointer shadow-sm text-center"
           >
             Enquire For Venue
-          </button>
+          </a>
         </div>
       </div>
     </div>

@@ -7,7 +7,7 @@ import { Calendar, Users, ArrowRight, Eye, XCircle, CheckCircle2, Clock, Ban, Al
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 import { AuthGuard } from "@/components/auth/AuthGuard";
-import { api } from "@/lib/api";
+import { api, getStoredBookings } from "@/lib/api";
 import { Booking } from "@/types/booking";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
@@ -24,75 +24,120 @@ function MyBookingsContent() {
   const [feedback, setFeedback] = useState<string | null>(null);
 
   const refreshBookings = async () => {
-    if (user) {
-      try {
-        const res = await api.bookings.getMyBookings();
-        if (res.status === "success" && Array.isArray(res.bookings)) {
-          const now = new Date();
-          const upcoming: Booking[] = [];
-          const previous: Booking[] = [];
-          res.bookings.forEach((b: any) => {
-            const checkOut = new Date(b.checkOutDate || b.checkOut);
-            const formatted: Booking = {
-              id: b.id,
-              bookingId: b.bookingId || b.id,
-              roomId: b.room?.id || b.roomId || "deluxe-room",
-              roomSlug: b.room?.slug || b.roomType || "deluxe",
-              roomName: b.room?.name || `${(b.roomType || "deluxe").toUpperCase()} Room`,
-              roomImage: b.room?.images?.[0] || "/images/rooms/deluxe.png",
-              room: b.room || {
-                id: b.room?.id || b.roomId || "deluxe-room",
-                name: b.room?.name || `${(b.roomType || "deluxe").toUpperCase()} Room`,
-                slug: b.room?.slug || b.roomType || "deluxe",
-                type: b.roomType || "deluxe",
-                price: b.baseAmount || b.totalAmount || 2499,
-                description: "Luxury hotel accommodation with modern amenities.",
-                shortDescription: "Luxury stay at Hotel Reliance.",
-                capacity: { adults: b.adults || 2, children: b.children || 0, maxTotal: 4 },
-                amenities: ["Free High-Speed Wi-Fi", "Air Conditioning", "HD TV", "Room Service"],
-                features: ["City View", "King Bed", "Ensuite Bathroom"],
-                images: [b.room?.images?.[0] || "/images/rooms/deluxe.png"],
-                heroImage: b.room?.images?.[0] || "/images/rooms/deluxe.png",
-                bedType: "King Bed",
-                size: "350 sq.ft",
-                view: "City View",
-                rating: 4.8,
-                reviewCount: 120,
-                isFeatured: false,
-                inventory: 10
-              },
-              checkIn: b.checkInDate || b.checkIn,
-              checkOut: b.checkOutDate || b.checkOut,
-              adults: b.adults || 2,
-              children: b.children || 0,
-              nights: b.nights || 1,
-              basePrice: b.baseAmount || b.totalAmount,
-              discount: b.discountAmount || 0,
-              taxes: b.taxAmount || 0,
-              totalPrice: b.totalAmount,
-              status: (b.bookingStatus?.toLowerCase() || b.status?.toLowerCase() || "confirmed") as any,
-              paymentStatus: (b.paymentStatus?.toLowerCase() || "paid") as any,
-              paymentMethod: b.paymentMethod || "online",
-              roomNumber: b.roomNumber,
-              guest: {
-                name: b.guestName || user.name,
-                email: b.guestEmail || user.email,
-                phone: b.guestPhone || user.phone || "",
-                specialRequests: b.specialRequests,
-              },
-              createdAt: b.createdAt || new Date().toISOString(),
-            };
-            if (checkOut >= now && formatted.status !== "cancelled") {
-              upcoming.push(formatted);
-            } else {
-              previous.push(formatted);
-            }
-          });
-          setBookings({ upcoming, previous });
-        }
-      } catch (err) {
-        console.error("Failed to load user bookings:", err);
+    if (!user) return;
+    try {
+      let rawList: any[] = [];
+      const res = await api.bookings.getMyBookings();
+      if (res.status === "success" && Array.isArray(res.bookings)) {
+        rawList = res.bookings;
       }
+
+      // Merge local storage and session storage so newly completed bookings show immediately
+      const stored = typeof window !== "undefined" ? getStoredBookings() : [];
+      const sessionRaw = typeof window !== "undefined" ? sessionStorage.getItem("confirmedBooking") : null;
+      let sessionBooking: any = null;
+      if (sessionRaw) {
+        try {
+          sessionBooking = JSON.parse(sessionRaw);
+        } catch {}
+      }
+
+      const combined: any[] = [...rawList];
+
+      if (sessionBooking && sessionBooking.id) {
+        const matchesUser = !sessionBooking.guest?.email ||
+          sessionBooking.guest.email.toLowerCase() === user.email.toLowerCase() ||
+          sessionBooking.userId === user.id;
+        if (matchesUser && !combined.some((b) => b.id === sessionBooking.id || b.bookingId === sessionBooking.id)) {
+          combined.unshift(sessionBooking);
+        }
+      }
+
+      for (const sb of stored) {
+        if (!sb || !sb.id) continue;
+        const matchesUser = !sb.guest?.email ||
+          sb.guest.email.toLowerCase() === user.email.toLowerCase() ||
+          sb.userId === user.id;
+        if (matchesUser && !combined.some((b) => b.id === sb.id || b.bookingId === sb.id)) {
+          combined.unshift(sb);
+        }
+      }
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const upcoming: Booking[] = [];
+      const previous: Booking[] = [];
+
+      combined.forEach((b: any) => {
+        const checkOutRaw = b.checkOutDate || b.checkOut;
+        const checkOut = checkOutRaw ? new Date(checkOutRaw) : new Date();
+        checkOut.setHours(23, 59, 59, 999);
+
+        const formatted: Booking = {
+          id: b.id,
+          bookingId: b.bookingId || b.id,
+          roomId: b.room?.id || b.roomId || "deluxe-room",
+          roomSlug: b.room?.slug || b.roomType || "deluxe",
+          roomName: b.room?.name || `${(b.roomType || "deluxe").toUpperCase()} Room`,
+          roomImage: b.room?.images?.[0] || "/images/rooms/deluxe.png",
+          room: b.room || {
+            id: b.room?.id || b.roomId || "deluxe-room",
+            name: b.room?.name || `${(b.roomType || "deluxe").toUpperCase()} Room`,
+            slug: b.room?.slug || b.roomType || "deluxe",
+            type: b.roomType || "deluxe",
+            price: b.baseAmount || b.totalAmount || 2499,
+            description: "Luxury hotel accommodation with modern amenities.",
+            shortDescription: "Luxury stay at Hotel Reliance.",
+            capacity: { adults: b.adults || 2, children: b.children || 0, maxTotal: 4 },
+            amenities: ["Free High-Speed Wi-Fi", "Air Conditioning", "HD TV", "Room Service"],
+            features: ["City View", "King Bed", "Ensuite Bathroom"],
+            images: [b.room?.images?.[0] || "/images/rooms/deluxe.png"],
+            heroImage: b.room?.images?.[0] || "/images/rooms/deluxe.png",
+            bedType: "King Bed",
+            size: "350 sq.ft",
+            view: "City View",
+            rating: 4.8,
+            reviewCount: 120,
+            isFeatured: false,
+            inventory: 10
+          },
+          checkIn: b.checkInDate || b.checkIn,
+          checkOut: b.checkOutDate || b.checkOut,
+          adults: b.adults || 2,
+          children: b.children || 0,
+          nights: b.nights || 1,
+          basePrice: b.baseAmount || b.totalAmount,
+          discount: b.discountAmount || 0,
+          taxes: b.taxAmount || 0,
+          totalPrice: b.totalAmount || b.totalPrice,
+          estimatedTotal: b.estimatedTotal || (b.totalAmount ? `₹${Number(b.totalAmount).toLocaleString("en-IN")}` : undefined),
+          status: (b.bookingStatus?.toLowerCase() || b.status?.toLowerCase() || "confirmed") as any,
+          paymentStatus: (b.paymentStatus?.toLowerCase() || "paid") as any,
+          paymentMethod: b.paymentMethod || "online",
+          roomNumber: b.roomNumber,
+          guest: {
+            name: b.guestName || b.guest?.name || user.name,
+            email: b.guestEmail || b.guest?.email || user.email,
+            phone: b.guestPhone || b.guest?.phone || user.phone || "",
+            specialRequests: b.specialRequests || b.guest?.specialRequests,
+          },
+          createdAt: b.createdAt || new Date().toISOString(),
+        };
+
+        const isCancelled = formatted.status === "cancelled";
+        const isCompleted = formatted.status === "completed";
+
+        if (checkOut >= today && !isCancelled && !isCompleted) {
+          upcoming.push(formatted);
+        } else {
+          previous.push(formatted);
+        }
+      });
+
+      setBookings({ upcoming, previous });
+    } catch (err) {
+      console.error("Failed to load user bookings:", err);
     }
   };
 
@@ -241,9 +286,13 @@ function MyBookingsContent() {
                           <h2 className="text-xl sm:text-2xl font-serif text-dark">
                             {booking.room.name}
                           </h2>
-                          {booking.roomNumber && (
+                          {booking.roomNumber ? (
                             <span className="inline-flex items-center px-2 py-0.5 bg-gold/15 text-gold border border-gold/30 rounded text-[11px] font-bold tracking-wider">
                               Room #{booking.roomNumber}
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center px-2 py-0.5 bg-amber-50 text-amber-800 border border-amber-200 rounded text-[10px] font-medium tracking-wide">
+                              Room No.: Allotted at Check-In
                             </span>
                           )}
                         </div>

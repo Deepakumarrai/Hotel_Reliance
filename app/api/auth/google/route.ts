@@ -76,6 +76,29 @@ export async function POST(request: Request) {
     const cleanEmail = userEmail.toLowerCase().trim();
     const cleanName = userName || cleanEmail.split("@")[0] || "Guest User";
 
+    const BACKEND_URL = process.env.BACKEND_API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001/api/v1";
+    try {
+      const backendRes = await fetch(`${BACKEND_URL}/auth/google`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: cleanEmail,
+          name: cleanName,
+          avatar: userAvatar,
+          phone: "+91 98765 43210"
+        })
+      });
+
+      if (backendRes.ok) {
+        const data = await backendRes.json();
+        if (data.status === "success" && data.token) {
+          return NextResponse.json(data);
+        }
+      }
+    } catch (beErr) {
+      console.warn("Backend /auth/google unreachable, using local fallback token:", beErr);
+    }
+
     const customerUser = {
       id: `usr_g_${Buffer.from(cleanEmail).toString("hex").slice(0, 12)}`,
       name: cleanName,
@@ -87,7 +110,7 @@ export async function POST(request: Request) {
       isVerified: true
     };
 
-    // Issue standard secure JWT token
+    // Issue standard secure JWT token matching backend secret
     const token = signJwt(
       {
         id: customerUser.id,

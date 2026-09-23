@@ -90,8 +90,8 @@ export class BookingsController {
       const pricePerNight = Number(room.pricePerNight);
       const stayTotal = pricePerNight * nights;
 
-      // 2. Check Live Availability & Allocate Physical Room Unit Directly
-      const overlappingBookings = await prisma.booking.findMany({
+      // 2. Check Live Category Availability
+      const overlappingBookingsCount = await prisma.booking.count({
         where: {
           roomId: room.id,
           status: { notIn: [BookingStatus.CANCELLED] },
@@ -99,35 +99,26 @@ export class BookingsController {
             { checkInDate: { lt: end } },
             { checkOutDate: { gt: start } }
           ]
-        },
-        select: { roomNumber: true }
+        }
       });
 
-      const bookedRoomNumbers = overlappingBookings
-        .map((b) => b.roomNumber)
-        .filter((num): num is string => Boolean(num));
-
-      // Query physical units for this room category that are not under maintenance
-      const candidateUnits = await prisma.roomUnit.findMany({
+      // Total physical units for this room category that are not under maintenance
+      const totalUnitsCount = await prisma.roomUnit.count({
         where: {
           roomId: room.id,
-          status: { notIn: ["MAINTENANCE", "OUT_OF_SERVICE"] },
-          roomNumber: { notIn: bookedRoomNumbers }
-        },
-        orderBy: { roomNumber: "asc" }
+          status: { notIn: ["MAINTENANCE", "OUT_OF_SERVICE"] }
+        }
       });
 
-      if (candidateUnits.length === 0) {
+      const maxCapacity = totalUnitsCount > 0 ? totalUnitsCount : (room.totalInventory || 10);
+
+      if (overlappingBookingsCount >= maxCapacity) {
         res.status(409).json({
           status: "error",
           message: `Sorry, ${room.name} has no available rooms for your selected dates (${checkIn} to ${checkOut}). Please select another room category.`
         });
         return;
       }
-
-      // Auto-allocate the first available physical unit
-      const allocatedUnit = candidateUnits[0];
-      const roomNumber = allocatedUnit.roomNumber;
 
       // 3. Validate Discount / Promo Code against DB
       let discountAmount = 0;
@@ -154,27 +145,41 @@ export class BookingsController {
 
       const bookingId = `HR-${Math.floor(100000 + Math.random() * 900000)}`;
 
+      // Resolve user id from session or by registered email
+      let bookingUserId = req.user?.id || null;
+      const cleanGuestEmail = guest.email ? guest.email.toLowerCase().trim() : "";
+      if (!bookingUserId && cleanGuestEmail) {
+        const matchedUser = await prisma.user.findFirst({
+          where: { email: { equals: cleanGuestEmail, mode: "insensitive" } }
+        });
+        if (matchedUser) {
+          bookingUserId = matchedUser.id;
+        }
+      }
+
       // 4. Create Booking Record in PostgreSQL - directly CONFIRMED!
+      // NOTE: Specific physical room unit (e.g. 101, 102) is NOT allotted upon booking.
+      // Physical room allotment is performed by Admin / Front Desk upon guest check-in!
       const booking = await prisma.booking.create({
         data: {
           id: bookingId,
-          userId: req.user?.id || null,
+          userId: bookingUserId,
           roomId: room.id,
-          roomNumber,
+          roomNumber: null, // Deferred to admin check-in!
           checkInDate: start,
           checkOutDate: end,
           nights,
           adults: Number(adults),
           children: Number(children),
           guestName: guest.name,
-          guestEmail: guest.email,
+          guestEmail: cleanGuestEmail || guest.email,
           guestPhone: guest.phone,
           specialRequests: guest.specialRequests || null,
           totalAmount: grandTotal,
           taxAmount,
           discountCode: appliedDiscountCode,
           discountAmount,
-          status: BookingStatus.CONFIRMED, // DIRECTLY CONFIRMED without waiting for admin!
+          status: BookingStatus.CONFIRMED,
           paymentStatus: PaymentStatus.PENDING,
           paymentMethod
         },
@@ -183,31 +188,21 @@ export class BookingsController {
         }
       });
 
-      // 5. Update physical RoomUnit to RESERVED immediately
-      await prisma.roomUnit.update({
-        where: { roomNumber },
-        data: {
-          status: "RESERVED",
-          currentBookingId: bookingId,
-          assignedGuest: guest.name
-        }
-      });
-
-      // 6. Release temporary hold lock
+      // 5. Release temporary hold lock
       lockService.releaseLock(room.id, checkIn);
 
-      // 7. Record Instant Confirmation in Audit Trail
+      // 6. Record Instant Confirmation in Audit Trail
       await prisma.auditLog.create({
         data: {
           adminUser: "INSTANT_CONFIRMATION_ENGINE",
           action: "BOOKING_DIRECT_CONFIRMED",
           entity: "Booking",
           entityId: bookingId,
-          newValue: `Reservation ${bookingId} directly confirmed for ${guest.name}. Physical room ${roomNumber} (${room.name}) reserved immediately with zero admin approval required.`
+          newValue: `Reservation ${bookingId} confirmed for ${guest.name} (${room.name}). Room allotment deferred to front desk check-in.`
         }
       });
 
-      // 8. Generate Razorpay Order if online payment
+      // 7. Generate Razorpay Order if online payment
       let razorpayOrder = null;
       if (paymentMethod === "RAZORPAY") {
         razorpayOrder = await PaymentService.createRazorpayOrder(grandTotal, bookingId);
@@ -218,7 +213,7 @@ export class BookingsController {
         booking: {
           id: booking.id,
           status: booking.status,
-          roomNumber,
+          roomNumber: null,
           checkIn,
           checkOut,
           nights,
@@ -228,7 +223,7 @@ export class BookingsController {
             slug: room.slug,
             pricePerNight
           },
-          totalPrice: stayTotal,
+          totalPrice: grandTotal,
           taxAmount,
           discountAmount,
           grandTotal
@@ -247,9 +242,23 @@ export class BookingsController {
     }
 
     try {
+      const userEmail = (req.user.email || "").toLowerCase().trim();
       const orConditions: any[] = [{ userId: req.user.id }];
-      if (req.user.email) {
-        orConditions.push({ guestEmail: req.user.email });
+      if (userEmail) {
+        orConditions.push({
+          guestEmail: { equals: userEmail, mode: "insensitive" }
+        });
+
+        // Automatically link any previously unlinked bookings matching this email to this user account
+        await prisma.booking.updateMany({
+          where: {
+            guestEmail: { equals: userEmail, mode: "insensitive" },
+            userId: null
+          },
+          data: {
+            userId: req.user.id
+          }
+        }).catch(() => null);
       }
 
       const bookings = await prisma.booking.findMany({

@@ -95,11 +95,9 @@ export default function BookingSuccessPage() {
                 <span className="inline-block px-2 py-0.5 bg-emerald-500 text-white text-[9px] uppercase font-bold tracking-wider rounded-sm">
                   Status: Confirmed (Instant)
                 </span>
-                {booking?.roomNumber && (
-                  <span className="inline-block px-2 py-0.5 bg-gold text-dark text-[10px] uppercase font-bold tracking-wider rounded-sm">
-                    Assigned Room #{booking.roomNumber}
-                  </span>
-                )}
+                <span className="inline-block px-2.5 py-0.5 bg-amber-400/20 text-amber-200 border border-amber-400/30 text-[9px] uppercase font-bold tracking-wider rounded-sm">
+                  Room Allotment: Assigned at Check-In
+                </span>
               </div>
             </div>
           </div>
@@ -147,15 +145,19 @@ export default function BookingSuccessPage() {
                   <h4 className="text-base font-serif font-semibold text-dark">
                     {booking?.room?.name || "Deluxe Suite"}
                   </h4>
-                  {booking?.roomNumber && (
-                    <span className="inline-flex items-center px-2 py-0.5 bg-primary text-gold text-[11px] font-bold tracking-wider rounded">
-                      Room #{booking.roomNumber}
-                    </span>
-                  )}
+                  <span className="inline-flex items-center px-2 py-0.5 bg-amber-50 text-amber-800 border border-amber-200 text-[10px] font-semibold tracking-wide rounded">
+                    Room No.: Allotted at Check-In
+                  </span>
                 </div>
                 <p className="text-muted leading-relaxed font-light">
                   {booking?.room?.description || "Elegant comfort with modern amenities, designed for a relaxing business or leisure stay."}
                 </p>
+                <div className="p-2.5 bg-amber-50/80 border border-amber-200/60 rounded text-[11px] text-amber-800">
+                  <p className="font-medium">Physical Room Assignment</p>
+                  <p className="text-[10px] text-amber-700 mt-0.5">
+                    Your room category is guaranteed. Specific room number allotment will be provided by reception upon arrival during check-in.
+                  </p>
+                </div>
                 <span className="text-[11px] text-gold font-medium block">
                   Room Size: {booking?.room?.size || "280 sq. ft."}
                 </span>

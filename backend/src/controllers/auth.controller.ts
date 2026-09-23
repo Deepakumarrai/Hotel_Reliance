@@ -387,4 +387,103 @@ export class AuthController {
       res.status(500).json({ status: "error", message: err.message });
     }
   }
+
+  public static async googleAuth(req: Request, res: Response): Promise<void> {
+    const { email, name, avatar, phone } = req.body;
+
+    if (!email) {
+      res.status(400).json({ status: "error", message: "Email is required for Google authentication." });
+      return;
+    }
+
+    try {
+      const cleanEmail = email.toLowerCase().trim();
+      const cleanName = name || cleanEmail.split("@")[0] || "Guest User";
+
+      let user = await prisma.user.findUnique({
+        where: { email: cleanEmail }
+      });
+
+      if (!user) {
+        let userPhone = phone;
+        if (!userPhone) {
+          userPhone = `+91 ${Date.now().toString().slice(-10)}`;
+        }
+        const existingPhone = await prisma.user.findUnique({
+          where: { phone: userPhone }
+        });
+        if (existingPhone) {
+          userPhone = `+91 ${Math.floor(1000000000 + Math.random() * 9000000000)}`;
+        }
+
+        user = await prisma.user.create({
+          data: {
+            name: cleanName,
+            email: cleanEmail,
+            phone: userPhone,
+            avatar: avatar || null,
+            role: Role.GUEST,
+            isVerified: true
+          }
+        });
+      } else if (avatar || (name && user.name === "Guest User")) {
+        user = await prisma.user.update({
+          where: { id: user.id },
+          data: {
+            name: name || user.name,
+            avatar: avatar || user.avatar,
+            isVerified: true
+          }
+        });
+      }
+
+      // Link any existing unlinked bookings created under this email
+      await prisma.booking.updateMany({
+        where: {
+          guestEmail: { equals: cleanEmail, mode: "insensitive" },
+          userId: null
+        },
+        data: {
+          userId: user.id
+        }
+      });
+
+      const token = jwt.sign(
+        { id: user.id, email: user.email, role: user.role, name: user.name },
+        config.jwt.secret,
+        { expiresIn: config.jwt.expiresIn as any }
+      );
+
+      const refreshToken = jwt.sign(
+        { id: user.id },
+        config.jwt.refreshSecret,
+        { expiresIn: "30d" }
+      );
+
+      await prisma.session.create({
+        data: {
+          userId: user.id,
+          token: refreshToken,
+          expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+        }
+      });
+
+      res.status(200).json({
+        status: "success",
+        token,
+        refreshToken,
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+          avatar: user.avatar,
+          role: user.role
+        }
+      });
+    } catch (err: any) {
+      res.status(500).json({ status: "error", message: err.message });
+    }
+  }
 }
+

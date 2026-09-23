@@ -28,7 +28,7 @@ export function setAuthToken(token: string | null): void {
   }
 }
 
-function getStoredBookings(): any[] {
+export function getStoredBookings(): any[] {
   if (typeof window === "undefined") return [];
   try {
     const raw = localStorage.getItem(BOOKINGS_STORAGE_KEY);
@@ -38,12 +38,13 @@ function getStoredBookings(): any[] {
   }
 }
 
-function saveStoredBooking(booking: any): void {
-  if (typeof window === "undefined") return;
+export function saveStoredBooking(booking: any): void {
+  if (typeof window === "undefined" || !booking) return;
   try {
     const list = getStoredBookings();
-    list.unshift(booking);
-    localStorage.setItem(BOOKINGS_STORAGE_KEY, JSON.stringify(list));
+    const filtered = list.filter((b) => b.id !== booking.id && b.bookingId !== booking.id);
+    filtered.unshift(booking);
+    localStorage.setItem(BOOKINGS_STORAGE_KEY, JSON.stringify(filtered));
   } catch (e) {
     console.error("Failed to store booking locally:", e);
   }
@@ -384,17 +385,25 @@ export const api = {
     }) => {
       // No silent fallback — if the backend is unreachable, the error must
       // surface to the user so they know the booking didn't go through.
-      return await request<{ status: string; booking: any; razorpayOrder?: any }>("/bookings/create", {
+      const res = await request<{ status: string; booking: any; razorpayOrder?: any }>("/bookings/create", {
         method: "POST",
         body: JSON.stringify(body)
       });
+      if (res?.booking) {
+        saveStoredBooking(res.booking);
+      }
+      return res;
     },
 
     getMyBookings: async () => {
       try {
-        return await request<{ status: string; bookings: any[] }>("/bookings/my-bookings", {
+        const res = await request<{ status: string; bookings: any[] }>("/bookings/my-bookings", {
           method: "GET"
         });
+        if (res.status === "success" && Array.isArray(res.bookings)) {
+          res.bookings.forEach((b) => saveStoredBooking(b));
+        }
+        return res;
       } catch (err: any) {
         const stored = getStoredBookings();
         return {

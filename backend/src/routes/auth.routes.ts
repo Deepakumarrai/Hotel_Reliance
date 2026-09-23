@@ -6,6 +6,7 @@ const router = Router();
 
 router.post("/signup", AuthController.signup);
 router.post("/signin", AuthController.signin);
+router.post("/google", AuthController.googleAuth);
 router.post("/send-otp", AuthController.sendOtp);
 router.post("/verify-otp", AuthController.verifyOtp);
 router.post("/refresh", AuthController.refresh);
