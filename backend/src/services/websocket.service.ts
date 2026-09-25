@@ -58,7 +58,7 @@ class WebSocketService {
         const pathname = url.pathname.replace(/\/+$/, "") || "/";
 
         if (pathname === "/ws") {
-          this.wss!.handleUpgrade(request, socket, head, (ws) => {
+          this.wss!.handleUpgrade(request, socket, head, (ws: WebSocket) => {
             this.wss!.emit("connection", ws, request);
           });
         }
@@ -69,8 +69,8 @@ class WebSocketService {
 
     console.log("[WebSocket] Live WebSocket Server initialized on path /ws");
 
-    this.wss.on("connection", (ws: WebSocket, req) => {
-      const clientIp = req.socket.remoteAddress || "unknown";
+    this.wss.on("connection", (ws: WebSocket, req: any) => {
+      const clientIp = (req && req.socket && req.socket.remoteAddress) || "unknown";
       console.log(`[WebSocket] Client connected from ${clientIp}. Total active clients: ${this.clients.size + 1}`);
 
       this.clients.add(ws);
@@ -88,7 +88,7 @@ class WebSocketService {
         (ws as any).isAlive = true;
       });
 
-      ws.on("message", (raw) => {
+      ws.on("message", (raw: any) => {
         try {
           const msg = JSON.parse(raw.toString());
           if (msg.type === "PING") {
@@ -100,12 +100,12 @@ class WebSocketService {
         }
       });
 
-      ws.on("close", (code, reason) => {
+      ws.on("close", (code: number, reason: any) => {
         this.clients.delete(ws);
         console.log(`[WebSocket] Client disconnected (code: ${code}, reason: ${reason || "none"}). Remaining: ${this.clients.size}`);
       });
 
-      ws.on("error", (err) => {
+      ws.on("error", (err: any) => {
         console.error("[WebSocket] Client socket error:", err.message);
         this.clients.delete(ws);
       });
