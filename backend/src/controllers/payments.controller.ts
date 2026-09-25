@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import { prisma } from "../services/prisma";
 import { PaymentService } from "../services/payment.service";
 import { BookingStatus, PaymentStatus } from "@prisma/client";
+import { cacheInvalidate } from "../services/cache";
+import { webSocketService } from "../services/websocket.service";
 
 export class PaymentsController {
   public static async createOrder(req: Request, res: Response): Promise<void> {
@@ -80,6 +82,15 @@ export class PaymentsController {
         }
       });
 
+      cacheInvalidate("admin:");
+      const fullBooking = await prisma.booking.findUnique({
+        where: { id: bookingId },
+        include: { room: true }
+      });
+      if (fullBooking) {
+        webSocketService.broadcastBookingUpdated(fullBooking, "PAYMENT_CONFIRMED");
+      }
+
       res.status(200).json({
         status: "success",
         message: "Payment successfully verified. Reservation confirmed.",
@@ -120,6 +131,14 @@ export class PaymentsController {
               where: { id: payment.bookingId },
               data: { status: BookingStatus.CONFIRMED, paymentStatus: PaymentStatus.PAID, paymentId }
             });
+            cacheInvalidate("admin:");
+            const fullBooking = await prisma.booking.findUnique({
+              where: { id: payment.bookingId },
+              include: { room: true }
+            });
+            if (fullBooking) {
+              webSocketService.broadcastBookingUpdated(fullBooking, "WEBHOOK_PAYMENT_CAPTURED");
+            }
           }
         }
       }

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { prisma } from "../services/prisma";
 import { cacheGet, cacheInvalidate } from "../services/cache";
+import { webSocketService } from "../services/websocket.service";
 
 // Helper to log administrative actions to PostgreSQL
 async function recordAuditLog(
@@ -293,6 +294,9 @@ export async function createAdminBooking(req: Request, res: Response): Promise<v
       req.ip
     );
 
+    // Broadcast new booking to admin WebSocket clients
+    webSocketService.broadcastNewBooking(booking);
+
     res.json({
       success: true,
       booking: {
@@ -460,6 +464,9 @@ export async function updateAdminBooking(req: Request, res: Response): Promise<v
       prevStatus,
       req.ip
     );
+
+    // Broadcast booking update to admin WebSocket clients
+    webSocketService.broadcastBookingUpdated(updated, action || "UPDATE");
 
     res.json({
       success: true,

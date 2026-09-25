@@ -72,12 +72,13 @@ export default function AdminDashboardPage() {
     return "Good Evening";
   };
 
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = async (silent = false) => {
+    if (!silent) setLoading(true);
     try {
       const [dashRes, roomsRes, sessionRes] = await Promise.all([
-        fetch("/api/admin/dashboard"),
-        fetch("/api/admin/rooms"),
-        fetch("/api/admin/auth/session"),
+        fetch(`/api/admin/dashboard?_t=${Date.now()}`),
+        fetch(`/api/admin/rooms?_t=${Date.now()}`),
+        fetch(`/api/admin/auth/session?_t=${Date.now()}`),
       ]);
 
       const dashData = await dashRes.json();
@@ -99,12 +100,36 @@ export default function AdminDashboardPage() {
     } catch (err) {
       console.error("Failed to load live dashboard data", err);
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchDashboardData();
+
+    const handleNewBooking = (e: any) => {
+      const { booking } = e.detail || {};
+      if (booking) {
+        setBookings((prev) => {
+          const exists = prev.some((b) => b.id === booking.id);
+          if (exists) return prev;
+          return [booking, ...prev].slice(0, 10);
+        });
+      }
+      fetchDashboardData(true);
+    };
+
+    const handleBookingUpdated = () => {
+      fetchDashboardData(true);
+    };
+
+    window.addEventListener("hr:new-booking", handleNewBooking);
+    window.addEventListener("hr:booking-updated", handleBookingUpdated);
+
+    return () => {
+      window.removeEventListener("hr:new-booking", handleNewBooking);
+      window.removeEventListener("hr:booking-updated", handleBookingUpdated);
+    };
   }, []);
 
   const getGuestInitials = (name: string) => {

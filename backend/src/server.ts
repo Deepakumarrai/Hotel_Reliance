@@ -1,16 +1,24 @@
+import http from "http";
 import app from "./app";
 import { config } from "./config";
 import prisma from "./services/prisma";
+import { webSocketService } from "./services/websocket.service";
 
-const server = app.listen(config.port, () => {
+const server = http.createServer(app);
+
+// Initialize WebSocket server on /ws path
+webSocketService.init(server);
+
+server.listen(config.port, () => {
   console.log(`
 =====================================================
-🏨 HOTEL RELIANCE — BACKEND API SERVICE
+🏨 HOTEL RELIANCE — BACKEND API & WEBSOCKET SERVICE
 =====================================================
   Port        : ${config.port}
   Environment : ${config.nodeEnv}
   Base URL    : http://localhost:${config.port}/api/v1
   Health Check: http://localhost:${config.port}/api/v1/health
+  WebSocket   : ws://localhost:${config.port}/ws
   Rooms API   : http://localhost:${config.port}/api/v1/rooms
   Auth API    : http://localhost:${config.port}/api/v1/auth
   Bookings API: http://localhost:${config.port}/api/v1/bookings

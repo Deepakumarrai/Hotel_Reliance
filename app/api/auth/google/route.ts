@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import crypto from "crypto";
+import { getBackendUrl } from "@/lib/backendConfig";
 
 const JWT_SECRET = process.env.JWT_SECRET || "reliance-super-secret-jwt-key-32-chars-minimum";
 
@@ -76,7 +77,7 @@ export async function POST(request: Request) {
     const cleanEmail = userEmail.toLowerCase().trim();
     const cleanName = userName || cleanEmail.split("@")[0] || "Guest User";
 
-    const BACKEND_URL = process.env.BACKEND_API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001/api/v1";
+    const BACKEND_URL = getBackendUrl();
     try {
       const backendRes = await fetch(`${BACKEND_URL}/auth/google`, {
         method: "POST",

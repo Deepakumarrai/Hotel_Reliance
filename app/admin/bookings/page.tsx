@@ -9,6 +9,8 @@ import {
   Download,
   PlusCircle,
   ChevronDown,
+  Sparkles,
+  Radio,
 } from "lucide-react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { CheckInModal } from "@/components/admin/CheckInModal";
@@ -27,6 +29,7 @@ function BookingsContent() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>(initialFilter.toUpperCase());
   const [roomTypeFilter, setRoomTypeFilter] = useState("ALL");
+  const [newBookingIds, setNewBookingIds] = useState<Set<string>>(new Set());
 
   // Modals
   const [checkInBooking, setCheckInBooking] = useState<AdminBooking | null>(null);
@@ -36,30 +39,81 @@ function BookingsContent() {
 
   const todayStr = new Date().toISOString().split("T")[0];
 
-  const fetchData = async () => {
+  const fetchData = async (silent = false) => {
+    if (!silent) setLoading(true);
     try {
       const [bRes, rRes] = await Promise.all([
-        fetch("/api/admin/bookings"),
-        fetch("/api/admin/rooms"),
+        fetch(`/api/admin/bookings?_t=${Date.now()}`),
+        fetch(`/api/admin/rooms?_t=${Date.now()}`),
       ]);
       const bData = await bRes.json();
       const rData = await rRes.json();
       if (Array.isArray(bData?.bookings)) {
         setBookings(bData.bookings);
       } else {
-        setBookings([]);
+        if (!silent) setBookings([]);
       }
       if (Array.isArray(rData?.rooms)) setRooms(rData.rooms);
     } catch (err) {
       console.error("Failed to load reservations:", err);
-      setBookings([]);
+      if (!silent) setBookings([]);
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchData();
+
+    // Listen to real-time events from WebSocket
+    const handleNewBooking = (e: any) => {
+      const { booking } = e.detail || {};
+      if (!booking) return;
+
+      setBookings((prev) => {
+        const exists = prev.some((b) => b.id === booking.id);
+        if (exists) {
+          return prev.map((b) => (b.id === booking.id ? { ...b, ...booking } : b));
+        }
+        return [booking, ...prev];
+      });
+
+      setNewBookingIds((prev) => {
+        const next = new Set(prev);
+        next.add(booking.id);
+        return next;
+      });
+
+      // Remove highlight after 8 seconds
+      setTimeout(() => {
+        setNewBookingIds((prev) => {
+          const next = new Set(prev);
+          next.delete(booking.id);
+          return next;
+        });
+      }, 8000);
+
+      // Silently refresh server data for consistent totals
+      fetchData(true);
+    };
+
+    const handleBookingUpdated = (e: any) => {
+      const { booking } = e.detail || {};
+      if (booking) {
+        setBookings((prev) =>
+          prev.map((b) => (b.id === booking.id ? { ...b, ...booking } : b))
+        );
+      }
+      fetchData(true);
+    };
+
+    window.addEventListener("hr:new-booking", handleNewBooking);
+    window.addEventListener("hr:booking-updated", handleBookingUpdated);
+
+    return () => {
+      window.removeEventListener("hr:new-booking", handleNewBooking);
+      window.removeEventListener("hr:booking-updated", handleBookingUpdated);
+    };
   }, []);
 
   const displayBookings = bookings;
@@ -165,6 +219,10 @@ function BookingsContent() {
               Reservation Ledger
             </span>
             <span className="w-12 h-[1px] bg-[#B8893E]/40" />
+            <span className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[10px] font-bold">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Live WebSocket Stream</span>
+            </span>
           </div>
 
           <h1 className="text-2xl sm:text-[34px] font-serif font-bold text-[#111923] tracking-tight leading-tight pt-0.5">
@@ -277,18 +335,32 @@ function BookingsContent() {
           <>
             {/* Mobile View: Dedicated Luxury Reservation Cards */}
             <div className="block md:hidden divide-y divide-[#EDE6DB]">
-              {filteredBookings.map((b) => (
-                <div key={b.id} className="p-4 space-y-3.5 bg-white hover:bg-[#FAF7F2]/50 transition-colors">
-                  {/* Card Header: ID & Status Badges */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <span className="font-bold text-[#A97A38] text-sm tracking-wide">
-                        {b.id}
-                      </span>
-                      <span className="text-[10px] text-[#8A8277]">
-                        {b.source === "DIRECT_WALKIN" ? "Walk-in" : "Online"}
-                      </span>
-                    </div>
+              {filteredBookings.map((b) => {
+                const isNew = newBookingIds.has(b.id);
+                return (
+                  <div
+                    key={b.id}
+                    className={`p-4 space-y-3.5 transition-all duration-500 ${
+                      isNew
+                        ? "bg-[#FFF8EC] border-l-4 border-l-[#C4984F] shadow-md animate-pulse"
+                        : "bg-white hover:bg-[#FAF7F2]/50"
+                    }`}
+                  >
+                    {/* Card Header: ID & Status Badges */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <span className="font-bold text-[#A97A38] text-sm tracking-wide">
+                          {b.id}
+                        </span>
+                        {isNew && (
+                          <span className="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-[#C4984F] text-[#111E31] animate-bounce">
+                            NEW
+                          </span>
+                        )}
+                        <span className="text-[10px] text-[#8A8277]">
+                          {b.source === "DIRECT_WALKIN" ? "Walk-in" : "Online"}
+                        </span>
+                      </div>
 
                     <div className="flex items-center space-x-1.5">
                       <span
@@ -392,8 +464,9 @@ function BookingsContent() {
                     )}
                   </div>
                 </div>
-              ))}
-            </div>
+              );
+            })}
+          </div>
 
             {/* Desktop View: Full Luxury Reservation Table */}
             <div className="hidden md:block overflow-x-auto custom-scrollbar">
@@ -411,12 +484,28 @@ function BookingsContent() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#EDE6DB] text-[#111923]">
-                  {filteredBookings.map((b) => (
-                    <tr key={b.id} className="hover:bg-[#FAF7F2]/60 transition-colors">
-                      {/* Booking ID */}
-                      <td className="py-4 px-5 font-bold text-[#A97A38] text-xs whitespace-nowrap">
-                        {b.id}
-                      </td>
+                  {filteredBookings.map((b) => {
+                    const isNew = newBookingIds.has(b.id);
+                    return (
+                      <tr
+                        key={b.id}
+                        className={`transition-all duration-500 ${
+                          isNew
+                            ? "bg-[#FFF9EE] border-l-4 border-l-[#C4984F] shadow-xs animate-pulse"
+                            : "hover:bg-[#FAF7F2]/60"
+                        }`}
+                      >
+                        {/* Booking ID */}
+                        <td className="py-4 px-5 font-bold text-[#A97A38] text-xs whitespace-nowrap">
+                          <div className="flex items-center space-x-1.5">
+                            <span>{b.id}</span>
+                            {isNew && (
+                              <span className="px-1.5 py-0.5 rounded-full text-[8.5px] font-bold bg-[#C4984F] text-[#111E31] shadow-2xs">
+                                NEW
+                              </span>
+                            )}
+                          </div>
+                        </td>
 
                       {/* Guest Details */}
                       <td className="py-4 px-4 whitespace-nowrap">
@@ -523,8 +612,9 @@ function BookingsContent() {
                           )}
                       </td>
                     </tr>
-                  ))}
-                </tbody>
+                  );
+                })}
+              </tbody>
               </table>
             </div>
           </>

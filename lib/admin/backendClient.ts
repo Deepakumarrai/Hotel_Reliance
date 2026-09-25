@@ -3,11 +3,7 @@
  * Proxies Next.js admin endpoints directly to the Express + Prisma live PostgreSQL backend.
  * Includes fast gateway caching to ensure instant (<10ms) admin page loads.
  */
-
-const BACKEND_API_URL =
-  process.env.BACKEND_API_URL ||
-  process.env.NEXT_PUBLIC_API_URL ||
-  "https://hotel-reliance-backend.onrender.com/api/v1";
+import { getBackendUrl } from "@/lib/backendConfig";
 
 interface CacheEntry {
   expiry: number;
@@ -33,11 +29,22 @@ export async function forwardToBackend<T = any>(
   options: RequestInit = {}
 ): Promise<{ status: number; data: T }> {
   const cleanEndpoint = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
-  const url = `${BACKEND_API_URL}${cleanEndpoint}`;
+  const url = `${getBackendUrl()}${cleanEndpoint}`;
   const method = (options.method || "GET").toUpperCase();
+
+  const isNoCache =
+    cleanEndpoint.includes("_t=") ||
+    cleanEndpoint.includes("nocache=1") ||
+    (options.headers &&
+      ((options.headers as any)["Cache-Control"] === "no-cache" ||
+        (options.headers as any)["cache-control"] === "no-cache"));
 
   if (method !== "GET") {
     gatewayCache.clear();
+  } else if (isNoCache) {
+    if (cleanEndpoint.includes("bookings")) invalidateGatewayCache("bookings");
+    if (cleanEndpoint.includes("dashboard")) invalidateGatewayCache("dashboard");
+    gatewayCache.delete(cleanEndpoint);
   } else {
     const cached = gatewayCache.get(cleanEndpoint);
     if (cached && cached.expiry > Date.now()) {

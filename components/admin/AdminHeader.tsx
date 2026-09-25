@@ -11,7 +11,22 @@ import {
   Clock,
   ChevronDown,
   X,
+  CheckCheck,
+  Radio,
 } from "lucide-react";
+import { useAdminWebSocket } from "./AdminWebSocketContext";
+
+function formatTimeAgo(isoString: string): string {
+  try {
+    const diff = Math.floor((Date.now() - new Date(isoString).getTime()) / 1000);
+    if (diff < 60) return "Just now";
+    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+    return `${Math.floor(diff / 86400)}d ago`;
+  } catch {
+    return "Recent";
+  }
+}
 
 export function AdminHeader({
   setMobileOpen,
@@ -24,6 +39,14 @@ export function AdminHeader({
   const [currentDate, setCurrentDate] = useState<string>("");
   const [notifOpen, setNotifOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+
+  const {
+    notifications,
+    unreadCount,
+    markAllAsRead,
+    markAsRead,
+    connectionStatus,
+  } = useAdminWebSocket();
 
   useEffect(() => {
     const updateDateTime = () => {
@@ -116,6 +139,32 @@ export function AdminHeader({
           <ExternalLink className="w-3.5 h-3.5 text-[#9E712E] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
         </Link>
 
+        {/* Live WebSocket Status Indicator */}
+        <div className="hidden sm:flex items-center space-x-1.5 px-2.5 py-1 rounded-full text-[10.5px] font-semibold border transition-all ${
+          connectionStatus === 'connected'
+            ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+            : connectionStatus === 'connecting'
+            ? 'bg-amber-50 text-amber-800 border-amber-200'
+            : 'bg-rose-50 text-rose-800 border-rose-200'
+        }">
+          <span
+            className={`w-2 h-2 rounded-full ${
+              connectionStatus === "connected"
+                ? "bg-emerald-500 animate-pulse"
+                : connectionStatus === "connecting"
+                ? "bg-amber-500 animate-ping"
+                : "bg-rose-500"
+            }`}
+          />
+          <span className="tracking-wide">
+            {connectionStatus === "connected"
+              ? "Live Sync"
+              : connectionStatus === "connecting"
+              ? "Connecting..."
+              : "Offline"}
+          </span>
+        </div>
+
         {/* Notifications Icon with Badge */}
         <div className="relative">
           <button
@@ -125,9 +174,11 @@ export function AdminHeader({
             aria-label="View notifications"
           >
             <Bell className="w-5 h-5 text-[#2D2A26]" />
-            <span className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full bg-[#9E712E] text-white text-[9px] font-bold flex items-center justify-center shadow-xs">
-              3
-            </span>
+            {unreadCount > 0 && (
+              <span className="absolute top-1.5 right-1.5 min-w-[16px] h-4 px-1 rounded-full bg-[#9E712E] text-white text-[9px] font-bold flex items-center justify-center shadow-xs animate-in zoom-in-50 duration-200">
+                {unreadCount > 9 ? "9+" : unreadCount}
+              </span>
+            )}
           </button>
 
           {notifOpen && (
@@ -136,48 +187,99 @@ export function AdminHeader({
                 <div className="flex items-center space-x-2">
                   <Bell className="w-4 h-4 text-[#9E712E]" />
                   <span className="text-xs font-bold uppercase tracking-wider text-[#111E31]">
-                    Operational Notifications
+                    Live Notifications
                   </span>
+                  {unreadCount > 0 && (
+                    <span className="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-[#9E712E] text-white">
+                      {unreadCount} new
+                    </span>
+                  )}
                 </div>
-                <button
-                  onClick={() => setNotifOpen(false)}
-                  className="p-1 min-w-[32px] min-h-[32px] flex items-center justify-center text-[#6B6255] hover:text-[#111E31] rounded-lg cursor-pointer"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
 
-              <div className="divide-y divide-[#EAE2D5]/60 max-h-72 overflow-y-auto">
-                <div className="p-3.5 hover:bg-[#FAF7F2] transition-colors">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-[#111E31]">VIP Arrival Today</span>
-                    <span className="text-[10px] text-[#8C8275]">10m ago</span>
-                  </div>
-                  <p className="text-[11px] text-[#6B6255] mt-1">Suite 401: Mr. Roy check-in scheduled for 2:00 PM</p>
-                </div>
-                <div className="p-3.5 hover:bg-[#FAF7F2] transition-colors">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-[#111E31]">Banquet Booking Confirmed</span>
-                    <span className="text-[10px] text-[#8C8275]">1h ago</span>
-                  </div>
-                  <p className="text-[11px] text-[#6B6255] mt-1">Royal Ballroom: Wedding reception for 250 guests on 15 Oct</p>
-                </div>
-                <div className="p-3.5 hover:bg-[#FAF7F2] transition-colors">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-[#111E31]">Housekeeping Update</span>
-                    <span className="text-[10px] text-[#8C8275]">2h ago</span>
-                  </div>
-                  <p className="text-[11px] text-[#6B6255] mt-1">12 Executive Rooms inspected and ready for check-in</p>
+                <div className="flex items-center space-x-2">
+                  {unreadCount > 0 && (
+                    <button
+                      onClick={markAllAsRead}
+                      className="text-[10px] text-[#9E712E] hover:text-[#7A541E] font-semibold flex items-center space-x-1 cursor-pointer"
+                      title="Mark all as read"
+                    >
+                      <CheckCheck className="w-3.5 h-3.5" />
+                      <span>Read all</span>
+                    </button>
+                  )}
+                  <button
+                    onClick={() => setNotifOpen(false)}
+                    className="p-1 min-w-[28px] min-h-[28px] flex items-center justify-center text-[#6B6255] hover:text-[#111E31] rounded-lg cursor-pointer"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
                 </div>
               </div>
 
-              <div className="p-3 bg-[#FAF7F2] text-center border-t border-[#EAE2D5]">
+              <div className="divide-y divide-[#EAE2D5]/60 max-h-80 overflow-y-auto">
+                {notifications.length === 0 ? (
+                  <div className="p-8 text-center text-xs text-[#8C8275]">
+                    No notifications yet. Live reservations will pop up here.
+                  </div>
+                ) : (
+                  notifications.map((notif) => (
+                    <div
+                      key={notif.id}
+                      onClick={() => {
+                        markAsRead(notif.id);
+                      }}
+                      className={`p-3.5 transition-colors cursor-pointer hover:bg-[#FAF7F2] ${
+                        !notif.read ? "bg-[#FAF5EE]/70" : "bg-white"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center space-x-2 min-w-0">
+                          {!notif.read && (
+                            <span className="w-2 h-2 rounded-full bg-[#9E712E] flex-shrink-0" />
+                          )}
+                          <span className="text-xs font-semibold text-[#111E31] truncate">
+                            {notif.title}
+                          </span>
+                        </div>
+                        <span className="text-[10px] text-[#8C8275] whitespace-nowrap">
+                          {formatTimeAgo(notif.timestamp)}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-[#6B6255] mt-1 leading-relaxed">
+                        {notif.message}
+                      </p>
+                      {notif.bookingId && (
+                        <div className="mt-2 flex items-center justify-between">
+                          <span className="text-[10px] font-mono text-[#9E712E] font-medium">
+                            #{notif.bookingId}
+                          </span>
+                          <Link
+                            href={`/admin/bookings?search=${notif.bookingId}`}
+                            onClick={() => {
+                              markAsRead(notif.id);
+                              setNotifOpen(false);
+                            }}
+                            className="text-[10px] font-bold text-[#9E712E] hover:underline"
+                          >
+                            View Booking →
+                          </Link>
+                        </div>
+                      )}
+                    </div>
+                  ))
+                )}
+              </div>
+
+              <div className="p-3 bg-[#FAF7F2] text-center border-t border-[#EAE2D5] flex items-center justify-between px-4">
+                <span className="text-[10px] text-[#8C8275]">
+                  Status: {connectionStatus === "connected" ? "● Connected" : "Connecting..."}
+                </span>
                 <Link
                   href="/admin/notifications"
                   onClick={() => setNotifOpen(false)}
-                  className="inline-block py-1 px-3 text-[11px] text-[#9E712E] hover:text-[#7A541E] font-bold tracking-wider uppercase"
+                  className="text-[11px] text-[#9E712E] hover:text-[#7A541E] font-bold tracking-wider uppercase"
                 >
-                  View All Notifications →
+                  Configure Templates →
                 </Link>
               </div>
             </div>

@@ -7,13 +7,14 @@ import { config } from "./config";
 const app = express();
 
 // Middlewares
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Private-Network", "true");
+  next();
+});
+
 app.use(
   cors({
-    origin: [
-      config.frontendUrl,
-      "http://localhost:3000",
-      "http://127.0.0.1:3000"
-    ],
+    origin: true,
     credentials: true
   })
 );

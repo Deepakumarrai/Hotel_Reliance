@@ -7,9 +7,14 @@
 import { roomsData } from "@/data/rooms";
 import { offersData } from "@/data/offers";
 import { getStoredCurrentUser, setStoredCurrentUser } from "@/lib/auth/storage";
+import { getBackendUrl } from "@/lib/backendConfig";
 
+// In browser, always use same-origin relative proxy path `/api/v1` to prevent CORS,
+// Mixed Content (HTTPS -> HTTP), and Private Network Access (loopback) blocks.
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001/api/v1";
+  typeof window !== "undefined"
+    ? "/api/v1"
+    : getBackendUrl();
 
 const TOKEN_STORAGE_KEY = "hotel_reliance_token";
 const BOOKINGS_STORAGE_KEY = "hotel_reliance_guest_bookings";

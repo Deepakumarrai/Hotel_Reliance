@@ -4,6 +4,8 @@ import { lockService } from "../services/lock.service";
 import { PaymentService } from "../services/payment.service";
 import { AuthRequest } from "../types";
 import { BookingStatus, PaymentStatus } from "@prisma/client";
+import { cacheInvalidate } from "../services/cache";
+import { webSocketService } from "../services/websocket.service";
 
 export class BookingsController {
   public static async lockRoom(req: AuthRequest, res: Response): Promise<void> {
@@ -175,6 +177,7 @@ export class BookingsController {
           guestEmail: cleanGuestEmail || guest.email,
           guestPhone: guest.phone,
           specialRequests: guest.specialRequests || null,
+          baseAmount: taxableSubtotal,
           totalAmount: grandTotal,
           taxAmount,
           discountCode: appliedDiscountCode,
@@ -202,7 +205,15 @@ export class BookingsController {
         }
       });
 
-      // 7. Generate Razorpay Order if online payment
+      // 7. Invalidate Admin in-memory caches
+      cacheInvalidate("admin:bookings");
+      cacheInvalidate("admin:dashboard");
+      cacheInvalidate("admin:rooms");
+
+      // 8. Broadcast live event to Admin Panel via WebSocket
+      webSocketService.broadcastNewBooking(booking);
+
+      // 9. Generate Razorpay Order if online payment
       let razorpayOrder = null;
       if (paymentMethod === "RAZORPAY") {
         razorpayOrder = await PaymentService.createRazorpayOrder(grandTotal, bookingId);
@@ -346,6 +357,9 @@ export class BookingsController {
           newValue: `Booking ${bookingId} cancelled. Room ${booking.roomNumber || "N/A"} released.`
         }
       });
+
+      cacheInvalidate("admin:");
+      webSocketService.broadcastBookingUpdated(updated, "CANCELLED");
 
       res.status(200).json({
         status: "success",
