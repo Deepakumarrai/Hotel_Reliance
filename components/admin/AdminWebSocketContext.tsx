@@ -349,9 +349,9 @@ export function AdminWebSocketProvider({
         setConnectionStatus("disconnected");
         if (pingIntervalRef.current) clearInterval(pingIntervalRef.current);
 
-        // Exponential backoff reconnect: 1s, 2s, 4s, 8s, up to 15s max
+        // Exponential backoff reconnect: 3s, 6s, 12s, up to 30s max
         const attempts = reconnectAttemptRef.current;
-        const delay = Math.min(1000 * Math.pow(1.8, attempts), 15000);
+        const delay = Math.min(3000 * Math.pow(1.5, attempts), 30000);
         reconnectAttemptRef.current = attempts + 1;
 
         if (reconnectTimeoutRef.current) clearTimeout(reconnectTimeoutRef.current);
@@ -363,11 +363,96 @@ export function AdminWebSocketProvider({
       ws.onerror = () => {
         // ws.onclose will be fired immediately after error
       };
-    } catch (err) {
-      console.error("[Admin WebSocket] Connection failed:", err);
+    } catch {
       setConnectionStatus("disconnected");
     }
   }, [handleIncomingMessage]);
+
+  const knownBookingIdsRef = useRef<Set<string>>(new Set());
+  const initialSyncDoneRef = useRef<boolean>(false);
+
+  // Active fallback synchronization loop:
+  // When WebSocket is disconnected or reconnecting, silently poll `/api/admin/bookings` every 10s
+  // so the Admin panel updates with new bookings automatically with zero manual refreshes!
+  useEffect(() => {
+    let isCancelled = false;
+
+    const pollSync = async () => {
+      try {
+        const res = await fetch(`/api/admin/bookings?_t=${Date.now()}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        const bookingsList = Array.isArray(data?.bookings) ? data.bookings : [];
+
+        // On first run, record all existing IDs without notifying
+        if (!initialSyncDoneRef.current) {
+          bookingsList.forEach((b: any) => {
+            if (b.id) knownBookingIdsRef.current.add(b.id);
+          });
+          initialSyncDoneRef.current = true;
+          return;
+        }
+
+        // On subsequent runs, detect newly added bookings
+        for (const booking of bookingsList) {
+          if (booking.id && !knownBookingIdsRef.current.has(booking.id)) {
+            knownBookingIdsRef.current.add(booking.id);
+
+            const newNotif: AdminLiveNotification = {
+              id: `notif-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+              title: "New Reservation Confirmed",
+              message: `${booking.guestName || "Guest"} booked ${booking.room?.name || booking.roomType || "Room"} (₹${Number(booking.totalAmount || 0).toLocaleString("en-IN")})`,
+              type: "NEW_BOOKING",
+              timestamp: new Date().toISOString(),
+              read: false,
+              bookingId: booking.id,
+              guestName: booking.guestName,
+              roomName: booking.room?.name || booking.roomType || "Room",
+              totalAmount: Number(booking.totalAmount || 0),
+            };
+
+            setNotifications((prev) => {
+              const updated = [newNotif, ...prev.filter((n) => n.id !== newNotif.id)].slice(0, 50);
+              try {
+                localStorage.setItem(NOTIFICATIONS_STORAGE_KEY, JSON.stringify(updated));
+              } catch {}
+              return updated;
+            });
+
+            triggerLivePopup(newNotif);
+
+            if (typeof window !== "undefined") {
+              window.dispatchEvent(
+                new CustomEvent("hr:new-booking", {
+                  detail: {
+                    booking,
+                    notification: newNotif,
+                    roomName: booking.room?.name || booking.roomType || "Room",
+                  },
+                })
+              );
+            }
+          }
+        }
+      } catch {
+        // Silently ignore background polling errors
+      }
+    };
+
+    // Run initial scan
+    pollSync();
+
+    // Run fallback check every 10 seconds if WS is disconnected, or 45s if connected
+    const intervalMs = connectionStatus === "connected" ? 45000 : 10000;
+    const interval = setInterval(() => {
+      if (!isCancelled) pollSync();
+    }, intervalMs);
+
+    return () => {
+      isCancelled = true;
+      clearInterval(interval);
+    };
+  }, [connectionStatus, triggerLivePopup]);
 
   useEffect(() => {
     connectWebSocket();

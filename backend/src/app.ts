@@ -36,15 +36,29 @@ if (config.nodeEnv === "development") {
   });
 }
 
+import { webSocketService } from "./services/websocket.service";
+
 // API Routes
 app.use("/api/v1", routes);
+
+// WebSocket status / diagnostic route
+app.get("/ws", (req, res) => {
+  res.status(200).json({
+    status: "online",
+    service: "Hotel Reliance Live WebSocket Event Stream",
+    endpoint: "wss://hotel-reliance-backend.onrender.com/ws",
+    connectedClients: webSocketService.getConnectedClientsCount(),
+    timestamp: new Date().toISOString()
+  });
+});
 
 // Root route
 app.get("/", (req, res) => {
   res.status(200).json({
     name: "Hotel Reliance API",
-    version: "1.0.0",
+    version: "1.1.0",
     docs: "/api/v1/health",
+    websocket: "/ws",
     status: "online"
   });
 });

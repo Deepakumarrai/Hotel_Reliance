@@ -49,9 +49,22 @@ class WebSocketService {
       return;
     }
 
-    this.wss = new WebSocketServer({
-      server,
-      path: "/ws"
+    this.wss = new WebSocketServer({ noServer: true });
+
+    server.on("upgrade", (request, socket, head) => {
+      try {
+        const host = request.headers.host || "localhost";
+        const url = new URL(request.url || "", `http://${host}`);
+        const pathname = url.pathname.replace(/\/+$/, "") || "/";
+
+        if (pathname === "/ws") {
+          this.wss!.handleUpgrade(request, socket, head, (ws) => {
+            this.wss!.emit("connection", ws, request);
+          });
+        }
+      } catch (err: any) {
+        console.error("[WebSocket] Upgrade error:", err.message);
+      }
     });
 
     console.log("[WebSocket] Live WebSocket Server initialized on path /ws");
