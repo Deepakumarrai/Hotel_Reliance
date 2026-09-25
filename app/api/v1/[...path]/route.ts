@@ -13,8 +13,9 @@ async function handleProxy(
 
   const headers = new Headers();
   request.headers.forEach((value, key) => {
-    // Avoid host header mismatch with target server
-    if (key.toLowerCase() !== "host") {
+    const lower = key.toLowerCase();
+    // Avoid host header mismatch, content-length mismatch, and compression ambiguity
+    if (!["host", "content-length", "connection", "accept-encoding"].includes(lower)) {
       headers.set(key, value);
     }
   });
@@ -39,7 +40,8 @@ async function handleProxy(
 
     const responseHeaders = new Headers();
     backendRes.headers.forEach((value, key) => {
-      if (!["content-encoding", "transfer-encoding"].includes(key.toLowerCase())) {
+      const lower = key.toLowerCase();
+      if (!["content-encoding", "transfer-encoding", "content-length"].includes(lower)) {
         responseHeaders.set(key, value);
       }
     });

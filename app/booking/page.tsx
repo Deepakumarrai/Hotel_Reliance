@@ -251,9 +251,11 @@ function BookingContent() {
         paymentMethod: paymentMethod === "ONLINE" ? "ONLINE_RAZORPAY" : "PAY_AT_HOTEL"
       });
 
-      if (liveRes.booking?.id) {
-        bookingId = liveRes.booking.id;
+      if (!liveRes || !liveRes.booking?.id) {
+        throw new Error((liveRes as any)?.message || "Reservation could not be created. Please try again.");
       }
+
+      bookingId = liveRes.booking.id;
       if (liveRes.razorpayOrder) {
         razorpayOrderData = liveRes.razorpayOrder;
       }

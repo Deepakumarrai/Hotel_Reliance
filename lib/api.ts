@@ -74,7 +74,7 @@ async function request<T = any>(
   // Use longer timeout for write operations (POST/PUT/DELETE) since they involve
   // multiple DB queries (booking creation runs ~6 queries). GET stays fast.
   const method = (options.method || "GET").toUpperCase();
-  const timeoutMs = method === "GET" ? 5000 : 15000;
+  const timeoutMs = method === "GET" ? 8000 : 20000;
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
@@ -86,12 +86,28 @@ async function request<T = any>(
     });
     clearTimeout(timeoutId);
 
-    const data = await res.json().catch(() => null);
+    const text = await res.text().catch(() => "");
+    let data: any = null;
+    if (text) {
+      try {
+        data = JSON.parse(text);
+      } catch {
+        data = null;
+      }
+    }
 
     if (!res.ok) {
+      // Automatically clear expired or rejected JWT tokens
+      if (res.status === 401 || res.status === 403) {
+        setAuthToken(null);
+      }
       const errorMessage =
-        data?.message || data?.error || `HTTP error ${res.status}: ${res.statusText}`;
+        data?.message || data?.error || (text && text.length < 200 ? text : `HTTP error ${res.status}: ${res.statusText}`);
       throw new Error(errorMessage);
+    }
+
+    if (data === null && res.status !== 204) {
+      throw new Error(text || `Empty or invalid response from server (Status ${res.status})`);
     }
 
     return data;
@@ -216,6 +232,10 @@ export const api = {
     },
 
     getMe: async () => {
+      const token = getAuthToken();
+      if (!token) {
+        return { status: "unauthenticated", user: null };
+      }
       try {
         return await request<{ status: string; user: any }>("/auth/me", {
           method: "GET"
@@ -224,9 +244,12 @@ export const api = {
         if (err.message === "BACKEND_OFFLINE") {
           const stored = getStoredCurrentUser();
           if (stored) return { status: "success", user: stored };
-          throw new Error("No active session");
+          return { status: "unauthenticated", user: null };
         }
-        throw err;
+        // If token is invalid or expired (401/403), gracefully reset
+        setAuthToken(null);
+        setStoredCurrentUser(null);
+        return { status: "unauthenticated", user: null };
       }
     },
 
@@ -394,9 +417,10 @@ export const api = {
         method: "POST",
         body: JSON.stringify(body)
       });
-      if (res?.booking) {
-        saveStoredBooking(res.booking);
+      if (!res || !res.booking) {
+        throw new Error((res as any)?.message || "Failed to create reservation. Please try again.");
       }
+      saveStoredBooking(res.booking);
       return res;
     },
 
