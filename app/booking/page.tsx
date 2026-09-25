@@ -227,10 +227,12 @@ function BookingContent() {
       else if (activePromo === "LUXURY20") discountPercent = 20;
 
       const discountAmount = discountPercent > 0 ? Math.round((rawSubtotal * discountPercent) / 100 * 100) / 100 : 0;
-      const finalTotal = Math.max(0, Math.round((rawSubtotal - discountAmount) * 100) / 100);
+      const taxableSubtotal = Math.max(0, Math.round((rawSubtotal - discountAmount) * 100) / 100);
+      const taxRate = 0.12; // 12% GST for hotel accommodation
+      const taxAmount = Math.round(taxableSubtotal * taxRate * 100) / 100;
+      const grandTotal = Math.round((taxableSubtotal + taxAmount) * 100) / 100;
 
       let bookingId = `HR-${Math.floor(100000 + Math.random() * 900000)}`;
-      let allocatedRoomNumber: string | undefined = undefined;
       let razorpayOrderData: any = null;
 
       // No silent fallback — errors must surface to the user
@@ -245,9 +247,9 @@ function BookingContent() {
           email: bookingState.guest?.email || user?.email || "",
           phone: bookingState.guest?.phone || user?.phone || "",
           specialRequests: bookingState.guest?.specialRequests || "",
-          promoCode: bookingState.promoCode || bookingState.guest?.promoCode || undefined
+          promoCode: activePromo || undefined
         },
-        promoCode: bookingState.promoCode || bookingState.guest?.promoCode || undefined,
+        promoCode: activePromo || undefined,
         paymentMethod: paymentMethod === "ONLINE" ? "ONLINE_RAZORPAY" : "PAY_AT_HOTEL"
       });
 
@@ -256,6 +258,11 @@ function BookingContent() {
       }
 
       bookingId = liveRes.booking.id;
+      const finalBaseAmount = Number(liveRes.booking.baseAmount) || rawSubtotal;
+      const finalDiscountAmount = Number(liveRes.booking.discountAmount) || discountAmount;
+      const finalTaxAmount = Number(liveRes.booking.taxAmount) || taxAmount;
+      const finalGrandTotal = Number(liveRes.booking.totalPrice) || Number(liveRes.booking.grandTotal) || grandTotal;
+
       if (liveRes.razorpayOrder) {
         razorpayOrderData = liveRes.razorpayOrder;
       }
@@ -278,10 +285,19 @@ function BookingContent() {
             name: bookingState.guest?.name || user?.name || "Guest",
             email: bookingState.guest?.email || user?.email || "",
             phone: bookingState.guest?.phone || user?.phone || "",
-            specialRequests: bookingState.guest?.specialRequests || ""
+            specialRequests: bookingState.guest?.specialRequests || "",
+            promoCode: activePromo || undefined
           },
-          totalPrice: finalTotal,
-          estimatedTotal: formatPrice(finalTotal),
+          basePrice: finalBaseAmount,
+          baseAmount: finalBaseAmount,
+          discount: finalDiscountAmount,
+          discountAmount: finalDiscountAmount,
+          discountCode: activePromo || undefined,
+          taxes: finalTaxAmount,
+          taxAmount: finalTaxAmount,
+          totalPrice: finalGrandTotal,
+          grandTotal: finalGrandTotal,
+          estimatedTotal: formatPrice(finalGrandTotal),
           status: "confirmed",
           createdAt: new Date().toISOString(),
           paymentMethod: pmLabel,
@@ -297,14 +313,14 @@ function BookingContent() {
         let orderObj = razorpayOrderData;
         if (!orderObj?.orderId && !orderObj?.id) {
           const orderRes = await api.payments.createOrder({
-            amount: finalTotal,
+            amount: finalGrandTotal,
             bookingId
           });
           orderObj = orderRes.razorpayOrder;
         }
 
         const rzpOrderId = orderObj?.orderId || orderObj?.id;
-        const rzpAmount = orderObj?.amount || Math.round(finalTotal * 100);
+        const rzpAmount = orderObj?.amount || Math.round(finalGrandTotal * 100);
 
         await openRazorpayCheckout({
           orderId: rzpOrderId,
@@ -566,6 +582,64 @@ function BookingContent() {
                         </p>
                       </div>
                     </div>
+
+                    {/* Itemized Tariff & Tax Breakdown */}
+                    {selectedRoom && (
+                      <div className="bg-white border border-[#E8DFD2] p-6 shadow-xs space-y-3">
+                        <div className="flex items-center justify-between border-b border-[#E8DFD2] pb-2">
+                          <span className="text-[10px] uppercase font-bold tracking-widest text-[#B38E5D]">
+                            Tariff & Statutory Tax Breakdown
+                          </span>
+                          <span className="text-[10px] text-emerald-800 font-semibold bg-emerald-50 px-2 py-0.5 border border-emerald-200 rounded-xs">
+                            GSTIN Compliant
+                          </span>
+                        </div>
+                        {(() => {
+                          const activeRoomPrice = getRoomPrice(selectedRoom.slug, selectedRoom.price) || selectedRoom.price || 0;
+                          const rawSubtotal = Math.round(activeRoomPrice * nights * 100) / 100;
+                          const activePromo = (bookingState.promoCode || bookingState.guest?.promoCode || "").toUpperCase().trim();
+                          let discountPercent = 0;
+                          if (activePromo === "RELIANCE15" || activePromo === "LUXURY15") discountPercent = 15;
+                          else if (activePromo === "WELCOME10" || activePromo === "KWALITY10" || activePromo === "CORPSTAY" || activePromo === "WEEKENDSPL") discountPercent = 10;
+                          else if (activePromo === "LUXURY20") discountPercent = 20;
+
+                          const discountAmount = discountPercent > 0 ? Math.round((rawSubtotal * discountPercent) / 100 * 100) / 100 : 0;
+                          const taxableSubtotal = Math.max(0, Math.round((rawSubtotal - discountAmount) * 100) / 100);
+                          const taxRate = 0.12;
+                          const taxAmount = Math.round(taxableSubtotal * taxRate * 100) / 100;
+                          const grandTotal = Math.round((taxableSubtotal + taxAmount) * 100) / 100;
+
+                          return (
+                            <div className="space-y-2 text-xs">
+                              <div className="flex justify-between text-[#5C4F46]">
+                                <span>{selectedRoom.name} ({nights} {nights === 1 ? "night" : "nights"} × {formatPrice(activeRoomPrice)}):</span>
+                                <span className="font-semibold text-[#2B2320]">{formatPrice(rawSubtotal)}</span>
+                              </div>
+                              {discountAmount > 0 && (
+                                <div className="flex justify-between text-emerald-700 font-semibold bg-emerald-50/80 p-2 border border-emerald-200 rounded-xs">
+                                  <span>Privilege Discount ({activePromo} - {discountPercent}%):</span>
+                                  <span>-{formatPrice(discountAmount)}</span>
+                                </div>
+                              )}
+                              {discountAmount > 0 && (
+                                <div className="flex justify-between text-[#7A6B61] text-[11px]">
+                                  <span>Net Taxable Accommodation Tariff:</span>
+                                  <span className="font-medium text-[#2B2320]">{formatPrice(taxableSubtotal)}</span>
+                                </div>
+                              )}
+                              <div className="flex justify-between text-[#5C4F46]">
+                                <span>Goods & Services Tax (GST @ 12%):</span>
+                                <span className="font-semibold text-[#2B2320]">+{formatPrice(taxAmount)}</span>
+                              </div>
+                              <div className="flex justify-between text-sm sm:text-base font-bold text-[#2B2320] border-t-2 border-[#E8DFD2] pt-3 mt-2">
+                                <span>Total Payable ({paymentMethod === "ONLINE" ? "Instant Online" : "At Hotel Check-In"}):</span>
+                                <span className="font-serif text-primary text-lg sm:text-xl font-bold">{formatPrice(grandTotal)}</span>
+                              </div>
+                            </div>
+                          );
+                        })()}
+                      </div>
+                    )}
                   </div>
                 )}
               </motion.div>

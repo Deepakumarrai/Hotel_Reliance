@@ -30,6 +30,7 @@ export interface AdminBooking {
   baseAmount: number;
   taxAmount: number;
   discountAmount: number;
+  discountCode?: string;
   totalAmount: number;
   paidAmount: number;
   paymentStatus: "SUCCESS" | "PENDING" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED" | "PAID";

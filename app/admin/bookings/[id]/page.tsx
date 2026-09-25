@@ -267,22 +267,34 @@ export default function SingleBookingDetailPage() {
                     <div className="text-[10px] text-[#78716C]">Includes High-Speed Wi-Fi & 24/7 Room Service Support</div>
                   </td>
                   <td className="p-3.5 text-center font-medium">{booking.nights}</td>
-                  <td className="p-3.5 text-right font-mono">₹{Math.round(booking.baseAmount / booking.nights).toLocaleString()}</td>
-                  <td className="p-3.5 text-right font-bold font-mono">₹{booking.baseAmount.toLocaleString()}</td>
+                  <td className="p-3.5 text-right font-mono">₹{Math.round(booking.baseAmount / booking.nights).toLocaleString("en-IN")}</td>
+                  <td className="p-3.5 text-right font-bold font-mono">₹{booking.baseAmount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
                 </tr>
                 {booking.discountAmount > 0 && (
                   <tr className="text-[#15803D]">
-                    <td className="p-3.5">Seasonal / Coupon Discount Applied</td>
+                    <td className="p-3.5">
+                      <div className="font-medium">Privilege / Coupon Discount Applied</div>
+                      {booking.discountCode && <div className="text-[10px] uppercase font-bold text-emerald-700">Code: {booking.discountCode}</div>}
+                    </td>
                     <td className="p-3.5 text-center">—</td>
                     <td className="p-3.5 text-right">—</td>
-                    <td className="p-3.5 text-right font-bold font-mono">-₹{booking.discountAmount.toLocaleString()}</td>
+                    <td className="p-3.5 text-right font-bold font-mono">-₹{booking.discountAmount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
+                  </tr>
+                )}
+                {booking.discountAmount > 0 && (
+                  <tr className="text-[#6B6255] bg-[#FAF8F5]">
+                    <td colSpan={3} className="p-2.5 text-right font-medium">Net Taxable Accommodation Tariff:</td>
+                    <td className="p-2.5 text-right font-mono font-semibold">₹{(booking.baseAmount - booking.discountAmount).toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
                   </tr>
                 )}
                 <tr>
-                  <td className="p-3.5">Goods & Services Tax (GST @ 12%)</td>
+                  <td className="p-3.5">
+                    <div className="font-medium">Goods & Services Tax (GST @ 12%)</div>
+                    <div className="text-[10px] text-[#78716C]">CGST (6%) + SGST (6%) on taxable room tariff</div>
+                  </td>
                   <td className="p-3.5 text-center">—</td>
                   <td className="p-3.5 text-right">—</td>
-                  <td className="p-3.5 text-right font-mono font-medium">₹{booking.taxAmount.toLocaleString()}</td>
+                  <td className="p-3.5 text-right font-mono font-medium">₹{booking.taxAmount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
                 </tr>
               </tbody>
               <tfoot className="bg-[#FAF7F2] border-t-2 border-[#E8DFD2]">

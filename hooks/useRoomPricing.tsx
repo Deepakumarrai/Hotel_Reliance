@@ -232,14 +232,17 @@ export function RoomPricingProvider({ children }: { children: React.ReactNode })
     const nights = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
 
     const nightlyPrice = rules.base;
-    const totalAmount = Math.round(nightlyPrice * nights * 100) / 100;
+    const baseAmount = Math.round(nightlyPrice * nights * 100) / 100;
+    const taxRate = 0.12; // 12% statutory GST (CGST 6% + SGST 6%)
+    const taxAmount = Math.round(baseAmount * taxRate * 100) / 100;
+    const totalAmount = Math.round((baseAmount + taxAmount) * 100) / 100;
 
     return {
       nights,
       nightlyPrice,
-      baseAmount: totalAmount,
-      taxAmount: 0,
-      taxRate: 0,
+      baseAmount,
+      taxAmount,
+      taxRate,
       extraGuestAmount: 0,
       totalAmount,
     };

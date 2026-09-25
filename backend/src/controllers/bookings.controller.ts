@@ -177,7 +177,7 @@ export class BookingsController {
           guestEmail: cleanGuestEmail || guest.email,
           guestPhone: guest.phone,
           specialRequests: guest.specialRequests || null,
-          baseAmount: taxableSubtotal,
+          baseAmount: stayTotal,
           totalAmount: grandTotal,
           taxAmount,
           discountCode: appliedDiscountCode,
@@ -234,9 +234,12 @@ export class BookingsController {
             slug: room.slug,
             pricePerNight
           },
-          totalPrice: grandTotal,
-          taxAmount,
+          baseAmount: stayTotal,
           discountAmount,
+          discountCode: appliedDiscountCode,
+          taxableSubtotal,
+          taxAmount,
+          totalPrice: grandTotal,
           grandTotal
         },
         razorpayOrder

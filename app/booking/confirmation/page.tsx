@@ -134,17 +134,45 @@ export default function BookingConfirmationPage() {
           <Divider />
 
           {/* Pricing receipt totals */}
-          <div className="bg-cream p-5 border border-border-custom flex items-center justify-between text-xs sm:text-sm">
-            <div className="space-y-1">
-              <span className="text-[10px] uppercase font-bold tracking-widest text-muted block">
-                Total Final Tariff (All-Inclusive)
+          <div className="border border-border-custom bg-white overflow-hidden text-xs">
+            <div className="p-3 bg-cream/70 border-b border-border-custom flex items-center justify-between">
+              <span className="text-[10px] uppercase font-bold tracking-widest text-gold">
+                Tariff & Statutory Tax Details
               </span>
-              <span className="text-2xl font-serif text-primary font-bold">
-                {booking.totalPrice ? formatPrice(booking.totalPrice) : "Price on request"}
+              <span className="text-[10px] text-emerald-800 font-semibold bg-emerald-50 px-2 py-0.5 border border-emerald-200 rounded-xs">
+                GSTIN Compliant
               </span>
             </div>
-            <div className="text-right text-[10px] text-emerald-800 font-semibold italic leading-relaxed max-w-[200px]">
-              ✓ All-inclusive final payable amount at check-in.
+            <div className="p-4 space-y-2">
+              <div className="flex justify-between text-muted">
+                <span>Room Tariff ({nights} {nights === 1 ? "Night" : "Nights"}):</span>
+                <span className="font-semibold text-dark font-mono">
+                  {formatPrice(booking.baseAmount || booking.basePrice || Math.round((booking.totalPrice || 0) / 1.12))}
+                </span>
+              </div>
+              {Boolean(booking.discountAmount || booking.discount) && (
+                <div className="flex justify-between text-emerald-700 font-semibold bg-emerald-50 px-2 py-1 border border-emerald-200 rounded-xs">
+                  <span>Privilege Discount Applied{booking.discountCode ? ` (${booking.discountCode})` : ""}:</span>
+                  <span className="font-mono">-{formatPrice(booking.discountAmount || booking.discount || 0)}</span>
+                </div>
+              )}
+              <div className="flex justify-between text-muted">
+                <span>Goods & Services Tax (GST @ 12%):</span>
+                <span className="font-semibold text-dark font-mono">
+                  +{formatPrice(booking.taxAmount || booking.taxes || Math.round((booking.totalPrice || 0) - ((booking.totalPrice || 0) / 1.12)))}
+                </span>
+              </div>
+              <div className="flex items-center justify-between border-t-2 border-border-custom pt-3 mt-1">
+                <span className="text-xs uppercase font-bold tracking-wider text-dark">
+                  Total Final Tariff (All-Inclusive):
+                </span>
+                <span className="text-xl font-serif text-primary font-bold">
+                  {booking.totalPrice ? formatPrice(booking.totalPrice) : "Price on request"}
+                </span>
+              </div>
+            </div>
+            <div className="px-4 py-2 bg-cream/50 border-t border-border-custom/60 text-[10px] text-emerald-800 font-semibold italic">
+              ✓ All-inclusive final payable amount at check-in (CGST 6% + SGST 6%).
             </div>
           </div>
 

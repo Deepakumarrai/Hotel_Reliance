@@ -115,30 +115,50 @@ export function BookingSummary({ state, selectedRoom }: BookingSummaryProps) {
 
             const roomSubtotal = calculation.baseAmount;
             const discountAmount = discountPercent > 0 ? Math.round((roomSubtotal * discountPercent) / 100 * 100) / 100 : 0;
-            const finalTotal = Math.max(0, Math.round((roomSubtotal - discountAmount) * 100) / 100);
+            const taxableSubtotal = Math.max(0, Math.round((roomSubtotal - discountAmount) * 100) / 100);
+            const taxRate = 0.12; // 12% GST
+            const taxAmount = Math.round(taxableSubtotal * taxRate * 100) / 100;
+            const grandTotal = Math.round((taxableSubtotal + taxAmount) * 100) / 100;
 
             return (
               <div className="space-y-2 pt-1 text-[11px]">
                 <div className="flex justify-between text-muted">
-                  <span>Room Tariff ({nights} {nights === 1 ? "night" : "nights"}):</span>
+                  <span>Room Tariff ({nights} {nights === 1 ? "night" : "nights"} × {formatPrice(calculation.nightlyPrice)}):</span>
                   <span className="font-semibold text-dark">{formatPrice(roomSubtotal)}</span>
                 </div>
                 {discountAmount > 0 && (
-                  <div className="flex justify-between text-emerald-700 font-semibold bg-emerald-50 px-2 py-1 border border-emerald-200">
+                  <div className="flex justify-between text-emerald-700 font-semibold bg-emerald-50 px-2 py-1 border border-emerald-200 rounded-sm">
                     <span className="flex items-center">
-                      <Sparkles className="w-3 h-3 mr-1 text-emerald-600" />
+                      <Sparkles className="w-3 h-3 mr-1 text-emerald-600 flex-shrink-0" />
                       Privilege Savings ({activePromo} - {discountPercent}%):
                     </span>
                     <span>-{formatPrice(discountAmount)}</span>
                   </div>
                 )}
+                {discountAmount > 0 && (
+                  <div className="flex justify-between text-muted/80 text-[10.5px]">
+                    <span>Net Taxable Subtotal:</span>
+                    <span className="font-semibold text-dark">{formatPrice(taxableSubtotal)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-muted">
+                  <span className="flex items-center">
+                    Statutory Taxes (GST @ 12%):
+                  </span>
+                  <span className="font-semibold text-dark">+{formatPrice(taxAmount)}</span>
+                </div>
                 <div className="flex justify-between text-xs font-bold text-dark border-t border-border-custom/80 pt-2 mt-1">
                   <span>Total Payable:</span>
-                  <span className="text-base font-serif text-primary font-bold">{formatPrice(finalTotal)}</span>
+                  <span className="text-base font-serif text-primary font-bold">{formatPrice(grandTotal)}</span>
                 </div>
-                <span className="text-[9.5px] text-emerald-700 font-semibold block pt-0.5">
-                  ✓ Final all-inclusive payable amount (No hidden charges)
-                </span>
+                <div className="p-2 bg-cream/70 border border-border-custom/60 rounded-sm space-y-0.5">
+                  <span className="text-[9.5px] text-emerald-800 font-semibold block">
+                    ✓ All-Inclusive Final Tariff (CGST 6% + SGST 6%)
+                  </span>
+                  <span className="text-[9px] text-muted block">
+                    Official tax invoice with GST breakdown provided at check-in.
+                  </span>
+                </div>
               </div>
             );
           })() : (

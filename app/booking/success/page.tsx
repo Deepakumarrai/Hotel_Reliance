@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/Button";
 import { Booking } from "@/types/booking";
 import { HOTEL_INFO } from "@/lib/constants";
 import { useHotelSettings } from "@/hooks/useHotelSettings";
+import { formatPrice } from "@/lib/utils";
 
 export default function BookingSuccessPage() {
   const settings = useHotelSettings();
@@ -179,6 +180,73 @@ export default function BookingSuccessPage() {
                 )}
               </div>
             </div>
+
+            {/* Itemized Billing Breakdown */}
+            {booking && (
+              <div className="border border-border-custom rounded-sm overflow-hidden bg-white">
+                <div className="p-3 bg-cream/70 border-b border-border-custom flex items-center justify-between">
+                  <span className="text-[10px] uppercase font-bold tracking-widest text-gold">
+                    Tariff & Statutory Tax Details
+                  </span>
+                  <span className="text-[10px] text-emerald-800 font-semibold bg-emerald-50 px-2 py-0.5 border border-emerald-200 rounded-xs">
+                    GSTIN Compliant
+                  </span>
+                </div>
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-cream/40 text-[10px] uppercase tracking-wider text-muted border-b border-border-custom">
+                    <tr>
+                      <th className="p-3 font-bold">Particulars</th>
+                      <th className="p-3 font-bold text-center">Nights</th>
+                      <th className="p-3 font-bold text-right">Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border-custom/60 text-dark">
+                    <tr>
+                      <td className="p-3">
+                        <span className="font-semibold block">{booking.room?.name || "Suite Accommodation"}</span>
+                        <span className="text-[10px] text-muted">Base room tariff</span>
+                      </td>
+                      <td className="p-3 text-center">{booking.nights || 1}</td>
+                      <td className="p-3 text-right font-mono font-medium">
+                        {formatPrice(booking.baseAmount || booking.basePrice || Math.round((booking.totalPrice || 0) / 1.12))}
+                      </td>
+                    </tr>
+                    {Boolean(booking.discountAmount || booking.discount) && (
+                      <tr className="text-emerald-700 bg-emerald-50/40">
+                        <td className="p-3">
+                          <span className="font-semibold block">Privilege Discount Applied</span>
+                          {booking.discountCode && <span className="text-[10px] block font-mono">Code: {booking.discountCode}</span>}
+                        </td>
+                        <td className="p-3 text-center">—</td>
+                        <td className="p-3 text-right font-mono font-semibold">
+                          -{formatPrice(booking.discountAmount || booking.discount || 0)}
+                        </td>
+                      </tr>
+                    )}
+                    <tr>
+                      <td className="p-3">
+                        <span className="font-semibold block">Goods & Services Tax (GST @ 12%)</span>
+                        <span className="text-[10px] text-muted">CGST 6% + SGST 6%</span>
+                      </td>
+                      <td className="p-3 text-center">—</td>
+                      <td className="p-3 text-right font-mono font-medium">
+                        +{formatPrice(booking.taxAmount || booking.taxes || Math.round((booking.totalPrice || 0) - ((booking.totalPrice || 0) / 1.12)))}
+                      </td>
+                    </tr>
+                  </tbody>
+                  <tfoot className="bg-cream/80 border-t border-border-custom text-dark font-medium">
+                    <tr>
+                      <td colSpan={2} className="p-3 text-right font-bold uppercase tracking-wider text-[11px] text-gold">
+                        Final Total Amount (All-Inclusive):
+                      </td>
+                      <td className="p-3 text-right text-sm font-bold font-serif text-primary">
+                        {formatPrice(booking.totalPrice || booking.grandTotal || 0)}
+                      </td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            )}
 
             {/* Hotel Location & Assistance */}
             <div className="p-4 bg-cream/40 border border-border-custom space-y-2 font-light">

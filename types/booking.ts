@@ -33,11 +33,16 @@ export interface Booking {
   roomName?: string;
   roomImage?: string;
   basePrice?: number;
+  baseAmount?: number;
   discount?: number;
+  discountAmount?: number;
+  discountCode?: string;
   taxes?: number;
+  taxAmount?: number;
   paymentStatus?: "paid" | "pending" | "refunded" | string;
   guest: GuestDetails;
   totalPrice: number | null;
+  grandTotal?: number;
   estimatedTotal?: string;
   status: "confirmed" | "pending" | "completed" | "cancelled";
   roomNumber?: string;
