@@ -240,9 +240,12 @@ export function RoomConfigModal({
         };
         localStorage.setItem("hr_room_pricing", JSON.stringify(currentPricing));
         localStorage.setItem("room_pricing_last_sync", Date.now().toString());
+        // Invalidate category cache TTL so customer pages fetch fresh data immediately
+        localStorage.removeItem("hr_room_categories_v2_ts");
         window.dispatchEvent(new Event("room-pricing-updated"));
         window.dispatchEvent(new Event("room-categories-updated"));
       }
+
 
       setIsPublished(publishLive);
       showToast(

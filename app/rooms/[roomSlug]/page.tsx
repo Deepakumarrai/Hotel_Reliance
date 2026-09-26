@@ -64,8 +64,9 @@ async function getLiveRooms(): Promise<Room[]> {
   return roomsData;
 }
 
-export function generateStaticParams() {
-  return [
+export async function generateStaticParams() {
+  // Default slugs (always included as fallback)
+  const defaultSlugs = [
     { roomSlug: "deluxe" },
     { roomSlug: "executive" },
     { roomSlug: "premium" },
@@ -74,6 +75,18 @@ export function generateStaticParams() {
     { roomSlug: "double" },
     { roomSlug: "triple" },
   ];
+  try {
+    const liveRooms = await getLiveRooms();
+    const liveSlugs = liveRooms.map((r) => ({ roomSlug: r.slug }));
+    // Merge: live slugs + defaults (deduplicated)
+    const allSlugs = [
+      ...liveSlugs,
+      ...defaultSlugs.filter((d) => !liveSlugs.some((l) => l.roomSlug === d.roomSlug)),
+    ];
+    return allSlugs;
+  } catch {
+    return defaultSlugs;
+  }
 }
 
 export async function generateMetadata({ params }: RoomPageProps): Promise<Metadata> {

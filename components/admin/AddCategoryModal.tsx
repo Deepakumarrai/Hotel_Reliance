@@ -136,7 +136,8 @@ export function AddCategoryModal({ onClose, onSuccess }: AddCategoryModalProps) 
           };
           localStorage.setItem("hr_room_pricing", JSON.stringify(currentPricing));
         } catch {}
-        window.dispatchEvent(new Event("room-pricing-updated"));
+        // Invalidate category cache TTL so customer pages fetch fresh data immediately
+        localStorage.removeItem("hr_room_categories_v2_ts");
         window.dispatchEvent(new Event("room-categories-updated"));
       }
 

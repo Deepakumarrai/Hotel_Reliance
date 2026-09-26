@@ -5,6 +5,7 @@ import { AuthProvider } from "@/lib/auth/AuthContext";
 import { HotelSettingsProvider } from "@/hooks/useHotelSettings";
 import { RoomPricingProvider } from "@/hooks/useRoomPricing";
 import { GuestLayoutWrapper } from "@/components/layout/GuestLayoutWrapper";
+import { RoomCategoriesProvider } from "@/hooks/useRoomCategories";
 import { hotelData } from "@/data/hotel";
 
 const cormorant = Cormorant_Garamond({
@@ -160,7 +161,9 @@ export default function RootLayout({
         <AuthProvider>
           <HotelSettingsProvider>
             <RoomPricingProvider>
-              <GuestLayoutWrapper>{children}</GuestLayoutWrapper>
+              <RoomCategoriesProvider>
+                <GuestLayoutWrapper>{children}</GuestLayoutWrapper>
+              </RoomCategoriesProvider>
             </RoomPricingProvider>
           </HotelSettingsProvider>
         </AuthProvider>
