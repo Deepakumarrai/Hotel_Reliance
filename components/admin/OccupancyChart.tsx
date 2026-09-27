@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
-import { ChevronDown } from "lucide-react";
+import React, { useState, useEffect } from "react";
 
 interface OccupancyChartProps {
   roomCounts?: {
@@ -16,43 +15,42 @@ interface OccupancyChartProps {
 }
 
 export function OccupancyChart({ roomCounts, totalRooms = 45 }: OccupancyChartProps) {
-  const [timeRange, setTimeRange] = useState("Live Status");
+  const [weeklyPoints, setWeeklyPoints] = useState<{ label: string; occupancyRate: number }[]>([]);
 
-  // Calculate live occupancy percentages based on real room units
+  useEffect(() => {
+    fetch("/api/admin/analytics?timeRange=week")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data?.timeSeries && Array.isArray(data.timeSeries)) {
+          setWeeklyPoints(
+            data.timeSeries.map((pt: any) => ({
+              label: pt.label || "",
+              occupancyRate: Math.min(100, Math.max(0, Number(pt.occupancyRate || 0))),
+            }))
+          );
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   const occupiedCount = (roomCounts?.occupied || 0) + (roomCounts?.reserved || 0);
   const availableCount = roomCounts?.available || 0;
   const maintCount = (roomCounts?.cleaning || 0) + (roomCounts?.maintenance || 0);
 
   const occPct = totalRooms > 0 ? Math.round((occupiedCount / totalRooms) * 100) : 0;
-  const availPct = totalRooms > 0 ? Math.round((availableCount / totalRooms) * 100) : 100;
-  const maintPct = totalRooms > 0 ? Math.round((maintCount / totalRooms) * 100) : 0;
 
-  // Generate 7-day pattern anchored to today's live metrics
   const daysOfWeek = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-  const currentDayIndex = (new Date().getDay() + 6) % 7; // Monday = 0
-
-  const data = daysOfWeek.map((day, idx) => {
-    // Current day uses exact real database stats
-    if (idx === currentDayIndex) {
-      return {
+  const data = weeklyPoints.length > 0
+    ? weeklyPoints.map((pt) => ({
+        day: pt.label,
+        occupied: pt.occupancyRate,
+        available: Math.max(0, 100 - pt.occupancyRate),
+      }))
+    : daysOfWeek.map((day) => ({
         day,
-        occupied: Math.min(100, Math.max(5, occPct)),
-        available: Math.min(100, Math.max(5, availPct)),
-        maint: maintPct,
-        isCurrent: true,
-      };
-    }
-    // Days leading up to today reflect dynamic variance
-    const variance = (idx % 2 === 0 ? 1 : -1) * (idx * 2);
-    const dayOcc = Math.max(5, Math.min(95, occPct + variance));
-    return {
-      day,
-      occupied: dayOcc,
-      available: Math.max(5, 100 - dayOcc - maintPct),
-      maint: maintPct,
-      isCurrent: false,
-    };
-  });
+        occupied: occPct,
+        available: Math.max(0, 100 - occPct),
+      }));
 
   return (
     <div className="bg-white border border-[#EAE2D5] rounded-xl p-5 sm:p-6 shadow-xs flex flex-col justify-between h-full">
@@ -63,7 +61,7 @@ export function OccupancyChart({ roomCounts, totalRooms = 45 }: OccupancyChartPr
             Occupancy Overview
           </h2>
           <p className="text-[11px] text-[#78716C] font-light mt-0.5">
-            Room occupancy across 45 physical units
+            Real-time occupancy across {totalRooms} physical units
           </p>
         </div>
 
@@ -97,34 +95,26 @@ export function OccupancyChart({ roomCounts, totalRooms = 45 }: OccupancyChartPr
 
         {/* Bars Container */}
         <div className="grid grid-cols-7 gap-2 sm:gap-3 pl-8 pr-2 items-end h-[140px] z-10">
-          {data.map((item) => (
-            <div key={item.day} className="flex flex-col items-center justify-end h-full relative group">
-              {item.isCurrent && (
-                <div className="absolute -top-10 z-20 flex flex-col items-center pointer-events-none">
-                  <div className="bg-[#111E31] text-white text-[10px] py-1 px-2.5 rounded-md shadow-md border border-[#9E712E]/60 text-center whitespace-nowrap">
-                    <div className="font-bold text-[#D8B875]">{occPct}%</div>
-                    <div className="text-[8px] text-white/80 -mt-0.5">Today</div>
-                  </div>
-                  <div className="w-2 h-2 bg-[#111E31] rotate-45 -mt-1" />
-                </div>
-              )}
-
+          {data.map((item, idx) => (
+            <div key={idx} className="flex flex-col items-center justify-end h-full relative group">
               {/* Grouped / Stacked Bars */}
               <div className="w-full max-w-[26px] flex items-end justify-center space-x-1 h-full">
                 {/* Occupied Bar (Gold) */}
                 <div
-                  style={{ height: `${item.occupied}%` }}
+                  style={{ height: `${Math.max(2, item.occupied)}%` }}
                   className="w-1/2 bg-[#9E712E] rounded-t-sm hover:brightness-110 transition-all duration-300"
+                  title={`Occupied: ${item.occupied}%`}
                 />
                 {/* Available Bar (Cream/Sand) */}
                 <div
-                  style={{ height: `${item.available}%` }}
+                  style={{ height: `${Math.max(2, item.available)}%` }}
                   className="w-1/2 bg-[#E5DEC9] rounded-t-sm hover:brightness-95 transition-all duration-300"
+                  title={`Available: ${item.available}%`}
                 />
               </div>
 
               {/* Day Label */}
-              <span className={`text-[10px] font-medium mt-2 ${item.isCurrent ? "text-[#9E712E] font-bold" : "text-[#78716C]"}`}>
+              <span className="text-[10px] font-medium mt-2 text-[#78716C] truncate px-0.5 max-w-[40px]">
                 {item.day}
               </span>
             </div>
