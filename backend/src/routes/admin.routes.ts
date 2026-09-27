@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { optionalAuthenticateToken } from "../middleware/auth";
 import {
+  getAnalyticsData,
   getDashboardStats,
   getBookings,
   createAdminBooking,
@@ -37,8 +38,9 @@ const router = Router();
 // Middleware: optionally attach user if present
 router.use(optionalAuthenticateToken);
 
-// 1. Dashboard
+// 1. Dashboard & Analytics
 router.get("/dashboard", getDashboardStats);
+router.get("/analytics", getAnalyticsData);
 
 // 2. Bookings
 router.get("/bookings", getBookings);

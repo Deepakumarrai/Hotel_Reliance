@@ -31,6 +31,368 @@ async function recordAuditLog(
 }
 
 // ----------------------------------------------------
+// 0. BUSINESS INTELLIGENCE & ANALYTICS AGGREGATION
+// ----------------------------------------------------
+export async function getAnalyticsData(req: Request, res: Response): Promise<void> {
+  try {
+    const { timeRange = "month", startDate: customStart, endDate: customEnd, compareWith = "previous_period" } = req.query;
+
+    const now = new Date();
+    let startDate = new Date();
+    let endDate = new Date();
+
+    if (timeRange === "today") {
+      startDate.setHours(0, 0, 0, 0);
+      endDate.setHours(23, 59, 59, 999);
+    } else if (timeRange === "week" || timeRange === "7days") {
+      startDate.setDate(now.getDate() - 6);
+      startDate.setHours(0, 0, 0, 0);
+      endDate.setHours(23, 59, 59, 999);
+    } else if (timeRange === "month" || timeRange === "30days") {
+      startDate.setDate(now.getDate() - 29);
+      startDate.setHours(0, 0, 0, 0);
+      endDate.setHours(23, 59, 59, 999);
+    } else if (timeRange === "last_month") {
+      startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1, 0, 0, 0, 0);
+      endDate = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999);
+    } else if (timeRange === "3months" || timeRange === "90days") {
+      startDate.setDate(now.getDate() - 89);
+      startDate.setHours(0, 0, 0, 0);
+      endDate.setHours(23, 59, 59, 999);
+    } else if (timeRange === "6months" || timeRange === "180days") {
+      startDate.setDate(now.getDate() - 179);
+      startDate.setHours(0, 0, 0, 0);
+      endDate.setHours(23, 59, 59, 999);
+    } else if (timeRange === "year" || timeRange === "365days") {
+      startDate = new Date(now.getFullYear(), 0, 1, 0, 0, 0, 0);
+      endDate.setHours(23, 59, 59, 999);
+    } else if (timeRange === "custom" && customStart && customEnd) {
+      startDate = new Date(String(customStart));
+      startDate.setHours(0, 0, 0, 0);
+      endDate = new Date(String(customEnd));
+      endDate.setHours(23, 59, 59, 999);
+    } else {
+      startDate.setDate(now.getDate() - 29);
+      startDate.setHours(0, 0, 0, 0);
+      endDate.setHours(23, 59, 59, 999);
+    }
+
+    const durationMs = Math.max(86400000, endDate.getTime() - startDate.getTime());
+    let prevStartDate = new Date(startDate.getTime() - durationMs);
+    let prevEndDate = new Date(startDate.getTime() - 1);
+
+    if (compareWith === "previous_month") {
+      prevStartDate = new Date(startDate);
+      prevStartDate.setMonth(prevStartDate.getMonth() - 1);
+      prevEndDate = new Date(endDate);
+      prevEndDate.setMonth(prevEndDate.getMonth() - 1);
+    } else if (compareWith === "previous_year") {
+      prevStartDate = new Date(startDate);
+      prevStartDate.setFullYear(prevStartDate.getFullYear() - 1);
+      prevEndDate = new Date(endDate);
+      prevEndDate.setFullYear(prevEndDate.getFullYear() - 1);
+    }
+
+    const [totalPhysicalRooms, allRooms, currentBookings, prevBookings] = await Promise.all([
+      prisma.roomUnit.count().then((c) => (c > 0 ? c : 45)),
+      prisma.room.findMany(),
+      prisma.booking.findMany({
+        where: {
+          OR: [
+            { createdAt: { gte: startDate, lte: endDate } },
+            { checkInDate: { gte: startDate, lte: endDate } }
+          ]
+        },
+        include: { room: true },
+        orderBy: { createdAt: "asc" }
+      }),
+      compareWith !== "none"
+        ? prisma.booking.findMany({
+            where: {
+              OR: [
+                { createdAt: { gte: prevStartDate, lte: prevEndDate } },
+                { checkInDate: { gte: prevStartDate, lte: prevEndDate } }
+              ]
+            }
+          })
+        : Promise.resolve([])
+    ]);
+
+    const validBookings = currentBookings.filter((b) => b.status !== "CANCELLED");
+    const cancelledBookings = currentBookings.filter((b) => b.status === "CANCELLED");
+    const confirmedBookings = currentBookings.filter((b) => b.status === "CONFIRMED" || b.status === "CHECKED_IN" || b.status === "CHECKED_OUT");
+    const pendingBookings = currentBookings.filter((b) => b.status === "PENDING");
+
+    const totalRevenue = validBookings.reduce((sum, b) => sum + Number(b.totalAmount || b.paidAmount || 0), 0);
+    const totalPaid = validBookings.reduce((sum, b) => sum + Number(b.paidAmount || 0), 0);
+    const totalRefunded = currentBookings.reduce(
+      (sum, b) =>
+        sum +
+        Number(
+          b.refundAmount ||
+            (b.status === "CANCELLED" && b.paymentStatus === "REFUNDED" ? b.paidAmount : 0) ||
+            0
+        ),
+      0
+    );
+
+    const totalNights = validBookings.reduce((sum, b) => sum + (b.nights || 1), 0);
+    const daysCount = Math.max(1, Math.round(durationMs / 86400000));
+    const totalAvailableRoomNights = totalPhysicalRooms * daysCount;
+    const occupancyRate =
+      totalAvailableRoomNights > 0
+        ? Math.min(100, Math.round((totalNights / totalAvailableRoomNights) * 1000) / 10)
+        : 0;
+
+    const adr = totalNights > 0 ? Math.round(totalRevenue / totalNights) : 0;
+    const revpar = totalAvailableRoomNights > 0 ? Math.round(totalRevenue / totalAvailableRoomNights) : 0;
+    const cancellationRate =
+      currentBookings.length > 0
+        ? Math.round((cancelledBookings.length / currentBookings.length) * 1000) / 10
+        : 0;
+
+    // Previous period comparisons
+    const prevValidBookings = prevBookings.filter((b) => b.status !== "CANCELLED");
+    const prevRevenue = prevValidBookings.reduce((sum, b) => sum + Number(b.totalAmount || b.paidAmount || 0), 0);
+    const prevNights = prevValidBookings.reduce((sum, b) => sum + (b.nights || 1), 0);
+    const prevOccupancy =
+      totalAvailableRoomNights > 0
+        ? Math.min(100, Math.round((prevNights / totalAvailableRoomNights) * 1000) / 10)
+        : 0;
+    const prevADR = prevNights > 0 ? Math.round(prevRevenue / prevNights) : 0;
+
+    const deltaRevenuePercent =
+      compareWith === "none"
+        ? null
+        : prevRevenue > 0
+        ? Math.round(((totalRevenue - prevRevenue) / prevRevenue) * 1000) / 10
+        : totalRevenue > 0
+        ? 100
+        : 0;
+
+    const deltaBookingsPercent =
+      compareWith === "none"
+        ? null
+        : prevBookings.length > 0
+        ? Math.round(((currentBookings.length - prevBookings.length) / prevBookings.length) * 1000) / 10
+        : currentBookings.length > 0
+        ? 100
+        : 0;
+
+    const deltaOccupancyPercent =
+      compareWith === "none" ? null : Math.round((occupancyRate - prevOccupancy) * 10) / 10;
+
+    const deltaADRPercent =
+      compareWith === "none"
+        ? null
+        : prevADR > 0
+        ? Math.round(((adr - prevADR) / prevADR) * 1000) / 10
+        : adr > 0
+        ? 100
+        : 0;
+
+    // Build Time Series Data Points
+    const dailyPoints: any[] = [];
+    const stepDays = daysCount > 90 ? Math.ceil(daysCount / 30) : 1;
+    const curDate = new Date(startDate);
+
+    while (curDate <= endDate) {
+      const dayStart = new Date(curDate);
+      dayStart.setHours(0, 0, 0, 0);
+      const dayEnd = new Date(curDate);
+      dayEnd.setDate(dayEnd.getDate() + stepDays - 1);
+      dayEnd.setHours(23, 59, 59, 999);
+
+      const dayBookings = currentBookings.filter((b) => {
+        const bDate = new Date(b.checkInDate || b.createdAt);
+        return bDate >= dayStart && bDate <= dayEnd;
+      });
+
+      const dayValid = dayBookings.filter((b) => b.status !== "CANCELLED");
+      const dayRev = dayValid.reduce((sum, b) => sum + Number(b.totalAmount || b.paidAmount || 0), 0);
+      const dayPaid = dayValid.reduce((sum, b) => sum + Number(b.paidAmount || 0), 0);
+      const dayConfirmed = dayBookings.filter(
+        (b) => b.status === "CONFIRMED" || b.status === "CHECKED_IN" || b.status === "CHECKED_OUT"
+      ).length;
+      const dayPending = dayBookings.filter((b) => b.status === "PENDING").length;
+      const dayCancelled = dayBookings.filter((b) => b.status === "CANCELLED").length;
+      const dayNights = dayValid.reduce((sum, b) => sum + (b.nights || 1), 0);
+      const dayCapacity = totalPhysicalRooms * stepDays;
+      const dayOccupancy =
+        dayCapacity > 0 ? Math.min(100, Math.round((dayNights / dayCapacity) * 1000) / 10) : 0;
+
+      const dateStr = curDate.toISOString().split("T")[0];
+      const label = curDate.toLocaleDateString("en-IN", {
+        day: "numeric",
+        month: "short"
+      });
+
+      dailyPoints.push({
+        date: dateStr,
+        label,
+        revenue: dayRev,
+        paid: dayPaid,
+        bookings: dayBookings.length,
+        confirmed: dayConfirmed,
+        pending: dayPending,
+        cancelled: dayCancelled,
+        occupancyRate: dayOccupancy,
+        occupiedRooms: dayNights
+      });
+
+      curDate.setDate(curDate.getDate() + stepDays);
+    }
+
+    // Room Category Breakdown
+    const defaultCategories = [
+      { key: "deluxe", label: "Single Occupancy (Deluxe)" },
+      { key: "executive", label: "Double Occupancy (Executive)" },
+      { key: "family", label: "Family Room" },
+      { key: "premium", label: "Premium Suite" }
+    ];
+
+    const categoryStats = defaultCategories.map((cat) => {
+      const catBookings = validBookings.filter(
+        (b) =>
+          b.room?.slug?.toLowerCase().includes(cat.key) ||
+          b.roomId?.toLowerCase().includes(cat.key)
+      );
+      const staysCount = catBookings.length;
+      const rev = catBookings.reduce((sum, b) => sum + Number(b.totalAmount || b.paidAmount || 0), 0);
+      const nights = catBookings.reduce((sum, b) => sum + (b.nights || 1), 0);
+      const avg = staysCount > 0 ? Math.round(rev / staysCount) : 0;
+      const contribution = totalRevenue > 0 ? Math.round((rev / totalRevenue) * 1000) / 10 : 0;
+
+      return {
+        slug: cat.key,
+        name: cat.label,
+        stays: `${staysCount} Stays`,
+        rawStays: staysCount,
+        revenue: rev,
+        formattedRevenue: `₹${rev.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+        avgRate: avg,
+        formattedAvgRate: `₹${avg.toLocaleString("en-IN")}`,
+        nights,
+        contributionPercent: contribution,
+        rank: 1
+      };
+    });
+
+    const sortedCats = [...categoryStats].sort((a, b) => b.revenue - a.revenue);
+    sortedCats.forEach((c, idx) => {
+      c.rank = idx + 1;
+    });
+
+    // Payment Methods Analytics
+    const paymentMethodsMap: Record<string, { count: number; amount: number }> = {};
+    validBookings.forEach((b) => {
+      const method = b.paymentMethod || "PAY_AT_HOTEL";
+      if (!paymentMethodsMap[method]) paymentMethodsMap[method] = { count: 0, amount: 0 };
+      paymentMethodsMap[method].count++;
+      paymentMethodsMap[method].amount += Number(b.totalAmount || b.paidAmount || 0);
+    });
+
+    const paymentMethods = Object.entries(paymentMethodsMap).map(([method, data]) => ({
+      method,
+      label:
+        method === "RAZORPAY"
+          ? "Razorpay (Online)"
+          : method === "PAY_AT_HOTEL"
+          ? "Pay at Hotel / Cash"
+          : method === "UPI"
+          ? "UPI Direct"
+          : method === "CREDIT_CARD"
+          ? "Credit / Debit Card"
+          : method,
+      count: data.count,
+      amount: data.amount,
+      percentage: totalRevenue > 0 ? Math.round((data.amount / totalRevenue) * 1000) / 10 : 0
+    }));
+
+    // Payment Status Distribution
+    const paymentStatusMap: Record<string, number> = {
+      PAID: 0,
+      PENDING: 0,
+      REFUNDED: 0,
+      FAILED: 0
+    };
+    currentBookings.forEach((b) => {
+      const s = b.paymentStatus || "PENDING";
+      if (paymentStatusMap[s] !== undefined) paymentStatusMap[s]++;
+      else paymentStatusMap[s] = 1;
+    });
+
+    // Cancellation Analytics
+    const lostRevenue = cancelledBookings.reduce(
+      (sum, b) => sum + Number(b.totalAmount || b.baseAmount || 0),
+      0
+    );
+
+    res.json({
+      success: true,
+      timeRange,
+      dateRange: {
+        startDate: startDate.toISOString().split("T")[0],
+        endDate: endDate.toISOString().split("T")[0],
+        daysCount
+      },
+      comparePeriod: {
+        enabled: compareWith !== "none",
+        compareWith,
+        startDate: prevStartDate.toISOString().split("T")[0],
+        endDate: prevEndDate.toISOString().split("T")[0]
+      },
+      kpis: {
+        totalRevenue,
+        totalPaid,
+        totalRefunded,
+        totalBookings: currentBookings.length,
+        confirmedBookings: confirmedBookings.length,
+        pendingBookings: pendingBookings.length,
+        cancelledBookings: cancelledBookings.length,
+        totalNights,
+        totalPhysicalRooms,
+        occupancyRate,
+        adr,
+        revpar,
+        cancellationRate,
+        deltaRevenuePercent,
+        deltaBookingsPercent,
+        deltaOccupancyPercent,
+        deltaADRPercent
+      },
+      timeSeries: dailyPoints,
+      categoryPerformance: sortedCats,
+      paymentAnalytics: {
+        totalRevenue,
+        totalPaid,
+        totalRefunded,
+        pendingAmount: Math.max(0, totalRevenue - totalPaid),
+        methods: paymentMethods,
+        statusDistribution: paymentStatusMap
+      },
+      cancellationAnalytics: {
+        totalCancellations: cancelledBookings.length,
+        cancellationRate,
+        refundAmount: totalRefunded,
+        lostRevenue,
+        recentCancellations: cancelledBookings.slice(0, 5).map((b) => ({
+          id: b.id,
+          guestName: b.guestName,
+          roomType: b.room?.name || b.roomType,
+          checkInDate: b.checkInDate.toISOString().split("T")[0],
+          refundAmount: Number(b.refundAmount || 0),
+          reason: b.cancellationReason || "Standard cancellation request"
+        }))
+      }
+    });
+  } catch (err: any) {
+    console.error("Analytics error:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+}
+
+// ----------------------------------------------------
 // 1. DASHBOARD KPIS & OVERVIEW
 // ----------------------------------------------------
 export async function getDashboardStats(req: Request, res: Response): Promise<void> {
