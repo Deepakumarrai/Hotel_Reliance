@@ -266,135 +266,156 @@ export function RoomConfigModal({
 
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/80 backdrop-blur-xs animate-in fade-in duration-200">
-        <div className="bg-[#0B1423] text-white w-full max-w-4xl rounded-2xl shadow-2xl border border-[#1B2A42] flex flex-col max-h-[92vh] overflow-hidden">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/75 backdrop-blur-xs animate-in fade-in duration-200">
+        <div className="bg-[#FFFFFF] text-[#111E31] w-full max-w-5xl rounded-[20px] shadow-[0_25px_60px_rgba(0,0,0,0.35)] border border-[#EADFCF] flex flex-col max-h-[92vh] overflow-hidden">
           {/* Header */}
-          <div className="bg-[#111E31] px-6 py-4 border-b border-[#1B2A42] flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#9E712E] to-[#C4984F] flex items-center justify-center text-white shadow-md">
-                <BedDouble className="w-5 h-5" />
+          <div className="bg-[#FFFFFF] px-6 py-4.5 border-b border-[#F0E8DD] flex items-center justify-between">
+            <div className="flex items-center space-x-3.5">
+              <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#B5853B] via-[#A0702B] to-[#875B1E] flex items-center justify-center text-white shadow-xs border border-[#ECCB8E]/40 flex-shrink-0">
+                <BedDouble className="w-6 h-6 text-white" strokeWidth={1.8} />
               </div>
               <div>
-                <h2 className="font-serif text-lg sm:text-xl font-bold text-white flex items-center space-x-2">
-                  <span>Configure {name}</span>
-                  <span className="px-2 py-0.5 rounded bg-[#1B2A42] text-[#D8B875] text-[10px] font-mono uppercase">
-                    {slug}
+                <div className="flex items-center space-x-2.5">
+                  <h2 className="font-serif text-xl sm:text-[22px] font-bold text-[#111E31] tracking-tight leading-none">
+                    Configure {name}
+                  </h2>
+                  <span className="px-2.5 py-0.5 rounded-full bg-[#F5EBD9] text-[#8C6228] text-[10.5px] font-bold uppercase tracking-wider border border-[#E5D2B3]">
+                    {(category as any).badge || slug.toUpperCase()}
                   </span>
-                </h2>
-                <p className="text-[11px] text-[#E9DFD2]/60">
+                </div>
+                <p className="text-[11.5px] text-[#6E6659] mt-1 font-normal">
                   Full category master controller • Updates customer frontend & booking engine live
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-3">
               <button
                 type="button"
                 onClick={() => setPreviewOpen(true)}
-                className="px-3 py-1.5 rounded-lg bg-[#1B2A42] hover:bg-[#253755] text-xs font-semibold text-[#D8B875] border border-[#C4984F]/40 flex items-center space-x-1.5 transition-colors cursor-pointer"
+                className="px-3.5 py-1.5 rounded-xl bg-[#FAF6F0] hover:bg-[#F2ECE0] text-xs font-semibold text-[#785724] border border-[#C8B69E] flex items-center space-x-1.5 transition-colors cursor-pointer shadow-2xs"
               >
-                <Eye className="w-3.5 h-3.5" />
+                <Eye className="w-3.5 h-3.5 text-[#8C6228]" />
                 <span className="hidden sm:inline">Live Preview</span>
               </button>
               <button
                 onClick={onClose}
-                className="text-white/60 hover:text-white p-1 rounded transition-colors cursor-pointer"
+                className="text-[#6E6659] hover:text-[#111E31] p-1.5 rounded-lg hover:bg-[#FAF6F0] transition-colors cursor-pointer"
+                aria-label="Close modal"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
           </div>
 
-          {/* Navigation Tabs */}
-          <div className="flex items-center space-x-1 px-6 bg-[#070D17] border-b border-[#1B2A42] overflow-x-auto custom-scrollbar">
+          {/* 5-Step Navigation Tabs */}
+          <div className="flex items-center space-x-1 px-6 bg-[#FFFFFF] border-b border-[#F0E8DD] overflow-x-auto custom-scrollbar">
             {[
-              { id: "basic", label: "1. Basic Info & Status" },
-              { id: "specs", label: "2. Capacity & Layout" },
-              { id: "amenities", label: `3. Amenities (${selectedAmenities.length})` },
-              { id: "gallery", label: `4. Photo Gallery (${images.length})` },
-              { id: "pricing", label: "5. Tariffs & Plans" },
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
-                className={`py-3 px-3.5 text-xs font-semibold whitespace-nowrap transition-all border-b-2 ${
-                  activeTab === tab.id
-                    ? "border-[#C4984F] text-[#D8B875] bg-[#111E31]/50 font-bold"
-                    : "border-transparent text-white/60 hover:text-white hover:bg-[#111E31]/20"
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
+              { id: "basic", num: "1", label: "Basic Info & Status" },
+              { id: "specs", num: "2", label: "Capacity & Layout" },
+              { id: "amenities", num: "3", label: `Amenities (${selectedAmenities.length})` },
+              { id: "gallery", num: "4", label: `Photo Gallery (${images.length})` },
+              { id: "pricing", num: "5", label: "Tariffs & Plans" },
+            ].map((tab) => {
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as any)}
+                  className={`py-3 px-3.5 text-xs whitespace-nowrap transition-all flex items-center space-x-2 border-b-2 cursor-pointer ${
+                    isActive
+                      ? "border-[#8C6228] text-[#8C6228] font-bold"
+                      : "border-transparent text-[#6E6659] hover:text-[#111E31] font-medium"
+                  }`}
+                >
+                  <span
+                    className={`w-5 h-5 rounded-full flex items-center justify-center text-[10.5px] font-bold ${
+                      isActive
+                        ? "bg-[#8C6228] text-white"
+                        : "bg-[#EAE2D5] text-[#6E6659]"
+                    }`}
+                  >
+                    {tab.num}
+                  </span>
+                  <span>{tab.label}</span>
+                </button>
+              );
+            })}
           </div>
 
           {/* Tab Content Area */}
-          <div className="p-6 overflow-y-auto space-y-6 flex-1 custom-scrollbar text-xs">
+          <div className="p-6 overflow-y-auto space-y-6 flex-1 custom-scrollbar text-xs bg-[#FFFFFF]">
             {/* TAB 1: Basic Information */}
             {activeTab === "basic" && (
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="bg-[#FAF6F0]/70 border border-[#ECE2D5] rounded-2xl p-5 sm:p-6 space-y-4.5">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
                   <div>
-                    <label className="text-[10px] uppercase font-bold text-[#C4984F] block mb-1">
-                      Room Category Name *
+                    <label className="text-[10px] uppercase font-bold tracking-[0.14em] text-[#8C6228] block mb-1.5">
+                      ROOM CATEGORY NAME *
                     </label>
                     <input
                       type="text"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="w-full bg-[#111E31] border border-[#1B2A42] rounded-lg p-2.5 text-white font-medium focus:outline-none focus:border-[#C4984F]"
+                      placeholder="Deluxe Room"
+                      className="w-full bg-white border border-[#DFD5C6] rounded-xl px-3.5 py-2.5 text-sm text-[#111E31] font-semibold focus:outline-none focus:border-[#8C6228] focus:ring-2 focus:ring-[#8C6228]/15 shadow-xs transition-all"
                     />
                   </div>
                   <div>
-                    <label className="text-[10px] uppercase font-bold text-[#C4984F] block mb-1">
-                      Category Slug (System ID)
+                    <label className="text-[10px] uppercase font-bold tracking-[0.14em] text-[#8C6228] block mb-1.5">
+                      CATEGORY SLUG (SYSTEM ID)
                     </label>
                     <input
                       type="text"
                       disabled
                       value={slug}
-                      className="w-full bg-[#111E31]/50 border border-[#1B2A42] rounded-lg p-2.5 text-white/50 font-mono"
+                      className="w-full bg-[#F0EBE1]/70 border border-[#DFD5C6] rounded-xl px-3.5 py-2.5 text-sm font-mono text-[#5C5447] cursor-not-allowed"
                     />
                   </div>
                   <div>
-                    <label className="text-[10px] uppercase font-bold text-[#C4984F] block mb-1">
-                      Publishing Status
+                    <label className="text-[10px] uppercase font-bold tracking-[0.14em] text-[#8C6228] block mb-1.5">
+                      PUBLISHING STATUS
                     </label>
-                    <select
-                      value={status}
-                      onChange={(e) => setStatus(e.target.value as any)}
-                      className="w-full bg-[#111E31] border border-[#1B2A42] rounded-lg p-2.5 text-white font-medium focus:outline-none focus:border-[#C4984F]"
-                    >
-                      <option value="ACTIVE">● ACTIVE (Available for Booking)</option>
-                      <option value="INACTIVE">○ INACTIVE (Hidden from Website)</option>
-                      <option value="MAINTENANCE">▲ TEMPORARY MAINTENANCE</option>
-                    </select>
+                    <div className="relative">
+                      <select
+                        value={status}
+                        onChange={(e) => setStatus(e.target.value as any)}
+                        className="w-full bg-white border border-[#DFD5C6] rounded-xl px-3.5 py-2.5 text-sm text-[#111E31] font-medium focus:outline-none focus:border-[#8C6228] focus:ring-2 focus:ring-[#8C6228]/15 shadow-xs transition-all appearance-none cursor-pointer pr-9"
+                      >
+                        <option value="ACTIVE">● ACTIVE (Available for Booking)</option>
+                        <option value="INACTIVE">○ INACTIVE (Hidden from Website)</option>
+                        <option value="MAINTENANCE">▲ TEMPORARY MAINTENANCE</option>
+                      </select>
+                      <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[#8C6228]">
+                        <Sliders className="w-3.5 h-3.5 rotate-90" />
+                      </div>
+                    </div>
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-[10px] uppercase font-bold text-[#C4984F] block mb-1">
-                    Short Overview Summary (Listing Card)
+                  <label className="text-[10px] uppercase font-bold tracking-[0.14em] text-[#8C6228] block mb-1.5">
+                    SHORT OVERVIEW SUMMARY (LISTING CARD)
                   </label>
                   <textarea
                     rows={2}
                     value={shortDesc}
                     onChange={(e) => setShortDesc(e.target.value)}
                     placeholder="Short summary displayed on room selection cards..."
-                    className="w-full bg-[#111E31] border border-[#1B2A42] rounded-lg p-2.5 text-white focus:outline-none focus:border-[#C4984F]"
+                    className="w-full bg-white border border-[#DFD5C6] rounded-xl p-3 text-sm text-[#111E31] focus:outline-none focus:border-[#8C6228] focus:ring-2 focus:ring-[#8C6228]/15 shadow-xs transition-all leading-relaxed"
                   />
                 </div>
 
                 <div>
-                  <label className="text-[10px] uppercase font-bold text-[#C4984F] block mb-1">
-                    Full Description (Room Detail Page)
+                  <label className="text-[10px] uppercase font-bold tracking-[0.14em] text-[#8C6228] block mb-1.5">
+                    FULL DESCRIPTION (ROOM DETAIL PAGE)
                   </label>
                   <textarea
-                    rows={4}
+                    rows={3}
                     value={fullDesc}
                     onChange={(e) => setFullDesc(e.target.value)}
                     placeholder="Comprehensive description covering aesthetics, lighting, comfort, and hospitality..."
-                    className="w-full bg-[#111E31] border border-[#1B2A42] rounded-lg p-2.5 text-white focus:outline-none focus:border-[#C4984F]"
+                    className="w-full bg-white border border-[#DFD5C6] rounded-xl p-3 text-sm text-[#111E31] focus:outline-none focus:border-[#8C6228] focus:ring-2 focus:ring-[#8C6228]/15 shadow-xs transition-all leading-relaxed"
                   />
                 </div>
               </div>
@@ -402,11 +423,11 @@ export function RoomConfigModal({
 
             {/* TAB 2: Capacity & Specs */}
             {activeTab === "specs" && (
-              <div className="space-y-4">
+              <div className="bg-[#FAF6F0]/70 border border-[#ECE2D5] rounded-2xl p-5 sm:p-6 space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
-                    <label className="text-[10px] uppercase font-bold text-[#C4984F] block mb-1">
-                      Max Adults
+                    <label className="text-[10px] uppercase font-bold tracking-[0.14em] text-[#8C6228] block mb-1.5">
+                      MAX ADULTS
                     </label>
                     <input
                       type="number"
@@ -414,12 +435,12 @@ export function RoomConfigModal({
                       max={10}
                       value={occupancyAdults}
                       onChange={(e) => setOccupancyAdults(Number(e.target.value))}
-                      className="w-full bg-[#111E31] border border-[#1B2A42] rounded-lg p-2.5 text-white font-bold focus:outline-none focus:border-[#C4984F]"
+                      className="w-full bg-white border border-[#DFD5C6] rounded-xl p-2.5 text-sm text-[#111E31] font-bold focus:outline-none focus:border-[#8C6228]"
                     />
                   </div>
                   <div>
-                    <label className="text-[10px] uppercase font-bold text-[#C4984F] block mb-1">
-                      Max Children
+                    <label className="text-[10px] uppercase font-bold tracking-[0.14em] text-[#8C6228] block mb-1.5">
+                      MAX CHILDREN
                     </label>
                     <input
                       type="number"
@@ -427,12 +448,12 @@ export function RoomConfigModal({
                       max={6}
                       value={occupancyKids}
                       onChange={(e) => setOccupancyKids(Number(e.target.value))}
-                      className="w-full bg-[#111E31] border border-[#1B2A42] rounded-lg p-2.5 text-white font-bold focus:outline-none focus:border-[#C4984F]"
+                      className="w-full bg-white border border-[#DFD5C6] rounded-xl p-2.5 text-sm text-[#111E31] font-bold focus:outline-none focus:border-[#8C6228]"
                     />
                   </div>
                   <div>
-                    <label className="text-[10px] uppercase font-bold text-[#C4984F] block mb-1">
-                      Total Max Capacity
+                    <label className="text-[10px] uppercase font-bold tracking-[0.14em] text-[#8C6228] block mb-1.5">
+                      TOTAL MAX CAPACITY
                     </label>
                     <input
                       type="number"
@@ -440,63 +461,64 @@ export function RoomConfigModal({
                       max={15}
                       value={maxTotalGuests}
                       onChange={(e) => setMaxTotalGuests(Number(e.target.value))}
-                      className="w-full bg-[#111E31] border border-[#1B2A42] rounded-lg p-2.5 text-white font-bold focus:outline-none focus:border-[#C4984F]"
+                      className="w-full bg-white border border-[#DFD5C6] rounded-xl p-2.5 text-sm text-[#111E31] font-bold focus:outline-none focus:border-[#8C6228]"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
-                    <label className="text-[10px] uppercase font-bold text-[#C4984F] block mb-1">
-                      Bedding Configuration
+                    <label className="text-[10px] uppercase font-bold tracking-[0.14em] text-[#8C6228] block mb-1.5">
+                      BEDDING CONFIGURATION
                     </label>
                     <select
                       value={bedType}
                       onChange={(e) => setBedType(e.target.value)}
-                      className="w-full bg-[#111E31] border border-[#1B2A42] rounded-lg p-2.5 text-white focus:outline-none focus:border-[#C4984F]"
+                      className="w-full bg-white border border-[#DFD5C6] rounded-xl p-2.5 text-sm text-[#111E31] focus:outline-none focus:border-[#8C6228]"
                     >
                       <option value="King Bed">1 King Size Bed</option>
                       <option value="Queen Bed">1 Queen Size Bed</option>
                       <option value="Twin Beds">2 Twin Beds</option>
                       <option value="Double + Single">1 Double + 1 Single Bed</option>
+                      <option value="2 King Beds">2 King Size Beds</option>
                       <option value="4 Separate Beds">4 Individual Beds (Family)</option>
                     </select>
                   </div>
                   <div>
-                    <label className="text-[10px] uppercase font-bold text-[#C4984F] block mb-1">
-                      Floor Area (Sq. Ft.)
+                    <label className="text-[10px] uppercase font-bold tracking-[0.14em] text-[#8C6228] block mb-1.5">
+                      FLOOR AREA (SQ. FT.)
                     </label>
                     <input
                       type="text"
                       value={roomSize}
                       onChange={(e) => setRoomSize(e.target.value)}
-                      placeholder="e.g. 350 sq. ft."
-                      className="w-full bg-[#111E31] border border-[#1B2A42] rounded-lg p-2.5 text-white focus:outline-none focus:border-[#C4984F]"
+                      placeholder="e.g. 280 sq. ft."
+                      className="w-full bg-white border border-[#DFD5C6] rounded-xl p-2.5 text-sm text-[#111E31] focus:outline-none focus:border-[#8C6228]"
                     />
                   </div>
                   <div>
-                    <label className="text-[10px] uppercase font-bold text-[#C4984F] block mb-1">
-                      Physical Room Numbers Range
+                    <label className="text-[10px] uppercase font-bold tracking-[0.14em] text-[#8C6228] block mb-1.5">
+                      PHYSICAL ROOM NUMBERS RANGE
                     </label>
                     <input
                       type="text"
                       value={roomRange}
                       onChange={(e) => setRoomRange(e.target.value)}
                       placeholder="e.g. 101 - 115"
-                      className="w-full bg-[#111E31] border border-[#1B2A42] rounded-lg p-2.5 text-white font-mono focus:outline-none focus:border-[#C4984F]"
+                      className="w-full bg-white border border-[#DFD5C6] rounded-xl p-2.5 text-sm text-[#111E31] font-mono focus:outline-none focus:border-[#8C6228]"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-[10px] uppercase font-bold text-[#C4984F] block mb-1">
-                      View Type
+                    <label className="text-[10px] uppercase font-bold tracking-[0.14em] text-[#8C6228] block mb-1.5">
+                      VIEW TYPE
                     </label>
                     <select
                       value={viewType}
                       onChange={(e) => setViewType(e.target.value)}
-                      className="w-full bg-[#111E31] border border-[#1B2A42] rounded-lg p-2.5 text-white focus:outline-none focus:border-[#C4984F]"
+                      className="w-full bg-white border border-[#DFD5C6] rounded-xl p-2.5 text-sm text-[#111E31] focus:outline-none focus:border-[#8C6228]"
                     >
                       <option value="City View">City Skyline & Boulevard View</option>
                       <option value="Garden View">Royal Garden & Lawn View</option>
@@ -504,13 +526,13 @@ export function RoomConfigModal({
                     </select>
                   </div>
                   <div>
-                    <label className="text-[10px] uppercase font-bold text-[#C4984F] block mb-1">
-                      Smoking Policy
+                    <label className="text-[10px] uppercase font-bold tracking-[0.14em] text-[#8C6228] block mb-1.5">
+                      SMOKING POLICY
                     </label>
                     <select
                       value={smokingPolicy}
                       onChange={(e) => setSmokingPolicy(e.target.value)}
-                      className="w-full bg-[#111E31] border border-[#1B2A42] rounded-lg p-2.5 text-white focus:outline-none focus:border-[#C4984F]"
+                      className="w-full bg-white border border-[#DFD5C6] rounded-xl p-2.5 text-sm text-[#111E31] focus:outline-none focus:border-[#8C6228]"
                     >
                       <option value="Non-Smoking">100% Non-Smoking Room</option>
                       <option value="Smoking Allowed">Smoking Permitted (Balcony Only)</option>
@@ -522,10 +544,10 @@ export function RoomConfigModal({
 
             {/* TAB 3: Amenities Manager */}
             {activeTab === "amenities" && (
-              <div className="space-y-4">
+              <div className="bg-[#FAF6F0]/70 border border-[#ECE2D5] rounded-2xl p-5 sm:p-6 space-y-4">
                 <div>
-                  <span className="text-[10px] uppercase font-bold text-[#C4984F] block mb-2">
-                    Standard Luxury Hotel Amenities
+                  <span className="text-[10px] uppercase font-bold tracking-[0.14em] text-[#8C6228] block mb-2.5">
+                    STANDARD LUXURY HOTEL AMENITIES
                   </span>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
                     {standardAmenitiesList.map((amenity) => {
@@ -535,14 +557,14 @@ export function RoomConfigModal({
                           key={amenity}
                           type="button"
                           onClick={() => toggleAmenity(amenity)}
-                          className={`p-2.5 rounded-lg border text-left flex items-center justify-between transition-all cursor-pointer ${
+                          className={`p-2.5 rounded-xl border text-left flex items-center justify-between transition-all cursor-pointer ${
                             isSelected
-                              ? "bg-[#1B2A42] border-[#C4984F] text-white"
-                              : "bg-[#111E31] border-[#1B2A42] text-white/60 hover:text-white"
+                              ? "bg-[#FAF7F2] border-[#8C6228] text-[#111E31] font-semibold shadow-2xs"
+                              : "bg-white border-[#DFD5C6] text-[#6E6659] hover:text-[#111E31]"
                           }`}
                         >
                           <span className="text-xs">{amenity}</span>
-                          {isSelected && <Check className="w-3.5 h-3.5 text-[#D8B875]" />}
+                          {isSelected && <Check className="w-4 h-4 text-[#8C6228]" />}
                         </button>
                       );
                     })}
@@ -550,9 +572,9 @@ export function RoomConfigModal({
                 </div>
 
                 {/* Add Custom Amenity */}
-                <div className="pt-3 border-t border-[#1B2A42]">
-                  <label className="text-[10px] uppercase font-bold text-[#C4984F] block mb-1.5">
-                    + Add Custom Amenity (No Developer Required)
+                <div className="pt-3 border-t border-[#ECE2D5]">
+                  <label className="text-[10px] uppercase font-bold tracking-[0.14em] text-[#8C6228] block mb-1.5">
+                    + ADD CUSTOM AMENITY
                   </label>
                   <div className="flex items-center space-x-2">
                     <input
@@ -561,12 +583,12 @@ export function RoomConfigModal({
                       onChange={(e) => setCustomAmenityInput(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addCustomAmenity())}
                       placeholder="e.g. Nespresso Machine, Pillow Menu, Jacuzzi Tub..."
-                      className="flex-1 bg-[#111E31] border border-[#1B2A42] rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-[#C4984F]"
+                      className="flex-1 bg-white border border-[#DFD5C6] rounded-xl p-2.5 text-xs text-[#111E31] focus:outline-none focus:border-[#8C6228]"
                     />
                     <button
                       type="button"
                       onClick={addCustomAmenity}
-                      className="px-4 py-2.5 bg-[#9E712E] hover:bg-[#8C6326] text-white font-bold rounded-lg text-xs transition-colors cursor-pointer"
+                      className="px-4 py-2.5 bg-[#8C6228] hover:bg-[#734E1A] text-white font-bold rounded-xl text-xs transition-colors cursor-pointer"
                     >
                       Add Amenity
                     </button>
@@ -574,21 +596,21 @@ export function RoomConfigModal({
                 </div>
 
                 {/* Selected Amenities Pill List */}
-                <div className="p-3 bg-[#111E31] rounded-xl border border-[#1B2A42]">
-                  <span className="text-[10px] uppercase font-bold text-[#E9DFD2]/60 block mb-2">
+                <div className="p-3.5 bg-white rounded-xl border border-[#DFD5C6]">
+                  <span className="text-[10px] uppercase font-bold tracking-[0.14em] text-[#8C6228] block mb-2">
                     Active Included Amenities on Customer Page ({selectedAmenities.length}):
                   </span>
                   <div className="flex flex-wrap gap-1.5">
                     {selectedAmenities.map((a) => (
                       <span
                         key={a}
-                        className="px-2.5 py-1 rounded bg-[#0B1423] border border-[#C4984F]/40 text-[#D8B875] text-[11px] flex items-center space-x-1.5"
+                        className="px-2.5 py-1 rounded-lg bg-[#FAF7F2] border border-[#E3D8C8] text-[#704E1D] text-[11px] font-medium flex items-center space-x-1.5"
                       >
                         <span>✓ {a}</span>
                         <button
                           type="button"
                           onClick={() => toggleAmenity(a)}
-                          className="text-white/40 hover:text-rose-400 ml-1"
+                          className="text-[#9E712E] hover:text-rose-600 ml-1 font-bold cursor-pointer"
                         >
                           ✕
                         </button>
@@ -601,12 +623,12 @@ export function RoomConfigModal({
 
             {/* TAB 4: Gallery & Media */}
             {activeTab === "gallery" && (
-              <div className="space-y-4">
+              <div className="bg-[#FAF6F0]/70 border border-[#ECE2D5] rounded-2xl p-5 sm:p-6 space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] uppercase font-bold text-[#C4984F]">
-                    Room Photo Gallery ({images.length} Photos)
+                  <span className="text-[10px] uppercase font-bold tracking-[0.14em] text-[#8C6228]">
+                    ROOM PHOTO GALLERY ({images.length} PHOTOS)
                   </span>
-                  <span className="text-[10px] text-white/40">
+                  <span className="text-[10px] text-[#6E6659]">
                     First image is always the primary cover photo
                   </span>
                 </div>
@@ -616,7 +638,7 @@ export function RoomConfigModal({
                   {images.map((imgUrl, idx) => (
                     <div
                       key={idx}
-                      className="relative aspect-[4/3] rounded-xl overflow-hidden border border-[#1B2A42] group bg-[#111E31]"
+                      className="relative aspect-[4/3] rounded-xl overflow-hidden border border-[#DFD5C6] group bg-white shadow-2xs"
                     >
                       <Image
                         src={imgUrl}
@@ -625,16 +647,16 @@ export function RoomConfigModal({
                         className="object-cover"
                       />
                       {idx === 0 && (
-                        <div className="absolute top-2 left-2 bg-[#9E712E] text-white text-[9px] font-bold px-2 py-0.5 rounded shadow">
+                        <div className="absolute top-2 left-2 bg-[#8C6228] text-white text-[9px] font-bold px-2 py-0.5 rounded shadow">
                           ★ PRIMARY COVER
                         </div>
                       )}
-                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center space-x-2">
+                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center space-x-2">
                         {idx !== 0 && (
                           <button
                             type="button"
                             onClick={() => handleSetPrimaryImage(idx)}
-                            className="px-2 py-1 bg-[#1B2A42] text-[#D8B875] text-[10px] font-semibold rounded hover:bg-[#253755]"
+                            className="px-2 py-1 bg-white text-[#8C6228] text-[10px] font-semibold rounded hover:bg-[#FAF7F2]"
                           >
                             Set Cover
                           </button>
@@ -642,7 +664,7 @@ export function RoomConfigModal({
                         <button
                           type="button"
                           onClick={() => handleDeleteImage(idx)}
-                          className="p-1 bg-red-950 text-red-300 rounded hover:bg-red-900"
+                          className="p-1.5 bg-red-600 text-white rounded hover:bg-red-700"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -652,9 +674,9 @@ export function RoomConfigModal({
                 </div>
 
                 {/* Add Photo URL */}
-                <div className="pt-3 border-t border-[#1B2A42]">
-                  <label className="text-[10px] uppercase font-bold text-[#C4984F] block mb-1.5">
-                    Add High-Resolution Image URL / Path
+                <div className="pt-3 border-t border-[#ECE2D5]">
+                  <label className="text-[10px] uppercase font-bold tracking-[0.14em] text-[#8C6228] block mb-1.5">
+                    ADD HIGH-RESOLUTION IMAGE URL / PATH
                   </label>
                   <div className="flex items-center space-x-2">
                     <input
@@ -662,13 +684,13 @@ export function RoomConfigModal({
                       value={newImageUrl}
                       onChange={(e) => setNewImageUrl(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleAddImage())}
-                      placeholder="e.g. /images/rooms/deluxe-bedroom.jpg or https://..."
-                      className="flex-1 bg-[#111E31] border border-[#1B2A42] rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-[#C4984F]"
+                      placeholder="e.g. /images/rooms/deluxe/1.png or https://..."
+                      className="flex-1 bg-white border border-[#DFD5C6] rounded-xl p-2.5 text-xs text-[#111E31] focus:outline-none focus:border-[#8C6228]"
                     />
                     <button
                       type="button"
                       onClick={handleAddImage}
-                      className="px-4 py-2.5 bg-[#9E712E] hover:bg-[#8C6326] text-white font-bold rounded-lg text-xs transition-colors cursor-pointer"
+                      className="px-4 py-2.5 bg-[#8C6228] hover:bg-[#734E1A] text-white font-bold rounded-xl text-xs transition-colors cursor-pointer"
                     >
                       + Add Image
                     </button>
@@ -679,49 +701,49 @@ export function RoomConfigModal({
 
             {/* TAB 5: Tariffs & Rate Plans */}
             {activeTab === "pricing" && (
-              <div className="space-y-5">
+              <div className="bg-[#FAF6F0]/70 border border-[#ECE2D5] rounded-2xl p-5 sm:p-6 space-y-5">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
-                    <label className="text-[10px] uppercase font-bold text-[#C4984F] block mb-1">
-                      Weekday Base Price (Mon - Thu)
+                    <label className="text-[10px] uppercase font-bold tracking-[0.14em] text-[#8C6228] block mb-1.5">
+                      WEEKDAY BASE PRICE (MON - THU)
                     </label>
                     <div className="relative">
-                      <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-white/40">₹</span>
+                      <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-[#6E6659] font-bold">₹</span>
                       <input
                         type="number"
                         value={basePrice}
                         onChange={(e) => setBasePrice(Number(e.target.value))}
-                        className="w-full bg-[#111E31] border border-[#1B2A42] rounded-lg pl-7 pr-3 py-2 text-white font-bold focus:outline-none focus:border-[#C4984F]"
+                        className="w-full bg-white border border-[#DFD5C6] rounded-xl pl-7 pr-3 py-2.5 text-[#111E31] font-bold text-sm focus:outline-none focus:border-[#8C6228]"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="text-[10px] uppercase font-bold text-[#C4984F] block mb-1">
-                      Weekend Tariff (Fri - Sun)
+                    <label className="text-[10px] uppercase font-bold tracking-[0.14em] text-[#8C6228] block mb-1.5">
+                      WEEKEND TARIFF (FRI - SUN)
                     </label>
                     <div className="relative">
-                      <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-white/40">₹</span>
+                      <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-[#6E6659] font-bold">₹</span>
                       <input
                         type="number"
                         value={weekendPrice}
                         onChange={(e) => setWeekendPrice(Number(e.target.value))}
-                        className="w-full bg-[#111E31] border border-[#1B2A42] rounded-lg pl-7 pr-3 py-2 text-white font-bold focus:outline-none focus:border-[#C4984F]"
+                        className="w-full bg-white border border-[#DFD5C6] rounded-xl pl-7 pr-3 py-2.5 text-[#111E31] font-bold text-sm focus:outline-none focus:border-[#8C6228]"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="text-[10px] uppercase font-bold text-amber-400 block mb-1">
-                      Peak Festive / Holiday Rate
+                    <label className="text-[10px] uppercase font-bold tracking-[0.14em] text-[#8C6228] block mb-1.5">
+                      PEAK FESTIVE / HOLIDAY RATE
                     </label>
                     <div className="relative">
-                      <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-amber-400/60">₹</span>
+                      <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-[#6E6659] font-bold">₹</span>
                       <input
                         type="number"
                         value={peakPrice}
                         onChange={(e) => setPeakPrice(Number(e.target.value))}
-                        className="w-full bg-[#111E31] border border-amber-500/40 rounded-lg pl-7 pr-3 py-2 text-amber-300 font-bold focus:outline-none focus:border-amber-400"
+                        className="w-full bg-white border border-[#DFD5C6] rounded-xl pl-7 pr-3 py-2.5 text-[#111E31] font-bold text-sm focus:outline-none focus:border-[#8C6228]"
                       />
                     </div>
                   </div>
@@ -729,48 +751,48 @@ export function RoomConfigModal({
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-[10px] uppercase font-bold text-[#C4984F] block mb-1">
-                      Extra Adult Surcharge
+                    <label className="text-[10px] uppercase font-bold tracking-[0.14em] text-[#8C6228] block mb-1.5">
+                      EXTRA ADULT SURCHARGE
                     </label>
                     <div className="relative">
-                      <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-white/40">₹</span>
+                      <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-[#6E6659] font-bold">₹</span>
                       <input
                         type="number"
                         value={extraAdultPrice}
                         onChange={(e) => setExtraAdultPrice(Number(e.target.value))}
-                        className="w-full bg-[#111E31] border border-[#1B2A42] rounded-lg pl-7 pr-3 py-2 text-white font-bold focus:outline-none focus:border-[#C4984F]"
+                        className="w-full bg-white border border-[#DFD5C6] rounded-xl pl-7 pr-3 py-2.5 text-[#111E31] font-bold text-sm focus:outline-none focus:border-[#8C6228]"
                       />
                     </div>
                   </div>
                   <div>
-                    <label className="text-[10px] uppercase font-bold text-[#C4984F] block mb-1">
-                      Extra Rollaway Bed Surcharge
+                    <label className="text-[10px] uppercase font-bold tracking-[0.14em] text-[#8C6228] block mb-1.5">
+                      EXTRA ROLLAWAY BED SURCHARGE
                     </label>
                     <div className="relative">
-                      <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-white/40">₹</span>
+                      <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-[#6E6659] font-bold">₹</span>
                       <input
                         type="number"
                         value={extraBedPrice}
                         onChange={(e) => setExtraBedPrice(Number(e.target.value))}
-                        className="w-full bg-[#111E31] border border-[#1B2A42] rounded-lg pl-7 pr-3 py-2 text-white font-bold focus:outline-none focus:border-[#C4984F]"
+                        className="w-full bg-white border border-[#DFD5C6] rounded-xl pl-7 pr-3 py-2.5 text-[#111E31] font-bold text-sm focus:outline-none focus:border-[#8C6228]"
                       />
                     </div>
                   </div>
                 </div>
 
                 {/* Rate Plans */}
-                <div className="p-4 bg-[#111E31] rounded-xl border border-[#1B2A42] space-y-2.5">
-                  <span className="text-[10px] uppercase font-bold text-[#C4984F] block">
-                    Supported Guest Meal Plans & Bundles
+                <div className="p-4 bg-white rounded-xl border border-[#DFD5C6] space-y-2.5">
+                  <span className="text-[10px] uppercase font-bold tracking-[0.14em] text-[#8C6228] block">
+                    SUPPORTED GUEST MEAL PLANS & BUNDLES
                   </span>
                   <div className="space-y-2">
                     {ratePlans.map((plan) => (
                       <div
                         key={plan.id}
-                        className="flex items-center justify-between p-2.5 bg-[#0B1423] rounded-lg border border-[#1B2A42]"
+                        className="flex items-center justify-between p-2.5 bg-[#FAF7F2] rounded-lg border border-[#E8DFD2]"
                       >
-                        <span className="text-xs font-semibold text-white">{plan.name}</span>
-                        <span className="text-[11px] text-[#D8B875] font-bold">
+                        <span className="text-xs font-semibold text-[#111E31]">{plan.name}</span>
+                        <span className="text-[11px] text-[#8C6228] font-bold">
                           {plan.extraCost ? `+₹${plan.extraCost} / guest` : "Standard Base"}
                         </span>
                       </div>
@@ -782,9 +804,9 @@ export function RoomConfigModal({
           </div>
 
           {/* Footer Actions: Save Draft vs Publish */}
-          <div className="bg-[#111E31] px-6 py-4 border-t border-[#1B2A42] flex flex-col sm:flex-row items-center justify-between gap-3">
-            <div className="flex items-center space-x-2 text-xs text-white/50">
-              <span className="w-2 h-2 rounded-full bg-emerald-400" />
+          <div className="bg-[#FFFFFF] px-6 py-4 border-t border-[#F0E8DD] flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="flex items-center space-x-2 text-xs text-[#6E6659] font-medium">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <span>Direct backend PostgreSQL synchronization enabled</span>
             </div>
 
@@ -793,7 +815,7 @@ export function RoomConfigModal({
                 type="button"
                 onClick={() => handleSave(false)}
                 disabled={saving}
-                className="px-4 py-2.5 bg-[#1B2A42] hover:bg-[#253755] text-xs font-semibold text-white/90 rounded-lg transition-colors cursor-pointer"
+                className="px-4 py-2.5 bg-[#F5EFE6] hover:bg-[#EDE5DA] text-xs font-semibold text-[#2C241B] rounded-xl border border-[#D9CABA] transition-colors cursor-pointer"
               >
                 Save as Draft
               </button>
@@ -801,10 +823,10 @@ export function RoomConfigModal({
                 type="button"
                 onClick={() => handleSave(true)}
                 disabled={saving}
-                className="px-6 py-2.5 bg-gradient-to-r from-[#9E712E] to-[#C4984F] hover:from-[#8C6326] hover:to-[#B38740] text-xs font-bold uppercase tracking-wider text-white rounded-lg shadow-lg transition-all flex items-center space-x-1.5 cursor-pointer disabled:opacity-50"
+                className="px-5 py-2.5 bg-gradient-to-r from-[#A67C38] via-[#946927] to-[#805518] hover:from-[#946927] hover:to-[#704812] text-xs font-bold uppercase tracking-wider text-white rounded-xl shadow-sm transition-all flex items-center space-x-2 cursor-pointer disabled:opacity-50"
               >
                 <Save className="w-4 h-4" />
-                <span>{saving ? "Publishing..." : "Publish Live Changes"}</span>
+                <span>{saving ? "Publishing..." : "PUBLISH LIVE CHANGES"}</span>
               </button>
             </div>
           </div>

@@ -120,10 +120,10 @@ export function AdminHeader({
         {onOpenQuickBooking && (
           <button
             onClick={onOpenQuickBooking}
-            className="hidden sm:inline-flex items-center space-x-1.5 px-4 py-2.5 min-h-[44px] rounded-xl bg-[#9E712E] hover:bg-[#8A6124] active:scale-95 text-white text-[11px] font-bold tracking-wider uppercase shadow-xs transition-all cursor-pointer"
+            className="hidden sm:inline-flex items-center space-x-1.5 px-4 py-2.5 min-h-[44px] rounded-xl bg-[#A57936] hover:bg-[#916524] active:scale-95 text-white text-[11px] font-bold tracking-[0.08em] uppercase shadow-xs transition-all cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
-            <span>New Reservation</span>
+            <span>NEW RESERVATION</span>
           </button>
         )}
 
@@ -301,7 +301,7 @@ export function AdminHeader({
                 Vikramaditya Roy
               </div>
               <div className="text-[9px] uppercase tracking-wider text-[#8C6527] font-semibold">
-                General Manager
+                GENERAL MANAGER
               </div>
             </div>
             <ChevronDown className="w-3.5 h-3.5 text-[#8C8275]" />
