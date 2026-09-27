@@ -219,10 +219,6 @@ function BookingsContent() {
               Reservation Ledger
             </span>
             <span className="w-12 h-[1px] bg-[#B8893E]/40" />
-            <span className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[10px] font-bold">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span>Live WebSocket Stream</span>
-            </span>
           </div>
 
           <h1 className="text-2xl sm:text-[34px] font-serif font-bold text-[#111923] tracking-tight leading-tight pt-0.5">

@@ -139,32 +139,6 @@ export function AdminHeader({
           <ExternalLink className="w-3.5 h-3.5 text-[#9E712E] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
         </Link>
 
-        {/* Live WebSocket Status Indicator */}
-        <div className="hidden sm:flex items-center space-x-1.5 px-2.5 py-1 rounded-full text-[10.5px] font-semibold border transition-all ${
-          connectionStatus === 'connected'
-            ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
-            : connectionStatus === 'connecting'
-            ? 'bg-amber-50 text-amber-800 border-amber-200'
-            : 'bg-rose-50 text-rose-800 border-rose-200'
-        }">
-          <span
-            className={`w-2 h-2 rounded-full ${
-              connectionStatus === "connected"
-                ? "bg-emerald-500 animate-pulse"
-                : connectionStatus === "connecting"
-                ? "bg-amber-500 animate-ping"
-                : "bg-rose-500"
-            }`}
-          />
-          <span className="tracking-wide">
-            {connectionStatus === "connected"
-              ? "Live Sync"
-              : connectionStatus === "connecting"
-              ? "Connecting..."
-              : "Offline"}
-          </span>
-        </div>
-
         {/* Notifications Icon with Badge */}
         <div className="relative">
           <button
