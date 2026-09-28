@@ -379,7 +379,7 @@ export async function getAnalyticsData(req: Request, res: Response): Promise<voi
         recentCancellations: cancelledBookings.slice(0, 5).map((b) => ({
           id: b.id,
           guestName: b.guestName,
-          roomType: b.room?.name || b.roomType,
+          roomType: b.room?.name || (b as any).roomType || "Standard Room",
           checkInDate: b.checkInDate.toISOString().split("T")[0],
           refundAmount: Number(b.refundAmount || 0),
           reason: b.cancellationReason || "Standard cancellation request"
