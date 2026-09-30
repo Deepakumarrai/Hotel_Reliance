@@ -326,7 +326,7 @@ function BookingContent() {
           orderId: rzpOrderId,
           amount: rzpAmount,
           currency: orderObj?.currency || "INR",
-          keyId: orderObj?.keyId,
+          keyId: (orderObj?.keyId && !orderObj.keyId.includes("placeholder")) ? orderObj.keyId : undefined,
           name: "Hotel Reliance",
           description: `Stay Reservation (${selectedRoom.name})`,
           prefill: {
@@ -337,7 +337,7 @@ function BookingContent() {
           onSuccess: async (response) => {
             try {
               await api.payments.verify({
-                orderId: response.razorpay_order_id,
+                orderId: response.razorpay_order_id || rzpOrderId,
                 paymentId: response.razorpay_payment_id,
                 signature: response.razorpay_signature,
                 bookingId
