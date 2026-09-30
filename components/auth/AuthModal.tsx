@@ -496,6 +496,29 @@ export function AuthModal() {
                 {isSubmitting ? "Creating Account..." : "Create Account & Continue"}
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
+
+              <div className="relative my-4">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-border-custom" />
+                </div>
+                <div className="relative flex justify-center text-[10px] uppercase">
+                  <span className="bg-cream px-2 text-muted font-bold tracking-widest">Or Register With</span>
+                </div>
+              </div>
+
+              <GoogleAuthButton
+                label="Sign Up with Google"
+                onSuccess={() => {
+                  setSuccessMessage("Google registration verified. Redirecting...");
+                  setTimeout(() => {
+                    closeAuthModal();
+                    if (bookingIntent) {
+                      router.push(`/booking?room=${bookingIntent.roomSlug || ""}`);
+                      clearBookingIntent();
+                    }
+                  }, 600);
+                }}
+              />
             </form>
           )}
         </div>

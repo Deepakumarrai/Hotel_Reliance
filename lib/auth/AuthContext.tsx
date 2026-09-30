@@ -152,24 +152,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signInWithGoogle = async (
-    googleData?: { credential?: string; email?: string; name?: string; avatar?: string }
+    googleData?: { credential?: string; email?: string; name?: string; avatar?: string; googleId?: string }
   ): Promise<{ success: boolean; error?: string }> => {
     try {
-      const res = await api.auth.googleAuth(
-        googleData || {
-          email: "arvindrai996@gmail.com",
-          name: "Arvind Rai"
-        }
-      );
+      if (!googleData || (!googleData.credential && !googleData.email)) {
+        return { success: false, error: "Please select or provide a valid Google account." };
+      }
+
+      const res = await api.auth.googleAuth(googleData);
       if (res?.token && res?.user) {
         setAuthToken(res.token);
         setUser(res.user);
         setStoredCurrentUser(res.user);
         return { success: true };
       }
-      return { success: false, error: "Google authentication failed" };
+      return { success: false, error: (res as any)?.message || "Google authentication failed." };
     } catch (err: any) {
-      return { success: false, error: err.message || "Google authentication failed" };
+      return { success: false, error: err.message || "Google authentication failed." };
     }
   };
 
