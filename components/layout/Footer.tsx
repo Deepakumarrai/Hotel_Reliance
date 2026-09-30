@@ -10,7 +10,10 @@ import {
   Plus, 
   Minus, 
   Check,
-  ArrowRight
+  ArrowRight,
+  Copy,
+  Navigation,
+  ArrowUpRight
 } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { hotelData } from "@/data/hotel";
@@ -23,6 +26,7 @@ export function Footer() {
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
   const [destinationsOpen, setDestinationsOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   // Do not render guest footer on admin panel routes
   if (pathname?.startsWith("/admin")) {
@@ -37,6 +41,16 @@ export function Footer() {
         setSubscribed(false);
         setEmail("");
       }, 3000);
+    }
+  };
+
+  const handleCopyAddress = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(hotelSettings.fullAddress);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
     }
   };
 
@@ -121,20 +135,70 @@ export function Footer() {
               </div>
             </div>
 
-            {/* Prominently Highlighted Hotel Address Card */}
-            <div className="bg-[#1C1715] border-2 border-[#C5A880]/70 rounded-xl p-5 sm:p-6 shadow-[0_4px_24px_rgba(0,0,0,0.5)] space-y-2 relative overflow-hidden">
-              <div className="flex items-center space-x-2 text-[#D8B875]">
-                <MapPin className="w-5 h-5 text-[#D8B875] flex-shrink-0" />
-                <span className="text-xs font-mono font-bold tracking-[0.22em] uppercase text-[#D8B875]">
-                  HOTEL LOCATION & LANDMARK
-                </span>
+            {/* Interactive & Beautiful Hotel Location Section (Box-free Luxury Design) */}
+            <div className="pt-2 border-t border-[#26201C]">
+              <div className="group relative block">
+                {/* Header with live pulse */}
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center space-x-2.5">
+                    <span className="relative flex h-2.5 w-2.5">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#BA8B32] opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#BA8B32]"></span>
+                    </span>
+                    <span className="text-xs sm:text-[13px] font-mono tracking-[0.2em] text-[#C5A880] uppercase font-bold">
+                      Hotel Location & Landmark
+                    </span>
+                  </div>
+
+                  {/* Copy Address Action */}
+                  <button
+                    type="button"
+                    onClick={handleCopyAddress}
+                    className="inline-flex items-center space-x-1.5 text-[11px] font-mono uppercase tracking-wider text-[#C5A880] hover:text-white transition-colors cursor-pointer px-2.5 py-1 rounded-full bg-white/5 hover:bg-white/10 border border-white/10"
+                    title="Copy full hotel address"
+                  >
+                    {copied ? (
+                      <>
+                        <Check className="w-3 h-3 text-emerald-400" />
+                        <span className="text-emerald-300">Copied</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3 h-3" />
+                        <span>Copy</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                {/* Main Prominent Address Text with Google Maps Direction Link */}
+                <a
+                  href="https://maps.google.com/?q=Hotel+Reliance+Co-Operative+Colony+Bokaro+Steel+City+Jharkhand+827001"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block space-y-2 group/addr"
+                >
+                  <div className="flex items-start space-x-3">
+                    <div className="w-9 h-9 rounded-full bg-[#C5A880]/15 group-hover/addr:bg-[#C5A880] text-[#D8B875] group-hover/addr:text-black flex items-center justify-center flex-shrink-0 transition-all duration-300 mt-0.5 shadow-sm">
+                      <MapPin className="w-4 h-4 transition-transform duration-300 group-hover/addr:scale-110" />
+                    </div>
+                    <div className="space-y-1.5 flex-grow">
+                      <p className="text-base sm:text-lg md:text-xl font-serif text-white group-hover/addr:text-[#D8B875] transition-colors leading-relaxed font-normal">
+                        {hotelSettings.fullAddress}
+                      </p>
+                      
+                      {/* Interactive Directions Indicator */}
+                      <div className="inline-flex items-center space-x-1.5 text-xs sm:text-[13px] text-[#C5A880] font-sans font-medium group-hover/addr:text-white transition-colors">
+                        <Navigation className="w-3.5 h-3.5 text-[#D8B875] group-hover/addr:translate-x-0.5 transition-transform" />
+                        <span className="underline underline-offset-4 decoration-[#C5A880]/50 group-hover/addr:decoration-[#D8B875]">
+                          Get Live Directions on Google Maps
+                        </span>
+                        <ArrowUpRight className="w-3.5 h-3.5 transition-transform duration-200 group-hover/addr:translate-x-0.5 group-hover/addr:-translate-y-0.5" />
+                      </div>
+                    </div>
+                  </div>
+                </a>
               </div>
-              <p className="text-base sm:text-lg font-serif font-bold text-white tracking-wide leading-relaxed">
-                {hotelSettings.fullAddress}
-              </p>
-              <p className="text-xs sm:text-[13px] text-[#C5A880]/90 font-serif italic">
-                Near Co-operative Colony, Bokaro Steel City, Jharkhand - 827001
-              </p>
             </div>
           </div>
 
