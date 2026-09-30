@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/Button";
 import { HomeCTA } from "@/components/home/HomeCTA";
 import { hotelData } from "@/data/hotel";
 import { RestaurantPageClient } from "@/components/restaurant/RestaurantPageClient";
+import { RestaurantIntroVideo } from "@/components/restaurant/RestaurantIntroVideo";
 
 export const metadata: Metadata = {
   title: "Kwality Restaurant & Fine Dining — North Indian, Tandoor & Chinese",
@@ -200,22 +201,9 @@ export default function RestaurantPage() {
               </div>
             </div>
 
-            {/* Intro Side Image: Canopy Dining Lounge */}
-            <div className="lg:col-span-5 relative">
-              <div className="absolute -inset-3 border border-[#C5A880]/30 -z-10 translate-x-2 translate-y-2 hidden sm:block" />
-              <div className="relative aspect-[4/3] w-full overflow-hidden border border-[#E8E1D7] shadow-xl bg-black group">
-                <Image
-                  src="/images/restaurant/canopy-lounge.png"
-                  alt="Kwality Canopy Dining Lounge"
-                  fill
-                  quality={100}
-                  sizes="(max-w-768px) 100vw, 40vw"
-                  className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                />
-                <div className="absolute bottom-3 left-3 z-10 bg-black/80 backdrop-blur-sm px-3 py-1 text-[10px] uppercase tracking-widest text-[#D8B875] font-serif border border-white/10">
-                  Canopy Dining Lounge
-                </div>
-              </div>
+            {/* Intro Side Video: Kwality Restaurant Video Tour */}
+            <div className="lg:col-span-5">
+              <RestaurantIntroVideo />
             </div>
           </div>
         </Container>
