@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import type { Metadata } from "next";
-import { Sparkles, Calendar, Heart, Award } from "lucide-react";
+import { Sparkles, Calendar, Heart, Award, ArrowRight } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { VenueCard, Venue } from "@/components/banquet/VenueCard";
@@ -263,6 +263,155 @@ export default function BanquetPage() {
                 </p>
               </div>
             ))}
+          </div>
+        </Container>
+      </section>
+
+      {/* Grand Marriage Package Section — ₹2,25,000/- */}
+      <section id="marriage-package" className="py-16 sm:py-24 bg-gradient-to-b from-[#181412] to-[#0D0B0A] text-white relative overflow-hidden border-t border-[#332A24]">
+        {/* Subtle Gold Ambient Glow */}
+        <div className="absolute top-0 right-1/4 w-96 h-96 bg-[#C5A880]/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-[#B38E5D]/10 rounded-full blur-3xl pointer-events-none" />
+
+        <Container className="max-w-7xl px-4 sm:px-6 relative z-10">
+          <div className="max-w-5xl mx-auto">
+            {/* Header */}
+            <div className="text-center space-y-3 mb-12">
+              <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-[#C5A880]/15 border border-[#C5A880]/40 text-[#D8B875] text-[11px] font-mono uppercase tracking-[0.25em]">
+                <Sparkles className="w-3.5 h-3.5 text-[#D8B875]" />
+                <span>OFFICIAL WEDDING CEREMONY TARIFF</span>
+              </div>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif tracking-[0.08em] uppercase text-white font-normal">
+                Grand Royal Marriage Package
+              </h2>
+              <div className="w-16 h-[2px] bg-[#C5A880] mx-auto mt-3" />
+              <p className="text-xs sm:text-sm font-serif italic text-white/80 max-w-2xl mx-auto leading-relaxed pt-1">
+                An all-inclusive, masterfully curated wedding experience with air-conditioned palace banquet halls, grand floral decor, live gourmet catering, and seamless hospitality.
+              </p>
+            </div>
+
+            {/* Main Package Pricing & Inclusions Card */}
+            <div className="bg-[#1C1715]/90 border-2 border-[#C5A880]/60 rounded-2xl p-6 sm:p-10 shadow-[0_12px_40px_rgba(0,0,0,0.6)] relative overflow-hidden backdrop-blur-md">
+              {/* Highlight Ribbon */}
+              <div className="absolute top-0 right-0 bg-gradient-to-l from-[#C5A880] to-[#9E712E] text-black font-bold text-[10px] sm:text-xs uppercase tracking-[0.2em] px-6 py-2 rounded-bl-xl shadow-md">
+                COMPLETE WEDDING PACKAGE
+              </div>
+
+              {/* Price Banner */}
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-8 border-b border-[#382E28]">
+                <div className="space-y-1">
+                  <span className="text-xs uppercase font-mono tracking-widest text-[#C5A880] block">
+                    All-Inclusive Wedding Booking
+                  </span>
+                  <div className="flex items-baseline space-x-2">
+                    <span className="text-3xl sm:text-5xl md:text-6xl font-serif font-bold text-white tracking-tight">
+                      ₹2,25,000
+                    </span>
+                    <span className="text-sm sm:text-base font-serif text-[#C5A880] font-normal">
+                      /- Net Fixed Tariff
+                    </span>
+                  </div>
+                  <p className="text-xs text-white/70 font-light">
+                    Covers full day & night wedding festivities (AC Banquet Hall / Outdoor Lawn + Catering + Decor + Sound)
+                  </p>
+                </div>
+
+                <a
+                  href="#enquiry-form"
+                  className="inline-flex items-center justify-center px-8 py-4 bg-[#C5A880] hover:bg-[#D8B875] text-[#111111] font-bold text-xs uppercase tracking-[0.2em] rounded-xl transition-all shadow-lg hover:shadow-xl active:scale-95 cursor-pointer whitespace-nowrap self-start md:self-auto"
+                >
+                  <span>Reserve This Wedding Date</span>
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </a>
+              </div>
+
+              {/* 6 Key Inclusions Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pt-8">
+                <div className="space-y-2 bg-black/30 p-4 rounded-xl border border-white/5">
+                  <div className="flex items-center space-x-2.5 text-[#D8B875]">
+                    <div className="w-7 h-7 rounded-full bg-[#C5A880]/20 flex items-center justify-center flex-shrink-0 text-[#D8B875] font-bold text-xs">
+                      1
+                    </div>
+                    <h4 className="text-sm font-serif font-bold text-white uppercase tracking-wide">
+                      Grand Venue Booking
+                    </h4>
+                  </div>
+                  <p className="text-xs text-white/75 leading-relaxed font-light pl-9">
+                    Full day & night booking of AC Banquet Hall (350+ guests capacity) or lush green Outdoor Celebration Lawn.
+                  </p>
+                </div>
+
+                <div className="space-y-2 bg-black/30 p-4 rounded-xl border border-white/5">
+                  <div className="flex items-center space-x-2.5 text-[#D8B875]">
+                    <div className="w-7 h-7 rounded-full bg-[#C5A880]/20 flex items-center justify-center flex-shrink-0 text-[#D8B875] font-bold text-xs">
+                      2
+                    </div>
+                    <h4 className="text-sm font-serif font-bold text-white uppercase tracking-wide">
+                      Royal Kwality Buffet
+                    </h4>
+                  </div>
+                  <p className="text-xs text-white/75 leading-relaxed font-light pl-9">
+                    Lavish multi-cuisine spread with welcome drinks, live tandoor starters, gourmet main courses, dum biryani, and royal desserts.
+                  </p>
+                </div>
+
+                <div className="space-y-2 bg-black/30 p-4 rounded-xl border border-white/5">
+                  <div className="flex items-center space-x-2.5 text-[#D8B875]">
+                    <div className="w-7 h-7 rounded-full bg-[#C5A880]/20 flex items-center justify-center flex-shrink-0 text-[#D8B875] font-bold text-xs">
+                      3
+                    </div>
+                    <h4 className="text-sm font-serif font-bold text-white uppercase tracking-wide">
+                      Stage & Mandap Decor
+                    </h4>
+                  </div>
+                  <p className="text-xs text-white/75 leading-relaxed font-light pl-9">
+                    Grand floral stage decoration, ornamental wedding mandap, red carpet entryway, and elegant LED lighting setup.
+                  </p>
+                </div>
+
+                <div className="space-y-2 bg-black/30 p-4 rounded-xl border border-white/5">
+                  <div className="flex items-center space-x-2.5 text-[#D8B875]">
+                    <div className="w-7 h-7 rounded-full bg-[#C5A880]/20 flex items-center justify-center flex-shrink-0 text-[#D8B875] font-bold text-xs">
+                      4
+                    </div>
+                    <h4 className="text-sm font-serif font-bold text-white uppercase tracking-wide">
+                      DJ Sound & Audio Visuals
+                    </h4>
+                  </div>
+                  <p className="text-xs text-white/75 leading-relaxed font-light pl-9">
+                    Professional concert-grade DJ sound setup, dynamic floor lighting, cordless mics, and celebration music console.
+                  </p>
+                </div>
+
+                <div className="space-y-2 bg-black/30 p-4 rounded-xl border border-white/5">
+                  <div className="flex items-center space-x-2.5 text-[#D8B875]">
+                    <div className="w-7 h-7 rounded-full bg-[#C5A880]/20 flex items-center justify-center flex-shrink-0 text-[#D8B875] font-bold text-xs">
+                      5
+                    </div>
+                    <h4 className="text-sm font-serif font-bold text-white uppercase tracking-wide">
+                      Bridal Room Suite
+                    </h4>
+                  </div>
+                  <p className="text-xs text-white/75 leading-relaxed font-light pl-9">
+                    Complimentary 1-Night luxury stay in our Bridal Suite for the couple, along with dedicated dressing area for preparation.
+                  </p>
+                </div>
+
+                <div className="space-y-2 bg-black/30 p-4 rounded-xl border border-white/5">
+                  <div className="flex items-center space-x-2.5 text-[#D8B875]">
+                    <div className="w-7 h-7 rounded-full bg-[#C5A880]/20 flex items-center justify-center flex-shrink-0 text-[#D8B875] font-bold text-xs">
+                      6
+                    </div>
+                    <h4 className="text-sm font-serif font-bold text-white uppercase tracking-wide">
+                      Hospitality & Power Backup
+                    </h4>
+                  </div>
+                  <p className="text-xs text-white/75 leading-relaxed font-light pl-9">
+                    Dedicated event captain, trained service stewards, valet guest parking, and uninterrupted 100% DG generator backup.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </Container>
       </section>

@@ -306,10 +306,9 @@ export function QuickBookingModal({
                       onChange={(e) => setFormData({ ...formData, roomType: e.target.value })}
                       className="w-full bg-[#FCFAF6] border border-[#E8DFD2] rounded-xl px-4 py-3 min-h-[46px] text-xs text-[#111923] font-medium focus:outline-none focus:border-[#B8893E] shadow-2xs cursor-pointer"
                     >
-                      <option value="deluxe">Deluxe Room {roomPrices.deluxe ? `(₹${roomPrices.deluxe}/nt)` : ''}</option>
-                      <option value="executive">Executive Room {roomPrices.executive ? `(₹${roomPrices.executive}/nt)` : ''}</option>
-                      <option value="premium">Premium Suite {roomPrices.premium ? `(₹${roomPrices.premium}/nt)` : ''}</option>
-                      <option value="family">Family Suite {roomPrices.family ? `(₹${roomPrices.family}/nt)` : ''}</option>
+                      <option value="deluxe">Single Occupancy {roomPrices.deluxe || roomPrices.single ? `(₹${roomPrices.deluxe || roomPrices.single}/nt)` : ''}</option>
+                      <option value="executive">Double Occupancy {roomPrices.executive || roomPrices.double ? `(₹${roomPrices.executive || roomPrices.double}/nt)` : ''}</option>
+                      <option value="family">Family Room {roomPrices.family ? `(₹${roomPrices.family}/nt)` : ''}</option>
                     </select>
                   </div>
 

@@ -45,10 +45,9 @@ export default function AdminAvailabilityCalendarPage() {
 
   // Categories computed dynamically from live room inventory and bookings
   const categoriesDef = [
-    { type: "deluxe", name: "Deluxe Room", defaultTotal: 12 },
-    { type: "executive", name: "Executive Room", defaultTotal: 15 },
-    { type: "premium", name: "Premium Suite", defaultTotal: 10 },
-    { type: "family", name: "Family Suite", defaultTotal: 8 },
+    { type: "deluxe", name: "Single Occupancy", defaultTotal: 15 },
+    { type: "executive", name: "Double Occupancy", defaultTotal: 18 },
+    { type: "family", name: "Family Room", defaultTotal: 12 },
   ];
 
   const categoryMatrix = categoriesDef.map((cat) => {

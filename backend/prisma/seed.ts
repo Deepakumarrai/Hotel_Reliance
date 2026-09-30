@@ -110,22 +110,22 @@ async function main() {
     {
       id: "deluxe-room",
       slug: "deluxe",
-      name: "Deluxe Room",
+      name: "Single Occupancy",
       category: RoomCategory.DELUXE,
       tagline: "Modern Comfort for Discerning Travelers",
-      shortDesc: "Elegant comfort with modern amenities, designed for a relaxing business or leisure stay in Bokaro.",
-      description: "Our Deluxe Rooms offer a perfect blend of space, comfort, and luxury. Designed with modern aesthetics, these rooms feature premium bedding, a fully equipped workstation, high-speed Wi-Fi, and a well-appointed bathroom.",
+      shortDesc: "Elegant comfort tailored for solo travelers and business guests with modern amenities in Bokaro.",
+      description: "Our Single Occupancy rooms offer a perfect blend of space, comfort, and luxury. Designed with modern aesthetics, these rooms feature premium bedding, a workstation, high-speed Wi-Fi, and a well-appointed bathroom.",
       pricePerNight: 2499.00,
-      capacityAdults: 2,
+      capacityAdults: 1,
       capacityKids: 1,
-      bedType: "King Bed",
+      bedType: "King / Queen Bed",
       roomSizeSqFt: 280,
       images: [
         "/images/rooms/deluxe/main.jpg",
         "/images/rooms/deluxe/room.jpg"
       ],
       amenities: [
-        "King Size Bed",
+        "King / Queen Bed",
         "High-Speed Wi-Fi",
         "Air Conditioning",
         "Flat Screen TV",
@@ -136,16 +136,16 @@ async function main() {
         "Electronic Safe",
         "Complimentary Bottled Water"
       ],
-      totalInventory: 12
+      totalInventory: 15
     },
     {
       id: "executive-room",
       slug: "executive",
-      name: "Executive Room",
+      name: "Double Occupancy",
       category: RoomCategory.EXECUTIVE,
       tagline: "Refined Workspace & Relaxed Luxury",
-      shortDesc: "Spacious layout with enhanced services and executive desk for premium business guests.",
-      description: "The Executive Room is meticulously designed for business executives who demand extra comfort and utility. Featuring a dedicated seating area, a large executive desk, premier toiletries, and high-speed connectivity.",
+      shortDesc: "Spacious layout with enhanced services and executive desk for couples and premium business guests.",
+      description: "The Double Occupancy room is meticulously designed for couples and business executives who demand extra comfort and utility. Featuring a dedicated seating area, a large executive desk, premier toiletries, and high-speed connectivity.",
       pricePerNight: 3499.00,
       capacityAdults: 2,
       capacityKids: 1,
@@ -167,51 +167,21 @@ async function main() {
         "24/7 Room Service",
         "Complimentary Breakfast"
       ],
-      totalInventory: 15
-    },
-    {
-      id: "premium-suite",
-      slug: "premium",
-      name: "Premium Suite",
-      category: RoomCategory.PREMIUM,
-      tagline: "The Pinnacle of Hospitality Excellence",
-      shortDesc: "Lavish living room, separate master bedroom, panoramic city views, and dedicated concierge.",
-      description: "Our Premium Suite delivers uncompromised grandeur with an expansive master bedroom, separate lounge, soaking bathtub, walk-in closet, and sweeping vistas of the Bokaro skyline.",
-      pricePerNight: 4999.00,
-      capacityAdults: 3,
-      capacityKids: 2,
-      bedType: "King Bed + Sofa Bed",
-      roomSizeSqFt: 500,
-      images: [
-        "/images/rooms/premium/main.jpg",
-        "/images/rooms/premium/room.jpg"
-      ],
-      amenities: [
-        "Master King Bed + Sofa Bed",
-        "Separate Living Room",
-        "Bathtub & Rain Shower",
-        "Espresso Machine",
-        "High-Speed 5G Wi-Fi",
-        "55-inch 4K Smart TV",
-        "Complimentary Buffet Breakfast",
-        "Evening Cocktail Hour",
-        "Express Check-In / Check-Out"
-      ],
-      totalInventory: 10
+      totalInventory: 18
     },
     {
       id: "family-suite",
       slug: "family",
-      name: "Family Suite",
+      name: "Family Room",
       category: RoomCategory.FAMILY,
       tagline: "Spacious Sanctuary for Families & Groups",
       shortDesc: "Interconnected bedrooms, dining space, and kid-friendly amenities designed for families visiting Bokaro.",
-      description: "Crafted specifically for families, this multi-room sanctuary provides two full master suites, dining space, children's welcome packs, and generous storage for effortless extended stays.",
-      pricePerNight: 5999.00,
+      description: "Crafted specifically for families and groups, our Family Room provides comfortable multi-bed accommodation, dining space, modern entertainment, children's welcome packs, and generous storage for effortless extended stays.",
+      pricePerNight: 4999.00,
       capacityAdults: 4,
       capacityKids: 2,
       bedType: "2 King Beds",
-      roomSizeSqFt: 650,
+      roomSizeSqFt: 550,
       images: [
         "/images/rooms/family/main.jpg",
         "/images/rooms/family/room.jpg"
@@ -226,7 +196,7 @@ async function main() {
         "Kids Activity Kits",
         "24/7 Butler Support"
       ],
-      totalInventory: 8
+      totalInventory: 12
     }
   ];
 

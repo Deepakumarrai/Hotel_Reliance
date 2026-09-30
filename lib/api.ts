@@ -336,10 +336,10 @@ export const api = {
         });
       } catch (err: any) {
         const norm = (slug || "").toLowerCase().trim();
-        const resolved = norm === "single" || norm === "single-room" ? "deluxe" :
-                         norm === "double" || norm === "double-room" ? "executive" :
-                         norm === "triple" || norm === "triple-room" ? "premium" : norm;
-        const found = roomsData.find((r) => r.slug === norm || r.id === norm || r.slug === resolved || r.id === `${resolved}-room` || r.id === `${resolved}-suite`) || roomsData[0];
+        const resolved = norm === "deluxe" || norm === "deluxe-room" || norm === "single-room" || norm === "single-occupancy" ? "single" :
+                         norm === "executive" || norm === "executive-room" || norm === "double-room" || norm === "double-occupancy" ? "double" :
+                         norm === "triple" || norm === "triple-room" || norm === "premium" || norm === "premium-room" || norm === "premium-suite" || norm === "family-suite" ? "family" : norm;
+        const found = roomsData.find((r) => r.slug === norm || r.id === norm || r.slug === resolved || r.id === `${resolved}-room` || r.id === `${resolved}-occupancy` || r.id === `${resolved}-suite`) || roomsData[0];
         return {
           status: "success",
           data: {

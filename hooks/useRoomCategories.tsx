@@ -79,14 +79,7 @@ export function getCachedCategories(): Room[] | null {
       if (cached) {
         const parsed = JSON.parse(cached);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          // Reject stale legacy categories (single/double/triple)
-          const isLegacy = parsed.some(
-            (c: any) =>
-              c.slug === "single" || c.id === "single-room" || c.name === "Single Room"
-          );
-          if (!isLegacy) {
-            return parsed.map(formatCategoryToRoom);
-          }
+          return parsed.map(formatCategoryToRoom);
         }
       }
     } catch {}

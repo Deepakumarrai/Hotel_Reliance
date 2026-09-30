@@ -93,16 +93,16 @@ export async function generateMetadata({ params }: RoomPageProps): Promise<Metad
   const { roomSlug } = await params;
   const normalized = roomSlug.toLowerCase().trim();
   const canonical =
-    normalized === "single" || normalized === "single-room" ? "deluxe" :
-    normalized === "double" || normalized === "double-room" ? "executive" :
-    normalized === "triple" || normalized === "triple-room" ? "premium" :
+    normalized === "deluxe" || normalized === "deluxe-room" || normalized === "single-room" || normalized === "single-occupancy" ? "single" :
+    normalized === "executive" || normalized === "executive-room" || normalized === "double-room" || normalized === "double-occupancy" ? "double" :
+    normalized === "triple" || normalized === "triple-room" || normalized === "premium" || normalized === "premium-suite" || normalized === "family-suite" ? "family" :
     normalized;
 
   const allRooms = await getLiveRooms();
   const room = allRooms.find((r) => r.slug.toLowerCase() === normalized || r.id.toLowerCase() === normalized) ||
-               allRooms.find((r) => r.slug === canonical || r.id === canonical || r.id === `${canonical}-room` || r.id === `${canonical}-suite`) ||
+               allRooms.find((r) => r.slug === canonical || r.id === canonical || r.id === `${canonical}-room` || r.id === `${canonical}-occupancy` || r.id === `${canonical}-suite`) ||
                roomsData.find((r) => r.slug.toLowerCase() === normalized || r.id.toLowerCase() === normalized) ||
-               roomsData.find((r) => r.slug === canonical || r.id === canonical || r.id === `${canonical}-room` || r.id === `${canonical}-suite`);
+               roomsData.find((r) => r.slug === canonical || r.id === canonical || r.id === `${canonical}-room` || r.id === `${canonical}-occupancy` || r.id === `${canonical}-suite`);
   if (!room) {
     return { title: "Room Not Found | Hotel Reliance" };
   }
@@ -113,7 +113,7 @@ export async function generateMetadata({ params }: RoomPageProps): Promise<Metad
 
   return {
     title: `${room.name} — Luxury Stay & Tariff`,
-    description: `${room.description} Book ${room.name} at Hotel Reliance Bokaro at ${priceDisplay}. Includes king bedding, high-speed Wi-Fi, AC, and room service.`,
+    description: `${room.description} Book ${room.name} at Hotel Reliance Bokaro at ${priceDisplay}. Includes comfortable bedding, high-speed Wi-Fi, AC, and room service.`,
     alternates: {
       canonical: pageUrl,
     },
@@ -144,16 +144,16 @@ export default async function RoomDetailPage({ params }: RoomPageProps) {
   const { roomSlug } = await params;
   const normalized = roomSlug.toLowerCase().trim();
   const canonical =
-    normalized === "single" || normalized === "single-room" ? "deluxe" :
-    normalized === "double" || normalized === "double-room" ? "executive" :
-    normalized === "triple" || normalized === "triple-room" ? "premium" :
+    normalized === "deluxe" || normalized === "deluxe-room" || normalized === "single-room" || normalized === "single-occupancy" ? "single" :
+    normalized === "executive" || normalized === "executive-room" || normalized === "double-room" || normalized === "double-occupancy" ? "double" :
+    normalized === "triple" || normalized === "triple-room" || normalized === "premium" || normalized === "premium-suite" || normalized === "family-suite" ? "family" :
     normalized;
 
   const allRooms = await getLiveRooms();
   const room = allRooms.find((r) => r.slug.toLowerCase() === normalized || r.id.toLowerCase() === normalized) ||
-               allRooms.find((r) => r.slug === canonical || r.id === canonical || r.id === `${canonical}-room` || r.id === `${canonical}-suite`) ||
+               allRooms.find((r) => r.slug === canonical || r.id === canonical || r.id === `${canonical}-room` || r.id === `${canonical}-occupancy` || r.id === `${canonical}-suite`) ||
                roomsData.find((r) => r.slug.toLowerCase() === normalized || r.id.toLowerCase() === normalized) ||
-               roomsData.find((r) => r.slug === canonical || r.id === canonical || r.id === `${canonical}-room` || r.id === `${canonical}-suite`);
+               roomsData.find((r) => r.slug === canonical || r.id === canonical || r.id === `${canonical}-room` || r.id === `${canonical}-occupancy` || r.id === `${canonical}-suite`);
 
   if (!room) {
     notFound();

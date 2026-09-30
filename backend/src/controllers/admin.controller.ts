@@ -245,10 +245,9 @@ export async function getAnalyticsData(req: Request, res: Response): Promise<voi
 
     // Room Category Breakdown
     const defaultCategories = [
-      { key: "deluxe", label: "Single Occupancy (Deluxe)" },
-      { key: "executive", label: "Double Occupancy (Executive)" },
+      { key: "deluxe", label: "Single Occupancy" },
+      { key: "executive", label: "Double Occupancy" },
       { key: "family", label: "Family Room" },
-      { key: "premium", label: "Premium Suite" }
     ];
 
     const categoryStats = defaultCategories.map((cat) => {

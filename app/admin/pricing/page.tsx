@@ -119,10 +119,9 @@ export default function AdminPricingPage() {
   };
 
   const categories = [
-    { key: "deluxe", name: "Deluxe Room", desc: "Base Corporate & Couple Lodging" },
-    { key: "executive", name: "Executive Room", desc: "Spacious Business Suite" },
-    { key: "premium", name: "Premium Suite", desc: "Luxury Suite with Living Lounge" },
-    { key: "family", name: "Family Suite", desc: "Multi-Guest 4-Bed Luxury Room" },
+    { key: "deluxe", name: "Single Occupancy", desc: "Base Corporate & Solo Lodging" },
+    { key: "executive", name: "Double Occupancy", desc: "Spacious Double Lodging for Couples & Execs" },
+    { key: "family", name: "Family Room", desc: "Multi-Guest 4-Bed Family Room" },
   ];
 
   if (loading) {

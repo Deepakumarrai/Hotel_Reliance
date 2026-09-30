@@ -189,12 +189,17 @@ export function TableReservationModal({ isOpen, onClose }: TableReservationModal
                     onChange={handleChange}
                     className="w-full bg-[#FAF8F5] border border-[#E8E1D7] p-2.5 text-xs focus:border-[#BA8B32] focus:outline-none"
                   >
-                    <option value="08:00 AM">08:00 AM (Breakfast)</option>
+                    <option value="08:30 AM">08:30 AM (Buffet Breakfast)</option>
+                    <option value="09:30 AM">09:30 AM (Buffet Breakfast)</option>
+                    <option value="12:00 PM">12:00 PM (Lunch)</option>
                     <option value="01:00 PM">01:00 PM (Lunch)</option>
                     <option value="02:00 PM">02:00 PM (Lunch)</option>
+                    <option value="03:00 PM">03:00 PM (Lunch)</option>
+                    <option value="07:00 PM">07:00 PM (Dinner)</option>
                     <option value="07:30 PM">07:30 PM (Dinner)</option>
                     <option value="08:30 PM">08:30 PM (Dinner)</option>
                     <option value="09:30 PM">09:30 PM (Dinner)</option>
+                    <option value="10:00 PM">10:00 PM (Dinner)</option>
                   </select>
                 </div>
 

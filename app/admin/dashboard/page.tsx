@@ -143,18 +143,11 @@ export default function AdminDashboardPage() {
   };
 
   const getRoomTypeLabel = (type?: string) => {
-    switch (type?.toLowerCase()) {
-      case "deluxe":
-        return "Deluxe Room";
-      case "executive":
-        return "Executive Room";
-      case "premium":
-        return "Premium Room";
-      case "family":
-        return "Family Room";
-      default:
-        return type ? `${type.charAt(0).toUpperCase()}${type.slice(1)} Room` : "Deluxe Room";
-    }
+    const t = type?.toLowerCase() || "";
+    if (t.includes("single") || t.includes("deluxe")) return "Single Occupancy";
+    if (t.includes("double") || t.includes("executive")) return "Double Occupancy";
+    if (t.includes("family") || t.includes("premium") || t.includes("triple")) return "Family Room";
+    return type ? `${type.charAt(0).toUpperCase()}${type.slice(1)}` : "Single Occupancy";
   };
 
   const pendingCount = bookings.filter((b) => b.bookingStatus === "PENDING").length;

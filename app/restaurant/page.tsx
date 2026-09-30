@@ -50,9 +50,9 @@ export const metadata: Metadata = {
 };
 
 const diningHours = [
-  { meal: "Breakfast Buffet", hours: "07:30 AM - 10:30 AM" },
-  { meal: "Lunch Service", hours: "12:30 PM - 03:30 PM" },
-  { meal: "Dinner Service", hours: "07:00 PM - 10:45 PM" }
+  { meal: "Buffet Breakfast", hours: "08:30 AM - 10:30 AM" },
+  { meal: "Lunch Service", hours: "12:00 PM - 04:00 PM" },
+  { meal: "Dinner Service", hours: "07:00 PM - 10:30 PM" }
 ];
 
 const chefSpecialties = [
@@ -102,8 +102,8 @@ export default function RestaurantPage() {
       {
         "@type": "OpeningHoursSpecification",
         dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
-        opens: "07:30",
-        closes: "22:45",
+        opens: "08:30",
+        closes: "22:30",
       },
     ],
     menu: "https://www.hotelreliance.com/restaurant#menu",

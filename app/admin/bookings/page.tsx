@@ -129,7 +129,11 @@ function BookingsContent() {
 
     const matchesRoomType =
       roomTypeFilter === "ALL" ||
-      b.roomType.toLowerCase() === roomTypeFilter.toLowerCase();
+      b.roomType.toLowerCase() === roomTypeFilter.toLowerCase() ||
+      b.roomType.toLowerCase().includes(roomTypeFilter.toLowerCase()) ||
+      (roomTypeFilter === "single" && (b.roomType.toLowerCase().includes("single") || b.roomType.toLowerCase().includes("deluxe"))) ||
+      (roomTypeFilter === "double" && (b.roomType.toLowerCase().includes("double") || b.roomType.toLowerCase().includes("executive"))) ||
+      (roomTypeFilter === "family" && (b.roomType.toLowerCase().includes("family") || b.roomType.toLowerCase().includes("premium") || b.roomType.toLowerCase().includes("triple")));
 
     let matchesStatus = true;
     if (statusFilter === "ARRIVALS") {
@@ -180,13 +184,12 @@ function BookingsContent() {
   ];
 
   const formatRoomTypeName = (type: string) => {
-    if (!type) return "Deluxe Room";
+    if (!type) return "Single Occupancy";
     const lower = type.toLowerCase();
-    if (lower.includes("deluxe")) return "Deluxe Room";
-    if (lower.includes("executive")) return "Executive Room";
-    if (lower.includes("premium")) return "Premium Room";
-    if (lower.includes("family")) return "Family Room";
-    return `${type.charAt(0).toUpperCase() + type.slice(1)} Room`;
+    if (lower.includes("single") || lower.includes("deluxe")) return "Single Occupancy";
+    if (lower.includes("double") || lower.includes("executive")) return "Double Occupancy";
+    if (lower.includes("family") || lower.includes("premium") || lower.includes("triple")) return "Family Room";
+    return `${type.charAt(0).toUpperCase() + type.slice(1)}`;
   };
 
   if (loading) {
@@ -304,9 +307,8 @@ function BookingsContent() {
             className="w-full bg-white border border-[#E8DFD2] rounded-xl px-4 py-2.5 text-xs text-[#111923] font-medium focus:outline-none focus:border-[#B8893E] shadow-2xs appearance-none cursor-pointer pr-10"
           >
             <option value="ALL">All Room Categories</option>
-            <option value="deluxe">Deluxe Room</option>
-            <option value="executive">Executive Room</option>
-            <option value="premium">Premium Room</option>
+            <option value="single">Single Occupancy</option>
+            <option value="double">Double Occupancy</option>
             <option value="family">Family Room</option>
           </select>
           <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[#8A8277]">

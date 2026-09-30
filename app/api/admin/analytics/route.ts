@@ -46,10 +46,9 @@ export async function GET(request: Request) {
     const cancellationRate = bookings.length > 0 ? Math.round((cancelledBookings.length / bookings.length) * 1000) / 10 : 0;
 
     const defaultCategories = [
-      { key: "deluxe", label: "Single Occupancy (Deluxe)" },
-      { key: "executive", label: "Double Occupancy (Executive)" },
+      { key: "deluxe", label: "Single Occupancy" },
+      { key: "executive", label: "Double Occupancy" },
       { key: "family", label: "Family Room" },
-      { key: "premium", label: "Premium Suite" }
     ];
 
     const categoryStats = defaultCategories.map((cat, idx) => {

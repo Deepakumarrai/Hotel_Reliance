@@ -11,28 +11,34 @@ export function DynamicContactInfo() {
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      {/* Location Card */}
-      <div className="bg-white/80 backdrop-blur-md border border-[#E8E1D7] p-5 sm:p-6 shadow-sm rounded-xl touch-card-press transition-all hover:border-[#C5A880]">
-        <div className="flex items-start space-x-4">
-          <div className="p-3 bg-[#FAF8F5] text-[#9E712E] border border-[#E8E1D7] rounded-lg flex-shrink-0">
-            <MapPin className="w-5 h-5" />
+      {/* Location Card — Highlighted & Prominent */}
+      <div className="bg-gradient-to-br from-amber-50/80 via-white to-orange-50/50 border-2 border-[#C5A880] p-6 sm:p-7 shadow-[0_4px_20px_rgba(186,139,50,0.12)] rounded-2xl touch-card-press transition-all hover:border-[#BA8B32] relative overflow-hidden">
+        <div className="absolute top-0 right-0 bg-[#C5A880] text-[#111111] font-mono text-[9px] uppercase tracking-widest font-bold px-3 py-1 rounded-bl-lg">
+          HOTEL ADDRESS
+        </div>
+        <div className="flex items-start space-x-4 pt-1">
+          <div className="p-3.5 bg-[#BA8B32] text-white shadow-md rounded-xl flex-shrink-0">
+            <MapPin className="w-6 h-6" />
           </div>
-          <div className="space-y-1 flex-1">
-            <span className="text-[10px] uppercase tracking-wider text-[#7A6B61] font-serif font-bold block">
-              Our Location
+          <div className="space-y-1.5 flex-1">
+            <span className="text-[11px] uppercase tracking-[0.2em] text-[#8C6418] font-mono font-bold block">
+              Hotel Reliance Location & Landmark
             </span>
-            <p className="text-xs sm:text-sm text-[#111E31] font-serif font-medium leading-relaxed">
+            <p className="text-base sm:text-lg text-[#111E31] font-serif font-bold leading-snug tracking-wide">
               {settings.fullAddress}
             </p>
-            <div className="pt-2">
+            <p className="text-xs text-[#7A6B61] font-sans font-medium">
+              Near Co-operative Colony, Bokaro Steel City, Jharkhand - 827001
+            </p>
+            <div className="pt-2.5">
               <a
                 href={HOTEL_INFO.googleMapUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center text-xs font-serif font-semibold text-[#9E712E] hover:text-[#111E31] transition-colors"
+                className="inline-flex items-center text-xs font-serif font-bold text-[#8C6418] hover:text-[#111E31] bg-[#C5A880]/15 hover:bg-[#C5A880]/30 px-3.5 py-1.5 rounded-lg transition-all"
               >
-                <span>Get Directions via Google Maps</span>
-                <ArrowUpRight className="w-3.5 h-3.5 ml-1" />
+                <span>Open in Google Maps & Get Directions</span>
+                <ArrowUpRight className="w-3.5 h-3.5 ml-1.5" />
               </a>
             </div>
           </div>

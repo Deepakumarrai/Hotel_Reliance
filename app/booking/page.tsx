@@ -45,7 +45,7 @@ function BookingContent() {
     checkOut: getTodayString(1),
     adults: 2,
     children: 0,
-    selectedRoomId: availableRooms[0]?.id || "deluxe-room",
+    selectedRoomId: availableRooms[0]?.id || "single-occupancy",
     guest: {
       name: user?.name || "",
       email: user?.email || "",
@@ -100,14 +100,14 @@ function BookingContent() {
       if (roomSlugParam) {
         const normalized = roomSlugParam.toLowerCase().trim();
         const canonical =
-          normalized === "single" || normalized === "single-room" ? "deluxe" :
-          normalized === "double" || normalized === "double-room" ? "executive" :
-          normalized === "triple" || normalized === "triple-room" ? "premium" :
+          normalized === "deluxe" || normalized === "deluxe-room" || normalized === "single-room" || normalized === "single-occupancy" ? "single" :
+          normalized === "executive" || normalized === "executive-room" || normalized === "double-room" || normalized === "double-occupancy" ? "double" :
+          normalized === "triple" || normalized === "triple-room" || normalized === "premium" || normalized === "premium-suite" || normalized === "family-suite" ? "family" :
           normalized;
 
         const found =
-          availableRooms.find((r) => r.slug === roomSlugParam || r.id === roomSlugParam || r.slug === canonical || r.id === canonical || r.id === `${canonical}-room` || r.id === `${canonical}-suite`) ||
-          roomsData.find((r) => r.slug === roomSlugParam || r.id === roomSlugParam || r.slug === canonical || r.id === canonical || r.id === `${canonical}-room` || r.id === `${canonical}-suite`);
+          availableRooms.find((r) => r.slug === roomSlugParam || r.id === roomSlugParam || r.slug === canonical || r.id === canonical || r.id === `${canonical}-room` || r.id === `${canonical}-occupancy` || r.id === `${canonical}-suite`) ||
+          roomsData.find((r) => r.slug === roomSlugParam || r.id === roomSlugParam || r.slug === canonical || r.id === canonical || r.id === `${canonical}-room` || r.id === `${canonical}-occupancy` || r.id === `${canonical}-suite`);
         if (found) {
           updated.selectedRoomId = found.id;
         }

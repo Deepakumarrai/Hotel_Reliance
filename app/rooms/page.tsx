@@ -11,15 +11,14 @@ import { HomeCTA } from "@/components/home/HomeCTA";
 export const metadata: Metadata = {
   title: "Luxury Rooms & Suites — Tariffs, Amenities & Online Booking",
   description:
-    "Explore our Deluxe Rooms, Executive Rooms, Premium Suites, and Family Suites in Bokaro Steel City starting from ₹2,499/night. Enjoy King-size beds, high-speed Wi-Fi, AC climate control, and 24/7 room service.",
+    "Explore our Single Occupancy, Double Occupancy, and Family Rooms in Bokaro Steel City starting from ₹2,499/night. Enjoy comfortable beds, high-speed Wi-Fi, AC climate control, and 24/7 room service.",
   keywords: [
     "Rooms in Bokaro",
     "Hotel Reliance Rooms",
     "Bokaro Hotel Booking",
-    "Deluxe Room Bokaro",
-    "Executive Room Bokaro",
-    "Premium Suite Bokaro",
-    "Family Suite Bokaro",
+    "Single Occupancy Bokaro",
+    "Double Occupancy Bokaro",
+    "Family Room Bokaro",
     "Hotel Room Tariff Bokaro",
   ],
   alternates: {
@@ -28,7 +27,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Luxury Rooms & Accommodations | Hotel Reliance Bokaro",
     description:
-      "Explore Deluxe Room, Executive Room, Premium Suite, and Family Suite accommodations in Bokaro Steel City. Enjoy top amenities, elegant interiors, and quality room service.",
+      "Explore Single Occupancy, Double Occupancy, and Family Room accommodations in Bokaro Steel City. Enjoy top amenities, elegant interiors, and quality room service.",
     url: "https://www.hotelreliance.com/rooms",
     type: "website",
     images: [
@@ -43,7 +42,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Luxury Rooms & Accommodations | Hotel Reliance Bokaro",
-    description: "Deluxe Room, Executive Room, Premium Suite, and Family Suite accommodations in Bokaro Steel City.",
+    description: "Single Occupancy, Double Occupancy, and Family Room accommodations in Bokaro Steel City.",
     images: ["/images/rooms/deluxe/main.jpg"],
   },
 };

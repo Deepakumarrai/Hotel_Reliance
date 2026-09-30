@@ -3,11 +3,11 @@ import { forwardToBackend } from "@/lib/admin/backendClient";
 
 export const officialCategories = [
   {
-    id: "deluxe-room",
-    slug: "deluxe",
-    name: "Deluxe Room",
-    badge: "DELUXE",
-    price: 2599,
+    id: "single-occupancy",
+    slug: "single",
+    name: "Single Occupancy",
+    badge: "SINGLE OCCUPANCY",
+    price: 2499,
     image: "/images/rooms/deluxe/1.png",
     images: [
       "/images/rooms/deluxe/1.png",
@@ -15,18 +15,18 @@ export const officialCategories = [
       "/images/rooms/deluxe/3.png",
       "/images/rooms/deluxe/4.png",
     ],
-    description: "Elegant comfort with modern amenities, designed for a relaxing business or leisure stay in Bokaro.",
-    longDescription: "Our Deluxe Rooms offer a perfect blend of space, comfort, and luxury. Designed with modern aesthetics, these rooms feature premium bedding, high-speed Wi-Fi, air conditioning, and 24/7 in-room dining service.",
-    maxGuests: "2 Adults",
-    occupancy: 2,
-    bedding: "King Bed",
-    bedType: "King Bed",
+    description: "Elegant comfort tailored for solo travelers and business guests with modern amenities in Bokaro.",
+    longDescription: "Our Single Occupancy rooms offer a perfect blend of space, comfort, and luxury. Designed with modern aesthetics, these rooms feature premium bedding, a workstation, high-speed Wi-Fi, air conditioning, and 24/7 in-room dining service.",
+    maxGuests: "1 Guest",
+    occupancy: 1,
+    bedding: "King / Queen Bed",
+    bedType: "King / Queen Bed",
     roomArea: "280 sq. ft.",
     size: "280 sq. ft.",
     view: "City View",
     amenitiesCount: 6,
     amenities: [
-      "King Size Bed",
+      "King / Queen Bed",
       "High-Speed Wi-Fi",
       "Air Conditioning",
       "Flat Screen TV",
@@ -36,10 +36,10 @@ export const officialCategories = [
     moreAmenitiesCount: 4,
   },
   {
-    id: "executive-room",
-    slug: "executive",
-    name: "Executive Room",
-    badge: "EXECUTIVE",
+    id: "double-occupancy",
+    slug: "double",
+    name: "Double Occupancy",
+    badge: "DOUBLE OCCUPANCY",
     price: 3499,
     image: "/images/rooms/executive/1.png",
     images: [
@@ -48,9 +48,9 @@ export const officialCategories = [
       "/images/rooms/executive/3.png",
       "/images/rooms/executive/4.png",
     ],
-    description: "Spacious layout with enhanced services and executive desk for premium business guests.",
-    longDescription: "The Executive Room is meticulously designed for business executives who demand extra comfort and utility. Featuring a dedicated seating area, a large executive desk, premier toiletries, smart LED TV, and 24/7 room service.",
-    maxGuests: "2 Adults",
+    description: "Spacious layout with enhanced services and executive desk for couples and premium guests.",
+    longDescription: "The Double Occupancy room is meticulously designed for couples and business executives who demand extra comfort and utility. Featuring a dedicated seating area, a large executive desk, premier toiletries, smart LED TV, and 24/7 room service.",
+    maxGuests: "2 Guests",
     occupancy: 2,
     bedding: "King Bed",
     bedType: "King Bed",
@@ -69,56 +69,26 @@ export const officialCategories = [
     moreAmenitiesCount: 4,
   },
   {
-    id: "premium-room",
-    slug: "premium",
-    name: "Premium Room",
-    badge: "PREMIUM",
-    price: 4999,
-    image: "/images/rooms/premium/1.png",
-    images: [
-      "/images/rooms/premium/1.png",
-      "/images/rooms/premium/2.png",
-      "/images/rooms/premium/3.png",
-    ],
-    description: "Luxurious ambiance with premium facilities, perfect for an elevated hospitality experience.",
-    longDescription: "Our Premium Room delivers uncompromised grandeur with an expansive master bedroom, separate lounge, soaking bathtub, walk-in closet, and sweeping vistas of the Bokaro skyline.",
-    maxGuests: "2 Adults",
-    occupancy: 2,
-    bedding: "King Bed",
-    bedType: "King Bed",
-    roomArea: "420 sq. ft.",
-    size: "420 sq. ft.",
-    view: "Panoramic Greenery View",
-    amenitiesCount: 6,
-    amenities: [
-      "King Size Bed",
-      "High-Speed Wi-Fi",
-      "Air Conditioning",
-      "Smart TV",
-      "Premium Toiletries",
-      "Mini Bar",
-    ],
-    moreAmenitiesCount: 0,
-  },
-  {
     id: "family-room",
     slug: "family",
     name: "Family Room",
-    badge: "FAMILY",
-    price: 5999,
+    badge: "FAMILY ROOM",
+    price: 4999,
     image: "/images/rooms/family/1.png",
     images: [
       "/images/rooms/family/1.png",
       "/images/rooms/family/2.png",
+      "/images/rooms/premium/1.png",
+      "/images/rooms/premium/2.png",
     ],
-    description: "Spacious and comfortable stay option for families with modern amenities and extra space.",
-    longDescription: "Crafted specifically for families, this multi-room sanctuary provides two full master suites, dining space, children's welcome packs, and generous storage for effortless extended stays.",
-    maxGuests: "4 Adults",
+    description: "Spacious and comfortable multi-bed stay option for families with modern amenities and extra space.",
+    longDescription: "Crafted specifically for families and groups, our Family Room provides comfortable multi-bed accommodation, dining space, modern entertainment, children's welcome packs, and generous storage for effortless extended stays.",
+    maxGuests: "4 Guests",
     occupancy: 4,
     bedding: "2 King Beds",
     bedType: "2 King Beds",
-    roomArea: "500 sq. ft.",
-    size: "500 sq. ft.",
+    roomArea: "550 sq. ft.",
+    size: "550 sq. ft.",
     view: "Garden & City View",
     amenitiesCount: 6,
     amenities: [
@@ -133,12 +103,12 @@ export const officialCategories = [
   },
 ];
 
-const CANONICAL_ORDER = ["deluxe", "executive", "premium", "family"];
+const CANONICAL_ORDER = ["single", "double", "family", "deluxe", "executive", "premium"];
 
 function sortCategories(categories: any[]) {
   return [...categories].sort((a, b) => {
-    const aSlug = (a.slug || a.id || "").toLowerCase().replace(/-room$/, "").replace(/-suite$/, "");
-    const bSlug = (b.slug || b.id || "").toLowerCase().replace(/-room$/, "").replace(/-suite$/, "");
+    const aSlug = (a.slug || a.id || "").toLowerCase().replace(/-room$/, "").replace(/-suite$/, "").replace(/-occupancy$/, "");
+    const bSlug = (b.slug || b.id || "").toLowerCase().replace(/-room$/, "").replace(/-suite$/, "").replace(/-occupancy$/, "");
     const aIdx = CANONICAL_ORDER.indexOf(aSlug);
     const bIdx = CANONICAL_ORDER.indexOf(bSlug);
     if (aIdx !== -1 && bIdx !== -1) return aIdx - bIdx;

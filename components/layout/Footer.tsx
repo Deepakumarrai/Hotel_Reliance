@@ -120,6 +120,22 @@ export function Footer() {
                 </a>
               </div>
             </div>
+
+            {/* Prominently Highlighted Hotel Address Card */}
+            <div className="bg-[#1C1715] border-2 border-[#C5A880]/70 rounded-xl p-5 sm:p-6 shadow-[0_4px_24px_rgba(0,0,0,0.5)] space-y-2 relative overflow-hidden">
+              <div className="flex items-center space-x-2 text-[#D8B875]">
+                <MapPin className="w-5 h-5 text-[#D8B875] flex-shrink-0" />
+                <span className="text-xs font-mono font-bold tracking-[0.22em] uppercase text-[#D8B875]">
+                  HOTEL LOCATION & LANDMARK
+                </span>
+              </div>
+              <p className="text-base sm:text-lg font-serif font-bold text-white tracking-wide leading-relaxed">
+                {hotelSettings.fullAddress}
+              </p>
+              <p className="text-xs sm:text-[13px] text-[#C5A880]/90 font-serif italic">
+                Near Co-operative Colony, Bokaro Steel City, Jharkhand - 827001
+              </p>
+            </div>
           </div>
 
           {/* Middle Columns: Quick Links (Span 5) */}
