@@ -24,9 +24,19 @@
 }
 
 @layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    /* Eliminate 300ms mobile tap delays */
+    touch-action: manipulation;
+  }
+
   html {
     scroll-behavior: smooth;
     -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
   
   body {
@@ -34,11 +44,34 @@
     color: var(--color-dark);
     font-family: var(--font-sans);
     overflow-x: hidden;
+    /* Cross-browser antialiased typography for Mac and Windows */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    /* Text wrapping protection for narrow phone viewports */
+    overflow-wrap: break-word;
+    word-break: normal;
+    /* iOS smooth scrolling momentum */
+    -webkit-overflow-scrolling: touch;
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-serif);
     letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Prevent iOS Safari unwanted auto-zoom on input focus */
+  @media screen and (max-width: 768px) {
+    input,
+    select,
+    textarea {
+      font-size: 16px !important;
+    }
   }
 
   /* Accessible Focus Ring styling */
@@ -50,9 +83,17 @@
     outline: 2px solid var(--color-gold);
     outline-offset: 2px;
   }
+
+  /* Hardware accelerated video and canvas tags across all platforms */
+  video {
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
 }
 
-/* Custom Scrollbar Styles for premium feel */
+/* Custom Scrollbar Styles for Windows and Linux */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -71,6 +112,15 @@
   background: var(--color-gold);
 }
 
+/* Safe Area Insets for notched & dynamic island mobile devices (iPhone/iPad/Android) */
+.safe-pb {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+}
+
+.safe-pt {
+  padding-top: max(1rem, env(safe-area-inset-top, 0px));
+}
+
 /* Micro-animations and utility animations */
 @keyframes fadeIn {
   from {
@@ -83,6 +133,11 @@
   }
 }
 
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
 @keyframes errorShake {
   0%, 100% { transform: translateX(0); }
   20%, 60% { transform: translateX(-4px); }
@@ -93,8 +148,51 @@
   animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+.animate-float-slow {
+  animation: floatSlow 4s ease-in-out infinite;
+}
+
 .animate-error-shake {
   animation: errorShake 0.4s ease-in-out;
+}
+
+/* Luxury Interactive Hover & Glow Effects for Desktop (Windows & Mac) */
+@media (hover: hover) and (pointer: fine) {
+  .luxury-card-hover {
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.35s ease;
+  }
+
+  .luxury-card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 35px -10px rgba(17, 30, 49, 0.12), 0 0 15px rgba(186, 139, 50, 0.15);
+    border-color: rgba(186, 139, 50, 0.45);
+  }
+
+  .luxury-btn-shine {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .luxury-btn-shine::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+      60deg,
+      transparent,
+      rgba(255, 255, 255, 0.2),
+      transparent
+    );
+    transform: rotate(30deg) translateY(-100%);
+    transition: transform 0.75s ease-in-out;
+  }
+
+  .luxury-btn-shine:hover::after {
+    transform: rotate(30deg) translateY(100%);
+  }
 }
 
 /* Hover Zoom effect for premium cards */
@@ -104,6 +202,7 @@
 
 .image-zoom-hover img {
   transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
 }
 
 .image-zoom-hover:hover img {
@@ -138,7 +237,7 @@
   border-radius: 20px;
 }
 
-/* 📱 Mobile & Touch Feedback Utilities */
+/* 📱 Mobile & Touch Feedback Utilities (iOS & Android) */
 .touch-press {
   transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   will-change: transform;
