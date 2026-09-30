@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Loader2, UserPlus, X, Check, Mail, User, ShieldCheck, Sparkles, ChevronRight } from "lucide-react";
+import { Loader2, UserPlus, X, Check, Mail, User, ShieldCheck, ChevronRight, AlertCircle } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
 interface GoogleAccountItem {
@@ -30,11 +30,12 @@ export function GoogleAuthButton({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [savedAccounts, setSavedAccounts] = useState<GoogleAccountItem[]>([]);
 
-  // Custom account input form state
+  // Custom account input state
   const [showCustomForm, setShowCustomForm] = useState(false);
   const [customEmail, setCustomEmail] = useState("");
   const [customName, setCustomName] = useState("");
   const [customError, setCustomError] = useState("");
+  const [isProcessing, setIsProcessing] = useState(false);
 
   // Load saved accounts on mount
   useEffect(() => {
@@ -60,8 +61,8 @@ export function GoogleAuthButton({
   };
 
   const handleAccountSelect = async (account: GoogleAccountItem) => {
-    setIsLoading(true);
-    setIsModalOpen(false);
+    setIsProcessing(true);
+    setCustomError("");
     try {
       const res = await signInWithGoogle({
         email: account.email,
@@ -71,24 +72,28 @@ export function GoogleAuthButton({
 
       if (res.success) {
         saveAccountToHistory(account);
+        setIsModalOpen(false);
         onSuccess?.();
       } else {
-        onError?.(res.error || "Google authentication failed.");
+        const msg = res.error || "Google authentication failed.";
+        setCustomError(msg);
+        onError?.(msg);
       }
-    } catch {
-      onError?.("An error occurred during Google sign in.");
+    } catch (err: any) {
+      const msg = err.message || "An error occurred during Google sign in.";
+      setCustomError(msg);
+      onError?.(msg);
     } finally {
-      setIsLoading(false);
+      setIsProcessing(false);
     }
   };
 
-  const handleCustomSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleCustomSubmit = () => {
     setCustomError("");
 
     const cleanEmail = customEmail.trim().toLowerCase();
-    if (!cleanEmail || !cleanEmail.includes("@")) {
-      setCustomError("Please enter a valid email address.");
+    if (!cleanEmail || !cleanEmail.includes("@") || !cleanEmail.includes(".")) {
+      setCustomError("Please enter a valid Google email address.");
       return;
     }
 
@@ -98,6 +103,13 @@ export function GoogleAuthButton({
       email: cleanEmail,
       name: cleanName
     });
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleCustomSubmit();
+    }
   };
 
   const handleClick = async () => {
@@ -129,6 +141,7 @@ export function GoogleAuthButton({
 
     // Otherwise open the interactive Google Account selector
     setIsModalOpen(true);
+    setCustomError("");
   };
 
   return (
@@ -164,11 +177,11 @@ export function GoogleAuthButton({
         <span>{isLoading ? "Connecting to Google..." : label}</span>
       </button>
 
-      {/* Interactive Google Account Chooser Modal */}
+      {/* Interactive Google Account Chooser Modal (No nested <form> tags) */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+        <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
           <div 
-            className="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden text-gray-900 animate-scale-up"
+            className="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden text-gray-900"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Google Styled Modal Header */}
@@ -198,8 +211,14 @@ export function GoogleAuthButton({
                 </div>
               </div>
               <button
-                onClick={() => setIsModalOpen(false)}
-                className="text-gray-400 hover:text-gray-700 p-1.5 rounded-full hover:bg-gray-100 transition-colors"
+                type="button"
+                onClick={() => {
+                  if (!isProcessing) {
+                    setIsModalOpen(false);
+                    setCustomError("");
+                  }
+                }}
+                className="text-gray-400 hover:text-gray-700 p-1.5 rounded-full hover:bg-gray-100 transition-colors cursor-pointer"
                 aria-label="Close"
               >
                 <X className="w-5 h-5" />
@@ -208,6 +227,13 @@ export function GoogleAuthButton({
 
             {/* Modal Body */}
             <div className="p-6 space-y-4">
+              {customError && (
+                <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-xl text-xs flex items-start space-x-2">
+                  <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
+                  <span>{customError}</span>
+                </div>
+              )}
+
               {!showCustomForm && savedAccounts.length > 0 && (
                 <div className="space-y-2">
                   <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block">
@@ -218,8 +244,9 @@ export function GoogleAuthButton({
                       <button
                         key={idx}
                         type="button"
+                        disabled={isProcessing}
                         onClick={() => handleAccountSelect(acc)}
-                        className="w-full flex items-center justify-between p-3.5 hover:bg-gray-50 text-left transition-colors cursor-pointer group"
+                        className="w-full flex items-center justify-between p-3.5 hover:bg-gray-50 text-left transition-colors cursor-pointer group disabled:opacity-50"
                       >
                         <div className="flex items-center space-x-3 truncate">
                           <div className="w-9 h-9 rounded-full bg-blue-600 text-white font-bold text-sm flex items-center justify-center flex-shrink-0">
@@ -232,16 +259,20 @@ export function GoogleAuthButton({
                             <p className="text-xs text-gray-500 truncate">{acc.email}</p>
                           </div>
                         </div>
-                        <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-blue-600 transition-colors flex-shrink-0 ml-2" />
+                        {isProcessing ? (
+                          <Loader2 className="w-4 h-4 animate-spin text-blue-600 flex-shrink-0" />
+                        ) : (
+                          <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-blue-600 transition-colors flex-shrink-0 ml-2" />
+                        )}
                       </button>
                     ))}
                   </div>
                 </div>
               )}
 
-              {/* Form to enter ANY Google Account */}
+              {/* Form to enter ANY Google Account (Direct Div without nested form tag) */}
               {(!savedAccounts.length || showCustomForm) ? (
-                <form onSubmit={handleCustomSubmit} className="space-y-4">
+                <div className="space-y-4">
                   <div className="space-y-1">
                     <label className="text-xs font-bold text-gray-700 uppercase tracking-wider block">
                       Google Email Address *
@@ -252,10 +283,11 @@ export function GoogleAuthButton({
                         type="email"
                         value={customEmail}
                         onChange={(e) => setCustomEmail(e.target.value)}
+                        onKeyDown={handleKeyDown}
                         placeholder="yourname@gmail.com"
-                        required
+                        disabled={isProcessing}
                         autoFocus
-                        className="w-full bg-white border border-gray-300 rounded-xl pl-9 pr-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none transition-all"
+                        className="w-full bg-white border border-gray-300 rounded-xl pl-9 pr-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none transition-all disabled:opacity-50"
                       />
                     </div>
                   </div>
@@ -270,39 +302,56 @@ export function GoogleAuthButton({
                         type="text"
                         value={customName}
                         onChange={(e) => setCustomName(e.target.value)}
+                        onKeyDown={handleKeyDown}
                         placeholder="e.g. Deepak Kumar Rai"
-                        className="w-full bg-white border border-gray-300 rounded-xl pl-9 pr-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none transition-all"
+                        disabled={isProcessing}
+                        className="w-full bg-white border border-gray-300 rounded-xl pl-9 pr-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none transition-all disabled:opacity-50"
                       />
                     </div>
                   </div>
-
-                  {customError && (
-                    <p className="text-xs text-red-600 font-medium">{customError}</p>
-                  )}
 
                   <div className="flex items-center space-x-3 pt-2">
                     {savedAccounts.length > 0 && (
                       <button
                         type="button"
-                        onClick={() => setShowCustomForm(false)}
-                        className="w-1/3 py-2.5 text-xs font-bold uppercase tracking-wider text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
+                        disabled={isProcessing}
+                        onClick={() => {
+                          setShowCustomForm(false);
+                          setCustomError("");
+                        }}
+                        className="w-1/3 py-2.5 text-xs font-bold uppercase tracking-wider text-gray-600 hover:bg-gray-100 rounded-xl transition-colors cursor-pointer"
                       >
                         Back
                       </button>
                     )}
                     <button
-                      type="submit"
-                      className="flex-grow py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-md transition-all flex items-center justify-center space-x-2"
+                      type="button"
+                      disabled={isProcessing}
+                      onClick={handleCustomSubmit}
+                      className="flex-grow py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-md transition-all flex items-center justify-center space-x-2 cursor-pointer disabled:opacity-50"
                     >
-                      <span>Sign In with This Account</span>
-                      <ChevronRight className="w-4 h-4" />
+                      {isProcessing ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          <span>Signing In...</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>Sign In with This Account</span>
+                          <ChevronRight className="w-4 h-4" />
+                        </>
+                      )}
                     </button>
                   </div>
-                </form>
+                </div>
               ) : (
                 <button
                   type="button"
-                  onClick={() => setShowCustomForm(true)}
+                  disabled={isProcessing}
+                  onClick={() => {
+                    setShowCustomForm(true);
+                    setCustomError("");
+                  }}
                   className="w-full py-3 px-4 border border-dashed border-gray-300 hover:border-blue-500 hover:bg-blue-50/50 rounded-xl text-xs font-semibold text-gray-700 hover:text-blue-600 transition-all flex items-center justify-center space-x-2 cursor-pointer"
                 >
                   <UserPlus className="w-4 h-4" />
@@ -322,4 +371,5 @@ export function GoogleAuthButton({
     </>
   );
 }
+
 

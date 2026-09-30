@@ -288,7 +288,8 @@ export function AuthModal() {
 
           {/* Sign In Form */}
           {mode === "signin" ? (
-            <form onSubmit={handleSignInSubmit} className="space-y-4">
+            <div>
+              <form onSubmit={handleSignInSubmit} className="space-y-4">
               <div className="space-y-1">
                 <label className="text-[10px] uppercase font-bold tracking-wider text-muted block">
                   Email Address
@@ -356,146 +357,149 @@ export function AuthModal() {
               >
                 {isSubmitting ? "Authenticating..." : "Sign In to Hotel Reliance"}
               </Button>
-
-              <div className="relative my-4">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-border-custom" />
-                </div>
-                <div className="relative flex justify-center text-[10px] uppercase">
-                  <span className="bg-cream px-2 text-muted font-bold tracking-widest">Or</span>
-                </div>
-              </div>
-
-              <GoogleAuthButton
-                onSuccess={() => {
-                  setSuccessMessage("Google sign-in verified. Redirecting...");
-                  setTimeout(() => {
-                    closeAuthModal();
-                    if (bookingIntent) {
-                      router.push(`/booking?room=${bookingIntent.roomSlug || ""}`);
-                      clearBookingIntent();
-                    }
-                  }, 600);
-                }}
-              />
             </form>
+
+            <div className="relative my-4">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-border-custom" />
+              </div>
+              <div className="relative flex justify-center text-[10px] uppercase">
+                <span className="bg-cream px-2 text-muted font-bold tracking-widest">Or</span>
+              </div>
+            </div>
+
+            <GoogleAuthButton
+              onSuccess={() => {
+                setSuccessMessage("Google sign-in verified. Redirecting...");
+                setTimeout(() => {
+                  closeAuthModal();
+                  if (bookingIntent) {
+                    router.push(`/booking?room=${bookingIntent.roomSlug || ""}`);
+                    clearBookingIntent();
+                  }
+                }, 600);
+              }}
+            />
+          </div>
           ) : (
-            /* Sign Up Form */
-            <form onSubmit={handleSignUpSubmit} className="space-y-4">
-              <div className="space-y-1">
-                <label className="text-[10px] uppercase font-bold tracking-wider text-muted block">
-                  Full Name
-                </label>
-                <div className="relative">
-                  <UserIcon className="w-4 h-4 text-muted absolute left-3 top-3" />
-                  <input
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Dr. Rajesh Sharma"
-                    required
-                    className="w-full bg-white border border-border-custom pl-9 pr-3 py-2.5 text-xs text-dark focus:border-gold focus:outline-none"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            /* Sign Up Section */
+            <div>
+              <form onSubmit={handleSignUpSubmit} className="space-y-4">
                 <div className="space-y-1">
                   <label className="text-[10px] uppercase font-bold tracking-wider text-muted block">
-                    Email Address
+                    Full Name
                   </label>
                   <div className="relative">
-                    <Mail className="w-4 h-4 text-muted absolute left-3 top-3" />
+                    <UserIcon className="w-4 h-4 text-muted absolute left-3 top-3" />
                     <input
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="guest@example.com"
+                      type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="Dr. Rajesh Sharma"
                       required
                       className="w-full bg-white border border-border-custom pl-9 pr-3 py-2.5 text-xs text-dark focus:border-gold focus:outline-none"
                     />
                   </div>
                 </div>
 
-                <div className="space-y-1">
-                  <label className="text-[10px] uppercase font-bold tracking-wider text-muted block">
-                    Phone Number
-                  </label>
-                  <div className="relative">
-                    <Phone className="w-4 h-4 text-muted absolute left-3 top-3" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <label className="text-[10px] uppercase font-bold tracking-wider text-muted block">
+                      Email Address
+                    </label>
+                    <div className="relative">
+                      <Mail className="w-4 h-4 text-muted absolute left-3 top-3" />
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="guest@example.com"
+                        required
+                        className="w-full bg-white border border-border-custom pl-9 pr-3 py-2.5 text-xs text-dark focus:border-gold focus:outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[10px] uppercase font-bold tracking-wider text-muted block">
+                      Phone Number
+                    </label>
+                    <div className="relative">
+                      <Phone className="w-4 h-4 text-muted absolute left-3 top-3" />
+                      <input
+                        type="tel"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        placeholder="+91 92629 97777"
+                        required
+                        className="w-full bg-white border border-border-custom pl-9 pr-3 py-2.5 text-xs text-dark focus:border-gold focus:outline-none"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <label className="text-[10px] uppercase font-bold tracking-wider text-muted block">
+                      Create Password
+                    </label>
                     <input
-                      type="tel"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      placeholder="+91 92629 97777"
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Min 6 chars"
                       required
-                      className="w-full bg-white border border-border-custom pl-9 pr-3 py-2.5 text-xs text-dark focus:border-gold focus:outline-none"
+                      className="w-full bg-white border border-border-custom px-3 py-2.5 text-xs text-dark focus:border-gold focus:outline-none"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[10px] uppercase font-bold tracking-wider text-muted block">
+                      Confirm Password
+                    </label>
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="Re-enter password"
+                      required
+                      className="w-full bg-white border border-border-custom px-3 py-2.5 text-xs text-dark focus:border-gold focus:outline-none"
                     />
                   </div>
                 </div>
-              </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="text-[10px] uppercase font-bold tracking-wider text-muted block">
-                    Create Password
-                  </label>
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Min 6 chars"
-                    required
-                    className="w-full bg-white border border-border-custom px-3 py-2.5 text-xs text-dark focus:border-gold focus:outline-none"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-[10px] uppercase font-bold tracking-wider text-muted block">
-                    Confirm Password
-                  </label>
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="Re-enter password"
-                    required
-                    className="w-full bg-white border border-border-custom px-3 py-2.5 text-xs text-dark focus:border-gold focus:outline-none"
-                  />
-                </div>
-              </div>
-
-              {/* Human Verification Requirement */}
-              <HumanVerification
-                isVerified={isHumanVerified}
-                onVerify={setIsHumanVerified}
-              />
-
-              {/* Terms Checkbox */}
-              <div className="flex items-start space-x-2 pt-1">
-                <input
-                  type="checkbox"
-                  id="modal-terms"
-                  checked={agreedTerms}
-                  onChange={(e) => setAgreedTerms(e.target.checked)}
-                  className="mt-1 accent-gold cursor-pointer"
-                  required
+                {/* Human Verification Requirement */}
+                <HumanVerification
+                  isVerified={isHumanVerified}
+                  onVerify={setIsHumanVerified}
                 />
-                <label htmlFor="modal-terms" className="text-[11px] text-muted leading-tight cursor-pointer">
-                  I agree to the Hotel Reliance Guest Policies, Terms of Service, and Privacy Policy.
-                </label>
-              </div>
 
-              <Button
-                type="submit"
-                variant="primary"
-                fullWidth
-                disabled={isSubmitting}
-                className="py-3 text-xs tracking-widest font-bold uppercase"
-              >
-                {isSubmitting ? "Creating Account..." : "Create Account & Continue"}
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
+                {/* Terms Checkbox */}
+                <div className="flex items-start space-x-2 pt-1">
+                  <input
+                    type="checkbox"
+                    id="modal-terms"
+                    checked={agreedTerms}
+                    onChange={(e) => setAgreedTerms(e.target.checked)}
+                    className="mt-1 accent-gold cursor-pointer"
+                    required
+                  />
+                  <label htmlFor="modal-terms" className="text-[11px] text-muted leading-tight cursor-pointer">
+                    I agree to the Hotel Reliance Guest Policies, Terms of Service, and Privacy Policy.
+                  </label>
+                </div>
+
+                <Button
+                  type="submit"
+                  variant="primary"
+                  fullWidth
+                  disabled={isSubmitting}
+                  className="py-3 text-xs tracking-widest font-bold uppercase"
+                >
+                  {isSubmitting ? "Creating Account..." : "Create Account & Continue"}
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </form>
 
               <div className="relative my-4">
                 <div className="absolute inset-0 flex items-center">
@@ -519,7 +523,7 @@ export function AuthModal() {
                   }, 600);
                 }}
               />
-            </form>
+            </div>
           )}
         </div>
       </motion.div>
