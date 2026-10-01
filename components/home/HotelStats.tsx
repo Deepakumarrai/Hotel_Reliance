@@ -2,82 +2,129 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Container } from "@/components/ui/Container";
-import { Sparkles, Utensils, Users, ShieldCheck } from "lucide-react";
+import { Users, Utensils, Sparkles, ShieldCheck } from "lucide-react";
 import { Counter } from "@/components/animation/Counter";
 
 const stats = [
   {
     id: 1,
-    icon: <Users className="w-6 h-6 text-[#BA8B32]" />,
+    icon: Users,
     value: "45+",
-    label: "Guest Rooms & Suites"
+    label: "Guest Rooms & Suites",
+    description: "Thoughtfully designed spaces for every traveller",
   },
   {
     id: 2,
-    icon: <Utensils className="w-6 h-6 text-[#BA8B32]" />,
+    icon: Utensils,
     value: "1",
-    label: "Kwality Multi-Cuisine Restaurant"
+    label: "Kwality Restaurant",
+    description: "Multi-cuisine fine dining in the heart of the hotel",
   },
   {
     id: 3,
-    icon: <Sparkles className="w-6 h-6 text-[#BA8B32]" />,
+    icon: Sparkles,
     value: "3",
-    label: "Grand Banquet & Event Venues"
+    label: "Event Venues",
+    description: "Grand banquets, weddings, and corporate events",
   },
   {
     id: 4,
-    icon: <ShieldCheck className="w-6 h-6 text-[#BA8B32]" />,
-    value: "100%",
-    label: "24/7 Security & Valet Parking"
-  }
+    icon: ShieldCheck,
+    value: "24/7",
+    label: "Dedicated Service",
+    description: "Security, valet parking & round-the-clock hospitality",
+  },
 ];
 
 export function HotelStats() {
   return (
-    <section className="bg-[#111E31] text-white py-14 sm:py-18 border-y-2 border-[#C5A880]/40 relative overflow-hidden">
-      {/* Subtle background glow */}
-      <div className="absolute inset-0 bg-radial-at-c from-[#1D2F4A]/40 via-transparent to-transparent pointer-events-none" />
-      
-      <Container className="relative z-10">
-        <motion.div 
+    <section className="bg-[#111E31] text-white py-20 sm:py-28 relative overflow-hidden">
+      {/* Subtle radial glow */}
+      <div
+        className="absolute inset-0 pointer-events-none opacity-30"
+        style={{
+          background: "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(186,139,50,0.15) 0%, transparent 70%)",
+        }}
+      />
+
+      {/* Grid lines decoration */}
+      <div
+        className="absolute inset-0 pointer-events-none opacity-[0.04]"
+        style={{
+          backgroundImage: `linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)`,
+          backgroundSize: "80px 80px",
+        }}
+      />
+
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 lg:px-16">
+        {/* Section header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-14 sm:mb-18"
+        >
+          <span className="text-[10px] sm:text-[11px] font-sans font-semibold tracking-[0.35em] uppercase text-[#BA8B32]">
+            The Numbers
+          </span>
+          <h2 className="mt-3 text-3xl sm:text-4xl md:text-5xl font-serif font-light text-white tracking-[-0.02em]">
+            Everything you need,{" "}
+            <em className="italic text-[#D8B875]">all in one place.</em>
+          </h2>
+        </motion.div>
+
+        {/* Stats grid */}
+        <motion.div
           initial="hidden"
           whileInView="show"
-          viewport={{ once: true, margin: "-50px" }}
+          viewport={{ once: true, margin: "-40px" }}
           variants={{
             hidden: {},
-            show: {
-              transition: {
-                staggerChildren: 0.1
-              }
-            }
+            show: { transition: { staggerChildren: 0.1 } },
           }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6"
+          className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-white/5 rounded-2xl sm:rounded-3xl overflow-hidden border border-white/8"
         >
-          {stats.map((stat) => (
-            <motion.div
-              key={stat.id}
-              variants={{
-                hidden: { opacity: 0, y: 20 },
-                show: { opacity: 1, y: 0, transition: { duration: 0.5 } }
-              }}
-              className="flex flex-col items-center text-center space-y-3 p-6 rounded-xl border border-[#C5A880]/25 bg-white/[0.03] backdrop-blur-sm hover:border-[#BA8B32]/70 hover:bg-white/[0.06] transition-all duration-300 group"
-            >
-              <div className="w-12 h-12 rounded-full bg-[#BA8B32]/15 border border-[#BA8B32]/40 flex items-center justify-center group-hover:scale-110 group-hover:bg-[#BA8B32]/25 transition-all duration-300">
-                {stat.icon}
-              </div>
-              <span className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-[#E9DFD2] tracking-tight">
-                <Counter value={stat.value} />
-              </span>
-              <div className="w-8 h-[1px] bg-[#BA8B32]/40 group-hover:w-12 transition-all duration-300" />
-              <span className="text-[10px] sm:text-xs uppercase font-serif tracking-[0.18em] text-[#C4B6A6] font-medium max-w-[200px]">
-                {stat.label}
-              </span>
-            </motion.div>
-          ))}
+          {stats.map((stat) => {
+            const Icon = stat.icon;
+            return (
+              <motion.div
+                key={stat.id}
+                variants={{
+                  hidden: { opacity: 0, y: 20 },
+                  show: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+                }}
+                className="group relative bg-[#111E31] hover:bg-white/[0.04] transition-colors duration-300 p-7 sm:p-9 flex flex-col space-y-4 cursor-default"
+              >
+                {/* Icon */}
+                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[#BA8B32]/12 border border-[#BA8B32]/25 flex items-center justify-center group-hover:bg-[#BA8B32]/20 transition-colors duration-300">
+                  <Icon className="w-5 h-5 text-[#D8B875]" strokeWidth={1.5} />
+                </div>
+
+                {/* Number */}
+                <div>
+                  <span className="text-4xl sm:text-5xl font-serif font-bold text-white tracking-[-0.02em]">
+                    <Counter value={stat.value} />
+                  </span>
+                </div>
+
+                {/* Separator */}
+                <div className="w-6 h-px bg-[#BA8B32]/40 group-hover:w-10 transition-all duration-400" />
+
+                {/* Labels */}
+                <div>
+                  <p className="text-[11px] sm:text-[12px] font-semibold uppercase tracking-[0.12em] text-white/80">
+                    {stat.label}
+                  </p>
+                  <p className="text-[11px] text-white/35 font-sans font-light mt-1 leading-relaxed">
+                    {stat.description}
+                  </p>
+                </div>
+              </motion.div>
+            );
+          })}
         </motion.div>
-      </Container>
+      </div>
     </section>
   );
 }
-

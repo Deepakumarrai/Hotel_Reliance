@@ -1,5 +1,5 @@
 import React from "react";
-import { User, Mail, Phone, MessageSquare } from "lucide-react";
+import { User, Mail, Phone, MessageSquare, Tag, Check, Sparkles } from "lucide-react";
 import { GuestDetails } from "@/types/booking";
 
 interface BookingGuestFormProps {
@@ -11,21 +11,19 @@ interface BookingGuestFormProps {
 export function BookingGuestForm({
   guest,
   onChange,
-  errors
+  errors,
 }: BookingGuestFormProps) {
   const values = guest || { name: "", email: "", phone: "", specialRequests: "" };
 
   return (
     <div className="space-y-6">
-      <h3 className="text-xl font-serif text-dark border-b border-border-custom pb-2">
-        Enter Guest Information
-      </h3>
-
-      <div className="bg-white border border-border-custom p-6 shadow-sm space-y-4">
+      <div className="space-y-5">
         {/* Full Name */}
-        <div className="space-y-1">
-          <label className="text-[10px] uppercase tracking-wider text-muted font-bold block flex items-center">
-            <User className="w-3.5 h-3.5 mr-2 text-primary" />
+        <div className="space-y-2">
+          <label className="text-[11px] uppercase tracking-[0.16em] text-stone-600 font-sans font-semibold flex items-center">
+            <span className="w-6 h-6 rounded-lg bg-[#BA8B32]/10 flex items-center justify-center mr-2 text-[#BA8B32]">
+              <User className="w-3.5 h-3.5" />
+            </span>
             Full Name (Lead Guest)
           </label>
           <input
@@ -33,22 +31,26 @@ export function BookingGuestForm({
             value={values.name}
             onChange={(e) => onChange("name", e.target.value)}
             placeholder="e.g. Deepak Kumar"
-            className={`w-full bg-[#FAF8F5] border p-3.5 text-base sm:text-sm text-[#2B2320] focus:border-[#BA8B32] focus:outline-none transition-colors rounded-xs ${
-              errors?.name ? "border-red-600 ring-1 ring-red-600" : "border-[#E8DFD2]"
+            className={`w-full bg-white border p-3.5 text-sm font-sans text-[#111E31] rounded-xl focus:border-[#BA8B32] focus:ring-2 focus:ring-[#BA8B32]/15 focus:outline-none transition-all shadow-[0_2px_8px_rgba(0,0,0,0.02)] ${
+              errors?.name ? "border-red-400 ring-2 ring-red-100" : "border-stone-200 hover:border-stone-300"
             }`}
             required
           />
           {errors?.name && (
-            <span className="text-xs text-red-600 font-medium block mt-1">{errors.name}</span>
+            <span className="text-[11px] text-red-600 font-sans font-medium block">
+              {errors.name}
+            </span>
           )}
         </div>
 
         {/* Contact info */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           {/* Email */}
-          <div className="space-y-1">
-            <label className="text-[10px] uppercase tracking-wider text-[#7A6B61] font-bold block flex items-center">
-              <Mail className="w-3.5 h-3.5 mr-2 text-[#BA8B32]" />
+          <div className="space-y-2">
+            <label className="text-[11px] uppercase tracking-[0.16em] text-stone-600 font-sans font-semibold flex items-center">
+              <span className="w-6 h-6 rounded-lg bg-[#BA8B32]/10 flex items-center justify-center mr-2 text-[#BA8B32]">
+                <Mail className="w-3.5 h-3.5" />
+              </span>
               Email Address
             </label>
             <input
@@ -56,20 +58,24 @@ export function BookingGuestForm({
               value={values.email}
               onChange={(e) => onChange("email", e.target.value)}
               placeholder="e.g. deepak@mail.com"
-              className={`w-full bg-[#FAF8F5] border p-3.5 text-base sm:text-sm text-[#2B2320] focus:border-[#BA8B32] focus:outline-none transition-colors rounded-xs ${
-                errors?.email ? "border-red-600 ring-1 ring-red-600" : "border-[#E8DFD2]"
+              className={`w-full bg-white border p-3.5 text-sm font-sans text-[#111E31] rounded-xl focus:border-[#BA8B32] focus:ring-2 focus:ring-[#BA8B32]/15 focus:outline-none transition-all shadow-[0_2px_8px_rgba(0,0,0,0.02)] ${
+                errors?.email ? "border-red-400 ring-2 ring-red-100" : "border-stone-200 hover:border-stone-300"
               }`}
               required
             />
             {errors?.email && (
-              <span className="text-xs text-red-600 font-medium block mt-1">{errors.email}</span>
+              <span className="text-[11px] text-red-600 font-sans font-medium block">
+                {errors.email}
+              </span>
             )}
           </div>
 
           {/* Phone */}
-          <div className="space-y-1">
-            <label className="text-[10px] uppercase tracking-wider text-[#7A6B61] font-bold block flex items-center">
-              <Phone className="w-3.5 h-3.5 mr-2 text-[#BA8B32]" />
+          <div className="space-y-2">
+            <label className="text-[11px] uppercase tracking-[0.16em] text-stone-600 font-sans font-semibold flex items-center">
+              <span className="w-6 h-6 rounded-lg bg-[#BA8B32]/10 flex items-center justify-center mr-2 text-[#BA8B32]">
+                <Phone className="w-3.5 h-3.5" />
+              </span>
               Mobile Number
             </label>
             <input
@@ -77,27 +83,31 @@ export function BookingGuestForm({
               value={values.phone}
               onChange={(e) => onChange("phone", e.target.value)}
               placeholder="e.g. 9262997777"
-              className={`w-full bg-[#FAF8F5] border p-3.5 text-base sm:text-sm text-[#2B2320] focus:border-[#BA8B32] focus:outline-none transition-colors rounded-xs ${
-                errors?.phone ? "border-red-600 ring-1 ring-red-600" : "border-[#E8DFD2]"
+              className={`w-full bg-white border p-3.5 text-sm font-sans text-[#111E31] rounded-xl focus:border-[#BA8B32] focus:ring-2 focus:ring-[#BA8B32]/15 focus:outline-none transition-all shadow-[0_2px_8px_rgba(0,0,0,0.02)] ${
+                errors?.phone ? "border-red-400 ring-2 ring-red-100" : "border-stone-200 hover:border-stone-300"
               }`}
               required
             />
             {errors?.phone && (
-              <span className="text-xs text-red-600 font-medium block mt-1">{errors.phone}</span>
+              <span className="text-[11px] text-red-600 font-sans font-medium block">
+                {errors.phone}
+              </span>
             )}
           </div>
         </div>
 
         {/* Promo Code / Privilege Voucher Section */}
-        <div className="space-y-2 pt-2 border-t border-[#E8DFD2]">
-          <label className="text-[10px] uppercase tracking-wider text-[#7A6B61] font-bold block flex items-center justify-between">
+        <div className="rounded-2xl border border-stone-200/90 bg-stone-50/70 p-4 sm:p-5 space-y-3">
+          <label className="text-[11px] uppercase tracking-[0.16em] text-stone-600 font-sans font-semibold flex items-center justify-between">
             <span className="flex items-center">
-              <span className="w-2 h-2 rounded-full bg-[#BA8B32] mr-2" />
+              <span className="w-6 h-6 rounded-lg bg-[#BA8B32]/10 flex items-center justify-center mr-2 text-[#BA8B32]">
+                <Tag className="w-3.5 h-3.5" />
+              </span>
               Privilege Promo Code / Voucher (Optional)
             </span>
             {values.promoCode && (
-              <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-wider">
-                Code Active: {values.promoCode}
+              <span className="text-[10.5px] text-emerald-700 font-sans font-bold uppercase tracking-wider bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                ✓ Active: {values.promoCode}
               </span>
             )}
           </label>
@@ -107,13 +117,13 @@ export function BookingGuestForm({
               value={values.promoCode || ""}
               onChange={(e) => onChange("promoCode", e.target.value.toUpperCase().trim())}
               placeholder="e.g. RELIANCE15, WEEKENDSPL, CORPSTAY"
-              className="flex-1 bg-[#FAF8F5] border border-[#E8DFD2] p-3.5 text-base sm:text-sm uppercase font-mono font-bold tracking-wider focus:border-[#BA8B32] focus:outline-none rounded-xs"
+              className="flex-1 bg-white border border-stone-200 p-3 sm:p-3.5 text-sm font-mono font-semibold uppercase tracking-wider text-[#111E31] rounded-xl focus:border-[#BA8B32] focus:ring-2 focus:ring-[#BA8B32]/15 focus:outline-none transition-all shadow-2xs"
             />
             {values.promoCode && (
               <button
                 type="button"
                 onClick={() => onChange("promoCode", "")}
-                className="px-4 py-2 text-xs text-[#7A6B61] hover:text-[#2B2320] font-bold border border-[#E8DFD2] bg-white hover:bg-[#FAF8F5] transition-colors rounded-xs cursor-pointer"
+                className="px-4 py-2 text-xs font-sans font-semibold text-stone-600 hover:text-[#111E31] border border-stone-200 bg-white hover:bg-stone-50 transition-all rounded-xl cursor-pointer shadow-2xs"
               >
                 Clear
               </button>
@@ -121,16 +131,16 @@ export function BookingGuestForm({
           </div>
           {/* Quick Apply Popular Codes */}
           <div className="flex flex-wrap items-center gap-2 pt-1">
-            <span className="text-[10px] text-[#7A6B61] font-medium">Available Offers:</span>
+            <span className="text-[11px] font-sans text-stone-500 font-medium">Available Offers:</span>
             {["RELIANCE15", "WEEKENDSPL", "CORPSTAY"].map((code) => (
               <button
                 key={code}
                 type="button"
                 onClick={() => onChange("promoCode", code)}
-                className={`text-[10.5px] font-mono px-2.5 py-1 border rounded-xs transition-colors cursor-pointer ${
+                className={`text-[11px] font-mono px-3 py-1 rounded-full border transition-all cursor-pointer shadow-2xs ${
                   values.promoCode === code
-                    ? "bg-[#BA8B32] text-white font-bold border-[#BA8B32]"
-                    : "bg-[#FAF8F5] text-[#2B2320] border-[#E8DFD2] hover:border-[#BA8B32]"
+                    ? "bg-[#BA8B32] text-white font-bold border-[#BA8B32] shadow-xs"
+                    : "bg-white text-stone-700 border-stone-200 hover:border-[#BA8B32] hover:bg-stone-50"
                 }`}
               >
                 {code}
@@ -140,25 +150,26 @@ export function BookingGuestForm({
         </div>
 
         {/* Special Requests */}
-        <div className="space-y-1.5 pt-2 border-t border-[#E8DFD2]">
-          <label className="text-[10px] uppercase tracking-wider text-[#7A6B61] font-bold block flex items-center justify-between">
-            <span className="flex items-center">
-              <MessageSquare className="w-3.5 h-3.5 mr-2 text-[#BA8B32]" />
-              Special Requests (Optional)
+        <div className="space-y-2">
+          <label className="text-[11px] uppercase tracking-[0.16em] text-stone-600 font-sans font-semibold flex items-center">
+            <span className="w-6 h-6 rounded-lg bg-[#BA8B32]/10 flex items-center justify-center mr-2 text-[#BA8B32]">
+              <MessageSquare className="w-3.5 h-3.5" />
             </span>
+            Special Requests & Preferences (Optional)
           </label>
           <textarea
             value={values.specialRequests || ""}
             onChange={(e) => onChange("specialRequests", e.target.value)}
             rows={3}
-            placeholder="e.g. Extra bed if available (extra bed is ₹300 payable at hotel), early check-in preference, airport cab..."
-            className="w-full bg-[#FAF8F5] border border-[#E8DFD2] p-3.5 text-base sm:text-sm text-[#2B2320] focus:border-[#BA8B32] focus:outline-none rounded-xs"
+            placeholder="e.g. Extra bed if available (extra bed is ₹300 payable at hotel), early check-in preference, airport pickup cab..."
+            className="w-full bg-white border border-stone-200 p-3.5 text-sm font-sans text-[#111E31] rounded-xl focus:border-[#BA8B32] focus:ring-2 focus:ring-[#BA8B32]/15 focus:outline-none transition-all shadow-[0_2px_8px_rgba(0,0,0,0.02)]"
           />
-          <span className="text-[10px] text-[#7A6B61] leading-relaxed block">
-            Note: All special preferences (extra beds, quiet room, late check-in) can be mentioned here and will be accommodated by the front desk.
-          </span>
+          <p className="text-[11px] text-stone-400 font-sans leading-relaxed">
+            Note: All special preferences (extra beds, quiet corner room, late check-in) will be accommodated directly by our front desk team upon arrival.
+          </p>
         </div>
       </div>
     </div>
   );
 }
+

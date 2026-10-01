@@ -2,8 +2,7 @@ import React from "react";
 import Image from "next/image";
 import type { Metadata } from "next";
 import { Info, Compass } from "lucide-react";
-import { Container } from "@/components/ui/Container";
-import { SectionHeading } from "@/components/ui/SectionHeading";
+import { PageHero } from "@/components/ui/PageHero";
 import { placesData } from "@/data/places";
 import { PlaceCard } from "@/components/places/PlaceCard";
 import { HomeCTA } from "@/components/home/HomeCTA";
@@ -49,121 +48,92 @@ export const metadata: Metadata = {
 export default function PlacesPage() {
   return (
     <>
-      {/* Luxury Hero Banner matching Offers, Rooms, Banquets & Restaurant */}
-      <section className="relative w-full aspect-[16/8.5] sm:aspect-[21/9.5] min-h-[440px] max-h-[750px] bg-black overflow-hidden flex items-end">
-        {/* Full-Bleed Background Photograph without Compression or Quality Loss */}
-        <div className="absolute inset-0 z-0">
-          <Image
-            src="/images/places/city-park.png"
-            alt="Bokaro City Park & Attractions"
-            fill
-            priority
-            unoptimized
-            sizes="100vw"
-            className="object-cover object-[center_35%]"
-          />
-          {/* Subtle Top and Deep Bottom Vignette Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-black/30" />
-        </div>
-
-        {/* Hero Bottom Content matching Shared Reference Typography */}
-        <Container className="relative z-10 w-full pb-10 sm:pb-14 px-4 sm:px-6">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-            {/* Title with Gold Line Prefix */}
-            <div className="flex items-start space-x-3 sm:space-x-4">
-              <div className="w-8 sm:w-16 h-[2px] bg-[#C5A880] mt-4 sm:mt-5 flex-shrink-0" />
-              <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-normal tracking-[0.1em] sm:tracking-[0.14em] text-white uppercase leading-tight drop-shadow-lg">
-                Local Attractions
-                <span className="block">& Sightseeing</span>
-              </h1>
-            </div>
-
-            {/* Right Subtitle */}
-            <p className="text-[15px] sm:text-[17px] md:text-[18.5px] font-serif italic text-white/90 max-w-lg leading-[1.6] text-left md:text-right font-normal drop-shadow-md">
-              Iconic industrial heritage, tranquil lakeside parks, spiritual sanctums, and wildlife safari habitats are all within reach from Hotel Reliance.
-            </p>
-          </div>
-        </Container>
-      </section>
+      <PageHero
+        label="Bokaro Travel Guide"
+        title="Local Attractions"
+        titleAccent="& Sightseeing."
+        subtitle="Iconic industrial heritage, tranquil lakeside parks, spiritual sanctums, and wildlife safari habitats — all within reach from Hotel Reliance."
+        image="/images/places/city-park.png"
+        imageAlt="Bokaro City Park & Attractions"
+        height="md"
+      />
 
       {/* Intro info box */}
-      <section className="py-12 bg-white border-b border-[#E8E1D7]">
-        <Container className="max-w-3xl text-center space-y-4">
-          <div className="inline-flex p-3 bg-[#FAF8F5] border border-[#E8E1D7] text-[#BA8B32] rounded-full mb-1 shadow-sm">
-            <Compass className="w-5 h-5 text-[#BA8B32]" />
+      <section className="py-12 sm:py-16 bg-white border-b border-stone-100">
+        <div className="max-w-3xl mx-auto px-4 sm:px-8 text-center space-y-4">
+          <div className="inline-flex p-3 bg-[#BA8B32]/10 border border-[#BA8B32]/20 text-[#BA8B32] rounded-2xl mb-1">
+            <Compass className="w-5 h-5" />
           </div>
-          <h2 className="text-2xl sm:text-3xl font-serif text-[#2B2320]">
-            Convenient Location in Bokaro Steel City
+          <h2 className="text-2xl sm:text-3xl font-serif font-light text-[#111E31] tracking-[-0.02em]">
+            Convenient location in <em className="italic text-[#BA8B32]">Bokaro Steel City.</em>
           </h2>
-          <p className="text-xs sm:text-sm text-[#5C4F46] leading-relaxed font-light">
-            Hotel Reliance is situated in the peaceful, green sector of Co-Operative Colony in Bokaro Steel City. This central placement offers travelers short commute distances to major corporate factories, local gardens, lakes, and transport hubs.
+          <p className="text-[13px] sm:text-sm text-stone-500 leading-[1.8] font-sans font-light">
+            Hotel Reliance is situated in the peaceful, green sector of Co-Operative Colony in Bokaro Steel City — offering short commute distances to major corporate factories, local gardens, lakes, and transport hubs.
           </p>
-        </Container>
+        </div>
       </section>
 
-      {/* Attractions Grid list */}
-      <section className="py-16 sm:py-24 bg-[#FAF8F5]">
-        <Container className="max-w-7xl px-4 sm:px-6">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-[#E8E1D7] mb-12">
+      {/* Attractions grid */}
+      <section className="py-16 sm:py-24 bg-[#FAFAF8]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-16">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-stone-100 mb-12">
             <div>
-              <span className="text-xs uppercase tracking-[0.2em] font-serif font-bold text-[#B38E5D] block">
-                LOCAL SIGHTSEEING
+              <span className="text-[10px] sm:text-[11px] font-sans font-semibold tracking-[0.35em] uppercase text-[#BA8B32] block mb-3">
+                Local Sightseeing
               </span>
-              <h2 className="text-xl sm:text-3xl font-serif text-[#2B2320] mt-0.5">
-                Sights Near Our Hotel
+              <h2 className="text-2xl sm:text-4xl font-serif font-light text-[#111E31] tracking-[-0.02em]">
+                Sights near our{" "}
+                <em className="italic text-[#BA8B32]">hotel.</em>
               </h2>
             </div>
-            <p className="text-xs sm:text-sm font-serif text-[#7A6B61] max-w-md">
-              Explore revered temples, peaceful botanical gardens, and scenic dams all located within a short drive from Hotel Reliance.
+            <p className="text-[13px] sm:text-sm text-stone-500 font-sans font-light max-w-sm leading-[1.8] md:text-right">
+              Temples, botanical gardens, and scenic dams all within a short drive from Hotel Reliance.
             </p>
           </div>
 
-          {/* Mobile Horizontal Swipeable Attractions */}
+          {/* Mobile */}
           <div className="md:hidden">
             <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 no-scrollbar -mx-4 px-4">
               {placesData.map((place) => (
-                <div
-                  key={place.id}
-                  className="w-[84vw] max-w-[330px] flex-shrink-0 snap-center h-full"
-                >
+                <div key={place.id} className="w-[84vw] max-w-[330px] flex-shrink-0 snap-center h-full">
                   <PlaceCard place={place} layout="vertical" />
                 </div>
               ))}
             </div>
-            <div className="text-center pt-2 text-[#BA8B32]">
-              <span className="text-[10px] uppercase font-serif tracking-widest text-[#7A6B61]">Swipe Attractions & Sights →</span>
+            <div className="text-center pt-2">
+              <span className="text-[10px] uppercase tracking-widest text-stone-400 font-sans">Swipe Attractions →</span>
             </div>
           </div>
 
-          {/* Tablet & Desktop Grid */}
-          <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {/* Desktop grid */}
+          <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {placesData.map((place) => (
               <div key={place.id} className="h-full">
                 <PlaceCard place={place} layout="vertical" />
               </div>
             ))}
           </div>
-        </Container>
+        </div>
       </section>
 
-      {/* Local Travel Tips */}
-      <section className="py-16 sm:py-20 bg-white border-t border-[#E8E1D7]">
-        <Container className="max-w-4xl px-4 sm:px-6">
-          <div className="border border-[#E8E1D7] p-8 sm:p-10 bg-[#FAF8F5] space-y-6 shadow-sm">
-            <h3 className="text-xl font-serif text-[#2B2320] border-b border-[#E8E1D7] pb-3 flex items-center">
+      {/* Travel tips */}
+      <section className="py-16 sm:py-20 bg-white border-t border-stone-100">
+        <div className="max-w-4xl mx-auto px-4 sm:px-8">
+          <div className="bg-[#FAFAF8] rounded-2xl sm:rounded-3xl border border-stone-100 p-7 sm:p-10 space-y-5 shadow-sm">
+            <h3 className="text-lg sm:text-xl font-serif font-light text-[#111E31] flex items-center border-b border-stone-100 pb-4">
               <Info className="w-5 h-5 text-[#BA8B32] mr-3 flex-shrink-0" />
-              Guest Traveler Information & Commute Guide
+              Guest Traveler Information &amp; Commute Guide
             </h3>
-            <div className="space-y-4 text-xs sm:text-sm text-[#5C4F46] font-light leading-relaxed">
+            <div className="space-y-4 text-[13px] sm:text-sm text-stone-500 font-sans font-light leading-[1.8]">
               <p>
-                <strong className="text-[#2B2320]">Local Cabs & Auto Rickshaws:</strong> Local transport is easily accessible directly outside the hotel gates in Co-Operative Colony. Our front desk concierge is happy to assist in coordinating day hire taxi cabs for plant visits or sightseeing tours.
+                <strong className="font-semibold text-[#111E31]">Local Cabs & Auto Rickshaws:</strong> Local transport is easily accessible directly outside the hotel gates in Co-Operative Colony. Our front desk concierge is happy to assist in coordinating day hire taxi cabs for plant visits or sightseeing tours.
               </p>
               <p>
-                <strong className="text-[#2B2320]">Railway Station:</strong> Bokaro Steel City Railway Station (BKSC) is situated roughly 10-12 km from the hotel, with frequent connections to Ranchi, Patna, Kolkata, and Delhi.
+                <strong className="font-semibold text-[#111E31]">Railway Station:</strong> Bokaro Steel City Railway Station (BKSC) is situated roughly 10-12 km from the hotel, with frequent connections to Ranchi, Patna, Kolkata, and Delhi.
               </p>
             </div>
           </div>
-        </Container>
+        </div>
       </section>
 
       <HomeCTA />

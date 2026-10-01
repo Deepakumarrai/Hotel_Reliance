@@ -20,7 +20,7 @@ export function GuestLayoutWrapper({ children }: { children: React.ReactNode }) 
   return (
     <>
       <Navbar />
-      <main className="flex-grow pt-[72px] lg:pt-[76px]">
+      <main className="flex-grow">
         <PageTransition>{children}</PageTransition>
       </main>
       <Footer />

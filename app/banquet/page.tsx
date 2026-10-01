@@ -1,14 +1,11 @@
 import React from "react";
 import Image from "next/image";
 import type { Metadata } from "next";
-import { Sparkles, Calendar, Heart, Award, ArrowRight } from "lucide-react";
-import { Container } from "@/components/ui/Container";
-import { SectionHeading } from "@/components/ui/SectionHeading";
-import { VenueCard, Venue } from "@/components/banquet/VenueCard";
+import { Sparkles, Calendar, Heart, Award, ArrowRight, Users, Maximize2 } from "lucide-react";
+import { PageHero } from "@/components/ui/PageHero";
+import { Venue } from "@/components/banquet/VenueCard";
 import { DynamicVenuesList } from "@/components/banquet/DynamicVenuesList";
-import { BanquetCostEstimator } from "@/components/banquet/BanquetCostEstimator";
 import { BanquetEnquiry } from "@/components/banquet/BanquetEnquiry";
-import { Banquet3DPlaceholder } from "@/components/banquet/Banquet3DPlaceholder";
 import { HomeCTA } from "@/components/home/HomeCTA";
 
 export const metadata: Metadata = {
@@ -23,29 +20,19 @@ export const metadata: Metadata = {
     "Corporate Meeting Rooms Bokaro",
     "Hotel Reliance Banquet",
   ],
-  alternates: {
-    canonical: "https://www.hotelreliance.com/banquet",
-  },
+  alternates: { canonical: "https://www.hotelreliance.com/banquet" },
   openGraph: {
     title: "AC Banquet Halls & Wedding Lawns | Hotel Reliance Bokaro",
-    description:
-      "Host magnificent weddings, engagement ceremonies, and business summits at Hotel Reliance, Bokaro Steel City.",
+    description: "Host magnificent weddings, engagement ceremonies, and business summits at Hotel Reliance, Bokaro Steel City.",
     url: "https://www.hotelreliance.com/banquet",
     type: "website",
-    images: [
-      {
-        url: "/images/banquet/hall-main.jpg",
-        width: 1200,
-        height: 800,
-        alt: "Grand AC Banquet Hall at Hotel Reliance Bokaro",
-      },
-    ],
+    images: [{ url: "/images/banquet/image.png", width: 1200, height: 800, alt: "Grand AC Banquet Hall at Hotel Reliance Bokaro" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "AC Banquet Halls & Wedding Lawns | Hotel Reliance Bokaro",
     description: "Weddings, receptions, and corporate conferences in Bokaro Steel City.",
-    images: ["/images/banquet/hall-main.jpg"],
+    images: ["/images/banquet/image.png"],
   },
 };
 
@@ -57,13 +44,7 @@ const venuesList: Venue[] = [
     capacity: "Up to 350 Guests",
     size: "4,200 sq. ft.",
     image: "/images/banquet/hall-main.jpg",
-    amenities: [
-      "AC Climate Control",
-      "Integrated Audio-Visual Setup",
-      "Configurable Stage Lighting",
-      "In-House Buffet Catering Area",
-      "Dedicated Groom & Bride Makeup Rooms"
-    ]
+    amenities: ["AC Climate Control", "Integrated Audio-Visual Setup", "Configurable Stage Lighting", "In-House Buffet Catering Area", "Dedicated Groom & Bride Makeup Rooms"],
   },
   {
     id: "meeting-room",
@@ -71,48 +52,45 @@ const venuesList: Venue[] = [
     description: "Configured for professional business conventions. Features high-speed connectivity, boards, and digital projection facilities for boardroom discussions.",
     capacity: "Up to 30 Guests",
     size: "800 sq. ft.",
-    image: "/images/gallery/hotel-lobby.jpg", // Lobby is elegant placeholder
-    amenities: [
-      "Digital Projection & LED Screens",
-      "High-Speed Wi-Fi",
-      "Ergonomic Business Seating",
-      "Coffee & Snack Caterings",
-      "Whiteboards & Flipcharts"
-    ]
+    image: "/images/gallery/hotel-lobby.jpg",
+    amenities: ["Digital Projection & LED Screens", "High-Speed Wi-Fi", "Ergonomic Business Seating", "Coffee & Snack Caterings", "Whiteboards & Flipcharts"],
   },
   {
     id: "outdoor-lawn",
     name: "Celebration Lawn",
-    description: "An expansive open-air manicured garden lawn designed for massive social gatherings, reception parties, exhibitions, and late-evening dinner gatherings under the stars.",
+    description: "An expansive open-air manicured garden lawn designed for massive social gatherings, reception parties, and late-evening dinner gatherings under the stars.",
     capacity: "Up to 600 Guests",
     size: "12,000 sq. ft.",
     image: "/images/banquet/lawn-main.jpg",
-    amenities: [
-      "Beautiful Green Landscaping",
-      "Custom Grand Stage Setups",
-      "Outdoor Barbeque & Bar Counters",
-      "Silent Power Generator Backup",
-      "Security Monitored Entry Gates"
-    ]
-  }
+    amenities: ["Beautiful Green Landscaping", "Custom Grand Stage Setups", "Outdoor Barbeque & Bar Counters", "Silent Power Generator Backup", "Security Monitored Entry Gates"],
+  },
 ];
 
 const eventTypes = [
   {
-    icon: <Heart className="w-6 h-6 text-gold" />,
+    icon: <Heart className="w-5 h-5 text-[#BA8B32]" />,
     title: "Weddings & Socials",
-    desc: "From engagements and mehendi to grand receptions. Our team coordinates details to let you enjoy your special milestones."
+    desc: "From engagements and mehendi to grand receptions. Our team coordinates every detail so you can enjoy your special milestones.",
   },
   {
-    icon: <Award className="w-6 h-6 text-gold" />,
+    icon: <Award className="w-5 h-5 text-[#BA8B32]" />,
     title: "Corporate Conferences",
-    desc: "Boardroom meetings, product lunches, seminars, or annual dinners. We offer professional planning support and caters."
+    desc: "Boardroom meetings, product lunches, seminars, or annual dinners. We offer professional planning support and catering.",
   },
   {
-    icon: <Calendar className="w-6 h-6 text-gold" />,
+    icon: <Calendar className="w-5 h-5 text-[#BA8B32]" />,
     title: "Birthdays & Anniversaries",
-    desc: "Host warm intimate celebrations or active kids parties. Our custom menus fit all social themes."
-  }
+    desc: "Host warm intimate celebrations or active kids parties. Our custom menus fit all social themes and occasions.",
+  },
+];
+
+const weddingInclusions = [
+  { n: "01", title: "Grand Venue Booking", desc: "Full day & night booking of AC Banquet Hall (350+ guests) or lush Outdoor Celebration Lawn." },
+  { n: "02", title: "Royal Kwality Buffet", desc: "Multi-cuisine spread with live tandoor starters, gourmet main courses, dum biryani, and royal desserts." },
+  { n: "03", title: "Stage & Mandap Decor", desc: "Grand floral stage, ornamental wedding mandap, red carpet entryway, and elegant LED lighting." },
+  { n: "04", title: "DJ Sound & Audio Visuals", desc: "Concert-grade DJ sound, dynamic floor lighting, cordless mics, and celebration music console." },
+  { n: "05", title: "Bridal Room Suite", desc: "Complimentary 1-Night luxury stay in our Bridal Suite for the couple, with dedicated dressing area." },
+  { n: "06", title: "Hospitality & Power Backup", desc: "Dedicated event captain, trained service stewards, valet parking, and 100% DG generator backup." },
 ];
 
 export default function BanquetPage() {
@@ -120,11 +98,7 @@ export default function BanquetPage() {
     "@context": "https://schema.org",
     "@type": "EventVenue",
     name: "Hotel Reliance Banquets & Event Lawns",
-    parentOrganization: {
-      "@type": "Hotel",
-      name: "Hotel Reliance",
-      url: "https://www.hotelreliance.com",
-    },
+    parentOrganization: { "@type": "Hotel", name: "Hotel Reliance", url: "https://www.hotelreliance.com" },
     url: "https://www.hotelreliance.com/banquet",
     maximumAttendeeCapacity: 350,
     address: {
@@ -140,294 +114,151 @@ export default function BanquetPage() {
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(venueSchema) }}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(venueSchema) }} />
+
+      <PageHero
+        label="Events & Celebrations"
+        title="Banquets"
+        titleAccent="& Events."
+        subtitle="From magnificent wedding celebrations to executive corporate conferences — Hotel Reliance crafts timeless gatherings with bespoke hospitality."
+        image="/images/banquet/image.png"
+        imageAlt="Hotel Reliance Banquets & Event Celebrations"
       />
-      {/* Luxury Hero Banner matching Offers & Rooms Header */}
-      <section className="relative w-full aspect-[16/8.5] sm:aspect-[21/9.5] min-h-[440px] max-h-[750px] bg-black overflow-hidden flex items-end">
-        {/* Full-Bleed Background Banquet Photograph without Cropping */}
-        <div className="absolute inset-0 z-0">
-          <Image
-            src="/images/banquet/image.png"
-            alt="Hotel Reliance Banquets & Event Celebrations"
-            fill
-            priority
-            unoptimized
-            sizes="100vw"
-            className="object-cover object-[center_40%]"
-          />
-          {/* Subtle Top and Deep Bottom Vignette Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-black/30" />
-        </div>
 
-        {/* Hero Bottom Content matching Offers & Rooms Header */}
-        <Container className="relative z-10 w-full pb-10 sm:pb-14 px-4 sm:px-6">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-            {/* Title with Gold Line Prefix */}
-            <div className="flex items-start space-x-3 sm:space-x-4">
-              <div className="w-8 sm:w-16 h-[2px] bg-[#C5A880] mt-4 sm:mt-5 flex-shrink-0" />
-              <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-normal tracking-[0.1em] sm:tracking-[0.14em] text-white uppercase leading-tight drop-shadow-lg">
-                Banquets
-                <span className="block">& Events</span>
-              </h1>
-            </div>
-
-            {/* Right Subtitle */}
-            <p className="text-[15px] sm:text-[17px] md:text-[18.5px] font-serif italic text-white/90 max-w-lg leading-[1.6] text-left md:text-right font-normal drop-shadow-md">
-              From magnificent wedding celebrations and grand receptions to executive corporate conferences, Hotel Reliance crafts timeless gatherings with bespoke hospitality.
-            </p>
-          </div>
-        </Container>
-      </section>
-
-      {/* Venues Grid Section */}
-      <section className="py-16 sm:py-24 bg-[#FAF8F5]">
-        <Container className="max-w-7xl px-4 sm:px-6 space-y-16">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-[#E8E1D7]">
+      {/* Venues Grid */}
+      <section className="bg-[#FAFAF8] py-20 sm:py-28">
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-16">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 sm:mb-14 pb-8 border-b border-stone-100">
             <div>
-              <span className="text-xs uppercase tracking-[0.2em] font-serif font-bold text-[#B38E5D] block">
-                GRAND SPACES
+              <span className="text-[10px] sm:text-[11px] font-sans font-semibold tracking-[0.35em] uppercase text-[#BA8B32] block mb-3">
+                Grand Spaces
               </span>
-              <h2 className="text-xl sm:text-3xl font-serif text-[#2B2320] mt-0.5">
-                Our Signature Event Venues
+              <h2 className="text-3xl sm:text-5xl font-serif font-light text-[#111E31] tracking-[-0.02em] leading-[1.05]">
+                Our signature{" "}
+                <em className="italic text-[#BA8B32]">event venues.</em>
               </h2>
             </div>
-            <p className="text-xs sm:text-sm font-serif text-[#7A6B61] max-w-md">
+            <p className="text-sm text-stone-500 max-w-sm leading-[1.8] font-sans font-light md:text-right">
               Versatile indoor halls, boardrooms, and expansive celebration lawns equipped with modern AV setups and personalized catering.
             </p>
           </div>
-          
-          <DynamicVenuesList initialVenues={venuesList} />
 
-          {/* Interactive Layout Visualizer */}
-          <div className="pt-6">
-            <Banquet3DPlaceholder />
-          </div>
-        </Container>
+          <DynamicVenuesList initialVenues={venuesList} />
+        </div>
       </section>
 
-      {/* Event niches */}
-      <section className="py-16 sm:py-20 bg-white border-t border-[#E8E1D7]">
-        <Container className="max-w-7xl px-4 sm:px-6">
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <span className="text-[10px] sm:text-xs uppercase font-bold tracking-[0.22em] text-[#BA8B32] block mb-1">
-              CELEBRATION GUIDES
+      {/* Events we host */}
+      <section className="bg-[#111E31] text-white py-20 sm:py-28 relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none opacity-20"
+          style={{ background: "radial-gradient(ellipse 80% 50% at 50% 50%, rgba(186,139,50,0.12) 0%, transparent 70%)" }}
+        />
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 lg:px-16">
+          <div className="text-center mb-12 sm:mb-14">
+            <span className="text-[10px] sm:text-[11px] font-sans font-semibold tracking-[0.35em] uppercase text-[#BA8B32] block mb-3">
+              Celebration Guides
             </span>
-            <h2 className="text-2xl sm:text-3xl font-serif tracking-[0.08em] uppercase text-[#2B2320]">
-              Events We Host
+            <h2 className="text-3xl sm:text-5xl font-serif font-light text-white tracking-[-0.02em]">
+              Events we{" "}
+              <em className="italic text-[#D8B875]">host.</em>
             </h2>
-            <div className="w-12 h-[1.5px] bg-[#C5A880] mx-auto mt-3" />
           </div>
 
-          {/* Mobile Horizontal Swipeable Editorial Cards */}
-          <div className="md:hidden">
-            <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 -mx-4 px-4 pb-4 no-scrollbar">
-              {eventTypes.map((event, index) => (
-                <div
-                  key={index}
-                  className="w-[82vw] max-w-[310px] flex-shrink-0 snap-center bg-[#FAF8F5] border border-[#E8E1D7] p-6 text-center space-y-3.5 shadow-sm rounded-sm touch-card-press"
-                >
-                  <div className="w-12 h-12 bg-white border border-[#E8E1D7] flex items-center justify-center mx-auto rounded-full shadow-sm text-[#BA8B32]">
-                    {event.icon}
-                  </div>
-                  <h3 className="text-base font-serif font-normal text-[#2B2320] uppercase tracking-wide">
-                    {event.title}
-                  </h3>
-                  <p className="text-xs text-[#5C4F46] leading-relaxed font-light line-clamp-3">
-                    {event.desc}
-                  </p>
-                </div>
-              ))}
-            </div>
-            <div className="text-center pt-1 text-[#BA8B32]">
-              <span className="text-[10px] uppercase font-serif tracking-widest text-[#7A6B61]">Swipe Event Types →</span>
-            </div>
-          </div>
-
-          {/* Tablet & Desktop 3-Column Grid */}
-          <div className="hidden md:grid md:grid-cols-3 gap-8 pt-2">
-            {eventTypes.map((event, index) => (
-              <div
-                key={index}
-                className="bg-[#FAF8F5] border border-[#E8E1D7] p-8 text-center space-y-4 hover:border-[#BA8B32] hover:shadow-lg transition-all duration-300 rounded-sm"
-              >
-                <div className="w-12 h-12 bg-white border border-[#E8E1D7] flex items-center justify-center mx-auto rounded-full shadow-sm text-[#BA8B32]">
-                  {event.icon}
-                </div>
-                <h3 className="text-lg font-serif font-normal text-[#2B2320] uppercase tracking-wide">
-                  {event.title}
-                </h3>
-                <p className="text-xs sm:text-[13px] text-[#5C4F46] leading-relaxed font-light">
-                  {event.desc}
-                </p>
+          {/* Mobile */}
+          <div className="md:hidden flex overflow-x-auto snap-x snap-mandatory gap-4 -mx-4 px-4 pb-4 no-scrollbar">
+            {eventTypes.map((event, i) => (
+              <div key={i} className="w-[82vw] max-w-[310px] flex-shrink-0 snap-center bg-white/[0.04] border border-white/8 rounded-2xl p-6 text-center space-y-3.5">
+                <div className="w-11 h-11 bg-[#BA8B32]/15 border border-[#BA8B32]/25 flex items-center justify-center mx-auto rounded-xl">{event.icon}</div>
+                <h3 className="text-base font-serif font-light text-white">{event.title}</h3>
+                <p className="text-[12px] text-white/45 font-sans font-light leading-relaxed">{event.desc}</p>
               </div>
             ))}
           </div>
-        </Container>
+
+          {/* Desktop */}
+          <div className="hidden md:grid md:grid-cols-3 gap-5">
+            {eventTypes.map((event, i) => (
+              <div key={i} className="group bg-white/[0.04] hover:bg-white/[0.07] border border-white/8 hover:border-[#BA8B32]/30 rounded-2xl sm:rounded-3xl p-7 text-center space-y-4 transition-all duration-300">
+                <div className="w-12 h-12 bg-[#BA8B32]/15 border border-[#BA8B32]/25 flex items-center justify-center mx-auto rounded-xl group-hover:bg-[#BA8B32]/25 transition-colors duration-300">{event.icon}</div>
+                <h3 className="text-lg font-serif font-light text-white group-hover:text-[#D8B875] transition-colors duration-300">{event.title}</h3>
+                <div className="w-5 h-px bg-[#BA8B32]/40 mx-auto" />
+                <p className="text-[12px] text-white/45 font-sans font-light leading-relaxed">{event.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
 
-      {/* Grand Marriage Package Section — ₹2,25,000/- */}
-      <section id="marriage-package" className="py-16 sm:py-24 bg-gradient-to-b from-[#181412] to-[#0D0B0A] text-white relative overflow-hidden border-t border-[#332A24]">
-        {/* Subtle Gold Ambient Glow */}
-        <div className="absolute top-0 right-1/4 w-96 h-96 bg-[#C5A880]/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-[#B38E5D]/10 rounded-full blur-3xl pointer-events-none" />
+      {/* Wedding Package */}
+      <section id="marriage-package" className="bg-[#080C14] text-white py-20 sm:py-28 relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ background: "radial-gradient(ellipse 60% 60% at 50% 0%, rgba(186,139,50,0.1) 0%, transparent 70%)" }}
+        />
+        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-8 lg:px-16">
+          {/* Header */}
+          <div className="text-center mb-10 sm:mb-12 space-y-4">
+            <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-[#BA8B32]/15 border border-[#BA8B32]/30 text-[#D8B875] text-[10px] font-sans font-semibold uppercase tracking-[0.25em]">
+              <Sparkles className="w-3 h-3" />
+              <span>Official Wedding Ceremony Tariff</span>
+            </div>
+            <h2 className="text-3xl sm:text-5xl md:text-6xl font-serif font-light text-white tracking-[-0.02em]">
+              Grand Royal{" "}
+              <em className="italic text-[#D8B875]">Marriage Package.</em>
+            </h2>
+            <p className="text-sm text-white/45 font-sans font-light max-w-xl mx-auto leading-[1.8]">
+              An all-inclusive, masterfully curated wedding experience with AC palace banquet halls, grand floral decor, live gourmet catering, and seamless hospitality.
+            </p>
+          </div>
 
-        <Container className="max-w-7xl px-4 sm:px-6 relative z-10">
-          <div className="max-w-5xl mx-auto">
-            {/* Header */}
-            <div className="text-center space-y-3 mb-12">
-              <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-[#C5A880]/15 border border-[#C5A880]/40 text-[#D8B875] text-[11px] font-mono uppercase tracking-[0.25em]">
-                <Sparkles className="w-3.5 h-3.5 text-[#D8B875]" />
-                <span>OFFICIAL WEDDING CEREMONY TARIFF</span>
-              </div>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif tracking-[0.08em] uppercase text-white font-normal">
-                Grand Royal Marriage Package
-              </h2>
-              <div className="w-16 h-[2px] bg-[#C5A880] mx-auto mt-3" />
-              <p className="text-xs sm:text-sm font-serif italic text-white/80 max-w-2xl mx-auto leading-relaxed pt-1">
-                An all-inclusive, masterfully curated wedding experience with air-conditioned palace banquet halls, grand floral decor, live gourmet catering, and seamless hospitality.
-              </p>
+          {/* Pricing card */}
+          <div className="bg-white/[0.04] border border-[#BA8B32]/30 rounded-2xl sm:rounded-3xl overflow-hidden shadow-[0_30px_80px_rgba(0,0,0,0.5)] relative">
+            {/* Ribbon */}
+            <div className="absolute top-0 right-0 bg-[#BA8B32] text-white text-[9px] font-semibold uppercase tracking-[0.2em] px-5 py-1.5 rounded-bl-xl">
+              Complete Package
             </div>
 
-            {/* Main Package Pricing & Inclusions Card */}
-            <div className="bg-[#1C1715]/90 border-2 border-[#C5A880]/60 rounded-2xl p-6 sm:p-10 shadow-[0_12px_40px_rgba(0,0,0,0.6)] relative overflow-hidden backdrop-blur-md">
-              {/* Highlight Ribbon */}
-              <div className="absolute top-0 right-0 bg-gradient-to-l from-[#C5A880] to-[#9E712E] text-black font-bold text-[10px] sm:text-xs uppercase tracking-[0.2em] px-6 py-2 rounded-bl-xl shadow-md">
-                COMPLETE WEDDING PACKAGE
+            {/* Price banner */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-6 sm:p-8 pb-6 border-b border-white/8">
+              <div>
+                <span className="text-[10px] font-sans font-semibold uppercase tracking-[0.25em] text-[#BA8B32] block mb-1">
+                  All-Inclusive Wedding Booking
+                </span>
+                <div className="flex items-baseline space-x-2">
+                  <span className="text-4xl sm:text-6xl font-serif font-bold text-white tracking-tight">₹2,25,000</span>
+                  <span className="text-sm font-sans text-white/50">/ Net Fixed Tariff</span>
+                </div>
+                <p className="text-[12px] text-white/35 font-sans mt-1">Covers full day & night festivities — Hall + Catering + Decor + Sound</p>
               </div>
+              <a href="#enquiry-form">
+                <button className="flex items-center space-x-2 px-7 py-3.5 rounded-full bg-[#BA8B32] hover:bg-[#A67B22] text-white text-[12px] font-semibold tracking-[0.1em] uppercase shadow-[0_4px_14px_rgba(186,139,50,0.35)] hover:shadow-[0_6px_20px_rgba(186,139,50,0.45)] transition-all duration-300 cursor-pointer whitespace-nowrap">
+                  <span>Reserve This Date</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              </a>
+            </div>
 
-              {/* Price Banner */}
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-8 border-b border-[#382E28]">
-                <div className="space-y-1">
-                  <span className="text-xs uppercase font-mono tracking-widest text-[#C5A880] block">
-                    All-Inclusive Wedding Booking
+            {/* Inclusions */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-6 sm:p-8">
+              {weddingInclusions.map((item) => (
+                <div key={item.n} className="flex items-start space-x-3.5 p-4 bg-white/[0.04] border border-white/6 rounded-xl hover:border-[#BA8B32]/25 transition-colors duration-300">
+                  <span className="w-7 h-7 rounded-full bg-[#BA8B32]/15 border border-[#BA8B32]/25 text-[#D8B875] text-[10px] font-bold flex items-center justify-center flex-shrink-0">
+                    {item.n}
                   </span>
-                  <div className="flex items-baseline space-x-2">
-                    <span className="text-3xl sm:text-5xl md:text-6xl font-serif font-bold text-white tracking-tight">
-                      ₹2,25,000
-                    </span>
-                    <span className="text-sm sm:text-base font-serif text-[#C5A880] font-normal">
-                      /- Net Fixed Tariff
-                    </span>
+                  <div>
+                    <h4 className="text-[12px] font-semibold text-white tracking-tight mb-1">{item.title}</h4>
+                    <p className="text-[11px] text-white/40 font-sans font-light leading-relaxed">{item.desc}</p>
                   </div>
-                  <p className="text-xs text-white/70 font-light">
-                    Covers full day & night wedding festivities (AC Banquet Hall / Outdoor Lawn + Catering + Decor + Sound)
-                  </p>
                 </div>
-
-                <a
-                  href="#enquiry-form"
-                  className="inline-flex items-center justify-center px-8 py-4 bg-[#C5A880] hover:bg-[#D8B875] text-[#111111] font-bold text-xs uppercase tracking-[0.2em] rounded-xl transition-all shadow-lg hover:shadow-xl active:scale-95 cursor-pointer whitespace-nowrap self-start md:self-auto"
-                >
-                  <span>Reserve This Wedding Date</span>
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </a>
-              </div>
-
-              {/* 6 Key Inclusions Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pt-8">
-                <div className="space-y-2 bg-black/30 p-4 rounded-xl border border-white/5">
-                  <div className="flex items-center space-x-2.5 text-[#D8B875]">
-                    <div className="w-7 h-7 rounded-full bg-[#C5A880]/20 flex items-center justify-center flex-shrink-0 text-[#D8B875] font-bold text-xs">
-                      1
-                    </div>
-                    <h4 className="text-sm font-serif font-bold text-white uppercase tracking-wide">
-                      Grand Venue Booking
-                    </h4>
-                  </div>
-                  <p className="text-xs text-white/75 leading-relaxed font-light pl-9">
-                    Full day & night booking of AC Banquet Hall (350+ guests capacity) or lush green Outdoor Celebration Lawn.
-                  </p>
-                </div>
-
-                <div className="space-y-2 bg-black/30 p-4 rounded-xl border border-white/5">
-                  <div className="flex items-center space-x-2.5 text-[#D8B875]">
-                    <div className="w-7 h-7 rounded-full bg-[#C5A880]/20 flex items-center justify-center flex-shrink-0 text-[#D8B875] font-bold text-xs">
-                      2
-                    </div>
-                    <h4 className="text-sm font-serif font-bold text-white uppercase tracking-wide">
-                      Royal Kwality Buffet
-                    </h4>
-                  </div>
-                  <p className="text-xs text-white/75 leading-relaxed font-light pl-9">
-                    Lavish multi-cuisine spread with welcome drinks, live tandoor starters, gourmet main courses, dum biryani, and royal desserts.
-                  </p>
-                </div>
-
-                <div className="space-y-2 bg-black/30 p-4 rounded-xl border border-white/5">
-                  <div className="flex items-center space-x-2.5 text-[#D8B875]">
-                    <div className="w-7 h-7 rounded-full bg-[#C5A880]/20 flex items-center justify-center flex-shrink-0 text-[#D8B875] font-bold text-xs">
-                      3
-                    </div>
-                    <h4 className="text-sm font-serif font-bold text-white uppercase tracking-wide">
-                      Stage & Mandap Decor
-                    </h4>
-                  </div>
-                  <p className="text-xs text-white/75 leading-relaxed font-light pl-9">
-                    Grand floral stage decoration, ornamental wedding mandap, red carpet entryway, and elegant LED lighting setup.
-                  </p>
-                </div>
-
-                <div className="space-y-2 bg-black/30 p-4 rounded-xl border border-white/5">
-                  <div className="flex items-center space-x-2.5 text-[#D8B875]">
-                    <div className="w-7 h-7 rounded-full bg-[#C5A880]/20 flex items-center justify-center flex-shrink-0 text-[#D8B875] font-bold text-xs">
-                      4
-                    </div>
-                    <h4 className="text-sm font-serif font-bold text-white uppercase tracking-wide">
-                      DJ Sound & Audio Visuals
-                    </h4>
-                  </div>
-                  <p className="text-xs text-white/75 leading-relaxed font-light pl-9">
-                    Professional concert-grade DJ sound setup, dynamic floor lighting, cordless mics, and celebration music console.
-                  </p>
-                </div>
-
-                <div className="space-y-2 bg-black/30 p-4 rounded-xl border border-white/5">
-                  <div className="flex items-center space-x-2.5 text-[#D8B875]">
-                    <div className="w-7 h-7 rounded-full bg-[#C5A880]/20 flex items-center justify-center flex-shrink-0 text-[#D8B875] font-bold text-xs">
-                      5
-                    </div>
-                    <h4 className="text-sm font-serif font-bold text-white uppercase tracking-wide">
-                      Bridal Room Suite
-                    </h4>
-                  </div>
-                  <p className="text-xs text-white/75 leading-relaxed font-light pl-9">
-                    Complimentary 1-Night luxury stay in our Bridal Suite for the couple, along with dedicated dressing area for preparation.
-                  </p>
-                </div>
-
-                <div className="space-y-2 bg-black/30 p-4 rounded-xl border border-white/5">
-                  <div className="flex items-center space-x-2.5 text-[#D8B875]">
-                    <div className="w-7 h-7 rounded-full bg-[#C5A880]/20 flex items-center justify-center flex-shrink-0 text-[#D8B875] font-bold text-xs">
-                      6
-                    </div>
-                    <h4 className="text-sm font-serif font-bold text-white uppercase tracking-wide">
-                      Hospitality & Power Backup
-                    </h4>
-                  </div>
-                  <p className="text-xs text-white/75 leading-relaxed font-light pl-9">
-                    Dedicated event captain, trained service stewards, valet guest parking, and uninterrupted 100% DG generator backup.
-                  </p>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
-        </Container>
-      </section>
-
-      {/* Interactive Banquet Cost Estimator */}
-      <section className="py-16 sm:py-20 bg-white border-t border-[#E8E1D7]">
-        <Container className="max-w-7xl px-4 sm:px-6">
-          <BanquetCostEstimator />
-        </Container>
+        </div>
       </section>
 
       {/* Enquiry Form */}
-      <section id="enquiry-form" className="py-16 sm:py-20 bg-[#FAF8F5] border-t border-[#E8E1D7] scroll-mt-20">
-        <Container className="max-w-7xl px-4 sm:px-6">
+      <section id="enquiry-form" className="bg-[#FAFAF8] py-16 sm:py-24 border-t border-stone-200/80 scroll-mt-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-16">
           <BanquetEnquiry />
-        </Container>
+        </div>
       </section>
 
       <HomeCTA />

@@ -165,53 +165,53 @@ function MyBookingsContent() {
     switch (status) {
       case "confirmed":
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-300">
-            <CheckCircle2 className="w-3 h-3 mr-1" /> Confirmed
+          <span className="inline-flex items-center px-3 py-1 text-[11px] font-sans font-semibold uppercase tracking-wider bg-emerald-500/90 backdrop-blur-md text-white rounded-full shadow-sm">
+            <CheckCircle2 className="w-3 h-3 mr-1.5" /> Confirmed
           </span>
         );
       case "pending":
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-300">
-            <Clock className="w-3 h-3 mr-1" /> Pending
+          <span className="inline-flex items-center px-3 py-1 text-[11px] font-sans font-semibold uppercase tracking-wider bg-amber-500/90 backdrop-blur-md text-white rounded-full shadow-sm">
+            <Clock className="w-3 h-3 mr-1.5" /> Pending
           </span>
         );
       case "completed":
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-800 border border-slate-300">
-            <CheckCircle2 className="w-3 h-3 mr-1" /> Completed
+          <span className="inline-flex items-center px-3 py-1 text-[11px] font-sans font-semibold uppercase tracking-wider bg-stone-700/90 backdrop-blur-md text-white rounded-full shadow-sm">
+            <CheckCircle2 className="w-3 h-3 mr-1.5" /> Completed
           </span>
         );
       case "cancelled":
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-red-100 text-red-800 border border-red-300">
-            <Ban className="w-3 h-3 mr-1" /> Cancelled
+          <span className="inline-flex items-center px-3 py-1 text-[11px] font-sans font-semibold uppercase tracking-wider bg-red-600/90 backdrop-blur-md text-white rounded-full shadow-sm">
+            <Ban className="w-3 h-3 mr-1.5" /> Cancelled
           </span>
         );
     }
   };
 
   return (
-    <div className="py-12 bg-cream min-h-screen">
+    <div className="pt-28 pb-20 bg-[#FAF8F5] min-h-screen">
       <Container className="max-w-5xl space-y-8">
         {/* Top Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border-custom pb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-200/80 pb-6">
           <div>
-            <span className="text-[10px] uppercase font-bold tracking-[0.25em] text-gold block">
+            <span className="text-[10px] uppercase font-sans font-semibold tracking-[0.3em] text-[#BA8B32] block">
               GUEST RESERVATIONS
             </span>
-            <h1 className="text-3xl sm:text-4xl font-serif text-dark font-normal">
+            <h1 className="text-3xl sm:text-4xl font-serif font-light text-[#111E31] mt-1 tracking-[-0.01em]">
               My Bookings
             </h1>
-            <p className="text-xs text-muted mt-1 font-light">
-              Review and manage your current and previous reservations at Hotel Reliance.
+            <p className="text-xs text-stone-500 mt-1 font-sans">
+              Review and manage your reservations, stay details, and hospitality preferences.
             </p>
           </div>
 
           <Link href="/rooms">
-            <Button variant="primary" size="sm" className="uppercase text-xs tracking-wider">
-              <Calendar className="w-3.5 h-3.5 mr-1.5" />
+            <button className="min-h-[42px] px-5 bg-[#111E31] hover:bg-[#1a2e4a] text-white text-xs font-sans font-semibold uppercase tracking-wider rounded-full shadow-[0_4px_16px_rgba(17,30,49,0.18)] hover:shadow-[0_8px_24px_rgba(17,30,49,0.25)] flex items-center transition-all cursor-pointer active:scale-[0.98]">
+              <Calendar className="w-3.5 h-3.5 mr-2" />
               Book Another Room
-            </Button>
+            </button>
           </Link>
         </div>
 
@@ -220,35 +220,37 @@ function MyBookingsContent() {
           <motion.div
             initial={{ opacity: 0, y: -5 }}
             animate={{ opacity: 1, y: 0 }}
-            className="p-4 bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs flex items-center space-x-2"
+            className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-emerald-800 text-xs flex items-center space-x-2.5 font-sans"
           >
             <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
             <span>{feedback}</span>
           </motion.div>
         )}
 
-        {/* Segmented Navigation Tabs */}
-        <div className="flex border-b border-border-custom bg-white p-1">
-          <button
-            onClick={() => setActiveTab("upcoming")}
-            className={`flex-1 sm:flex-initial sm:px-8 py-3 text-xs uppercase tracking-wider font-bold transition-all cursor-pointer ${
-              activeTab === "upcoming"
-                ? "bg-primary text-gold shadow-sm"
-                : "text-muted hover:text-dark"
-            }`}
-          >
-            Upcoming Reservations ({bookings.upcoming.length})
-          </button>
-          <button
-            onClick={() => setActiveTab("previous")}
-            className={`flex-1 sm:flex-initial sm:px-8 py-3 text-xs uppercase tracking-wider font-bold transition-all cursor-pointer ${
-              activeTab === "previous"
-                ? "bg-primary text-gold shadow-sm"
-                : "text-muted hover:text-dark"
-            }`}
-          >
-            Previous Bookings ({bookings.previous.length})
-          </button>
+        {/* Segmented Pill Navigation Tabs */}
+        <div className="flex justify-start">
+          <div className="inline-flex bg-stone-200/70 p-1 rounded-full text-xs font-sans">
+            <button
+              onClick={() => setActiveTab("upcoming")}
+              className={`px-5 sm:px-7 py-2 rounded-full font-medium transition-all cursor-pointer text-xs ${
+                activeTab === "upcoming"
+                  ? "bg-white text-[#111E31] shadow-[0_2px_8px_rgba(0,0,0,0.06)] font-semibold"
+                  : "text-stone-500 hover:text-[#111E31]"
+              }`}
+            >
+              Upcoming ({bookings.upcoming.length})
+            </button>
+            <button
+              onClick={() => setActiveTab("previous")}
+              className={`px-5 sm:px-7 py-2 rounded-full font-medium transition-all cursor-pointer text-xs ${
+                activeTab === "previous"
+                  ? "bg-white text-[#111E31] shadow-[0_2px_8px_rgba(0,0,0,0.06)] font-semibold"
+                  : "text-stone-500 hover:text-[#111E31]"
+              }`}
+            >
+              Past Stays ({bookings.previous.length})
+            </button>
+          </div>
         </div>
 
         {/* Bookings List */}
@@ -259,81 +261,81 @@ function MyBookingsContent() {
                 key={booking.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white border border-border-custom shadow-md overflow-hidden grid grid-cols-1 md:grid-cols-12 hover:border-gold/60 transition-all"
+                className="bg-white rounded-3xl border border-stone-100 shadow-[0_4px_30px_rgba(17,30,49,0.06)] hover:shadow-[0_12px_40px_rgba(17,30,49,0.1)] transition-all overflow-hidden grid grid-cols-1 md:grid-cols-12"
               >
                 {/* Room Thumbnail */}
-                <div className="md:col-span-4 relative min-h-[180px] md:min-h-[220px]">
+                <div className="md:col-span-4 relative min-h-[200px] md:min-h-full">
                   <Image
                     src={booking.room.images[0] || "/images/rooms/deluxe/main.jpg"}
                     alt={booking.room.name}
                     fill
                     className="object-cover"
                   />
-                  <div className="absolute top-3 left-3">
+                  <div className="absolute top-4 left-4 z-10">
                     {getStatusBadge(booking.status)}
                   </div>
                 </div>
 
                 {/* Booking Information */}
-                <div className="md:col-span-8 p-6 flex flex-col justify-between space-y-4">
+                <div className="md:col-span-8 p-6 sm:p-7 flex flex-col justify-between space-y-5">
                   <div>
-                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border-custom pb-3">
+                    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-stone-100 pb-4">
                       <div>
-                        <span className="text-[10px] text-muted uppercase font-bold tracking-widest block">
-                          Booking ID: <strong className="text-dark">{booking.id}</strong>
+                        <span className="text-[10px] text-stone-400 font-sans uppercase font-semibold tracking-wider block">
+                          Booking ID: <strong className="text-[#111E31] font-mono">{booking.id}</strong>
                         </span>
-                        <div className="flex flex-wrap items-center gap-2 mt-0.5">
-                          <h2 className="text-xl sm:text-2xl font-serif text-dark">
+                        <div className="flex flex-wrap items-center gap-2.5 mt-1">
+                          <h2 className="text-xl sm:text-2xl font-serif font-light text-[#111E31]">
                             {booking.room.name}
                           </h2>
                           {booking.roomNumber ? (
-                            <span className="inline-flex items-center px-2 py-0.5 bg-gold/15 text-gold border border-gold/30 rounded text-[11px] font-bold tracking-wider">
+                            <span className="inline-flex items-center px-2.5 py-0.5 bg-[#BA8B32]/10 text-[#BA8B32] border border-[#BA8B32]/25 rounded-full text-[11px] font-semibold font-sans">
                               Room #{booking.roomNumber}
                             </span>
                           ) : (
-                            <span className="inline-flex items-center px-2 py-0.5 bg-amber-50 text-amber-800 border border-amber-200 rounded text-[10px] font-medium tracking-wide">
-                              Room No.: Allotted at Check-In
+                            <span className="inline-flex items-center px-2.5 py-0.5 bg-stone-100 text-stone-600 rounded-full text-[10px] font-medium font-sans">
+                              Room Allotted at Check-In
                             </span>
                           )}
                         </div>
                       </div>
                       <div className="text-right">
-                        <span className="text-[10px] text-muted uppercase font-bold block">Rate Estimate</span>
-                        <span className="text-sm font-serif font-bold text-gold">
+                        <span className="text-[10px] text-stone-400 font-sans uppercase font-medium block">Total Tariff</span>
+                        <span className="text-base sm:text-lg font-serif font-light text-[#111E31]">
                           {booking.estimatedTotal || "Price on Request"}
                         </span>
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 text-xs">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 text-xs font-sans">
                       <div>
-                        <span className="text-[10px] text-muted uppercase font-semibold block">Check-In</span>
-                        <span className="font-semibold text-dark">{booking.checkIn}</span>
-                        <span className="text-[10px] text-muted block">From 12:00 PM</span>
+                        <span className="text-[10px] text-stone-400 uppercase font-semibold block">Check-In</span>
+                        <span className="font-semibold text-[#111E31] mt-0.5 block">{booking.checkIn}</span>
+                        <span className="text-[10px] text-stone-400 block">From 12:00 PM</span>
                       </div>
                       <div>
-                        <span className="text-[10px] text-muted uppercase font-semibold block">Check-Out</span>
-                        <span className="font-semibold text-dark">{booking.checkOut}</span>
-                        <span className="text-[10px] text-muted block">Until 11:00 AM</span>
+                        <span className="text-[10px] text-stone-400 uppercase font-semibold block">Check-Out</span>
+                        <span className="font-semibold text-[#111E31] mt-0.5 block">{booking.checkOut}</span>
+                        <span className="text-[10px] text-stone-400 block">Until 11:00 AM</span>
                       </div>
                       <div>
-                        <span className="text-[10px] text-muted uppercase font-semibold block">Guests</span>
-                        <span className="font-semibold text-dark">
+                        <span className="text-[10px] text-stone-400 uppercase font-semibold block">Guests</span>
+                        <span className="font-semibold text-[#111E31] mt-0.5 block">
                           {booking.adults} Adults {booking.children > 0 ? `, ${booking.children} Ch` : ""}
                         </span>
-                        <span className="text-[10px] text-muted block">{booking.room.bedType}</span>
+                        <span className="text-[10px] text-stone-400 block">{booking.room.bedType}</span>
                       </div>
                       <div>
-                        <span className="text-[10px] text-muted uppercase font-semibold block">Guest Name</span>
-                        <span className="font-semibold text-dark truncate block">{booking.guest.name}</span>
-                        <span className="text-[10px] text-muted truncate block">{booking.guest.phone}</span>
+                        <span className="text-[10px] text-stone-400 uppercase font-semibold block">Primary Guest</span>
+                        <span className="font-semibold text-[#111E31] mt-0.5 truncate block">{booking.guest.name}</span>
+                        <span className="text-[10px] text-stone-400 truncate block">{booking.guest.phone}</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Actions Bar */}
-                  <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-border-custom">
-                    <div className="text-[11px] text-muted">
+                  <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-stone-100 font-sans">
+                    <div className="text-[11px] text-stone-400">
                       Booked on: {new Date(booking.createdAt).toLocaleDateString("en-IN", { month: "short", day: "numeric", year: "numeric" })}
                     </div>
 
@@ -342,17 +344,17 @@ function MyBookingsContent() {
                         <button
                           type="button"
                           onClick={() => setCancelModalId(booking.id)}
-                          className="text-xs text-red-600 hover:text-red-800 font-semibold uppercase tracking-wider transition-colors cursor-pointer"
+                          className="text-xs text-red-600 hover:text-red-700 font-semibold uppercase tracking-wider transition-colors cursor-pointer px-3 py-1.5"
                         >
                           Cancel Booking
                         </button>
                       )}
 
                       <Link href={`/my-bookings/${booking.id}`}>
-                        <Button variant="primary" size="sm" className="text-xs uppercase tracking-wider">
-                          <Eye className="w-3.5 h-3.5 mr-1" />
-                          View Details
-                        </Button>
+                        <button className="min-h-[38px] px-5 bg-stone-100 hover:bg-stone-200 text-[#111E31] text-xs font-semibold uppercase tracking-wider rounded-full transition-all flex items-center cursor-pointer">
+                          <Eye className="w-3.5 h-3.5 mr-1.5" />
+                          View Voucher
+                        </button>
                       </Link>
                     </div>
                   </div>
@@ -362,28 +364,28 @@ function MyBookingsContent() {
           </div>
         ) : (
           /* Empty State */
-          <div className="bg-white border border-border-custom p-12 text-center space-y-6 shadow-sm">
-            <div className="w-16 h-16 bg-cream border border-gold/40 text-gold rounded-full flex items-center justify-center mx-auto shadow-inner">
-              <Calendar className="w-8 h-8" />
+          <div className="bg-white rounded-3xl border border-stone-100 p-12 sm:p-16 text-center space-y-6 shadow-[0_4px_30px_rgba(17,30,49,0.04)]">
+            <div className="w-16 h-16 bg-stone-50 border border-stone-200 text-[#BA8B32] rounded-full flex items-center justify-center mx-auto shadow-sm">
+              <Calendar className="w-7 h-7" />
             </div>
 
             <div className="space-y-2 max-w-md mx-auto">
-              <h2 className="text-2xl font-serif text-dark font-normal">
+              <h2 className="text-2xl font-serif font-light text-[#111E31]">
                 {activeTab === "upcoming" ? "No Upcoming Reservations" : "No Previous Bookings"}
               </h2>
-              <p className="text-xs text-muted leading-relaxed font-light">
+              <p className="text-xs text-stone-500 leading-relaxed font-sans">
                 {activeTab === "upcoming"
-                  ? "You don't have any active reservations scheduled. Explore our 45+ premier suites in Bokaro Steel City and plan your stay."
+                  ? "You don't have any active reservations scheduled. Explore our curated rooms and suites in Bokaro Steel City to plan your stay."
                   : "You have not completed any past stays at Hotel Reliance yet."}
               </p>
             </div>
 
             <div className="pt-2">
               <Link href="/rooms">
-                <Button variant="primary" size="md" className="uppercase text-xs tracking-widest font-bold">
+                <button className="min-h-[46px] px-7 bg-[#111E31] hover:bg-[#1a2e4a] text-white text-xs font-sans font-semibold uppercase tracking-wider rounded-full shadow-[0_4px_16px_rgba(17,30,49,0.2)] hover:shadow-[0_8px_24px_rgba(17,30,49,0.3)] transition-all cursor-pointer inline-flex items-center active:scale-[0.98]">
                   Explore Rooms & Suites
                   <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
+                </button>
               </Link>
             </div>
           </div>
@@ -392,42 +394,39 @@ function MyBookingsContent() {
         {/* Cancellation Confirmation Modal */}
         <AnimatePresence>
           {cancelModalId && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-dark/80 backdrop-blur-sm">
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0C1524]/65 backdrop-blur-md">
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="bg-white border border-border-custom p-6 sm:p-8 max-w-md w-full shadow-2xl space-y-5 text-center"
+                className="bg-white rounded-3xl border border-stone-200/80 p-6 sm:p-8 max-w-md w-full shadow-[0_30px_90px_rgba(17,30,49,0.28)] space-y-5 text-center font-sans"
               >
-                <div className="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto">
+                <div className="w-12 h-12 bg-red-50 text-red-600 rounded-full flex items-center justify-center mx-auto border border-red-100">
                   <AlertCircle className="w-6 h-6" />
                 </div>
 
                 <div className="space-y-2">
-                  <h3 className="text-xl font-serif text-dark font-normal">
+                  <h3 className="text-2xl font-serif font-light text-[#111E31]">
                     Cancel Reservation?
                   </h3>
-                  <p className="text-xs text-muted leading-relaxed">
-                    Are you sure you want to cancel booking <strong className="text-dark">{cancelModalId}</strong>?
-                    Free cancellation is allowed prior to 24 hours before check-in.
+                  <p className="text-xs text-stone-500 leading-relaxed">
+                    Are you sure you want to cancel booking <strong className="text-[#111E31] font-mono">{cancelModalId}</strong>?
+                    Free cancellation is allowed up to 24 hours prior to check-in.
                   </p>
                 </div>
 
                 <div className="flex items-center space-x-3 pt-2">
-                  <Button
-                    variant="secondary"
-                    fullWidth
-                    size="sm"
+                  <button
                     onClick={() => setCancelModalId(null)}
-                    className="text-xs uppercase tracking-wider"
+                    className="flex-1 min-h-[42px] px-5 border border-stone-200 bg-white hover:bg-stone-50 text-[#111E31] text-xs font-semibold uppercase tracking-wider rounded-full transition-all cursor-pointer"
                   >
                     Keep Booking
-                  </Button>
+                  </button>
                   <button
                     onClick={() => handleCancelBooking(cancelModalId)}
-                    className="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer"
+                    className="flex-1 min-h-[42px] px-5 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold uppercase tracking-wider rounded-full shadow-sm transition-all cursor-pointer"
                   >
-                    Confirm Cancellation
+                    Confirm Cancel
                   </button>
                 </div>
               </motion.div>

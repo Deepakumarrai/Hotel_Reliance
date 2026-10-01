@@ -1,11 +1,8 @@
 import React from "react";
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
-import { Phone, Clock, UtensilsCrossed, Award, Sparkles, Check, ArrowRight, Flame } from "lucide-react";
-import { Container } from "@/components/ui/Container";
-import { SectionHeading } from "@/components/ui/SectionHeading";
-import { Button } from "@/components/ui/Button";
+import { Clock, Phone, ArrowRight } from "lucide-react";
+import { PageHero } from "@/components/ui/PageHero";
 import { HomeCTA } from "@/components/home/HomeCTA";
 import { hotelData } from "@/data/hotel";
 import { RestaurantPageClient } from "@/components/restaurant/RestaurantPageClient";
@@ -24,23 +21,13 @@ export const metadata: Metadata = {
     "Biryani in Bokaro",
     "Hotel Reliance Restaurant",
   ],
-  alternates: {
-    canonical: "https://www.hotelreliance.com/restaurant",
-  },
+  alternates: { canonical: "https://www.hotelreliance.com/restaurant" },
   openGraph: {
     title: "Kwality Restaurant & Fine Dining | Hotel Reliance Bokaro",
-    description:
-      "A symphony of rich North Indian flavours, live tandoori specialties, and genuine hospitality in Bokaro Steel City.",
+    description: "A symphony of rich North Indian flavours, live tandoori specialties, and genuine hospitality in Bokaro Steel City.",
     url: "https://www.hotelreliance.com/restaurant",
     type: "website",
-    images: [
-      {
-        url: "/images/restaurant/image.png",
-        width: 1200,
-        height: 800,
-        alt: "Kwality Restaurant Palace Dining Hall at Hotel Reliance Bokaro",
-      },
-    ],
+    images: [{ url: "/images/restaurant/image.png", width: 1200, height: 800, alt: "Kwality Restaurant Palace Dining Hall" }],
   },
   twitter: {
     card: "summary_large_image",
@@ -51,30 +38,43 @@ export const metadata: Metadata = {
 };
 
 const diningHours = [
-  { meal: "Buffet Breakfast", hours: "08:30 AM - 10:30 AM" },
-  { meal: "Lunch Service", hours: "12:00 PM - 04:00 PM" },
-  { meal: "Dinner Service", hours: "07:00 PM - 10:30 PM" }
+  { meal: "Buffet Breakfast", hours: "08:30 AM – 10:30 AM" },
+  { meal: "Lunch Service", hours: "12:00 PM – 04:00 PM" },
+  { meal: "Dinner Service", hours: "07:00 PM – 10:30 PM" },
 ];
 
 const chefSpecialties = [
   {
     name: "Murgh Malai Tikka",
     tag: "Chef's Signature",
-    desc: "Tender boneless chicken morsels marinated in rich clotted cream, processed cheese, roasted garlic, and green cardamom, slow-charred in our live clay tandoor and served with fresh mint chutney.",
-    image: "/images/restaurant/murgh-malai-tikka.png"
+    desc: "Tender boneless chicken morsels marinated in rich clotted cream, roasted garlic, and green cardamom, slow-charred in our live clay tandoor.",
+    image: "/images/restaurant/murgh-malai-tikka.png",
   },
   {
     name: "Paneer Butter Masala",
     tag: "Vegetarian Classic",
-    desc: "Fresh cottage cheese cubes cooked in a velvet-smooth slow-simmered rich makhani gravy enriched with fresh butter, dried fenugreek leaves, cream, and aromatic spices.",
-    image: "/images/restaurant/paneer-butter-masala.png"
+    desc: "Fresh cottage cheese cubes cooked in a velvet-smooth makhani gravy enriched with fresh butter, dried fenugreek leaves, cream, and aromatic spices.",
+    image: "/images/restaurant/paneer-butter-masala.png",
   },
   {
-    name: "Kwality Special Dum Biryani",
+    name: "Kwality Dum Biryani",
     tag: "Royal Heritage",
-    desc: "Aromatic long-grain aged basmati rice slow-cooked on dum with saffron milk, caramelized fried onions, whole spices, and served in a traditional handi with spiced raita.",
-    image: "/images/restaurant/dum-biryani.png"
-  }
+    desc: "Aromatic aged basmati rice slow-cooked on dum with saffron milk, caramelized onions, whole spices, served in a traditional handi.",
+    image: "/images/restaurant/dum-biryani.png",
+  },
+];
+
+const diningSpaces = [
+  {
+    name: "The Grand Dining Hall",
+    desc: "Crystal chandeliers, velvet seating, intricate gold screens, and candlelit ambiance for an unforgettable experience.",
+    image: "/images/restaurant/image.png",
+  },
+  {
+    name: "Sunlit Canopy Lounge",
+    desc: "Airy draped fabric ceiling, floor-to-ceiling garden views, and contemporary daytime dining.",
+    image: "/images/restaurant/canopy-lounge.png",
+  },
 ];
 
 export default function RestaurantPage() {
@@ -82,11 +82,7 @@ export default function RestaurantPage() {
     "@context": "https://schema.org",
     "@type": "Restaurant",
     name: "Kwality Restaurant",
-    parentOrganization: {
-      "@type": "Hotel",
-      name: "Hotel Reliance",
-      url: "https://www.hotelreliance.com",
-    },
+    parentOrganization: { "@type": "Hotel", name: "Hotel Reliance", url: "https://www.hotelreliance.com" },
     url: "https://www.hotelreliance.com/restaurant",
     telephone: hotelData.phones[0],
     servesCuisine: ["North Indian", "Tandoori", "Mughlai", "Chinese", "Continental"],
@@ -99,298 +95,202 @@ export default function RestaurantPage() {
       postalCode: hotelData.address.pincode,
       addressCountry: "IN",
     },
-    openingHoursSpecification: [
-      {
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
-        opens: "08:30",
-        closes: "22:30",
-      },
-    ],
+    openingHoursSpecification: [{
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
+      opens: "08:30",
+      closes: "22:30",
+    }],
     menu: "https://www.hotelreliance.com/restaurant#menu",
-    image: [
-      "https://www.hotelreliance.com/images/restaurant/image.png",
-      "https://www.hotelreliance.com/images/restaurant/canopy-lounge.png",
-      "https://www.hotelreliance.com/images/restaurant/murgh-malai-tikka.png",
-      "https://www.hotelreliance.com/images/restaurant/paneer-butter-masala.png",
-      "https://www.hotelreliance.com/images/restaurant/dum-biryani.png",
-    ],
   };
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(restaurantSchema) }}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(restaurantSchema) }} />
+
+      <PageHero
+        label="Dining"
+        title="Kwality Restaurant"
+        titleAccent="& Fine Dining."
+        subtitle="Step into a symphony of rich North Indian flavours, authentic tandoori delights, oriental specialties, and genuine hospitality."
+        image="/images/restaurant/image.png"
+        imageAlt="Kwality Restaurant Palace Dining Hall"
       />
-      {/* Luxury Full-Bleed Restaurant Hero Banner matching Offers & Rooms Header */}
-      <section className="relative w-full aspect-[16/8.5] sm:aspect-[21/9.5] min-h-[440px] max-h-[750px] bg-black overflow-hidden flex items-end">
-        {/* Full-Bleed Background Lifestyle Photograph without Cropping or Compression */}
-        <div className="absolute inset-0 z-0">
-          <Image
-            src="/images/restaurant/image.png"
-            alt="Kwality Restaurant Palace Dining Hall"
-            fill
-            priority
-            unoptimized
-            sizes="100vw"
-            className="object-cover object-[center_35%]"
-          />
-          {/* Subtle Top and Deep Bottom Vignette Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-black/30" />
-        </div>
 
-        {/* Hero Bottom Content matching Reference Typography */}
-        <Container className="relative z-10 w-full pb-10 sm:pb-14 px-4 sm:px-6">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-            {/* Title with Gold Line Prefix */}
-            <div className="flex items-start space-x-3 sm:space-x-4">
-              <div className="w-8 sm:w-16 h-[2px] bg-[#C5A880] mt-4 sm:mt-5 flex-shrink-0" />
-              <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-normal tracking-[0.1em] sm:tracking-[0.14em] text-white uppercase leading-tight drop-shadow-lg">
-                Kwality Restaurant
-                <span className="block">& Fine Dining</span>
-              </h1>
-            </div>
-
-            {/* Right Subtitle */}
-            <p className="text-[15px] sm:text-[17px] md:text-[18.5px] font-serif italic text-white/90 max-w-lg leading-[1.6] text-left md:text-right font-normal drop-shadow-md">
-              Step into Kwality Restaurant where a symphony of rich North Indian flavours, authentic tandoori delights, oriental specialties, and genuine hospitality leaves you feeling truly indulged.
-            </p>
-          </div>
-        </Container>
-      </section>
-
-      {/* Restaurant Introduction */}
-      <section className="py-20 bg-[#FAF8F5]">
-        <Container className="max-w-7xl px-4 sm:px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            {/* Intro Text */}
-            <div className="lg:col-span-7 space-y-6">
-              <div className="space-y-2">
-                <span className="text-xs uppercase font-bold tracking-[0.22em] text-[#BA8B32] block">
-                  CUISINE HERITAGE
-                </span>
-                <h2 className="text-3xl sm:text-4xl font-serif tracking-[0.08em] uppercase text-[#2B2320]">
-                  A Feast of Indian & Global Flavors
-                </h2>
-                <div className="w-12 h-[1.5px] bg-[#C5A880]" />
+      {/* Intro Section */}
+      <section className="bg-[#FAFAF8] py-20 sm:py-28">
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-16">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-20 items-start">
+            {/* Text */}
+            <div className="space-y-6">
+              <span className="text-[10px] sm:text-[11px] font-sans font-semibold tracking-[0.35em] uppercase text-[#BA8B32]">
+                Cuisine Heritage
+              </span>
+              <h2 className="text-3xl sm:text-5xl font-serif font-light text-[#111E31] tracking-[-0.02em] leading-[1.05]">
+                A feast of Indian &amp;{" "}
+                <em className="italic text-[#BA8B32]">global flavours.</em>
+              </h2>
+              <div className="space-y-4 text-sm sm:text-base text-stone-500 font-sans font-light leading-[1.8]">
+                <p>
+                  <strong className="font-semibold text-[#111E31]">Kwality Restaurant</strong> is the culinary crown jewel of Hotel Reliance, Bokaro Steel City. Known for its warm, sophisticated ambiance and attentive hospitality, our restaurant is a favorite dining destination for guests and local families alike.
+                </p>
+                <p>
+                  Our extensive multi-cuisine menu captures the authentic tastes of North Indian clay ovens, aromatic biryanis, and Chinese wok stir-fries — each recipe prepared using traditional methods and fresh, premium ingredients.
+                </p>
               </div>
 
-              <p className="text-sm text-[#5C4F46] leading-relaxed font-light">
-                <strong className="text-[#2B2320]">Kwality Restaurant</strong> is the culinary crown jewel of Hotel Reliance, Bokaro Steel City. Known for its warm, sophisticated ambiance, crystal chandelier lighting, and attentive table hospitality, our restaurant is a favorite dining destination for hotel guests and local families alike.
-              </p>
-
-              <p className="text-sm text-[#5C4F46] leading-relaxed font-light">
-                Our extensive multi-cuisine menu captures the authentic tastes of North Indian clay ovens, aromatic biryanis, and Chinese wok stir-fries. Each recipe is prepared using traditional methods and fresh, premium ingredients. Whether you want a lavish breakfast buffet, a corporate lunch, or an elegant dinner celebration, we offer the perfect setting.
-              </p>
-
-              {/* Hours display */}
-              <div className="bg-white border border-[#E8E1D7] p-6 max-w-md space-y-3 shadow-sm">
-                <h4 className="text-sm font-bold uppercase tracking-wider text-[#BA8B32] flex items-center">
-                  <Clock className="w-4 h-4 mr-2 text-[#2B2320]" />
-                  Service Timings
-                </h4>
-                <div className="space-y-2 text-xs text-[#5C4F46]">
-                  {diningHours.map((time, idx) => (
-                    <div key={idx} className="flex justify-between border-b border-[#FAF8F5] pb-1.5 last:border-0 last:pb-0">
-                      <span className="font-semibold text-[#2B2320]">{time.meal}</span>
-                      <span>{time.hours}</span>
+              {/* Hours card */}
+              <div className="bg-white rounded-2xl border border-stone-100 p-5 sm:p-6 shadow-sm">
+                <div className="flex items-center space-x-2 mb-4">
+                  <Clock className="w-4 h-4 text-[#BA8B32]" strokeWidth={1.8} />
+                  <span className="text-[11px] font-sans font-semibold uppercase tracking-[0.2em] text-[#BA8B32]">
+                    Service Timings
+                  </span>
+                </div>
+                <div className="space-y-3">
+                  {diningHours.map((t, i) => (
+                    <div key={i} className="flex justify-between items-center pb-3 border-b border-stone-50 last:border-0 last:pb-0">
+                      <span className="text-[13px] font-semibold text-[#111E31]">{t.meal}</span>
+                      <span className="text-[12px] text-stone-500 font-sans">{t.hours}</span>
                     </div>
                   ))}
                 </div>
               </div>
+
+              <a href={`tel:${hotelData.phones[0].replace(/\s+/g, "")}`}>
+                <button className="flex items-center space-x-2 px-6 py-3 rounded-full bg-[#BA8B32] hover:bg-[#A67B22] text-white text-[12px] font-semibold tracking-[0.1em] uppercase shadow-[0_4px_14px_rgba(186,139,50,0.35)] transition-all duration-300 cursor-pointer">
+                  <Phone className="w-3.5 h-3.5" />
+                  <span>Reserve a Table</span>
+                </button>
+              </a>
             </div>
 
-            {/* Intro Side Video: Kwality Restaurant Video Tour */}
-            <div className="lg:col-span-5">
+            {/* Video */}
+            <div className="rounded-2xl sm:rounded-3xl overflow-hidden border border-stone-100 shadow-[0_20px_60px_rgba(17,30,49,0.10)]">
               <RestaurantIntroVideo />
             </div>
           </div>
-        </Container>
+        </div>
       </section>
 
-      {/* Dual Ambiance Showcase Section */}
-      <section className="py-16 sm:py-24 bg-[#111111] text-white border-t border-white/15">
-        <Container className="max-w-7xl px-4 sm:px-6">
-          <div className="text-center space-y-3 mb-12 sm:mb-16">
-            <span className="text-xs uppercase font-bold tracking-[0.25em] text-[#BA8B32]">
-              CURATED DINING SPACES
+      {/* Dining Spaces */}
+      <section className="bg-[#111E31] text-white py-20 sm:py-28 relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none opacity-20"
+          style={{ background: "radial-gradient(ellipse 80% 50% at 50% 50%, rgba(186,139,50,0.12) 0%, transparent 70%)" }}
+        />
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 lg:px-16">
+          <div className="text-center mb-12 sm:mb-16">
+            <span className="text-[10px] sm:text-[11px] font-sans font-semibold tracking-[0.35em] uppercase text-[#BA8B32] block mb-3">
+              Curated Dining Spaces
             </span>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif uppercase tracking-[0.1em]">
-              The Restaurant Spaces
+            <h2 className="text-3xl sm:text-5xl font-serif font-light text-white tracking-[-0.02em]">
+              Two unique{" "}
+              <em className="italic text-[#D8B875]">atmospheres.</em>
             </h2>
-            <div className="w-12 h-[1.5px] bg-[#BA8B32] mx-auto" />
-            <p className="text-xs sm:text-sm font-serif italic text-white/80 max-w-xl mx-auto font-light leading-relaxed">
-              Experience the dual charm of our crystal chandelier royal dining hall and our sunlit garden-facing canopy lounge.
-            </p>
           </div>
 
-          {/* Dual High-Resolution Uncropped Displays */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10">
-            {/* Space 1: Grand Palace Hall */}
-            <div className="space-y-4">
-              <div className="relative aspect-[16/10] w-full overflow-hidden border border-white/20 shadow-2xl bg-black group">
-                <Image
-                  src="/images/restaurant/image.png"
-                  alt="Kwality Grand Palace Dining Room"
-                  fill
-                  quality={100}
-                  sizes="(max-w-1024px) 100vw, 50vw"
-                  className="object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
-                />
-              </div>
-              <div className="p-4 bg-white/5 border border-white/10 space-y-1.5">
-                <h3 className="font-serif text-lg tracking-[0.1em] uppercase text-white font-normal flex items-center">
-                  <span className="w-3 h-[1px] bg-[#BA8B32] mr-2" />
-                  The Grand Dining Hall
-                </h3>
-                <p className="text-xs font-serif font-light text-white/70 leading-relaxed">
-                  Crystal chandeliers, royal blue velvet seating, intricate gold jali screens, and candlelit ambiance.
-                </p>
-              </div>
-            </div>
-
-            {/* Space 2: Sunlit Canopy Lounge */}
-            <div className="space-y-4">
-              <div className="relative aspect-[16/10] w-full overflow-hidden border border-white/20 shadow-2xl bg-black group">
-                <Image
-                  src="/images/restaurant/canopy-lounge.png"
-                  alt="Kwality Sunlit Canopy Lounge"
-                  fill
-                  quality={100}
-                  sizes="(max-w-1024px) 100vw, 50vw"
-                  className="object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
-                />
-              </div>
-              <div className="p-4 bg-white/5 border border-white/10 space-y-1.5">
-                <h3 className="font-serif text-lg tracking-[0.1em] uppercase text-white font-normal flex items-center">
-                  <span className="w-3 h-[1px] bg-[#BA8B32] mr-2" />
-                  Sunlit Canopy Lounge
-                </h3>
-                <p className="text-xs font-serif font-light text-white/70 leading-relaxed">
-                  Airy draped fabric ceiling, floor-to-ceiling garden views, and contemporary daytime dining tables.
-                </p>
-              </div>
-            </div>
-          </div>
-        </Container>
-      </section>
-
-      {/* Chef Specialties with Murgh Malai Tikka Feature */}
-      <section className="py-20 bg-white border-t border-[#E8E1D7]">
-        <Container className="max-w-7xl px-4 sm:px-6">
-          <SectionHeading
-            title="Signature Chef Specialties"
-            subtitle="MENU HIGHLIGHTS"
-          />
-
-          {/* Mobile Swipeable Food Cards */}
-          <div className="md:hidden pt-6">
-            <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 no-scrollbar -mx-4 px-4">
-              {chefSpecialties.map((spec, idx) => (
-                <div
-                  key={idx}
-                  className="w-[84vw] max-w-[330px] flex-shrink-0 snap-center bg-[#FAF8F5] border border-[#E8E1D7] shadow-sm overflow-hidden flex flex-col justify-between touch-card-press rounded-sm"
-                >
-                  {/* Dish High-Resolution Image */}
-                  <div className="relative aspect-[16/10] w-full overflow-hidden bg-black">
-                    <Image
-                      src={spec.image}
-                      alt={spec.name}
-                      fill
-                      unoptimized
-                      quality={100}
-                      sizes="(max-width: 768px) 85vw, 33vw"
-                      className="object-cover object-center"
-                    />
-                    <div className="absolute top-3 left-3 z-10 bg-black/80 backdrop-blur-sm px-2.5 py-1 text-[9px] uppercase tracking-widest text-[#D8B875] font-serif border border-white/10 rounded-sm">
-                      {spec.tag}
-                    </div>
-                  </div>
-
-                  {/* Dish Info */}
-                  <div className="p-5 flex-grow flex flex-col justify-between space-y-3">
-                    <div>
-                      <h4 className="text-base font-serif font-normal text-[#2B2320] flex items-center">
-                        <span className="w-3 h-[1.5px] bg-[#BA8B32] mr-2 flex-shrink-0" />
-                        <span>{spec.name}</span>
-                      </h4>
-                      <p className="text-xs text-[#5C4F46] leading-relaxed font-light mt-2 line-clamp-3">
-                        {spec.desc}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="text-center pt-2 text-[#BA8B32]">
-              <span className="text-[10px] uppercase font-serif tracking-widest text-[#7A6B61]">Swipe Signature Dishes →</span>
-            </div>
-          </div>
-
-          {/* Tablet & Desktop 3-Column Grid */}
-          <div className="hidden md:grid md:grid-cols-3 gap-8 pt-6">
-            {chefSpecialties.map((spec, idx) => (
-              <div
-                key={idx}
-                className="bg-[#FAF8F5] border border-[#E8E1D7] shadow-sm overflow-hidden flex flex-col justify-between group hover:shadow-xl hover:border-[#BA8B32] transition-all duration-300 rounded-sm"
-              >
-                {/* Dish High-Resolution Image */}
-                <div className="relative aspect-[16/10] w-full overflow-hidden bg-black">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6">
+            {diningSpaces.map((space, i) => (
+              <div key={i} className="group rounded-2xl sm:rounded-3xl overflow-hidden bg-white/[0.04] border border-white/8 hover:border-[#BA8B32]/30 transition-all duration-500">
+                <div className="relative aspect-[16/10] overflow-hidden">
                   <Image
-                    src={spec.image}
-                    alt={spec.name}
+                    src={space.image}
+                    alt={space.name}
                     fill
-                    unoptimized
-                    quality={100}
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                    className="object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                    className="object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out opacity-80 group-hover:opacity-95"
                   />
-                  <div className="absolute top-3 left-3 z-10 bg-black/80 backdrop-blur-sm px-2.5 py-1 text-[9px] uppercase tracking-widest text-[#D8B875] font-serif border border-white/10 rounded-sm">
-                    {spec.tag}
-                  </div>
                 </div>
-
-                {/* Dish Info */}
-                <div className="p-6 flex-grow flex flex-col justify-between space-y-3">
-                  <div>
-                    <h4 className="text-lg font-serif font-normal text-[#2B2320] group-hover:text-[#BA8B32] transition-colors flex items-center">
-                      <span className="w-3 h-[1.5px] bg-[#BA8B32] mr-2 flex-shrink-0" />
-                      <span>{spec.name}</span>
-                    </h4>
-                    <p className="text-xs sm:text-[13px] text-[#5C4F46] leading-relaxed font-light mt-2">
-                      {spec.desc}
-                    </p>
-                  </div>
+                <div className="p-5 sm:p-6">
+                  <h3 className="text-base sm:text-lg font-serif font-light text-white group-hover:text-[#D8B875] transition-colors duration-300 mb-2">
+                    {space.name}
+                  </h3>
+                  <div className="w-6 h-px bg-[#BA8B32]/40 mb-3" />
+                  <p className="text-[12px] text-white/45 font-sans font-light leading-relaxed">{space.desc}</p>
                 </div>
               </div>
             ))}
           </div>
-        </Container>
+        </div>
       </section>
 
-      {/* Interactive Reservation Bar & Digital A La Carte Menu */}
+      {/* Chef Specialties */}
+      <section id="menu" className="bg-[#FAFAF8] py-20 sm:py-28">
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-16">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 sm:mb-14">
+            <div>
+              <span className="text-[10px] sm:text-[11px] font-sans font-semibold tracking-[0.35em] uppercase text-[#BA8B32] block mb-3">
+                Menu Highlights
+              </span>
+              <h2 className="text-3xl sm:text-5xl font-serif font-light text-[#111E31] tracking-[-0.02em] leading-[1.05]">
+                Signature chef{" "}
+                <em className="italic text-[#BA8B32]">specialties.</em>
+              </h2>
+            </div>
+          </div>
+
+          {/* Mobile swipe */}
+          <div className="md:hidden flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 no-scrollbar -mx-4 px-4">
+            {chefSpecialties.map((spec, idx) => (
+              <div key={idx} className="w-[84vw] max-w-[330px] flex-shrink-0 snap-center bg-white rounded-2xl overflow-hidden border border-stone-100 shadow-sm flex flex-col">
+                <div className="relative aspect-[16/10] overflow-hidden bg-stone-100">
+                  <Image src={spec.image} alt={spec.name} fill unoptimized sizes="85vw" className="object-cover" />
+                  <div className="absolute top-3 left-3 bg-[#111E31]/80 backdrop-blur-sm rounded-full px-3 py-1 border border-white/10">
+                    <span className="text-[9px] uppercase tracking-widest text-[#D8B875] font-semibold">{spec.tag}</span>
+                  </div>
+                </div>
+                <div className="p-5 flex-grow">
+                  <h4 className="text-[15px] font-serif font-semibold text-[#111E31] mb-2">{spec.name}</h4>
+                  <p className="text-[12px] text-stone-500 font-sans font-light leading-relaxed line-clamp-3">{spec.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop grid */}
+          <div className="hidden md:grid md:grid-cols-3 gap-6">
+            {chefSpecialties.map((spec, idx) => (
+              <div key={idx} className="group bg-white rounded-2xl sm:rounded-3xl overflow-hidden border border-stone-100 hover:border-[#BA8B32]/25 hover:shadow-[0_20px_60px_rgba(17,30,49,0.10)] transition-all duration-500 flex flex-col">
+                <div className="relative aspect-[16/10] overflow-hidden bg-stone-100">
+                  <Image src={spec.image} alt={spec.name} fill unoptimized sizes="33vw" className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out" />
+                  <div className="absolute top-3 left-3 bg-[#111E31]/80 backdrop-blur-md rounded-full px-3 py-1 border border-white/10">
+                    <span className="text-[9px] uppercase tracking-widest text-[#D8B875] font-semibold">{spec.tag}</span>
+                  </div>
+                </div>
+                <div className="p-5 sm:p-6 flex-grow">
+                  <h4 className="text-lg font-serif font-semibold text-[#111E31] group-hover:text-[#BA8B32] transition-colors duration-300 mb-2">{spec.name}</h4>
+                  <div className="w-6 h-px bg-[#BA8B32]/40 mb-3 group-hover:w-10 transition-all duration-400" />
+                  <p className="text-[13px] text-stone-500 font-sans font-light leading-relaxed">{spec.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Interactive Menu & Reservation */}
       <RestaurantPageClient phone={hotelData.phones[0]} />
 
-      {/* Dining details */}
-      <section className="py-20 bg-[#FAF8F5] border-t border-[#E8E1D7] text-center">
-        <Container className="max-w-2xl space-y-6">
-          <SectionHeading
-            title="Table Reservations & Room Dining"
-            subtitle="HAVE A DINING ENQUIRY?"
-          />
-          <p className="text-xs sm:text-sm text-[#5C4F46] leading-relaxed font-light">
-            We accommodate lunch and dinner table bookings. Guests lodging in our rooms can also enjoy the complete menu served to their door through our 24/7 room service options.
+      {/* Dining enquiry CTA */}
+      <section className="bg-[#FAFAF8] py-16 sm:py-20 text-center">
+        <div className="max-w-xl mx-auto px-4 sm:px-8 space-y-5">
+          <span className="text-[10px] font-sans font-semibold uppercase tracking-[0.3em] text-[#BA8B32]">
+            Have a Dining Enquiry?
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-serif font-light text-[#111E31] tracking-[-0.02em]">
+            Table reservations &amp;{" "}
+            <em className="italic text-[#BA8B32]">room dining.</em>
+          </h2>
+          <p className="text-[13px] sm:text-sm text-stone-500 font-sans font-light leading-[1.8]">
+            We accommodate lunch and dinner table bookings. Hotel guests enjoy the complete menu served to their door through our 24/7 room service.
           </p>
-          <div className="pt-2">
-            <a href={`tel:${hotelData.phones[0].replace(/\s+/g, "")}`}>
-              <Button variant="gold" size="lg" className="uppercase text-xs tracking-wider font-semibold">
-                <Phone className="w-4 h-4 mr-2" />
-                Call Table Booking: {hotelData.phones[0]}
-              </Button>
-            </a>
-          </div>
-        </Container>
+          <a href={`tel:${hotelData.phones[0].replace(/\s+/g, "")}`}>
+            <button className="inline-flex items-center space-x-2 px-7 py-3.5 rounded-full bg-[#BA8B32] hover:bg-[#A67B22] text-white text-[12px] font-semibold tracking-[0.1em] uppercase shadow-[0_4px_14px_rgba(186,139,50,0.35)] transition-all duration-300 cursor-pointer">
+              <Phone className="w-3.5 h-3.5" />
+              <span>Call: {hotelData.phones[0]}</span>
+            </button>
+          </a>
+        </div>
       </section>
 
       <HomeCTA />

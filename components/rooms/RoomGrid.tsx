@@ -23,43 +23,20 @@ export function RoomGrid({ rooms: initialRooms }: RoomGridProps) {
 
   return (
     <div className="space-y-10 sm:space-y-12">
-      {/* Sub-header & Category Filter Tabs matching Offers Page */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-[#E8E1D7]">
+      {/* Sub-header & Category Filter Tabs with Apple Pill Aesthetics */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-stone-200/80">
         <div>
-          <span className="text-xs uppercase tracking-[0.2em] font-serif font-bold text-[#B38E5D] block">
-            CURATED SPACES
+          <span className="text-[10px] sm:text-[11px] font-sans font-semibold tracking-[0.35em] uppercase text-[#BA8B32] block mb-2">
+            Curated Spaces
           </span>
-          <h2 className="text-xl sm:text-2xl font-serif text-[#2B2320] mt-0.5">
-            Select Your Accommodation
+          <h2 className="text-2xl sm:text-4xl font-serif font-light text-[#111E31] tracking-[-0.02em]">
+            Select your <em className="italic text-[#BA8B32]">accommodation.</em>
           </h2>
+          <p className="text-xs sm:text-[13px] text-stone-500 font-sans font-light mt-1.5">
+            Filter by room category to discover bespoke sanctuaries tailored for your stay.
+          </p>
         </div>
 
-        {/* Dynamic Filter Category Tabs */}
-        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-          <button
-            onClick={() => setActiveFilter("all")}
-            className={`px-4 sm:px-5 py-2 sm:py-2.5 text-xs font-serif uppercase tracking-[0.12em] sm:tracking-[0.16em] transition-all duration-300 rounded-none cursor-pointer border ${
-              activeFilter === "all"
-                ? "bg-[#2B2320] text-white border-[#2B2320] shadow-sm font-semibold"
-                : "bg-white text-[#5C4F46] border-[#E8E1D7] hover:border-[#C5A880] hover:text-[#2B2320]"
-            }`}
-          >
-            All Rooms ({rooms.length})
-          </button>
-          {rooms.map((r) => (
-            <button
-              key={r.id || r.slug}
-              onClick={() => setActiveFilter(r.slug)}
-              className={`px-4 sm:px-5 py-2 sm:py-2.5 text-xs font-serif uppercase tracking-[0.12em] sm:tracking-[0.16em] transition-all duration-300 rounded-none cursor-pointer border ${
-                activeFilter === r.slug
-                  ? "bg-[#2B2320] text-white border-[#2B2320] shadow-sm font-semibold"
-                  : "bg-white text-[#5C4F46] border-[#E8E1D7] hover:border-[#C5A880] hover:text-[#2B2320]"
-              }`}
-            >
-              {r.name} ({r.occupancy} {r.occupancy === 1 ? "Guest" : "Guests"})
-            </button>
-          ))}
-        </div>
       </div>
 
 

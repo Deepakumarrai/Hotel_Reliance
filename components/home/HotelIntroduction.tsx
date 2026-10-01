@@ -3,175 +3,131 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Sparkles } from "lucide-react";
-import { Container } from "@/components/ui/Container";
-import { Button } from "@/components/ui/Button";
-import { FadeUp } from "@/components/animation/FadeUp";
+import { ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
 
 export function HotelIntroduction() {
   return (
-    <section id="introduction" className="py-16 sm:py-28 bg-[#F6F3EE] text-[#2D2424] overflow-hidden">
-      <Container className="max-w-6xl px-4 sm:px-6">
-        <FadeUp className="space-y-10 sm:space-y-12">
-          {/* Top Editorial Header Area */}
-          <div className="text-center max-w-4xl mx-auto space-y-4 sm:space-y-6">
-            {/* Top Ornamental Line with Center Diamond */}
-            <div className="flex items-center justify-center space-x-3 max-w-xs sm:max-w-md mx-auto">
-              <div className="h-[1.5px] bg-[#C5A880] flex-grow" />
-              <span className="text-[#C5A880] text-xs sm:text-sm">✦</span>
-              <div className="w-2.5 h-2.5 rotate-45 border-2 border-[#C5A880] bg-[#FAF7F2]" />
-              <span className="text-[#C5A880] text-xs sm:text-sm">✦</span>
-              <div className="h-[1.5px] bg-[#C5A880] flex-grow" />
+    <section id="introduction" className="bg-[#FAFAF8] text-[#111E31] overflow-hidden">
+      {/* Chapter label */}
+      <div className="flex items-center justify-center pt-20 sm:pt-28 pb-0 px-6">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="flex flex-col items-center text-center"
+        >
+          <span className="text-[10px] sm:text-[11px] font-sans font-semibold tracking-[0.35em] uppercase text-[#BA8B32] mb-4">
+            Our Story
+          </span>
+          <h2 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-light text-[#111E31] tracking-[-0.02em] leading-[1.05] max-w-4xl text-center">
+            Not just a hotel —{" "}
+            <em className="italic text-[#BA8B32]">a home</em>{" "}
+            you return to.
+          </h2>
+          <div className="w-px h-12 sm:h-16 bg-gradient-to-b from-[#BA8B32] to-transparent mt-8 sm:mt-10" />
+        </motion.div>
+      </div>
+
+      {/* Two-column editorial layout */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-16 py-16 sm:py-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+          {/* Left: Image */}
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            className="relative"
+          >
+            <div className="relative aspect-[3/4] max-h-[640px] overflow-hidden rounded-3xl shadow-[0_30px_80px_rgba(17,30,49,0.15)]">
+              <Image
+                src="/images/hotel/image.png"
+                alt="Hotel Reliance Bokaro Building"
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-contain w-full h-full"
+                priority
+              />
             </div>
-
-            {/* Main Title */}
-            <h2 className="text-2xl sm:text-5xl md:text-6xl font-serif font-normal text-[#2A211D] tracking-[0.06em] sm:tracking-[0.1em] uppercase leading-tight">
-              Thank You For Being
-              <span className="block mt-1 sm:mt-3 text-[#9E7848]">Part Of This Journey</span>
-            </h2>
-
-            {/* Subtext Paragraphs */}
-            <div className="space-y-3 sm:space-y-4 pt-2 text-sm sm:text-lg md:text-xl font-serif text-[#3D302A] leading-relaxed max-w-3xl mx-auto font-normal">
-              <p className="tracking-wide">
-                At <span className="font-semibold text-[#2A211D] underline decoration-[#C5A880]/60 decoration-2 underline-offset-4">Hotel Reliance, Bokaro Steel City</span>, your support and trust inspire us every single day.
-              </p>
-              <p className="text-xs sm:text-base md:text-lg text-[#52443C] font-light leading-relaxed">
-                We are not just a brand or a chain of hotels — we are a <strong className="font-semibold text-[#2A211D]">locally owned hospitality destination</strong> built with passion, dedicated to serving our guests with <em className="italic text-[#9E7848] font-serif">warmth, comfort, and genuine care</em>.
-              </p>
+            {/* Floating accent card */}
+            <div className="absolute -bottom-5 -right-4 sm:-right-8 bg-[#111E31] text-white rounded-2xl px-5 sm:px-7 py-4 sm:py-5 shadow-2xl">
+              <p className="text-3xl sm:text-4xl font-serif font-bold text-[#D8B875]">45+</p>
+              <p className="text-[10px] sm:text-[11px] uppercase tracking-widest text-white/60 mt-0.5">Premium Rooms</p>
             </div>
-          </div>
+          </motion.div>
 
-          {/* Master 2-Panel Golden Framed Card */}
-          <div className="relative border-2 border-[#C5A880] bg-[#FAF7F2] shadow-2xl overflow-hidden rounded-sm">
-            <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[460px]">
-              {/* Left Column: Natural Unstretched Hotel Image with Luxury Inner Framing */}
-              <div className="lg:col-span-6 relative bg-[#FAF7F2] p-4 sm:p-6 lg:p-8 flex items-center justify-center">
-                <div className="relative w-full aspect-[1121/1403] max-h-[580px] overflow-hidden rounded-sm border border-[#C5A880]/50 shadow-md bg-white">
-                  <Image
-                    src="/images/hotel/image.png"
-                    alt="Hotel Reliance Bokaro Building"
-                    fill
-                    sizes="(max-w-1024px) 100vw, 50vw"
-                    className="object-contain w-full h-full"
-                    priority
-                  />
-                </div>
+          {/* Right: Story content */}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+            className="flex flex-col space-y-7 sm:space-y-8 lg:pl-4"
+          >
+            {/* Brand monogram */}
+            <div className="flex items-center space-x-4">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#BA8B32]/10 border border-[#BA8B32]/30 flex items-center justify-center">
+                <span className="font-serif text-lg sm:text-xl font-bold text-[#BA8B32]">R</span>
               </div>
-
-
-
-
-
-
-              {/* Right Column: Hand-Coded Luxury Credo & Royal Monogram */}
-              <div className="lg:col-span-6 lg:border-l-2 border-[#C5A880] bg-[#FAF7F2] p-6 sm:p-12 lg:p-14 flex flex-col items-center justify-center text-center space-y-5 sm:space-y-6">
-                {/* Royal Laurel Crest & Monogram */}
-                <div className="flex flex-col items-center space-y-2">
-                  <svg
-                    className="w-14 h-14 sm:w-20 sm:h-20 text-[#C5A880]"
-                    viewBox="0 0 100 100"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    {/* Crown */}
-                    <path
-                      d="M38 30L42 22L50 28L58 22L62 30H38Z"
-                      fill="#C5A880"
-                    />
-                    <circle cx="42" cy="20" r="1.5" fill="#C5A880" />
-                    <circle cx="50" cy="18" r="2" fill="#C5A880" />
-                    <circle cx="58" cy="20" r="1.5" fill="#C5A880" />
-                    {/* Laurel Wreath Left */}
-                    <path
-                      d="M30 45C30 58 38 68 50 72C42 68 36 58 36 45C36 38 38 32 40 28C34 32 30 38 30 45Z"
-                      fill="#C5A880"
-                      opacity="0.85"
-                    />
-                    {/* Laurel Wreath Right */}
-                    <path
-                      d="M70 45C70 58 62 68 50 72C58 68 64 58 64 45C64 38 62 32 60 28C66 32 70 38 70 45Z"
-                      fill="#C5A880"
-                      opacity="0.85"
-                    />
-                    {/* Inner Serif R */}
-                    <text
-                      x="50"
-                      y="56"
-                      fontFamily="Cinzel, Playfair Display, var(--font-cormorant), Georgia, serif"
-                      fontSize="24"
-                      fontWeight="bold"
-                      fill="#C5A880"
-                      textAnchor="middle"
-                      dominantBaseline="middle"
-                    >
-                      R
-                    </text>
-                  </svg>
-
-                  {/* Brand Typography */}
-                  <div className="space-y-0.5">
-                    <span className="text-[10px] sm:text-xs uppercase tracking-[0.35em] text-[#B38E5D] font-serif font-bold block">
-                      HOTEL
-                    </span>
-                    <h3 className="text-xl sm:text-3xl lg:text-4xl font-serif font-normal text-[#2A211D] tracking-[0.14em]">
-                      RELIANCE
-                    </h3>
-                    <span className="text-[9px] sm:text-[11px] uppercase tracking-[0.25em] text-[#B38E5D] font-serif font-medium block">
-                      BOKARO STEEL CITY
-                    </span>
-                  </div>
-                </div>
-
-                {/* Decorative Scroll Divider */}
-                <div className="flex items-center justify-center space-x-2 w-32 sm:w-36 mx-auto">
-                  <div className="h-[1px] bg-[#C5A880]/60 flex-grow" />
-                  <svg className="w-5 h-2.5 sm:w-6 sm:h-3 text-[#C5A880]" viewBox="0 0 24 12" fill="none" stroke="currentColor">
-                    <circle cx="12" cy="6" r="2" fill="#C5A880" />
-                    <path d="M4 6C7 2 17 2 20 6C17 10 7 10 4 6Z" strokeWidth="1" />
-                  </svg>
-                  <div className="h-[1px] bg-[#C5A880]/60 flex-grow" />
-                </div>
-
-                {/* The Emotional Hospitality Message */}
-                <p className="font-serif italic text-xs sm:text-base md:text-[17px] text-[#4F423A] leading-relaxed max-w-md font-light">
-                  &ldquo;We may not be the biggest chain, but every guest who walks through our doors becomes a part of the Hotel Reliance family. Your love and encouragement motivate us to keep improving and creating memorable experiences.&rdquo;
-                </p>
-
-                {/* Center Horizontal Separator */}
-                <div className="w-16 sm:w-20 h-[1px] bg-[#C5A880]/50" />
-
-                {/* The Signature Motto */}
-                <div className="space-y-1.5 sm:space-y-2">
-                  <p className="text-[10px] sm:text-sm font-serif uppercase tracking-[0.18em] sm:tracking-[0.22em] font-bold text-[#9E7848]">
-                    LOCALLY ROOTED. GUEST FOCUSED. BUILT WITH HEART.
-                  </p>
-                </div>
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.3em] text-[#BA8B32] font-semibold">Hotel Reliance</p>
+                <p className="text-[10px] uppercase tracking-[0.2em] text-stone-400 font-medium">Bokaro Steel City</p>
               </div>
             </div>
-          </div>
 
-          {/* Action Row below the Spread */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 pt-2 px-2">
-            <p className="text-[11px] sm:text-sm font-serif uppercase tracking-[0.16em] sm:tracking-[0.18em] text-[#7C695A] text-center sm:text-left">
-              Plot No. 11, Co-Operative Colony • Bokaro Steel City, Jharkhand
+            <div className="space-y-4 sm:space-y-5">
+              <p className="text-xl sm:text-2xl font-serif text-[#111E31] leading-[1.5] font-light">
+                At Hotel Reliance, your support and trust inspire us every single day.
+              </p>
+              <p className="text-sm sm:text-base text-stone-500 leading-[1.8] font-sans font-light">
+                We are not just a brand or a chain of hotels — we are a{" "}
+                <strong className="font-semibold text-[#111E31]">locally owned hospitality destination</strong>{" "}
+                built with passion, dedicated to serving our guests with warmth, comfort, and genuine care.
+              </p>
+              <p className="text-sm sm:text-base text-stone-500 leading-[1.8] font-sans font-light">
+                Located in the heart of Bokaro Steel City, our property blends modern luxury with the warmth of true Indian hospitality. Every corner has been thoughtfully crafted to make you feel truly at home.
+              </p>
+            </div>
+
+            {/* Quote */}
+            <div className="border-l-2 border-[#BA8B32]/40 pl-5 py-1">
+              <p className="font-serif italic text-base sm:text-lg text-[#4A3E37] leading-relaxed font-light">
+                "Every guest who walks through our doors becomes part of the Hotel Reliance family."
+              </p>
+            </div>
+
+            {/* Signature line */}
+            <p className="text-[10px] uppercase tracking-[0.2em] text-stone-400 font-semibold">
+              Locally Rooted · Guest Focused · Built with Heart
             </p>
 
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
-              <Link href="/about" className="w-full sm:w-auto">
-                <Button variant="outline" size="md" className="w-full sm:w-auto uppercase text-xs tracking-wider border-[#C5A880] text-[#2A211D] hover:bg-[#C5A880] hover:text-white">
-                  Our Story & Team
-                  <ArrowRight className="w-3.5 h-3.5 ml-2" />
-                </Button>
+            {/* Action buttons */}
+            <div className="flex flex-col sm:flex-row gap-3 pt-2">
+              <Link href="/about">
+                <button className="flex items-center justify-center space-x-2 px-6 py-3 rounded-full border border-[#111E31]/20 text-[#111E31] hover:bg-[#111E31] hover:text-white text-[12px] font-semibold tracking-[0.1em] uppercase transition-all duration-300 cursor-pointer w-full sm:w-auto">
+                  <span>Our Story</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
               </Link>
-              <Link href="/rooms" className="w-full sm:w-auto">
-                <Button variant="primary" size="md" className="w-full sm:w-auto uppercase text-xs tracking-wider">
-                  Explore Rooms & Suites
-                </Button>
+              <Link href="/rooms">
+                <button className="flex items-center justify-center space-x-2 px-6 py-3 rounded-full bg-[#BA8B32] hover:bg-[#A67B22] text-white text-[12px] font-semibold tracking-[0.1em] uppercase shadow-[0_4px_14px_rgba(186,139,50,0.35)] hover:shadow-[0_6px_20px_rgba(186,139,50,0.45)] transition-all duration-300 cursor-pointer w-full sm:w-auto">
+                  <span>Explore Rooms</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
               </Link>
             </div>
-          </div>
-        </FadeUp>
-      </Container>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* Address footer line */}
+      <div className="text-center pb-10 sm:pb-14">
+        <p className="text-[10px] sm:text-[11px] font-sans text-stone-400 tracking-[0.2em] uppercase">
+          Plot No. 11, Co-Operative Colony · Bokaro Steel City, Jharkhand
+        </p>
+      </div>
     </section>
   );
 }

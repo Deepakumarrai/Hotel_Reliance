@@ -172,80 +172,80 @@ export function AuthModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-dark/80 backdrop-blur-sm overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0C1524]/65 backdrop-blur-md overflow-y-auto">
       <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 15 }}
+        initial={{ opacity: 0, scale: 0.96, y: 12 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95, y: 15 }}
+        exit={{ opacity: 0, scale: 0.96, y: 12 }}
         transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-        className="relative w-full max-w-lg bg-cream border border-border-custom shadow-2xl overflow-hidden my-8"
+        className="relative w-full max-w-lg bg-white/95 backdrop-blur-2xl rounded-3xl border border-stone-200/80 shadow-[0_30px_90px_rgba(17,30,49,0.28)] overflow-hidden my-8"
       >
-        {/* Header Gold Accent */}
-        <div className="h-1.5 w-full bg-gradient-to-r from-gold via-gold-highlight to-gold" />
+        {/* Subtle warm luxury top glow */}
+        <div className="h-1 w-full bg-gradient-to-r from-transparent via-[#BA8B32]/70 to-transparent" />
 
-        {/* Close button */}
+        {/* Apple style close pill button */}
         <button
           onClick={closeAuthModal}
-          className="absolute top-4 right-4 p-2 text-muted hover:text-dark transition-colors focus:outline-none focus:ring-1 focus:ring-gold"
+          className="absolute top-4 right-4 w-8 h-8 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-600 flex items-center justify-center transition-all cursor-pointer focus:outline-none z-20"
           aria-label="Close modal"
         >
-          <X className="w-5 h-5" />
+          <X className="w-4 h-4" />
         </button>
 
-        <div className="p-6 sm:p-8 space-y-6">
+        <div className="p-6 sm:p-8 space-y-5">
           {/* Modal Header */}
-          <div className="text-center space-y-1">
-            <span className="text-[10px] uppercase font-bold tracking-[0.25em] text-gold">
+          <div className="text-center space-y-1.5 pt-1">
+            <span className="text-[10px] uppercase font-sans font-semibold tracking-[0.25em] text-[#BA8B32] block">
               HOTEL RELIANCE • GUEST ACCESS
             </span>
-            <h2 className="text-2xl sm:text-3xl font-serif text-dark">
+            <h2 className="text-2xl sm:text-3xl font-serif font-light text-[#111E31] tracking-[-0.01em]">
               {mode === "signin" ? "Sign In to Continue" : "Create Guest Account"}
             </h2>
-            <p className="text-xs text-muted max-w-sm mx-auto font-light">
+            <p className="text-xs text-stone-500 max-w-sm mx-auto font-sans leading-relaxed">
               {targetRoom
                 ? `Sign in or create an account to finalize your reservation for ${targetRoom.name}.`
-                : "Manage your reservations, room preferences, and hospitality concierge."}
+                : "Manage your reservations, special amenities, and direct booking perks."}
             </p>
           </div>
 
           {/* Booking intent banner if present */}
           {targetRoom && (
-            <div className="p-3 bg-white border border-gold/30 flex items-center justify-between text-xs">
+            <div className="p-3.5 bg-stone-50/90 border border-stone-200 rounded-2xl flex items-center justify-between text-xs">
               <div>
-                <span className="text-[9px] uppercase tracking-wider text-gold font-bold block">
+                <span className="text-[9px] uppercase tracking-wider text-[#BA8B32] font-semibold block">
                   Preserved Selection
                 </span>
-                <span className="font-semibold text-dark">{targetRoom.name}</span>
+                <span className="font-serif font-medium text-[#111E31] text-[13px]">{targetRoom.name}</span>
                 {bookingIntent?.checkIn && (
-                  <span className="text-muted text-[11px] block">
+                  <span className="text-stone-500 text-[11px] block mt-0.5">
                     {bookingIntent.checkIn} to {bookingIntent.checkOut || ""} • {bookingIntent.adults || 2} Adults
                   </span>
                 )}
               </div>
-              <span className="px-2 py-1 bg-gold/10 text-gold text-[10px] uppercase font-bold border border-gold/20">
+              <span className="px-2.5 py-1 bg-[#BA8B32]/10 text-[#BA8B32] text-[10px] uppercase font-semibold rounded-full border border-[#BA8B32]/20">
                 Ready to Book
               </span>
             </div>
           )}
 
-          {/* Mode Switcher Tabs */}
-          <div className="flex border-b border-border-custom text-xs font-semibold uppercase tracking-wider">
+          {/* Mode Switcher Pill Tabs */}
+          <div className="flex bg-stone-100/80 p-1 rounded-full text-xs font-medium">
             <button
               onClick={() => handleModeSwitch("signin")}
-              className={`flex-1 py-3 text-center border-b-2 transition-all cursor-pointer ${
+              className={`flex-1 py-2 rounded-full transition-all text-center cursor-pointer text-xs font-sans ${
                 mode === "signin"
-                  ? "border-gold text-dark font-bold bg-white/50"
-                  : "border-transparent text-muted hover:text-dark"
+                  ? "bg-white text-[#111E31] shadow-sm font-semibold"
+                  : "text-stone-500 hover:text-stone-900"
               }`}
             >
               Sign In
             </button>
             <button
               onClick={() => handleModeSwitch("signup")}
-              className={`flex-1 py-3 text-center border-b-2 transition-all cursor-pointer ${
+              className={`flex-1 py-2 rounded-full transition-all text-center cursor-pointer text-xs font-sans ${
                 mode === "signup"
-                  ? "border-gold text-dark font-bold bg-white/50"
-                  : "border-transparent text-muted hover:text-dark"
+                  ? "bg-white text-[#111E31] shadow-sm font-semibold"
+                  : "text-stone-500 hover:text-stone-900"
               }`}
             >
               Create Account
@@ -257,7 +257,7 @@ export function AuthModal() {
             <motion.div
               initial={{ opacity: 0, y: -5 }}
               animate={{ opacity: 1, y: 0 }}
-              className="p-3 bg-red-50 border border-red-300 text-red-700 text-xs flex items-start space-x-2"
+              className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-xs flex items-start space-x-2"
             >
               <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
               <div className="flex-grow">
@@ -266,7 +266,7 @@ export function AuthModal() {
                   <button
                     type="button"
                     onClick={() => handleModeSwitch("signup")}
-                    className="block font-bold text-red-800 underline mt-1 cursor-pointer"
+                    className="block font-semibold text-red-800 underline mt-1 cursor-pointer"
                   >
                     Click here to Create an Account
                   </button>
@@ -279,7 +279,7 @@ export function AuthModal() {
             <motion.div
               initial={{ opacity: 0, y: -5 }}
               animate={{ opacity: 1, y: 0 }}
-              className="p-3 bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs flex items-center space-x-2"
+              className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 text-xs flex items-center space-x-2"
             >
               <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
               <span>{successMessage}</span>
@@ -290,149 +290,150 @@ export function AuthModal() {
           {mode === "signin" ? (
             <div>
               <form onSubmit={handleSignInSubmit} className="space-y-4">
-              <div className="space-y-1">
-                <label className="text-[10px] uppercase font-bold tracking-wider text-muted block">
-                  Email Address
-                </label>
-                <div className="relative">
-                  <Mail className="w-4 h-4 text-muted absolute left-3 top-3" />
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="e.g. demo@example.com"
-                    required
-                    className="w-full bg-white border border-border-custom pl-9 pr-3 py-2.5 text-xs text-dark focus:border-gold focus:outline-none"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <div className="flex items-center justify-between">
-                  <label className="text-[10px] uppercase font-bold tracking-wider text-muted block">
-                    Password
+                <div className="space-y-1">
+                  <label className="text-[11px] font-sans font-medium text-stone-600 block">
+                    Email Address
                   </label>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      closeAuthModal();
-                      router.push("/auth/forgot-password");
-                    }}
-                    className="text-[10px] text-gold hover:underline"
-                  >
-                    Forgot Password?
-                  </button>
+                  <div className="relative">
+                    <Mail className="w-4 h-4 text-stone-400 absolute left-3.5 top-3" />
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="e.g. demo@example.com"
+                      required
+                      className="w-full bg-stone-50/80 hover:bg-stone-50 focus:bg-white border border-stone-200 focus:border-[#BA8B32] rounded-xl transition-all pl-10 pr-3.5 py-2.5 text-xs text-[#111E31] placeholder-stone-400 outline-none"
+                    />
+                  </div>
                 </div>
-                <div className="relative">
-                  <Lock className="w-4 h-4 text-muted absolute left-3 top-3" />
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Enter your password"
-                    required
-                    className="w-full bg-white border border-border-custom pl-9 pr-10 py-2.5 text-xs text-dark focus:border-gold focus:outline-none"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-3 text-muted hover:text-dark focus:outline-none"
-                    aria-label={showPassword ? "Hide password" : "Show password"}
-                  >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
+
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[11px] font-sans font-medium text-stone-600 block">
+                      Password
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        closeAuthModal();
+                        router.push("/auth/forgot-password");
+                      }}
+                      className="text-[11px] text-[#BA8B32] hover:underline cursor-pointer"
+                    >
+                      Forgot Password?
+                    </button>
+                  </div>
+                  <div className="relative">
+                    <Lock className="w-4 h-4 text-stone-400 absolute left-3.5 top-3" />
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Enter your password"
+                      required
+                      className="w-full bg-stone-50/80 hover:bg-stone-50 focus:bg-white border border-stone-200 focus:border-[#BA8B32] rounded-xl transition-all pl-10 pr-10 py-2.5 text-xs text-[#111E31] placeholder-stone-400 outline-none"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-2.5 p-1 text-stone-400 hover:text-[#111E31] focus:outline-none cursor-pointer"
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="text-[11px] text-stone-500 bg-stone-50 p-3 rounded-xl border border-stone-200 flex items-center justify-between">
+                  <div>
+                    <span className="font-semibold text-[#111E31]">Demo Account:</span>{" "}
+                    <span>demo@example.com / password123</span>
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full min-h-[44px] bg-[#111E31] hover:bg-[#1a2e4a] text-white rounded-full font-sans font-semibold text-xs tracking-wider uppercase transition-all shadow-[0_4px_16px_rgba(17,30,49,0.2)] hover:shadow-[0_8px_24px_rgba(17,30,49,0.3)] active:scale-[0.99] cursor-pointer flex items-center justify-center disabled:opacity-60"
+                >
+                  {isSubmitting ? "Authenticating..." : "Sign In to Hotel Reliance"}
+                </button>
+              </form>
+
+              <div className="relative my-4">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-stone-200" />
+                </div>
+                <div className="relative flex justify-center text-[10px] uppercase font-semibold">
+                  <span className="bg-white px-3 text-stone-400 tracking-wider">Or</span>
                 </div>
               </div>
 
-              <div className="text-[11px] text-muted bg-white/70 p-2.5 border border-border-custom">
-                <span className="font-semibold text-dark">Demo Test Account:</span> demo@example.com / password123
-              </div>
-
-              <Button
-                type="submit"
-                variant="primary"
-                fullWidth
-                disabled={isSubmitting}
-                className="py-3 text-xs tracking-widest font-bold uppercase"
-              >
-                {isSubmitting ? "Authenticating..." : "Sign In to Hotel Reliance"}
-              </Button>
-            </form>
-
-            <div className="relative my-4">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-border-custom" />
-              </div>
-              <div className="relative flex justify-center text-[10px] uppercase">
-                <span className="bg-cream px-2 text-muted font-bold tracking-widest">Or</span>
-              </div>
+              <GoogleAuthButton
+                onSuccess={() => {
+                  setSuccessMessage("Google sign-in verified. Redirecting...");
+                  setTimeout(() => {
+                    closeAuthModal();
+                    if (bookingIntent) {
+                      router.push(`/booking?room=${bookingIntent.roomSlug || ""}`);
+                      clearBookingIntent();
+                    }
+                  }, 600);
+                }}
+              />
             </div>
-
-            <GoogleAuthButton
-              onSuccess={() => {
-                setSuccessMessage("Google sign-in verified. Redirecting...");
-                setTimeout(() => {
-                  closeAuthModal();
-                  if (bookingIntent) {
-                    router.push(`/booking?room=${bookingIntent.roomSlug || ""}`);
-                    clearBookingIntent();
-                  }
-                }, 600);
-              }}
-            />
-          </div>
           ) : (
             /* Sign Up Section */
             <div>
-              <form onSubmit={handleSignUpSubmit} className="space-y-4">
+              <form onSubmit={handleSignUpSubmit} className="space-y-3.5">
                 <div className="space-y-1">
-                  <label className="text-[10px] uppercase font-bold tracking-wider text-muted block">
+                  <label className="text-[11px] font-sans font-medium text-stone-600 block">
                     Full Name
                   </label>
                   <div className="relative">
-                    <UserIcon className="w-4 h-4 text-muted absolute left-3 top-3" />
+                    <UserIcon className="w-4 h-4 text-stone-400 absolute left-3.5 top-3" />
                     <input
                       type="text"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="Dr. Rajesh Sharma"
                       required
-                      className="w-full bg-white border border-border-custom pl-9 pr-3 py-2.5 text-xs text-dark focus:border-gold focus:outline-none"
+                      className="w-full bg-stone-50/80 hover:bg-stone-50 focus:bg-white border border-stone-200 focus:border-[#BA8B32] rounded-xl transition-all pl-10 pr-3.5 py-2.5 text-xs text-[#111E31] placeholder-stone-400 outline-none"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <label className="text-[10px] uppercase font-bold tracking-wider text-muted block">
+                    <label className="text-[11px] font-sans font-medium text-stone-600 block">
                       Email Address
                     </label>
                     <div className="relative">
-                      <Mail className="w-4 h-4 text-muted absolute left-3 top-3" />
+                      <Mail className="w-4 h-4 text-stone-400 absolute left-3.5 top-3" />
                       <input
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="guest@example.com"
                         required
-                        className="w-full bg-white border border-border-custom pl-9 pr-3 py-2.5 text-xs text-dark focus:border-gold focus:outline-none"
+                        className="w-full bg-stone-50/80 hover:bg-stone-50 focus:bg-white border border-stone-200 focus:border-[#BA8B32] rounded-xl transition-all pl-10 pr-3.5 py-2.5 text-xs text-[#111E31] placeholder-stone-400 outline-none"
                       />
                     </div>
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[10px] uppercase font-bold tracking-wider text-muted block">
+                    <label className="text-[11px] font-sans font-medium text-stone-600 block">
                       Phone Number
                     </label>
                     <div className="relative">
-                      <Phone className="w-4 h-4 text-muted absolute left-3 top-3" />
+                      <Phone className="w-4 h-4 text-stone-400 absolute left-3.5 top-3" />
                       <input
                         type="tel"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                         placeholder="+91 92629 97777"
                         required
-                        className="w-full bg-white border border-border-custom pl-9 pr-3 py-2.5 text-xs text-dark focus:border-gold focus:outline-none"
+                        className="w-full bg-stone-50/80 hover:bg-stone-50 focus:bg-white border border-stone-200 focus:border-[#BA8B32] rounded-xl transition-all pl-10 pr-3.5 py-2.5 text-xs text-[#111E31] placeholder-stone-400 outline-none"
                       />
                     </div>
                   </div>
@@ -440,7 +441,7 @@ export function AuthModal() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <label className="text-[10px] uppercase font-bold tracking-wider text-muted block">
+                    <label className="text-[11px] font-sans font-medium text-stone-600 block">
                       Create Password
                     </label>
                     <input
@@ -449,12 +450,12 @@ export function AuthModal() {
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="Min 6 chars"
                       required
-                      className="w-full bg-white border border-border-custom px-3 py-2.5 text-xs text-dark focus:border-gold focus:outline-none"
+                      className="w-full bg-stone-50/80 hover:bg-stone-50 focus:bg-white border border-stone-200 focus:border-[#BA8B32] rounded-xl transition-all px-3.5 py-2.5 text-xs text-[#111E31] placeholder-stone-400 outline-none"
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[10px] uppercase font-bold tracking-wider text-muted block">
+                    <label className="text-[11px] font-sans font-medium text-stone-600 block">
                       Confirm Password
                     </label>
                     <input
@@ -463,7 +464,7 @@ export function AuthModal() {
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       placeholder="Re-enter password"
                       required
-                      className="w-full bg-white border border-border-custom px-3 py-2.5 text-xs text-dark focus:border-gold focus:outline-none"
+                      className="w-full bg-stone-50/80 hover:bg-stone-50 focus:bg-white border border-stone-200 focus:border-[#BA8B32] rounded-xl transition-all px-3.5 py-2.5 text-xs text-[#111E31] placeholder-stone-400 outline-none"
                     />
                   </div>
                 </div>
@@ -481,32 +482,30 @@ export function AuthModal() {
                     id="modal-terms"
                     checked={agreedTerms}
                     onChange={(e) => setAgreedTerms(e.target.checked)}
-                    className="mt-1 accent-gold cursor-pointer"
+                    className="mt-0.5 accent-[#BA8B32] cursor-pointer"
                     required
                   />
-                  <label htmlFor="modal-terms" className="text-[11px] text-muted leading-tight cursor-pointer">
+                  <label htmlFor="modal-terms" className="text-[11px] text-stone-500 leading-tight cursor-pointer font-sans">
                     I agree to the Hotel Reliance Guest Policies, Terms of Service, and Privacy Policy.
                   </label>
                 </div>
 
-                <Button
+                <button
                   type="submit"
-                  variant="primary"
-                  fullWidth
                   disabled={isSubmitting}
-                  className="py-3 text-xs tracking-widest font-bold uppercase"
+                  className="w-full min-h-[44px] bg-[#111E31] hover:bg-[#1a2e4a] text-white rounded-full font-sans font-semibold text-xs tracking-wider uppercase transition-all shadow-[0_4px_16px_rgba(17,30,49,0.2)] hover:shadow-[0_8px_24px_rgba(17,30,49,0.3)] active:scale-[0.99] cursor-pointer flex items-center justify-center disabled:opacity-60"
                 >
                   {isSubmitting ? "Creating Account..." : "Create Account & Continue"}
                   <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
+                </button>
               </form>
 
               <div className="relative my-4">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-border-custom" />
+                  <div className="w-full border-t border-stone-200" />
                 </div>
-                <div className="relative flex justify-center text-[10px] uppercase">
-                  <span className="bg-cream px-2 text-muted font-bold tracking-widest">Or Register With</span>
+                <div className="relative flex justify-center text-[10px] uppercase font-semibold">
+                  <span className="bg-white px-3 text-stone-400 tracking-wider">Or Register With</span>
                 </div>
               </div>
 

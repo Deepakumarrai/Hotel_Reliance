@@ -101,46 +101,44 @@ function ProfileContent() {
     : "HR";
 
   return (
-    <div className="py-12 bg-cream min-h-screen">
+    <div className="pt-28 pb-20 bg-[#FAF8F5] min-h-screen">
       <Container className="max-w-4xl space-y-8">
         {/* Profile Header Card */}
-        <div className="bg-primary text-white border border-border-custom p-6 sm:p-8 shadow-xl relative overflow-hidden">
-          <div className="absolute right-0 top-0 w-48 h-48 bg-gold/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="bg-[#111E31] text-white rounded-3xl sm:rounded-[32px] p-7 sm:p-9 shadow-[0_16px_50px_rgba(17,30,49,0.2)] relative overflow-hidden border border-white/10">
+          <div className="absolute right-0 top-0 w-64 h-64 bg-[#BA8B32]/10 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-6 relative z-10 text-center sm:text-left">
-            <div className="w-20 h-20 rounded-full bg-gold text-primary font-serif text-2xl font-bold flex items-center justify-center border-2 border-white shadow-lg flex-shrink-0">
+          <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-5 sm:space-y-0 sm:space-x-6 relative z-10 text-center sm:text-left">
+            <div className="w-20 h-20 rounded-full bg-[#BA8B32] text-white font-serif text-2xl font-light flex items-center justify-center border-2 border-white/20 shadow-xl flex-shrink-0">
               {initials}
             </div>
 
-            <div className="flex-grow space-y-1">
-              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-                <h1 className="text-2xl sm:text-3xl font-serif text-white font-normal">
+            <div className="flex-grow space-y-1.5 font-sans">
+              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5">
+                <h1 className="text-2xl sm:text-3xl font-serif text-white font-light tracking-[-0.01em]">
                   {user?.name}
                 </h1>
-                <span className="px-2.5 py-0.5 bg-gold/20 text-gold border border-gold/40 text-[10px] uppercase font-bold tracking-wider rounded-sm">
+                <span className="px-3 py-0.5 bg-[#BA8B32]/20 text-[#BA8B32] border border-[#BA8B32]/30 text-[10px] uppercase font-semibold tracking-wider rounded-full">
                   Verified Guest
                 </span>
               </div>
-              <p className="text-xs text-cream/70 font-light">{user?.email}</p>
-              <p className="text-xs text-cream/70 font-light">{user?.phone}</p>
+              <p className="text-xs text-stone-300 font-light">{user?.email}</p>
+              <p className="text-xs text-stone-300 font-light">{user?.phone}</p>
             </div>
 
-            <div className="flex flex-wrap gap-2 pt-2 sm:pt-0">
+            <div className="flex flex-wrap gap-2.5 pt-2 sm:pt-0 font-sans">
               <Link href="/my-bookings">
-                <Button variant="outline" size="sm" className="border-white text-white hover:bg-white hover:text-primary text-xs uppercase tracking-wider">
-                  <Calendar className="w-3.5 h-3.5 mr-1.5" />
+                <button className="min-h-[38px] px-5 bg-white/10 hover:bg-white hover:text-[#111E31] text-white text-xs font-semibold uppercase tracking-wider rounded-full transition-all cursor-pointer flex items-center border border-white/15">
+                  <Calendar className="w-3.5 h-3.5 mr-2" />
                   My Bookings
-                </Button>
+                </button>
               </Link>
-              <Button
-                variant="secondary"
-                size="sm"
+              <button
                 onClick={handleLogout}
-                className="text-xs uppercase tracking-wider bg-white/10 text-white hover:bg-red-600 hover:text-white border-transparent"
+                className="min-h-[38px] px-5 bg-white/10 hover:bg-red-600 text-white text-xs font-semibold uppercase tracking-wider rounded-full transition-all cursor-pointer flex items-center border border-white/15"
               >
-                <LogOut className="w-3.5 h-3.5 mr-1.5" />
+                <LogOut className="w-3.5 h-3.5 mr-2" />
                 Log Out
-              </Button>
+              </button>
             </div>
           </div>
         </div>
@@ -150,10 +148,10 @@ function ProfileContent() {
           <motion.div
             initial={{ opacity: 0, y: -5 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`p-4 border text-xs flex items-center space-x-3 ${
+            className={`p-4 rounded-2xl border text-xs flex items-center space-x-3 font-sans ${
               feedback.type === "success"
-                ? "bg-emerald-50 border-emerald-300 text-emerald-800"
-                : "bg-red-50 border-red-300 text-red-700"
+                ? "bg-emerald-50 border-emerald-200 text-emerald-800"
+                : "bg-red-50 border-red-200 text-red-700"
             }`}
           >
             {feedback.type === "success" ? (
@@ -167,18 +165,18 @@ function ProfileContent() {
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
           {/* Main Account Details Form */}
-          <div className="md:col-span-7 bg-white border border-border-custom p-6 sm:p-8 shadow-sm space-y-6">
-            <div className="flex items-center justify-between border-b border-border-custom pb-4">
+          <div className="md:col-span-7 bg-white rounded-3xl border border-stone-100 p-7 sm:p-8 shadow-[0_4px_30px_rgba(17,30,49,0.06)] space-y-6">
+            <div className="flex items-center justify-between border-b border-stone-100 pb-4">
               <div>
-                <span className="text-[9px] uppercase font-bold tracking-[0.25em] text-gold block">
+                <span className="text-[10px] uppercase font-sans font-semibold tracking-[0.25em] text-[#BA8B32] block">
                   PERSONAL DETAILS
                 </span>
-                <h2 className="text-xl font-serif text-dark">Profile Information</h2>
+                <h2 className="text-xl font-serif text-[#111E31] font-light mt-0.5">Profile Information</h2>
               </div>
               {!isEditing && (
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="inline-flex items-center text-xs font-semibold text-gold hover:text-primary transition-colors cursor-pointer"
+                  className="inline-flex items-center text-xs font-sans font-semibold text-[#BA8B32] hover:text-[#111E31] transition-colors cursor-pointer"
                 >
                   <Edit3 className="w-3.5 h-3.5 mr-1" />
                   Edit Profile
@@ -187,101 +185,97 @@ function ProfileContent() {
             </div>
 
             {isEditing ? (
-              <form onSubmit={handleSaveProfile} className="space-y-4">
+              <form onSubmit={handleSaveProfile} className="space-y-4 font-sans">
                 <div className="space-y-1">
-                  <label className="text-[10px] uppercase font-bold tracking-wider text-muted block">
+                  <label className="text-[11px] font-medium text-stone-600 block">
                     Full Name
                   </label>
                   <div className="relative">
-                    <User className="w-4 h-4 text-muted absolute left-3 top-3" />
+                    <User className="w-4 h-4 text-stone-400 absolute left-3.5 top-3" />
                     <input
                       type="text"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       required
-                      className="w-full bg-cream/40 border border-border-custom pl-9 pr-3 py-2.5 text-xs text-dark focus:border-gold focus:outline-none"
+                      className="w-full bg-stone-50/80 hover:bg-stone-50 focus:bg-white border border-stone-200 focus:border-[#BA8B32] rounded-xl pl-10 pr-3.5 py-2.5 text-xs text-[#111E31] transition-all outline-none"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[10px] uppercase font-bold tracking-wider text-muted block">
+                  <label className="text-[11px] font-medium text-stone-600 block">
                     Email Address
                   </label>
                   <div className="relative">
-                    <Mail className="w-4 h-4 text-muted absolute left-3 top-3" />
+                    <Mail className="w-4 h-4 text-stone-400 absolute left-3.5 top-3" />
                     <input
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
-                      className="w-full bg-cream/40 border border-border-custom pl-9 pr-3 py-2.5 text-xs text-dark focus:border-gold focus:outline-none"
+                      className="w-full bg-stone-50/80 hover:bg-stone-50 focus:bg-white border border-stone-200 focus:border-[#BA8B32] rounded-xl pl-10 pr-3.5 py-2.5 text-xs text-[#111E31] transition-all outline-none"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[10px] uppercase font-bold tracking-wider text-muted block">
+                  <label className="text-[11px] font-medium text-stone-600 block">
                     Phone Number
                   </label>
                   <div className="relative">
-                    <Phone className="w-4 h-4 text-muted absolute left-3 top-3" />
+                    <Phone className="w-4 h-4 text-stone-400 absolute left-3.5 top-3" />
                     <input
                       type="tel"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       required
-                      className="w-full bg-cream/40 border border-border-custom pl-9 pr-3 py-2.5 text-xs text-dark focus:border-gold focus:outline-none"
+                      className="w-full bg-stone-50/80 hover:bg-stone-50 focus:bg-white border border-stone-200 focus:border-[#BA8B32] rounded-xl pl-10 pr-3.5 py-2.5 text-xs text-[#111E31] transition-all outline-none"
                     />
                   </div>
                 </div>
 
-                <div className="flex items-center space-x-3 pt-2">
-                  <Button
+                <div className="flex items-center space-x-3 pt-3">
+                  <button
                     type="submit"
-                    variant="primary"
-                    size="sm"
                     disabled={isSaving}
-                    className="text-xs uppercase tracking-wider"
+                    className="min-h-[40px] px-6 bg-[#111E31] hover:bg-[#1a2e4a] text-white text-xs font-semibold uppercase tracking-wider rounded-full shadow-sm transition-all flex items-center cursor-pointer disabled:opacity-60"
                   >
                     <Save className="w-3.5 h-3.5 mr-1.5" />
                     {isSaving ? "Saving..." : "Save Changes"}
-                  </Button>
-                  <Button
+                  </button>
+                  <button
                     type="button"
-                    variant="secondary"
-                    size="sm"
                     onClick={() => {
                       setIsEditing(false);
                       setName(user?.name || "");
                       setEmail(user?.email || "");
                       setPhone(user?.phone || "");
                     }}
-                    className="text-xs uppercase tracking-wider"
+                    className="min-h-[40px] px-5 bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold uppercase tracking-wider rounded-full transition-all cursor-pointer"
                   >
                     Cancel
-                  </Button>
+                  </button>
                 </div>
               </form>
             ) : (
-              <div className="space-y-4 text-xs">
-                <div className="p-3 bg-cream/40 border border-border-custom flex items-center justify-between">
-                  <span className="text-muted uppercase text-[10px] font-semibold">Full Name</span>
-                  <span className="font-medium text-dark">{user?.name}</span>
+              <div className="space-y-3 text-xs font-sans">
+                <div className="p-3.5 bg-stone-50/70 rounded-2xl border border-stone-100 flex items-center justify-between">
+                  <span className="text-stone-400 uppercase text-[10px] font-semibold tracking-wider">Full Name</span>
+                  <span className="font-semibold text-[#111E31]">{user?.name}</span>
                 </div>
-                <div className="p-3 bg-cream/40 border border-border-custom flex items-center justify-between">
-                  <span className="text-muted uppercase text-[10px] font-semibold">Email</span>
-                  <span className="font-medium text-dark">{user?.email}</span>
+                <div className="p-3.5 bg-stone-50/70 rounded-2xl border border-stone-100 flex items-center justify-between">
+                  <span className="text-stone-400 uppercase text-[10px] font-semibold tracking-wider">Email</span>
+                  <span className="font-semibold text-[#111E31]">{user?.email}</span>
                 </div>
-                <div className="p-3 bg-cream/40 border border-border-custom flex items-center justify-between">
-                  <span className="text-muted uppercase text-[10px] font-semibold">Phone</span>
-                  <span className="font-medium text-dark">{user?.phone}</span>
+                <div className="p-3.5 bg-stone-50/70 rounded-2xl border border-stone-100 flex items-center justify-between">
+                  <span className="text-stone-400 uppercase text-[10px] font-semibold tracking-wider">Phone</span>
+                  <span className="font-semibold text-[#111E31]">{user?.phone}</span>
                 </div>
-                <div className="p-3 bg-cream/40 border border-border-custom flex items-center justify-between">
-                  <span className="text-muted uppercase text-[10px] font-semibold">Security Status</span>
-                  <span className="text-emerald-700 font-semibold flex items-center">
-                    <ShieldCheck className="w-3.5 h-3.5 mr-1" />
-                    Human Verified Guest
+                <div className="p-3.5 bg-stone-50/70 rounded-2xl border border-stone-100 flex items-center justify-between">
+                  <span className="text-stone-400 uppercase text-[10px] font-semibold tracking-wider">Security Status</span>
+                  <span className="text-emerald-700 font-semibold flex items-center bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                    <ShieldCheck className="w-3.5 h-3.5 mr-1 text-emerald-600" />
+                    Verified Guest
                   </span>
                 </div>
               </div>
@@ -290,18 +284,18 @@ function ProfileContent() {
 
           {/* Right Column: Security & Actions */}
           <div className="md:col-span-5 space-y-6">
-            <div className="bg-white border border-border-custom p-6 shadow-sm space-y-4">
-              <div className="border-b border-border-custom pb-3">
-                <span className="text-[9px] uppercase font-bold tracking-[0.25em] text-gold block">
+            <div className="bg-white rounded-3xl border border-stone-100 p-6 sm:p-7 shadow-[0_4px_30px_rgba(17,30,49,0.06)] space-y-4">
+              <div className="border-b border-stone-100 pb-3">
+                <span className="text-[10px] uppercase font-sans font-semibold tracking-[0.25em] text-[#BA8B32] block">
                   SECURITY SETTINGS
                 </span>
-                <h3 className="text-lg font-serif text-dark">Password Management</h3>
+                <h3 className="text-lg font-serif text-[#111E31] font-light mt-0.5">Password Management</h3>
               </div>
 
               {isChangingPassword ? (
-                <form onSubmit={handlePasswordChange} className="space-y-3">
+                <form onSubmit={handlePasswordChange} className="space-y-3 font-sans">
                   <div className="space-y-1">
-                    <label className="text-[10px] uppercase font-bold text-muted block">
+                    <label className="text-[10px] uppercase font-semibold text-stone-500 block">
                       Current Password
                     </label>
                     <input
@@ -310,11 +304,11 @@ function ProfileContent() {
                       onChange={(e) => setCurrentPassword(e.target.value)}
                       placeholder="••••••••"
                       required
-                      className="w-full bg-cream/40 border border-border-custom p-2 text-xs focus:border-gold focus:outline-none"
+                      className="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-xs text-[#111E31] focus:border-[#BA8B32] outline-none"
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[10px] uppercase font-bold text-muted block">
+                    <label className="text-[10px] uppercase font-semibold text-stone-500 block">
                       New Password
                     </label>
                     <input
@@ -323,11 +317,11 @@ function ProfileContent() {
                       onChange={(e) => setNewPassword(e.target.value)}
                       placeholder="Min 6 chars"
                       required
-                      className="w-full bg-cream/40 border border-border-custom p-2 text-xs focus:border-gold focus:outline-none"
+                      className="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-xs text-[#111E31] focus:border-[#BA8B32] outline-none"
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[10px] uppercase font-bold text-muted block">
+                    <label className="text-[10px] uppercase font-semibold text-stone-500 block">
                       Confirm New Password
                     </label>
                     <input
@@ -336,58 +330,57 @@ function ProfileContent() {
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       placeholder="Re-enter new password"
                       required
-                      className="w-full bg-cream/40 border border-border-custom p-2 text-xs focus:border-gold focus:outline-none"
+                      className="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-xs text-[#111E31] focus:border-[#BA8B32] outline-none"
                     />
                   </div>
 
-                  <div className="flex items-center space-x-2 pt-1">
-                    <Button type="submit" variant="primary" size="sm" disabled={isSaving} className="text-xs uppercase">
+                  <div className="flex items-center space-x-2 pt-2">
+                    <button
+                      type="submit"
+                      disabled={isSaving}
+                      className="min-h-[38px] px-5 bg-[#111E31] hover:bg-[#1a2e4a] text-white text-xs font-semibold uppercase tracking-wider rounded-full transition-all cursor-pointer shadow-sm disabled:opacity-60"
+                    >
                       Save Password
-                    </Button>
-                    <Button
+                    </button>
+                    <button
                       type="button"
-                      variant="secondary"
-                      size="sm"
                       onClick={() => setIsChangingPassword(false)}
-                      className="text-xs uppercase"
+                      className="min-h-[38px] px-4 bg-stone-100 hover:bg-stone-200 text-stone-600 text-xs font-semibold uppercase tracking-wider rounded-full transition-all cursor-pointer"
                     >
                       Cancel
-                    </Button>
+                    </button>
                   </div>
                 </form>
               ) : (
-                <div className="space-y-3">
-                  <p className="text-xs text-muted font-light leading-relaxed">
-                    Update your account password regularly to keep your booking information secure.
+                <div className="space-y-3 font-sans">
+                  <p className="text-xs text-stone-500 font-light leading-relaxed">
+                    Update your account password regularly to keep your reservations and profile secure.
                   </p>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    fullWidth
+                  <button
                     onClick={() => setIsChangingPassword(true)}
-                    className="text-xs uppercase tracking-wider"
+                    className="w-full min-h-[40px] px-5 bg-stone-100 hover:bg-stone-200 text-[#111E31] text-xs font-semibold uppercase tracking-wider rounded-full transition-all flex items-center justify-center cursor-pointer"
                   >
                     <Lock className="w-3.5 h-3.5 mr-1.5" />
                     Change Password
-                  </Button>
+                  </button>
                 </div>
               )}
             </div>
 
             {/* Quick Links Card */}
-            <div className="bg-white border border-border-custom p-6 shadow-sm space-y-3">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-dark border-b border-border-custom pb-2">
+            <div className="bg-white rounded-3xl border border-stone-100 p-6 sm:p-7 shadow-[0_4px_30px_rgba(17,30,49,0.06)] space-y-3 font-sans">
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-[#111E31] border-b border-stone-100 pb-2.5">
                 Hospitality Concierge
               </h4>
-              <p className="text-xs text-muted font-light">
-                Need customized arrangements, banquet reservations, or early check-in? Contact our front desk directly.
+              <p className="text-xs text-stone-500 leading-relaxed font-light">
+                Need customized stay packages, banquet reservations, or late checkout? Connect with our front desk.
               </p>
-              <div className="pt-2 text-xs space-y-1">
-                <p className="text-muted">
-                  Phone: <strong className="text-dark">+91 92629 97777</strong>
+              <div className="pt-2 text-xs space-y-1.5">
+                <p className="text-stone-500">
+                  Phone: <strong className="text-[#111E31] font-semibold">+91 92629 97777</strong>
                 </p>
-                <p className="text-muted">
-                  Email: <strong className="text-dark">reservation@hotelreliance.com</strong>
+                <p className="text-stone-500">
+                  Email: <strong className="text-[#111E31] font-semibold">reservation@hotelreliance.com</strong>
                 </p>
               </div>
             </div>

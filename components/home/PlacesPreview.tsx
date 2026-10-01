@@ -1,136 +1,145 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, ChevronRight as ArrowIcon } from "lucide-react";
-import { Container } from "@/components/ui/Container";
+import { ArrowRight, MapPin } from "lucide-react";
+import { motion } from "framer-motion";
 import { placesData } from "@/data/places";
-import { FadeUp } from "@/components/animation/FadeUp";
 
 export function PlacesPreview() {
-  const [startIndex, setStartIndex] = useState(0);
-  const visibleCount = 3;
-
-  const handlePrev = () => {
-    setStartIndex((prev) => (prev === 0 ? Math.max(0, placesData.length - visibleCount) : prev - 1));
-  };
-
-  const handleNext = () => {
-    setStartIndex((prev) => (prev + visibleCount >= placesData.length ? 0 : prev + 1));
-  };
-
-  const displayedPlaces = placesData.slice(startIndex, startIndex + visibleCount);
-  const items = displayedPlaces.length < visibleCount
-    ? [...displayedPlaces, ...placesData.slice(0, visibleCount - displayedPlaces.length)]
-    : displayedPlaces;
+  const featured = placesData.slice(0, 4);
 
   return (
-    <section className="py-16 sm:py-24 bg-[#FAF8F5] text-[#2B2320] border-t border-[#E8E1D7] overflow-hidden select-none">
-      <Container className="max-w-7xl px-4 sm:px-6">
-        {/* Top Header Row matching Taj Reference Layout */}
-        <FadeUp className="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6 mb-12 sm:mb-16 pb-6 sm:pb-8 border-b border-[#E8E1D7]">
-          {/* Left Two-Line Title with Dash */}
-          <div className="flex items-start space-x-3 sm:space-x-4">
-            <div className="w-8 sm:w-16 h-[1.5px] bg-[#C5A880] mt-3 sm:mt-4 flex-shrink-0" />
-            <h2 className="text-2xl sm:text-4xl md:text-5xl font-serif font-normal tracking-[0.1em] sm:tracking-[0.14em] text-[#2B2320] uppercase leading-tight">
-              Explore
-              <span className="block">More</span>
+    <section className="bg-[#111E31] text-white py-20 sm:py-28 overflow-hidden relative">
+      {/* Subtle gradient */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: "radial-gradient(ellipse 100% 50% at 50% 100%, rgba(186,139,50,0.06) 0%, transparent 70%)",
+        }}
+      />
+
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 lg:px-16">
+        {/* Section header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-14 sm:mb-18">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <span className="text-[10px] sm:text-[11px] font-sans font-semibold tracking-[0.35em] uppercase text-[#BA8B32] block mb-3">
+              Explore Bokaro
+            </span>
+            <h2 className="text-3xl sm:text-5xl md:text-6xl font-serif font-light text-white tracking-[-0.02em] leading-[1.05]">
+              The city{" "}
+              <em className="italic text-[#D8B875]">around you.</em>
             </h2>
-          </div>
+          </motion.div>
 
-          {/* Right Subtitle Text */}
-          <p className="text-[15.5px] sm:text-[17.5px] md:text-[19px] font-serif italic text-[#4A3E37] max-w-xl leading-[1.7] text-left md:text-right md:self-end font-normal">
-            Iconic industrial heritage, tranquil lakeside parks, spiritual sanctums, and wildlife safari habitats are all within reach from Hotel Reliance.
-          </p>
-        </FadeUp>
-
-        {/* Carousel & Cards Grid with Side Navigation Arrows */}
-        <div className="relative px-0 sm:px-4">
-          {/* Left Circular Arrow */}
-          <button
-            onClick={handlePrev}
-            className="absolute left-1 sm:-left-6 top-[38%] -translate-y-1/2 z-20 w-9 h-9 sm:w-11 sm:h-11 rounded-full border border-[#C5A880] bg-white/95 text-[#C5A880] hover:bg-[#C5A880] hover:text-white transition-all duration-300 flex items-center justify-center shadow-lg focus:outline-none cursor-pointer group active:scale-95 touch-manipulation"
-            aria-label="Previous attractions"
+          <motion.p
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="text-sm sm:text-base text-white/40 max-w-sm leading-[1.8] font-sans font-light md:text-right"
           >
-            <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 group-hover:-translate-x-0.5 transition-transform" />
-          </button>
+            Iconic industrial heritage, tranquil lakeside parks, spiritual sanctums, and wildlife habitats — all within reach.
+          </motion.p>
+        </div>
 
-          {/* Right Circular Arrow */}
-          <button
-            onClick={handleNext}
-            className="absolute right-1 sm:-right-6 top-[38%] -translate-y-1/2 z-20 w-9 h-9 sm:w-11 sm:h-11 rounded-full border border-[#C5A880] bg-white/95 text-[#C5A880] hover:bg-[#C5A880] hover:text-white transition-all duration-300 flex items-center justify-center shadow-lg focus:outline-none cursor-pointer group active:scale-95 touch-manipulation"
-            aria-label="Next attractions"
-          >
-            <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-0.5 transition-transform" />
-          </button>
-
-          {/* Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 lg:gap-8 pb-4">
-            {items.map((place) => (
-              <Link
-                key={place.id}
-                href={`/places/${place.slug}`}
-                className="group flex flex-col items-center transition-all duration-300 block cursor-pointer"
-              >
-                {/* Card Image Container with Smooth Crossfade Hover */}
-                <div className="relative w-full aspect-[4/3] overflow-hidden bg-[#1E1815] shadow-md">
-                  {/* Default Image */}
+        {/* Places grid — 2 col on mobile, 4 col on desktop */}
+        <motion.div
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-40px" }}
+          variants={{
+            hidden: {},
+            show: { transition: { staggerChildren: 0.08 } },
+          }}
+          className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4"
+        >
+          {featured.map((place, idx) => (
+            <motion.div
+              key={place.id}
+              variants={{
+                hidden: { opacity: 0, y: 24 },
+                show: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+              }}
+            >
+              <Link href={`/places/${place.slug}`} className="group block h-full">
+                <div
+                  className={`relative overflow-hidden rounded-2xl sm:rounded-3xl bg-[#0A0D14] cursor-pointer ${
+                    idx === 0 ? "aspect-[3/4]" : "aspect-[3/4]"
+                  }`}
+                >
+                  {/* Default image */}
                   <Image
                     src={place.image}
                     alt={place.name}
                     fill
                     unoptimized
-                    sizes="(max-w-768px) 100vw, (max-w-1200px) 50vw, 33vw"
-                    className={`object-cover object-center w-full h-full transition-all duration-700 ease-out group-hover:scale-105 ${
+                    sizes="(max-width: 640px) 50vw, 25vw"
+                    className={`object-cover object-center w-full h-full transition-all duration-700 ease-out group-hover:scale-105 opacity-75 group-hover:opacity-90 ${
                       place.hoverImage ? "group-hover:opacity-0" : ""
                     }`}
                   />
 
-                  {/* Hover Image Crossfade if available */}
+                  {/* Hover image crossfade */}
                   {place.hoverImage && (
                     <Image
                       src={place.hoverImage}
-                      alt={`${place.name} evening sunset view`}
+                      alt={`${place.name} evening view`}
                       fill
                       unoptimized
-                      sizes="(max-w-768px) 100vw, (max-w-1200px) 50vw, 33vw"
-                      className="object-cover object-center w-full h-full absolute inset-0 opacity-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 ease-out"
+                      sizes="(max-width: 640px) 50vw, 25vw"
+                      className="object-cover object-center w-full h-full absolute inset-0 opacity-0 group-hover:opacity-90 group-hover:scale-105 transition-all duration-700 ease-out"
                     />
                   )}
 
-                  {/* Category Pill Top Right */}
-                  <div className="absolute top-3 right-3 z-10 bg-black/60 backdrop-blur-md px-2.5 py-1 text-[9px] uppercase font-bold tracking-widest text-[#D8B875] border border-white/10">
-                    {place.category}
-                  </div>
-                </div>
+                  {/* Gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
-                {/* Overlapping Floating White Card matching Reference */}
-                <div className="relative z-20 -mt-7 sm:-mt-10 w-[90%] sm:w-[88%] bg-white border border-[#E8E1D7] shadow-xl p-4 sm:p-5 text-left group-hover:border-[#C5A880] group-hover:shadow-2xl transition-all duration-300">
-                  <h3 className="font-serif text-xs sm:text-sm tracking-[0.12em] sm:tracking-[0.14em] uppercase text-[#2B2320] font-normal group-hover:text-[#9E712E] transition-colors line-clamp-1">
-                    {place.name}
-                  </h3>
-                  <div className="flex items-center text-[10px] uppercase tracking-[0.2em] font-serif font-bold text-[#9E712E] pt-1.5 sm:pt-2 group-hover:translate-x-1 transition-transform">
-                    <span>MORE</span>
-                    <ArrowIcon className="w-3 h-3 ml-1" />
+                  {/* Category pill */}
+                  <div className="absolute top-3 left-3 bg-black/40 backdrop-blur-md border border-white/10 rounded-full px-2.5 py-1">
+                    <span className="text-[8px] sm:text-[9px] uppercase tracking-widest text-[#D8B875] font-semibold">
+                      {place.category}
+                    </span>
+                  </div>
+
+                  {/* Content */}
+                  <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-5">
+                    <h3 className="text-[13px] sm:text-sm font-semibold text-white group-hover:text-[#D8B875] transition-colors duration-300 line-clamp-1 mb-1">
+                      {place.name}
+                    </h3>
+                    <div className="flex items-center space-x-1 text-[#BA8B32] group-hover:text-[#D8B875] transition-colors duration-300">
+                      <MapPin className="w-3 h-3" />
+                      <span className="text-[10px] font-sans">Bokaro</span>
+                    </div>
                   </div>
                 </div>
               </Link>
-            ))}
-          </div>
-        </div>
+            </motion.div>
+          ))}
+        </motion.div>
 
-        {/* Bottom Centered "View All Attractions" link */}
-        <div className="text-center pt-8 sm:pt-12">
-          <Link
-            href="/places"
-            className="inline-flex items-center space-x-2 text-xs uppercase tracking-[0.2em] sm:tracking-[0.25em] font-serif font-bold text-[#2B2320] hover:text-[#9E712E] transition-colors border-b border-[#C5A880] pb-1"
-          >
-            <span>Discover All Bokaro Attractions & Landmarks</span>
-            <span className="text-[#C5A880]">»</span>
+        {/* Footer CTA */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="flex justify-center mt-12 sm:mt-14"
+        >
+          <Link href="/places">
+            <button className="group flex items-center space-x-2.5 px-8 py-3.5 rounded-full border border-white/15 text-white hover:bg-white hover:text-[#111E31] text-[12px] font-semibold tracking-[0.1em] uppercase transition-all duration-300 cursor-pointer">
+              <span>Discover All Attractions</span>
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-300" />
+            </button>
           </Link>
-        </div>
-      </Container>
+        </motion.div>
+      </div>
     </section>
   );
 }

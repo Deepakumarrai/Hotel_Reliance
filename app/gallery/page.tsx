@@ -2,9 +2,8 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { Plus, Camera, Eye, Filter } from "lucide-react";
-import { Container } from "@/components/ui/Container";
-import { SectionHeading } from "@/components/ui/SectionHeading";
+import { Camera, Eye } from "lucide-react";
+import { PageHero } from "@/components/ui/PageHero";
 import { galleryData } from "@/data/gallery";
 import { Lightbox } from "@/components/gallery/Lightbox";
 import { HomeCTA } from "@/components/home/HomeCTA";
@@ -50,81 +49,51 @@ export default function GalleryPage() {
 
   return (
     <>
-      {/* Luxury Hero Banner matching Offers, Rooms, Banquets, About & Restaurant */}
-      <section className="relative w-full aspect-[16/8.5] sm:aspect-[21/9.5] min-h-[440px] max-h-[750px] bg-black overflow-hidden flex items-end">
-        {/* Full-Bleed Background Lifestyle Photograph without Cropping or Quality Loss */}
-        <div className="absolute inset-0 z-0">
-          <Image
-            src="/images/gallery/image copy 4.png"
-            alt="Hotel Reliance Visual Photo Gallery"
-            fill
-            priority
-            unoptimized
-            sizes="100vw"
-            className="object-cover object-[center_35%]"
-          />
-          {/* Subtle Top and Deep Bottom Vignette Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-black/30" />
-        </div>
-
-        {/* Hero Bottom Content matching Shared Reference Typography */}
-        <Container className="relative z-10 w-full pb-10 sm:pb-14 px-4 sm:px-6">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-            {/* Title with Gold Line Prefix */}
-            <div className="flex items-start space-x-3 sm:space-x-4">
-              <div className="w-8 sm:w-16 h-[2px] bg-[#C5A880] mt-4 sm:mt-5 flex-shrink-0" />
-              <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-normal tracking-[0.1em] sm:tracking-[0.14em] text-white uppercase leading-tight drop-shadow-lg">
-                Photo Gallery
-                <span className="block">& Visual Journey</span>
-              </h1>
-            </div>
-
-            {/* Right Subtitle */}
-            <p className="text-[15px] sm:text-[17px] md:text-[18.5px] font-serif italic text-white/90 max-w-lg leading-[1.6] text-left md:text-right font-normal drop-shadow-md">
-              Immerse yourself in authentic captures of Hotel Reliance, from our welcoming reception and luxury guest suites to celebratory banquet lawns and Bokaro landmarks.
-            </p>
-          </div>
-        </Container>
-      </section>
+      <PageHero
+        label="Visual Journey"
+        title="Photo Gallery"
+        titleAccent="& Moments."
+        subtitle="Authentic captures of Hotel Reliance — from our welcoming reception and luxury suites to celebratory banquet lawns and Bokaro landmarks."
+        image="/images/gallery/image copy 4.png"
+        imageAlt="Hotel Reliance Visual Photo Gallery"
+        height="md"
+      />
 
       {/* Main Gallery Section */}
-      <section className="py-16 sm:py-24 bg-[#FAF8F5]">
-        <Container className="max-w-7xl px-4 sm:px-6">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 pb-6 border-b border-[#E8E1D7]">
+      <section className="py-16 sm:py-24 bg-[#FAFAF8]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-16">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 pb-6 border-b border-stone-100">
             <div>
-              <span className="text-[10px] sm:text-xs uppercase font-bold tracking-[0.22em] text-[#BA8B32] block mb-1">
-                CURATED COLLECTION
+              <span className="text-[10px] sm:text-[11px] font-sans font-semibold tracking-[0.35em] uppercase text-[#BA8B32] block mb-2">
+                Curated Collection
               </span>
-              <h2 className="text-2xl sm:text-3xl font-serif tracking-[0.08em] uppercase text-[#2B2320]">
-                Moments of Hospitality
+              <h2 className="text-2xl sm:text-4xl font-serif font-light text-[#111E31] tracking-[-0.02em]">
+                Moments of{" "}
+                <em className="italic text-[#BA8B32]">hospitality.</em>
               </h2>
             </div>
 
-            {/* Category Filter Pills matching Offers and Rooms style */}
-            <div className="flex flex-wrap gap-2 sm:gap-2.5">
+            {/* Category Filter Pills */}
+            <div className="flex flex-wrap gap-2">
               {CATEGORIES.map((cat) => {
                 const count = cat.id === "all"
                   ? galleryData.length
                   : galleryData.filter((i) => i.category === cat.id).length;
-
                 const isActive = activeCategory === cat.id;
-
                 return (
                   <button
                     key={cat.id}
                     onClick={() => setActiveCategory(cat.id)}
-                    className={`px-3.5 sm:px-4 py-2 text-xs font-serif uppercase tracking-wider transition-all duration-300 rounded-none border cursor-pointer flex items-center space-x-2 ${
+                    className={`px-3.5 py-1.5 text-[11px] font-sans font-semibold uppercase tracking-[0.08em] transition-all duration-300 rounded-full border cursor-pointer flex items-center space-x-1.5 ${
                       isActive
-                        ? "bg-[#1E1815] text-white border-[#1E1815] shadow-sm font-semibold"
-                        : "bg-white text-[#5C4F46] border-[#E8E1D7] hover:border-[#BA8B32] hover:text-[#2B2320]"
+                        ? "bg-[#111E31] text-white border-[#111E31]"
+                        : "bg-white text-stone-500 border-stone-200 hover:border-[#BA8B32]/50 hover:text-[#111E31]"
                     }`}
                   >
                     <span>{cat.label}</span>
-                    <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${
-                      isActive ? "bg-white/20 text-white" : "bg-[#FAF8F5] text-[#7C6B61]"
-                    }`}>
-                      {count}
-                    </span>
+                    <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-bold ${
+                      isActive ? "bg-white/20 text-white" : "bg-stone-100 text-stone-400"
+                    }`}>{count}</span>
                   </button>
                 );
               })}
@@ -144,24 +113,22 @@ export default function GalleryPage() {
             />
           </div>
 
-          {/* Photo Count Status */}
-          <div className="flex items-center justify-between text-xs text-[#7C6B61] font-serif mb-6">
+          {/* Photo Count */}
+          <div className="flex items-center justify-between text-[12px] text-stone-500 font-sans mb-6">
             <span className="flex items-center space-x-1.5">
-              <Camera className="w-4 h-4 text-[#BA8B32]" />
-              <span>Showing {filteredImages.length} Photographs</span>
+              <Camera className="w-3.5 h-3.5 text-[#BA8B32]" />
+              <span>Showing {filteredImages.length} photographs</span>
             </span>
-            <span className="text-[11px] italic">
-              Click on any photograph to view high-resolution fullscreen
-            </span>
+            <span className="text-[11px] italic text-stone-400">Click any photo to view fullscreen</span>
           </div>
 
-          {/* Masonry / Responsive Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          {/* Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
             {filteredImages.map((img, index) => (
               <div
                 key={img.id}
                 onClick={() => handleOpen(index)}
-                className="relative h-72 border border-[#E8E1D7] cursor-pointer overflow-hidden group shadow-sm bg-[#1E1815] transition-all duration-300 hover:shadow-xl hover:border-[#BA8B32]"
+                className="relative h-72 cursor-pointer overflow-hidden rounded-2xl group shadow-sm bg-stone-100 hover:shadow-[0_20px_60px_rgba(17,30,49,0.14)] transition-all duration-500"
               >
                 {/* Image Container with Zoom and zero quality loss */}
                 <div className="absolute inset-0">
@@ -177,45 +144,33 @@ export default function GalleryPage() {
                   />
                 </div>
 
-                {/* Category Tag Top Left */}
-                <div className="absolute top-3 left-3 z-20 bg-black/70 backdrop-blur-sm px-2.5 py-1 text-[9px] uppercase font-serif font-bold tracking-widest text-[#D8B875] border border-white/10">
-                  {img.category}
+                {/* Category tag */}
+                <div className="absolute top-3 left-3 z-20 bg-[#111E31]/75 backdrop-blur-md rounded-full px-2.5 py-0.5">
+                  <span className="text-[9px] uppercase tracking-widest text-[#D8B875] font-semibold">{img.category}</span>
                 </div>
 
-                {/* Hover Overlay with Eye and Title */}
-                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center p-6 z-20 text-center">
-                  <div className="p-3.5 bg-white/20 backdrop-blur-md rounded-full text-white transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 mb-3 shadow-lg">
+                {/* Hover overlay */}
+                <div className="absolute inset-0 bg-black/55 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center p-6 z-20 text-center">
+                  <div className="p-3.5 bg-white/20 backdrop-blur-md rounded-full text-white transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 mb-3">
                     <Eye className="w-5 h-5 text-[#D8B875]" />
                   </div>
                   {img.title && (
-                    <h3 className="text-white text-base font-serif tracking-wide transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                      {img.title}
-                    </h3>
+                    <h3 className="text-white text-sm font-serif tracking-wide transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">{img.title}</h3>
                   )}
-                  <span className="text-white/80 text-[10px] uppercase font-serif tracking-widest mt-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                    Click for Fullscreen
-                  </span>
                 </div>
               </div>
             ))}
           </div>
 
           {filteredImages.length === 0 && (
-            <div className="text-center py-16 bg-white border border-[#E8E1D7] p-8 space-y-3">
+            <div className="text-center py-16 bg-white rounded-2xl border border-stone-100 space-y-3">
               <Camera className="w-8 h-8 text-[#BA8B32] mx-auto" />
               <p className="text-sm font-serif text-[#2B2320]">No photographs found in this category.</p>
             </div>
           )}
-        </Container>
+        </div>
 
-        {/* Lightbox Modal */}
-        <Lightbox
-          images={filteredImages}
-          currentIndex={photoIndex}
-          onClose={handleClose}
-          onPrev={handlePrev}
-          onNext={handleNext}
-        />
+        <Lightbox images={filteredImages} currentIndex={photoIndex} onClose={handleClose} onPrev={handlePrev} onNext={handleNext} />
       </section>
 
       <HomeCTA />

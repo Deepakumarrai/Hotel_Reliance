@@ -52,57 +52,67 @@ export function VenueCard({ venue }: VenueCardProps) {
   const whatsappUrl = `https://api.whatsapp.com/send/?phone=${hotelSettings.whatsappNumber || "919262997777"}&text=${encodeURIComponent(messageText)}`;
 
   return (
-    <div className="bg-white border border-[#E8E1D7] shadow-sm grid grid-cols-1 lg:grid-cols-12 overflow-hidden group hover:border-[#BA8B32] hover:shadow-xl transition-all duration-300">
+    <div className="rounded-3xl border border-stone-200/90 bg-white shadow-[0_4px_30px_rgba(17,30,49,0.05)] hover:shadow-[0_20px_60px_rgba(17,30,49,0.12)] grid grid-cols-1 lg:grid-cols-12 overflow-hidden group transition-all duration-500 hover:border-[#BA8B32]/40">
       {/* Venue Thumbnail Image */}
-      <div className="relative h-64 lg:h-auto min-h-[280px] lg:col-span-5 bg-[#1E1815] overflow-hidden">
+      <div className="relative h-72 lg:h-auto min-h-[300px] lg:col-span-5 bg-stone-900 overflow-hidden">
         <Image
           src={venue.image}
           alt={venue.name}
           fill
-          sizes="(max-w-1024px) 100vw, 40vw"
+          sizes="(max-width: 1024px) 100vw, 42vw"
           className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
           loading="lazy"
         />
-        <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-md px-2.5 py-1 text-[9px] font-serif uppercase tracking-widest text-[#D8B875] border border-white/10">
-          {venue.capacity}
+
+        {/* Ambient bottom depth overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+
+        {/* Capacity Pill Badge */}
+        <div className="absolute top-4 left-4 bg-black/70 backdrop-blur-md px-3.5 py-1 rounded-full text-[10px] font-sans font-semibold uppercase tracking-wider text-[#D8B875] border border-white/15 shadow-md flex items-center gap-1.5">
+          <Users className="w-3 h-3 text-[#D8B875]" />
+          <span>{venue.capacity}</span>
         </div>
       </div>
 
       {/* Venue Info text */}
-      <div className="p-6 sm:p-8 lg:col-span-7 flex flex-col justify-between space-y-6">
-        <div className="space-y-4">
+      <div className="p-7 sm:p-9 lg:col-span-7 flex flex-col justify-between space-y-6">
+        <div className="space-y-5">
           <div className="space-y-2">
-            <h3 className="text-xl sm:text-2xl font-serif font-normal text-[#2B2320] group-hover:text-[#BA8B32] transition-colors flex items-center">
-              <span className="w-3.5 sm:w-4 h-[1.5px] bg-[#C5A880] mr-2 flex-shrink-0" />
-              <span>{venue.name}</span>
+            <span className="text-[10px] uppercase font-sans font-semibold tracking-[0.25em] text-[#BA8B32] block">
+              Event Venue
+            </span>
+            <h3 className="text-2xl sm:text-3xl font-serif font-light text-[#111E31] group-hover:text-[#BA8B32] transition-colors">
+              {venue.name}
             </h3>
-            <p className="text-xs sm:text-[13px] text-[#5C4F46] leading-relaxed font-light">
+            <p className="text-xs sm:text-[13px] text-stone-500 leading-relaxed font-sans font-light">
               {venue.description}
             </p>
           </div>
 
-          {/* Key specs */}
-          <div className="flex flex-wrap gap-3 text-xs font-serif text-[#7A6B61]">
-            <span className="flex items-center px-3 py-1.5 bg-[#FAF8F5] border border-[#E8E1D7]">
-              <Users className="w-3.5 h-3.5 mr-1.5 text-[#BA8B32]" />
+          {/* Key specs pill chips */}
+          <div className="flex flex-wrap gap-2.5 font-sans">
+            <span className="flex items-center px-4 py-1.5 bg-stone-50 border border-stone-200/80 rounded-full text-xs font-medium text-stone-700 shadow-2xs">
+              <Users className="w-3.5 h-3.5 mr-2 text-[#BA8B32]" />
               {venue.capacity}
             </span>
-            <span className="flex items-center px-3 py-1.5 bg-[#FAF8F5] border border-[#E8E1D7]">
-              <Expand className="w-3.5 h-3.5 mr-1.5 text-[#BA8B32]" />
+            <span className="flex items-center px-4 py-1.5 bg-stone-50 border border-stone-200/80 rounded-full text-xs font-medium text-stone-700 shadow-2xs">
+              <Expand className="w-3.5 h-3.5 mr-2 text-[#BA8B32]" />
               {venue.size}
             </span>
           </div>
 
           {/* Venue Specific Amenities list */}
-          <div className="space-y-2 pt-2 border-t border-[#E8E1D7]">
-            <span className="text-[10px] uppercase tracking-wider text-[#BA8B32] font-bold block">
-              Venue Features & Amenities
+          <div className="space-y-3 pt-4 border-t border-stone-100 font-sans">
+            <span className="text-[10px] uppercase tracking-[0.2em] text-[#BA8B32] font-semibold block">
+              Venue Features & Highlights
             </span>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-[#5C4F46] font-light">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs text-stone-500 font-light">
               {venue.amenities.map((amenity, idx) => (
                 <div key={idx} className="flex items-center space-x-2">
-                  <Sparkles className="w-3 h-3 text-[#C5A880] flex-shrink-0" />
-                  <span>{amenity}</span>
+                  <span className="w-5 h-5 rounded-full bg-[#BA8B32]/10 flex items-center justify-center text-[#BA8B32] flex-shrink-0">
+                    <Sparkles className="w-2.5 h-2.5" />
+                  </span>
+                  <span className="truncate">{amenity}</span>
                 </div>
               ))}
             </div>
@@ -114,13 +124,14 @@ export function VenueCard({ venue }: VenueCardProps) {
             href={whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center px-6 py-2.5 text-xs font-serif uppercase tracking-[0.14em] bg-[#1E1815] text-white border border-[#1E1815] hover:bg-[#BA8B32] hover:border-[#BA8B32] transition-colors cursor-pointer shadow-sm text-center"
+            className="inline-flex items-center justify-center px-7 py-3 text-xs font-sans font-semibold uppercase tracking-wider rounded-full bg-[#111E31] text-white hover:bg-[#BA8B32] transition-all duration-300 shadow-[0_4px_16px_rgba(17,30,49,0.2)] hover:shadow-[0_8px_25px_rgba(186,139,50,0.3)] cursor-pointer text-center active:scale-[0.98]"
           >
-            Enquire For Venue
+            Enquire For Venue Availability
           </a>
         </div>
       </div>
     </div>
   );
 }
+
 

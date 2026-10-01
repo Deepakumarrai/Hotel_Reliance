@@ -368,24 +368,43 @@ function BookingContent() {
   };
 
   return (
-    <div className="bg-[#FAF8F5] min-h-screen pb-20 pt-6">
-      <BookingProgress currentStep={step} />
+    <div className="bg-[#FAFAF8] min-h-screen pb-24 pt-0">
+      {/* Cinematic page header */}
+      <div className="bg-[#111E31] relative overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="absolute top-[-30%] left-[-10%] w-[500px] h-[500px] rounded-full bg-[#BA8B32]/[0.06] blur-[100px]" />
+          <div className="absolute bottom-[-20%] right-[5%] w-[350px] h-[350px] rounded-full bg-[#1E4080]/[0.12] blur-[80px]" />
+        </div>
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 lg:px-16 pt-32 sm:pt-36 lg:pt-40 pb-8 sm:pb-10">
+          <span className="text-[10px] font-sans font-semibold tracking-[0.35em] uppercase text-[#D8B875] block mb-2">Hotel Reliance</span>
+          <h1 className="text-3xl sm:text-5xl font-serif font-light text-white tracking-[-0.02em]">
+            Reserve your <em className="italic text-[#D8B875]">stay.</em>
+          </h1>
+          <p className="text-xs sm:text-[13px] text-white/60 font-sans font-light mt-2 max-w-lg leading-[1.7]">
+            Complete your booking in 3 simple steps — select your room & dates, personalize your details, and confirm securely.
+          </p>
+        </div>
+        {/* Step progress inside header */}
+        <div className="relative z-10">
+          <BookingProgress currentStep={step} />
+        </div>
+      </div>
 
-      <Container>
-        {/* Error Alert */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-16 py-10 sm:py-12">
+        {/* Error alert */}
         {bookingError && (
           <motion.div
             initial={{ opacity: 0, y: -5 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-6 p-4 bg-red-50 border border-red-300 text-red-800 text-xs flex items-center justify-between"
+            className="mb-6 p-4 sm:p-5 bg-red-50 border border-red-200 text-red-700 text-xs sm:text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl font-sans shadow-sm"
           >
-            <div className="flex items-center space-x-2">
-              <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
+            <div className="flex items-center gap-2.5">
+              <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
               <span>{bookingError}</span>
             </div>
             <button
               onClick={handleSubmit}
-              className="px-3 py-1 bg-red-600 text-white font-bold uppercase text-[10px] tracking-wider rounded-sm cursor-pointer"
+              className="px-5 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold text-[11px] tracking-wider uppercase rounded-full cursor-pointer transition-colors self-start sm:self-auto shadow-xs"
             >
               Try Again
             </button>
@@ -393,7 +412,7 @@ function BookingContent() {
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Main Form Area */}
+          {/* Main Form */}
           <div className="lg:col-span-8 space-y-6">
             <AnimatePresence mode="wait">
               <motion.div
@@ -408,60 +427,43 @@ function BookingContent() {
                 {step === 1 && (
                   <div className="space-y-8">
                     {/* Stay Dates & Occupancy Selector Header */}
-                    <div className="bg-white border border-[#E8DFD2] p-5 shadow-xs space-y-4">
-                      <div className="border-b border-[#E8DFD2] pb-3 flex items-center justify-between">
+                    <div className="bg-white rounded-3xl border border-stone-200/90 p-6 sm:p-8 shadow-[0_4px_30px_rgba(17,30,49,0.05)] space-y-6">
+                      <div className="border-b border-stone-100 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                         <div>
-                          <span className="text-[10px] uppercase font-bold tracking-widest text-[#B38E5D] block">
+                          <span className="text-[10px] uppercase font-sans font-semibold tracking-[0.25em] text-[#BA8B32] block">
                             STEP 01 OF 03
                           </span>
-                          <h2 className="text-xl sm:text-2xl font-serif text-[#2B2320]">
+                          <h2 className="text-xl sm:text-2xl font-serif font-light text-[#111E31] mt-0.5">
                             Select Room & Stay Dates
                           </h2>
                         </div>
-                        <span className="text-xs font-serif text-[#7A6B61]">
+                        <span className="text-xs font-sans font-medium text-stone-600 bg-stone-50 px-3.5 py-1.5 rounded-full border border-stone-200 self-start sm:self-auto shadow-2xs">
                           {nights} {nights === 1 ? "Night" : "Nights"} Selected
                         </span>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <BookingDateSelector
-                          checkIn={bookingState.checkIn}
-                          checkOut={bookingState.checkOut}
-                          onChange={handleDateChange}
-                          errors={errors}
-                        />
-                        <GuestSelector
-                          adults={bookingState.adults}
-                          children={bookingState.children}
-                          onChange={handleGuestCountChange}
-                          errors={errors}
-                        />
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <BookingDateSelector checkIn={bookingState.checkIn} checkOut={bookingState.checkOut} onChange={handleDateChange} errors={errors} />
+                        <GuestSelector adults={bookingState.adults} children={bookingState.children} onChange={handleGuestCountChange} errors={errors} />
                       </div>
                     </div>
 
-                    {/* Room Category Selection */}
-                    <div className="space-y-3">
-                      <h3 className="text-lg font-serif text-[#2B2320]">
-                        Choose Your Room Category
-                      </h3>
+                    {/* Room category */}
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-xl font-serif font-light text-[#111E31] tracking-[-0.01em]">
+                          Choose Your Room Category
+                        </h3>
+                        {bookingState.selectedRoomId && (
+                          <span className="text-[11px] font-sans font-semibold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+                            ✓ Room Selected
+                          </span>
+                        )}
+                      </div>
                       {errors.selectedRoomId && (
-                        <p className="text-xs text-red-600 font-medium">
-                          {errors.selectedRoomId}
-                        </p>
+                        <p className="text-xs text-red-600 font-sans font-medium p-3 bg-red-50 border border-red-200 rounded-xl">{errors.selectedRoomId}</p>
                       )}
-                      <AvailableRooms
-                        rooms={availableRooms}
-                        selectedRoomId={bookingState.selectedRoomId}
-                        onSelect={handleRoomSelect}
-                        errors={errors}
-                        isLoading={false}
-                        checkIn={bookingState.checkIn}
-                        checkOut={bookingState.checkOut}
-                        adults={bookingState.adults}
-                        children={bookingState.children}
-                        nights={nights}
-                        onEditDates={() => setStep(1)}
-                      />
+                      <AvailableRooms rooms={availableRooms} selectedRoomId={bookingState.selectedRoomId} onSelect={handleRoomSelect} errors={errors} isLoading={false} checkIn={bookingState.checkIn} checkOut={bookingState.checkOut} adults={bookingState.adults} children={bookingState.children} nights={nights} onEditDates={() => setStep(1)} />
                     </div>
                   </div>
                 )}
@@ -469,129 +471,137 @@ function BookingContent() {
                 {/* STEP 2: GUEST DETAILS & SPECIAL REQUESTS */}
                 {step === 2 && (
                   <div className="space-y-6">
-                    <div className="border-b border-[#E8DFD2] pb-3">
-                      <span className="text-[10px] uppercase font-bold tracking-widest text-[#B38E5D] block">
-                        STEP 02 OF 03
-                      </span>
-                      <h2 className="text-xl sm:text-2xl font-serif text-[#2B2320]">
-                        Primary Guest Details & Special Requests
-                      </h2>
-                    </div>
+                    <div className="bg-white rounded-3xl border border-stone-200/90 p-6 sm:p-8 shadow-[0_4px_30px_rgba(17,30,49,0.05)] space-y-6">
+                      <div className="border-b border-stone-100 pb-4">
+                        <span className="text-[10px] uppercase font-sans font-semibold tracking-[0.25em] text-[#BA8B32] block">
+                          STEP 02 OF 03
+                        </span>
+                        <h2 className="text-xl sm:text-2xl font-serif font-light text-[#111E31] mt-0.5">
+                          Primary Guest Details & Special Requests
+                        </h2>
+                      </div>
 
-                    <BookingGuestForm
-                      guest={bookingState.guest}
-                      onChange={handleGuestDetailsChange}
-                      errors={errors}
-                    />
+                      <BookingGuestForm
+                        guest={bookingState.guest}
+                        onChange={handleGuestDetailsChange}
+                        errors={errors}
+                      />
+                    </div>
                   </div>
                 )}
 
                 {/* STEP 3: PAYMENT & CONFIRMATION */}
                 {step === 3 && (
                   <div className="space-y-6">
-                    <div className="border-b border-[#E8DFD2] pb-3">
-                      <span className="text-[10px] uppercase font-bold tracking-widest text-[#B38E5D] block">
-                        STEP 03 OF 03
-                      </span>
-                      <h2 className="text-xl sm:text-2xl font-serif text-[#2B2320]">
-                        Select Payment Method & Review Booking
-                      </h2>
-                    </div>
+                    <div className="bg-white rounded-3xl border border-stone-200/90 p-6 sm:p-8 shadow-[0_4px_30px_rgba(17,30,49,0.05)] space-y-6">
+                      <div className="border-b border-stone-100 pb-4">
+                        <span className="text-[10px] uppercase font-sans font-semibold tracking-[0.25em] text-[#BA8B32] block">
+                          STEP 03 OF 03
+                        </span>
+                        <h2 className="text-xl sm:text-2xl font-serif font-light text-[#111E31] mt-0.5">
+                          Select Payment Method & Review Booking
+                        </h2>
+                      </div>
 
-                    {/* Payment Mode Selector */}
-                    <div className="bg-white border border-[#E8DFD2] p-6 shadow-xs space-y-4">
-                      <h3 className="text-xs font-serif uppercase tracking-widest text-[#B38E5D] font-bold">
-                        Choose How You Wish To Pay
-                      </h3>
+                      {/* Payment Mode Selector */}
+                      <div className="space-y-4">
+                        <h3 className="text-[11px] font-sans uppercase tracking-[0.2em] text-[#BA8B32] font-semibold">
+                          Choose How You Wish To Pay
+                        </h3>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {/* Option A: Pay at Hotel */}
-                        <div
-                          onClick={() => setPaymentMethod("PAY_AT_HOTEL")}
-                          className={`p-4 border-2 rounded-sm cursor-pointer transition-all ${
-                            paymentMethod === "PAY_AT_HOTEL"
-                              ? "border-[#2B2320] bg-[#FAF8F5] shadow-sm"
-                              : "border-[#E8DFD2] hover:border-[#C5A880] bg-white"
-                          }`}
-                        >
-                          <div className="flex items-start space-x-3">
-                            <Hotel className="w-5 h-5 text-[#B38E5D] flex-shrink-0 mt-0.5" />
-                            <div>
-                              <p className="text-sm font-serif font-bold text-[#2B2320]">
-                                Pay at Check-In (Front Desk)
-                              </p>
-                              <p className="text-[11px] text-[#7A6B61] mt-1 leading-relaxed">
-                                Settle your room tariff directly at reception during check-in via Cash, UPI, or Card.
-                              </p>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          {/* Pay at Hotel */}
+                          <div
+                            onClick={() => setPaymentMethod("PAY_AT_HOTEL")}
+                            className={`p-5 rounded-2xl cursor-pointer transition-all duration-300 relative border-2 ${
+                              paymentMethod === "PAY_AT_HOTEL"
+                                ? "border-[#BA8B32] bg-[#BA8B32]/[0.03] ring-2 ring-[#BA8B32]/20 shadow-md"
+                                : "border-stone-200 hover:border-stone-300 bg-stone-50/50 hover:bg-stone-50"
+                            }`}
+                          >
+                            <div className="flex items-start gap-3.5">
+                              <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors ${ paymentMethod === "PAY_AT_HOTEL" ? "bg-[#BA8B32] text-white shadow-xs" : "bg-stone-100 text-stone-600" }`}>
+                                <Hotel className="w-5 h-5" />
+                              </div>
+                              <div>
+                                <p className="text-sm font-sans font-semibold text-[#111E31]">Pay at Hotel</p>
+                                <p className="text-xs text-stone-500 font-sans mt-0.5 leading-[1.5]">Reserve now, settle at check-in. No online card required.</p>
+                              </div>
                             </div>
+                            {paymentMethod === "PAY_AT_HOTEL" && (
+                              <div className="mt-3.5 flex items-center gap-1.5 text-xs text-[#BA8B32] font-semibold font-sans">
+                                <Check className="w-4 h-4 stroke-[2.5]" />
+                                <span>Selected Method</span>
+                              </div>
+                            )}
                           </div>
-                        </div>
 
-                        {/* Option B: Direct Online Payment */}
-                        <div
-                          onClick={() => setPaymentMethod("ONLINE")}
-                          className={`p-4 border-2 rounded-sm cursor-pointer transition-all ${
-                            paymentMethod === "ONLINE"
-                              ? "border-[#2B2320] bg-[#FAF8F5] shadow-sm"
-                              : "border-[#E8DFD2] hover:border-[#C5A880] bg-white"
-                          }`}
-                        >
-                          <div className="flex items-start space-x-3">
-                            <CreditCard className="w-5 h-5 text-[#B38E5D] flex-shrink-0 mt-0.5" />
-                            <div>
-                              <p className="text-sm font-serif font-bold text-[#2B2320]">
-                                Direct Online Payment
-                              </p>
-                              <p className="text-[11px] text-[#7A6B61] mt-1 leading-relaxed">
-                                Instant automated receipt confirmation via UPI, NetBanking, Debit/Credit Card.
-                              </p>
+                          {/* Option B: Direct Online Payment */}
+                          <div
+                            onClick={() => setPaymentMethod("ONLINE")}
+                            className={`p-5 rounded-2xl cursor-pointer transition-all duration-300 relative border-2 ${
+                              paymentMethod === "ONLINE"
+                                ? "border-[#BA8B32] bg-[#BA8B32]/[0.03] ring-2 ring-[#BA8B32]/20 shadow-md"
+                                : "border-stone-200 hover:border-stone-300 bg-stone-50/50 hover:bg-stone-50"
+                            }`}
+                          >
+                            <div className="flex items-start gap-3.5">
+                              <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors ${ paymentMethod === "ONLINE" ? "bg-[#BA8B32] text-white shadow-xs" : "bg-stone-100 text-stone-600" }`}>
+                                <CreditCard className="w-5 h-5" />
+                              </div>
+                              <div>
+                                <p className="text-sm font-sans font-semibold text-[#111E31]">Direct Online Payment</p>
+                                <p className="text-xs text-stone-500 font-sans mt-0.5 leading-[1.5]">Instant confirmation via UPI, Cards, NetBanking.</p>
+                              </div>
                             </div>
+                            {paymentMethod === "ONLINE" && (
+                              <div className="mt-3.5 flex items-center gap-1.5 text-xs text-[#BA8B32] font-semibold font-sans">
+                                <Check className="w-4 h-4 stroke-[2.5]" />
+                                <span>Selected Method</span>
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
                     </div>
 
-                    {/* Guest & Stay Summary Verification Card */}
-                    <div className="bg-white border border-[#E8DFD2] p-6 shadow-xs space-y-4 text-xs sm:text-sm">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                        <div>
-                          <span className="text-[10px] uppercase font-bold tracking-widest text-[#B38E5D] block mb-1">
-                            Guest Details
-                          </span>
-                          <p className="font-serif font-bold text-[#2B2320] text-sm">{bookingState.guest?.name}</p>
-                          <p className="text-[#5C4F46] mt-0.5">{bookingState.guest?.email}</p>
-                          <p className="text-[#5C4F46]">{bookingState.guest?.phone}</p>
+                    {/* Guest review card */}
+                    <div className="bg-white rounded-3xl border border-stone-200/90 p-6 sm:p-8 shadow-[0_4px_30px_rgba(17,30,49,0.05)] space-y-5">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm">
+                        <div className="space-y-1">
+                          <span className="text-[10px] font-sans font-semibold tracking-[0.25em] uppercase text-[#BA8B32] block mb-2">Guest Details</span>
+                          <p className="font-serif font-normal text-[#111E31] text-base">{bookingState.guest?.name}</p>
+                          <p className="text-stone-500 font-sans text-xs">{bookingState.guest?.email}</p>
+                          <p className="text-stone-500 font-sans text-xs">{bookingState.guest?.phone}</p>
                         </div>
 
                         {bookingState.guest?.specialRequests && (
                           <div>
-                            <span className="text-[10px] uppercase font-bold tracking-widest text-[#B38E5D] block mb-1">
-                              Special Request
-                            </span>
-                            <p className="text-[#5C4F46] leading-relaxed italic bg-[#FAF8F5] p-3 border border-[#E8DFD2] rounded-xs">
-                              "{bookingState.guest.specialRequests}"
+                            <span className="text-[10px] font-sans font-semibold tracking-[0.25em] uppercase text-[#BA8B32] block mb-2">Special Request</span>
+                            <p className="text-stone-600 font-sans text-xs leading-[1.6] italic bg-stone-50 p-3.5 rounded-2xl border border-stone-100">
+                              &ldquo;{bookingState.guest.specialRequests}&rdquo;
                             </p>
                           </div>
                         )}
                       </div>
 
-                      <div className="bg-[#FAF8F5] p-4 border border-[#E8DFD2] text-[11px] text-[#5C4F46] flex items-start space-x-2.5">
+                      <div className="bg-emerald-50/70 rounded-2xl border border-emerald-100 p-4 flex items-start gap-3">
                         <ShieldCheck className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
-                        <p className="leading-relaxed">
-                          Your reservation is protected by our Direct Booking Guarantee. Check-in is at 12:00 PM and check-out is at 11:00 AM. Free cancellation up to 24 hours prior to check-in.
+                        <p className="text-xs text-emerald-800 font-sans leading-[1.6]">
+                          Your reservation is protected by our Direct Booking Guarantee. Standard check-in is at 12:00 PM and check-out at 11:00 AM. Free cancellation up to 24 hours prior.
                         </p>
                       </div>
                     </div>
 
                     {/* Itemized Tariff & Tax Breakdown */}
                     {selectedRoom && (
-                      <div className="bg-white border border-[#E8DFD2] p-6 shadow-xs space-y-3">
-                        <div className="flex items-center justify-between border-b border-[#E8DFD2] pb-2">
-                          <span className="text-[10px] uppercase font-bold tracking-widest text-[#B38E5D]">
+                      <div className="bg-white rounded-3xl border border-stone-200/90 p-6 sm:p-8 shadow-[0_4px_30px_rgba(17,30,49,0.05)] space-y-4">
+                        <div className="flex items-center justify-between border-b border-stone-100 pb-3">
+                          <span className="text-[10px] uppercase font-sans font-semibold tracking-[0.25em] text-[#BA8B32]">
                             Tariff & Statutory Tax Breakdown
                           </span>
-                          <span className="text-[10px] text-emerald-800 font-semibold bg-emerald-50 px-2 py-0.5 border border-emerald-200 rounded-xs">
-                            GSTIN Compliant
+                          <span className="text-[10.5px] text-emerald-800 font-semibold bg-emerald-50 px-3 py-1 border border-emerald-200 rounded-full font-sans">
+                            ✓ GSTIN Compliant
                           </span>
                         </div>
                         {(() => {
@@ -610,30 +620,30 @@ function BookingContent() {
                           const grandTotal = Math.round((taxableSubtotal + taxAmount) * 100) / 100;
 
                           return (
-                            <div className="space-y-2 text-xs">
-                              <div className="flex justify-between text-[#5C4F46]">
+                            <div className="space-y-3 text-xs font-sans">
+                              <div className="flex justify-between text-stone-600">
                                 <span>{selectedRoom.name} ({nights} {nights === 1 ? "night" : "nights"} × {formatPrice(activeRoomPrice)}):</span>
-                                <span className="font-semibold text-[#2B2320]">{formatPrice(rawSubtotal)}</span>
+                                <span className="font-semibold text-[#111E31]">{formatPrice(rawSubtotal)}</span>
                               </div>
                               {discountAmount > 0 && (
-                                <div className="flex justify-between text-emerald-700 font-semibold bg-emerald-50/80 p-2 border border-emerald-200 rounded-xs">
+                                <div className="flex justify-between text-emerald-700 font-semibold bg-emerald-50/80 p-3 border border-emerald-200 rounded-2xl">
                                   <span>Privilege Discount ({activePromo} - {discountPercent}%):</span>
                                   <span>-{formatPrice(discountAmount)}</span>
                                 </div>
                               )}
                               {discountAmount > 0 && (
-                                <div className="flex justify-between text-[#7A6B61] text-[11px]">
+                                <div className="flex justify-between text-stone-500 text-[11px]">
                                   <span>Net Taxable Accommodation Tariff:</span>
-                                  <span className="font-medium text-[#2B2320]">{formatPrice(taxableSubtotal)}</span>
+                                  <span className="font-medium text-[#111E31]">{formatPrice(taxableSubtotal)}</span>
                                 </div>
                               )}
-                              <div className="flex justify-between text-[#5C4F46]">
+                              <div className="flex justify-between text-stone-600">
                                 <span>Goods & Services Tax (GST @ 12%):</span>
-                                <span className="font-semibold text-[#2B2320]">+{formatPrice(taxAmount)}</span>
+                                <span className="font-semibold text-[#111E31]">+{formatPrice(taxAmount)}</span>
                               </div>
-                              <div className="flex justify-between text-sm sm:text-base font-bold text-[#2B2320] border-t-2 border-[#E8DFD2] pt-3 mt-2">
+                              <div className="flex justify-between items-center text-sm sm:text-base font-bold text-[#111E31] border-t border-stone-200/80 pt-4 mt-2">
                                 <span>Total Payable ({paymentMethod === "ONLINE" ? "Instant Online" : "At Hotel Check-In"}):</span>
-                                <span className="font-serif text-primary text-lg sm:text-xl font-bold">{formatPrice(grandTotal)}</span>
+                                <span className="font-serif text-[#111E31] text-2xl sm:text-3xl font-light">{formatPrice(grandTotal)}</span>
                               </div>
                             </div>
                           );
@@ -645,59 +655,44 @@ function BookingContent() {
               </motion.div>
             </AnimatePresence>
 
-            {/* Navigation Buttons with 46px+ touch targets */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-6 border-t border-[#E8DFD2]">
+            {/* Nav buttons */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-6 border-t border-stone-200/80">
               {step > 1 ? (
-                <button
-                  type="button"
-                  onClick={handleBack}
-                  disabled={isSubmitting}
-                  className="min-h-[46px] px-6 text-xs uppercase tracking-wider font-semibold border border-[#E8DFD2] bg-white hover:bg-[#FAF8F5] text-[#2B2320] rounded-xs cursor-pointer flex items-center justify-center touch-press"
+                <button type="button" onClick={handleBack} disabled={isSubmitting}
+                  className="min-h-[46px] px-6 text-[12px] font-sans font-semibold uppercase tracking-wider border border-stone-200 bg-white hover:bg-stone-50 text-[#111E31] rounded-full cursor-pointer flex items-center justify-center transition-all shadow-2xs hover:border-stone-300"
                 >
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back
+                  <ArrowLeft className="w-4 h-4 mr-2" /> Back
                 </button>
               ) : (
                 <div className="hidden sm:block" />
               )}
 
               {step < 3 ? (
-                <button
-                  type="button"
-                  onClick={handleNext}
-                  className="min-h-[46px] px-8 text-xs uppercase tracking-widest font-bold bg-[#2B2320] text-white hover:bg-[#1E1815] rounded-xs cursor-pointer flex items-center justify-center shadow-md touch-press active:scale-[0.98]"
+                <button type="button" onClick={handleNext}
+                  className="min-h-[48px] px-8 text-[12px] font-sans font-semibold uppercase tracking-wider bg-[#111E31] hover:bg-[#1a2e4a] text-white rounded-full cursor-pointer flex items-center justify-center shadow-[0_8px_30px_rgba(17,30,49,0.22)] hover:shadow-[0_12px_40px_rgba(17,30,49,0.32)] transition-all active:scale-[0.98]"
                 >
                   <span>{step === 1 ? "Continue to Guest Details" : "Continue to Payment"}</span>
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </button>
               ) : (
-                <button
-                  type="button"
-                  onClick={handleSubmit}
-                  disabled={isSubmitting}
-                  className="min-h-[48px] px-8 text-xs uppercase tracking-widest font-bold bg-emerald-800 hover:bg-emerald-900 text-white rounded-xs cursor-pointer shadow-md flex items-center justify-center touch-press active:scale-[0.98]"
+                <button type="button" onClick={handleSubmit} disabled={isSubmitting}
+                  className="min-h-[48px] px-8 text-[12px] font-sans font-semibold uppercase tracking-wider bg-emerald-700 hover:bg-emerald-800 text-white rounded-full cursor-pointer shadow-[0_8px_30px_rgba(5,100,60,0.3)] hover:shadow-[0_12px_40px_rgba(5,100,60,0.4)] flex items-center justify-center transition-all active:scale-[0.98] disabled:opacity-60"
                 >
-                  <span>
-                    {isSubmitting
-                      ? "Processing..."
-                      : paymentMethod === "ONLINE"
-                      ? "Proceed to Online Payment"
-                      : "Confirm & Complete Booking"}
-                  </span>
-                  {!isSubmitting && <Check className="w-4 h-4 ml-2" />}
+                  <span>{isSubmitting ? "Processing..." : paymentMethod === "ONLINE" ? "Proceed to Online Payment" : "Confirm & Complete Booking"}</span>
+                  {!isSubmitting && <Check className="w-4 h-4 ml-2 stroke-[2.5]" />}
                 </button>
               )}
             </div>
           </div>
 
-          {/* Sticky Booking Summary Panel */}
+          {/* Sticky summary */}
           <div className="lg:col-span-4">
-            <div className="sticky top-[90px]">
+            <div className="sticky top-28">
               <BookingSummary state={bookingState} selectedRoom={selectedRoom} />
             </div>
           </div>
         </div>
-      </Container>
+      </div>
     </div>
   );
 }

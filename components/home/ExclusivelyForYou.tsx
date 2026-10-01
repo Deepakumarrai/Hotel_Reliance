@@ -5,8 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, ChevronRight as ArrowIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Container } from "@/components/ui/Container";
-import { FadeUp } from "@/components/animation/FadeUp";
+
+
 
 interface ExclusivelyItem {
   id: string;
@@ -135,23 +135,22 @@ export function ExclusivelyForYou() {
         </AnimatePresence>
       </div>
 
-      <Container className="max-w-7xl px-4 sm:px-6 relative z-10">
-        {/* Top Header Row matching Taj Reference Layout */}
-        <FadeUp className="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6 mb-12 sm:mb-16 pb-6 sm:pb-8 border-b border-white/20">
-          {/* Left Title with Dash */}
-          <div className="flex items-start space-x-3 sm:space-x-4">
-            <div className="w-8 sm:w-16 h-[1.5px] bg-[#C5A880] mt-3 sm:mt-4 flex-shrink-0" />
-            <h2 className="text-2xl sm:text-4xl md:text-5xl font-serif font-normal tracking-[0.1em] sm:tracking-[0.14em] text-white uppercase leading-tight drop-shadow-md">
-              Exclusively
-              <span className="block">For You</span>
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-16 relative z-10">
+        {/* Section header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-14 sm:mb-18 pb-8 border-b border-white/10">
+          <div>
+            <span className="text-[10px] sm:text-[11px] font-sans font-semibold tracking-[0.35em] uppercase text-[#BA8B32] block mb-3">
+              Exclusively for You
+            </span>
+            <h2 className="text-3xl sm:text-5xl md:text-6xl font-serif font-light text-white tracking-[-0.02em] leading-[1.05]">
+              Experiences{" "}
+              <em className="italic text-[#D8B875]">beyond ordinary.</em>
             </h2>
           </div>
-
-          {/* Right Subtitle Text */}
-          <p className="text-[15.5px] sm:text-[17.5px] md:text-[19px] font-serif italic text-white/90 max-w-xl leading-[1.7] text-left md:text-right md:self-end font-normal drop-shadow-md">
+          <p className="text-sm sm:text-base text-white/40 max-w-sm leading-[1.8] font-sans font-light md:text-right">
             Refinement and creativity intertwine with dreamlike destinations and soulful moments on each sojourn with Hotel Reliance.
           </p>
-        </FadeUp>
+        </div>
 
         {/* 3-Panel Cinema Carousel matching Taj Reference Screenshots */}
         <div className="relative">
@@ -304,7 +303,7 @@ export function ExclusivelyForYou() {
             </button>
           </div>
         </div>
-      </Container>
+      </div>
     </section>
   );
 }

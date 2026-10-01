@@ -3,21 +3,70 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { 
-  Phone, 
-  Mail, 
-  MapPin, 
-  Plus, 
-  Minus, 
+import {
+  Phone,
+  Mail,
+  MapPin,
   Check,
-  ArrowRight,
   Copy,
+  ArrowUpRight,
   Navigation,
-  ArrowUpRight
 } from "lucide-react";
-import { Container } from "@/components/ui/Container";
 import { hotelData } from "@/data/hotel";
 import { useHotelSettings } from "@/hooks/useHotelSettings";
+
+const links = {
+  explore: [
+    { label: "Rooms & Suites", href: "/rooms" },
+    { label: "Kwality Dining", href: "/restaurant" },
+    { label: "Banquets & Events", href: "/banquet" },
+    { label: "Weddings", href: "/banquet#lawn" },
+    { label: "Photo Gallery", href: "/gallery" },
+  ],
+  info: [
+    { label: "About Us", href: "/about" },
+    { label: "Offers", href: "/offers" },
+    { label: "Attractions", href: "/places" },
+    { label: "FAQ", href: "/faq" },
+    { label: "Contact", href: "/contact" },
+  ],
+  legal: [
+    { label: "Policies", href: "/policies" },
+    { label: "Privacy", href: "/privacy-policy" },
+    { label: "Terms", href: "/terms-and-conditions" },
+    { label: "Cancellation", href: "/cancellation-policy" },
+  ],
+};
+
+const socials = [
+  {
+    label: "Facebook",
+    href: "https://www.facebook.com/share/1N5dD3DvRk/",
+    icon: (
+      <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+      </svg>
+    ),
+  },
+  {
+    label: "Instagram",
+    href: "https://www.instagram.com/hotelreliancebokaro?igsh=MWI3bGpoODVnNHRvdA==",
+    icon: (
+      <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+      </svg>
+    ),
+  },
+  {
+    label: "YouTube",
+    href: "https://youtube.com/@hotelreliancebokaro2683?si=1CpOpWNnGipC5R2A",
+    icon: (
+      <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+      </svg>
+    ),
+  },
+];
 
 export function Footer() {
   const pathname = usePathname();
@@ -25,28 +74,19 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
-  const [destinationsOpen, setDestinationsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  // Do not render guest footer on admin panel routes
-  if (pathname?.startsWith("/admin")) {
-    return null;
-  }
+  if (pathname?.startsWith("/admin")) return null;
 
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
     if (email) {
       setSubscribed(true);
-      setTimeout(() => {
-        setSubscribed(false);
-        setEmail("");
-      }, 3000);
+      setTimeout(() => { setSubscribed(false); setEmail(""); }, 3000);
     }
   };
 
-  const handleCopyAddress = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleCopyAddress = () => {
     if (navigator.clipboard) {
       navigator.clipboard.writeText(hotelSettings.fullAddress);
       setCopied(true);
@@ -55,371 +95,218 @@ export function Footer() {
   };
 
   return (
-    <footer className="bg-[#0F0D0C] text-[#EFEBE6] pt-16 pb-12 border-t border-[#26201C] select-none">
-      <Container className="max-w-7xl">
-        {/* Top Heritage Brand Title matching IHCL Logo Position */}
-        <div className="mb-14">
-          <Link href="/" className="inline-block group">
-            <span className="text-3xl sm:text-5xl font-serif tracking-[0.22em] text-white uppercase font-normal group-hover:text-[#D8B875] transition-colors">
-              {hotelSettings.hotelName}
-            </span>
-          </Link>
-        </div>
+    <footer className="bg-[#0C0A09] text-white/70 border-t border-white/6 select-none">
+      {/* ── Main grid ── */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-16 pt-12 sm:pt-14 pb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 pb-10 border-b border-white/8">
 
-        {/* Main Footer Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 pb-14 border-b border-[#26201C]">
-          {/* Left Column: Brand & Direct Contact (Span 7) */}
-          <div className="lg:col-span-7 space-y-10">
-            {/* Newsletter Subscription */}
-            <div>
-              <span className="text-xs sm:text-[13px] font-mono tracking-[0.2em] text-[#C5A880] uppercase font-bold block mb-4">
-                Subscribe For Latest Updates
+          {/* Brand + contact column */}
+          <div className="lg:col-span-4 space-y-7">
+            {/* Wordmark */}
+            <Link href="/" className="inline-block group">
+              <span className="text-2xl sm:text-3xl font-serif tracking-[0.18em] text-white uppercase font-light group-hover:text-[#D8B875] transition-colors duration-300">
+                {hotelSettings.hotelName}
               </span>
+              <span className="block text-[9px] tracking-[0.3em] uppercase text-[#BA8B32] font-sans font-semibold mt-0.5">
+                Bokaro Steel City · Jharkhand
+              </span>
+            </Link>
 
-              <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row items-stretch sm:items-end gap-3 max-w-md">
-                <div className="relative flex-grow">
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter your email address"
-                    required
-                    className="w-full bg-transparent border-b-2 border-[#3D332C] text-sm text-white placeholder:text-[#888078] pb-2.5 focus:outline-none focus:border-[#D8B875] font-sans transition-colors"
-                  />
+            {/* Contact pills */}
+            <div className="space-y-2.5">
+              {hotelSettings.phones.map((phone) => (
+                <a
+                  key={phone}
+                  href={`tel:${phone.replace(/\s+/g, "")}`}
+                  className="flex items-center space-x-2.5 text-sm text-white/60 hover:text-[#D8B875] transition-colors duration-200 group"
+                >
+                  <span className="w-7 h-7 rounded-full bg-white/6 border border-white/8 flex items-center justify-center flex-shrink-0 group-hover:bg-[#BA8B32]/15 group-hover:border-[#BA8B32]/30 transition-all duration-200">
+                    <Phone className="w-3 h-3" strokeWidth={1.8} />
+                  </span>
+                  <span className="font-sans text-[13px]">{phone}</span>
+                </a>
+              ))}
+              <a
+                href={`mailto:${hotelSettings.primaryEmail}`}
+                className="flex items-center space-x-2.5 text-sm text-white/60 hover:text-[#D8B875] transition-colors duration-200 group"
+              >
+                <span className="w-7 h-7 rounded-full bg-white/6 border border-white/8 flex items-center justify-center flex-shrink-0 group-hover:bg-[#BA8B32]/15 group-hover:border-[#BA8B32]/30 transition-all duration-200">
+                  <Mail className="w-3 h-3" strokeWidth={1.8} />
+                </span>
+                <span className="font-sans text-[13px] truncate">{hotelSettings.primaryEmail}</span>
+              </a>
+            </div>
+
+            {/* Address */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between mb-1">
+                <div className="flex items-center space-x-1.5">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#BA8B32] opacity-60" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-[#BA8B32]" />
+                  </span>
+                  <span className="text-[10px] font-sans font-semibold uppercase tracking-[0.2em] text-[#BA8B32]">
+                    Location
+                  </span>
                 </div>
                 <button
+                  onClick={handleCopyAddress}
+                  className="flex items-center space-x-1 text-[10px] font-sans text-white/35 hover:text-white/70 transition-colors cursor-pointer"
+                  title="Copy address"
+                >
+                  {copied ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                  <span>{copied ? "Copied" : "Copy"}</span>
+                </button>
+              </div>
+              <a
+                href="https://maps.google.com/?q=Hotel+Reliance+Co-Operative+Colony+Bokaro+Steel+City+Jharkhand+827001"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex items-start space-x-2 text-white/55 hover:text-white/90 transition-colors duration-200"
+              >
+                <MapPin className="w-3.5 h-3.5 text-[#BA8B32] flex-shrink-0 mt-0.5" strokeWidth={1.8} />
+                <span className="text-[12px] font-sans leading-relaxed">
+                  {hotelSettings.fullAddress}
+                </span>
+                <ArrowUpRight className="w-3 h-3 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity mt-0.5" />
+              </a>
+            </div>
+
+            {/* Social icons */}
+            <div className="flex items-center space-x-2">
+              {socials.map((s) => (
+                <a
+                  key={s.label}
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={s.label}
+                  className="w-8 h-8 rounded-full bg-white/6 border border-white/8 flex items-center justify-center text-white/50 hover:text-[#D8B875] hover:bg-white/10 hover:border-[#BA8B32]/30 transition-all duration-200"
+                >
+                  {s.icon}
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* Nav links */}
+          <div className="lg:col-span-5 grid grid-cols-2 gap-8">
+            <div>
+              <p className="text-[10px] font-sans font-semibold uppercase tracking-[0.25em] text-[#BA8B32] mb-4">
+                Explore
+              </p>
+              <ul className="space-y-2.5">
+                {links.explore.map((l) => (
+                  <li key={l.href}>
+                    <Link
+                      href={l.href}
+                      className="text-[13px] font-sans text-white/55 hover:text-white transition-colors duration-200 hover:translate-x-0.5 inline-block"
+                    >
+                      {l.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <p className="text-[10px] font-sans font-semibold uppercase tracking-[0.25em] text-[#BA8B32] mb-4">
+                Information
+              </p>
+              <ul className="space-y-2.5">
+                {links.info.map((l) => (
+                  <li key={l.href}>
+                    <Link
+                      href={l.href}
+                      className="text-[13px] font-sans text-white/55 hover:text-white transition-colors duration-200 hover:translate-x-0.5 inline-block"
+                    >
+                      {l.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* Newsletter */}
+          <div className="lg:col-span-3 space-y-5">
+            <div>
+              <p className="text-[10px] font-sans font-semibold uppercase tracking-[0.25em] text-[#BA8B32] mb-4">
+                Stay Updated
+              </p>
+              <p className="text-[12px] text-white/40 font-sans leading-relaxed mb-4">
+                Get exclusive offers and hotel updates delivered to your inbox.
+              </p>
+              <form onSubmit={handleSubscribe} className="space-y-2.5">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="your@email.com"
+                  required
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-[13px] text-white placeholder:text-white/25 focus:outline-none focus:border-[#BA8B32]/60 focus:bg-white/8 transition-all duration-200 font-sans"
+                />
+                <button
                   type="submit"
-                  className="bg-[#C5A880] hover:bg-[#D8B875] text-[#111111] font-bold text-xs tracking-[0.18em] uppercase px-8 py-3 transition-all duration-300 flex items-center justify-center cursor-pointer flex-shrink-0 shadow-md hover:shadow-lg"
+                  className="w-full bg-[#BA8B32] hover:bg-[#A67B22] text-white font-semibold text-[11px] uppercase tracking-[0.1em] py-2.5 rounded-xl transition-all duration-300 cursor-pointer shadow-[0_4px_14px_rgba(186,139,50,0.3)] hover:shadow-[0_6px_20px_rgba(186,139,50,0.4)] flex items-center justify-center space-x-1.5"
                 >
                   {subscribed ? (
-                    <span className="flex items-center text-emerald-950 font-bold">
-                      <Check className="w-4 h-4 mr-1.5" />
-                      Subscribed
-                    </span>
+                    <>
+                      <Check className="w-3.5 h-3.5 text-emerald-300" />
+                      <span className="text-emerald-100">Subscribed!</span>
+                    </>
                   ) : (
-                    "Subscribe"
+                    <span>Subscribe</span>
                   )}
                 </button>
               </form>
             </div>
 
-            {/* Bookings & Reservations Contact */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
-              <div className="space-y-2">
-                <span className="text-xs sm:text-[13px] font-mono tracking-[0.2em] text-[#C5A880] uppercase font-bold block">
-                  For Bookings Contact
-                </span>
-                <div className="flex flex-col space-y-1.5 text-sm sm:text-base font-sans text-white/95">
-                  {hotelSettings.phones.map((phone) => (
-                    <a
-                      key={phone}
-                      href={`tel:${phone.replace(/\s+/g, "")}`}
-                      className="hover:text-[#D8B875] transition-colors font-medium"
-                    >
-                      {phone}
-                    </a>
-                  ))}
+            {/* Book CTA */}
+            <Link href="/booking">
+              <div className="group flex items-center justify-between bg-white/5 hover:bg-white/9 border border-white/8 hover:border-[#BA8B32]/30 rounded-xl px-4 py-3.5 transition-all duration-300 cursor-pointer">
+                <div>
+                  <p className="text-[11px] font-semibold text-white/80 font-sans">Reserve a Room</p>
+                  <p className="text-[10px] text-white/35 font-sans mt-0.5">Check availability</p>
+                </div>
+                <div className="w-7 h-7 rounded-full bg-[#BA8B32]/15 border border-[#BA8B32]/25 flex items-center justify-center group-hover:bg-[#BA8B32] group-hover:border-[#BA8B32] transition-all duration-300">
+                  <ArrowUpRight className="w-3.5 h-3.5 text-[#D8B875] group-hover:text-white transition-colors duration-300" />
                 </div>
               </div>
+            </Link>
+          </div>
+        </div>
 
-              <div className="space-y-2">
-                <span className="text-xs sm:text-[13px] font-mono tracking-[0.2em] text-[#C5A880] uppercase font-bold block">
-                  Customer Support & Email
-                </span>
-                <a
-                  href={`mailto:${hotelSettings.primaryEmail}`}
-                  className="text-sm font-sans text-[#E5DFD7] hover:text-[#D8B875] transition-colors block font-medium"
+        {/* ── Bottom bar ── */}
+        <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-0">
+          <p className="text-[11px] font-sans text-white/25 text-center sm:text-left">
+            © {currentYear} {hotelSettings.hotelName}. All rights reserved.
+            {" · "}
+            Designed by{" "}
+            <a
+              href="https://hypekimedia.myquro.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white/40 hover:text-[#D8B875] transition-colors underline underline-offset-2"
+            >
+              Deepak Kumar Rai
+            </a>
+          </p>
+
+          <div className="flex items-center gap-4">
+            {links.legal.map((l, i) => (
+              <React.Fragment key={l.href}>
+                {i > 0 && <span className="text-white/15 text-[10px]">·</span>}
+                <Link
+                  href={l.href}
+                  className="text-[11px] font-sans text-white/30 hover:text-white/70 transition-colors duration-200"
                 >
-                  {hotelSettings.primaryEmail}
-                </a>
-              </div>
-            </div>
-
-            {/* Interactive & Beautiful Hotel Location Section (Box-free Luxury Design) */}
-            <div className="pt-2 border-t border-[#26201C]">
-              <div className="group relative block">
-                {/* Header with live pulse */}
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center space-x-2.5">
-                    <span className="relative flex h-2.5 w-2.5">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#BA8B32] opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#BA8B32]"></span>
-                    </span>
-                    <span className="text-xs sm:text-[13px] font-mono tracking-[0.2em] text-[#C5A880] uppercase font-bold">
-                      Hotel Location & Landmark
-                    </span>
-                  </div>
-
-                  {/* Copy Address Action */}
-                  <button
-                    type="button"
-                    onClick={handleCopyAddress}
-                    className="inline-flex items-center space-x-1.5 text-[11px] font-mono uppercase tracking-wider text-[#C5A880] hover:text-white transition-colors cursor-pointer px-2.5 py-1 rounded-full bg-white/5 hover:bg-white/10 border border-white/10"
-                    title="Copy full hotel address"
-                  >
-                    {copied ? (
-                      <>
-                        <Check className="w-3 h-3 text-emerald-400" />
-                        <span className="text-emerald-300">Copied</span>
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="w-3 h-3" />
-                        <span>Copy</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-
-                {/* Main Prominent Address Text with Google Maps Direction Link */}
-                <a
-                  href="https://maps.google.com/?q=Hotel+Reliance+Co-Operative+Colony+Bokaro+Steel+City+Jharkhand+827001"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block space-y-2 group/addr"
-                >
-                  <div className="flex items-start space-x-3">
-                    <div className="w-9 h-9 rounded-full bg-[#C5A880]/15 group-hover/addr:bg-[#C5A880] text-[#D8B875] group-hover/addr:text-black flex items-center justify-center flex-shrink-0 transition-all duration-300 mt-0.5 shadow-sm">
-                      <MapPin className="w-4 h-4 transition-transform duration-300 group-hover/addr:scale-110" />
-                    </div>
-                    <div className="space-y-1.5 flex-grow">
-                      <p className="text-base sm:text-lg md:text-xl font-serif text-white group-hover/addr:text-[#D8B875] transition-colors leading-relaxed font-normal">
-                        {hotelSettings.fullAddress}
-                      </p>
-                      
-                      {/* Interactive Directions Indicator */}
-                      <div className="inline-flex items-center space-x-1.5 text-xs sm:text-[13px] text-[#C5A880] font-sans font-medium group-hover/addr:text-white transition-colors">
-                        <Navigation className="w-3.5 h-3.5 text-[#D8B875] group-hover/addr:translate-x-0.5 transition-transform" />
-                        <span className="underline underline-offset-4 decoration-[#C5A880]/50 group-hover/addr:decoration-[#D8B875]">
-                          Get Live Directions on Google Maps
-                        </span>
-                        <ArrowUpRight className="w-3.5 h-3.5 transition-transform duration-200 group-hover/addr:translate-x-0.5 group-hover/addr:-translate-y-0.5" />
-                      </div>
-                    </div>
-                  </div>
-                </a>
-              </div>
-            </div>
-          </div>
-
-          {/* Middle Columns: Quick Links (Span 5) */}
-          <div className="lg:col-span-5 grid grid-cols-1 sm:grid-cols-2 gap-8">
-            {/* Quick Links Column 1 */}
-            <div>
-              <span className="text-xs sm:text-[13px] font-mono tracking-[0.2em] text-[#C5A880] uppercase font-bold block mb-4">
-                Quick Links
-              </span>
-              <ul className="space-y-3.5 text-sm sm:text-[15px] font-serif text-[#DFD7CF]">
-                <li>
-                  <Link href="/rooms" className="hover:text-[#D8B875] transition-all hover:translate-x-1 duration-200 inline-block font-normal">
-                    Hotels & Suites
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/restaurant" className="hover:text-[#D8B875] transition-all hover:translate-x-1 duration-200 inline-block font-normal">
-                    Kwality Dining
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/banquet" className="hover:text-[#D8B875] transition-all hover:translate-x-1 duration-200 inline-block font-normal">
-                    Banquets & Lawns
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/banquet#weddings" className="hover:text-[#D8B875] transition-all hover:translate-x-1 duration-200 inline-block font-normal">
-                    Timeless Weddings
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/banquet#meetings" className="hover:text-[#D8B875] transition-all hover:translate-x-1 duration-200 inline-block font-normal">
-                    Event Venues
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/gallery" className="hover:text-[#D8B875] transition-all hover:translate-x-1 duration-200 inline-block font-normal">
-                    Photo Gallery
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/policies" className="hover:text-[#D8B875] transition-all hover:translate-x-1 duration-200 inline-block font-normal">
-                    Hotel Policies
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            {/* Quick Links Column 2 */}
-            <div>
-              <span className="text-xs sm:text-[13px] font-mono tracking-[0.2em] text-[#C5A880] uppercase font-bold block mb-4 opacity-0 hidden sm:block">
-                More Information
-              </span>
-              <ul className="space-y-3.5 text-sm sm:text-[15px] font-serif text-[#DFD7CF]">
-                <li>
-                  <Link href="/about" className="hover:text-[#D8B875] transition-all hover:translate-x-1 duration-200 inline-block font-normal">
-                    About Hotel Reliance
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/offers" className="hover:text-[#D8B875] transition-all hover:translate-x-1 duration-200 inline-block font-normal">
-                    Special Offers & Packages
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/places" className="hover:text-[#D8B875] transition-all hover:translate-x-1 duration-200 inline-block font-normal">
-                    Local Attractions
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/faq" className="hover:text-[#D8B875] transition-all hover:translate-x-1 duration-200 inline-block font-normal">
-                    Frequently Asked Questions
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/privacy-policy" className="hover:text-[#D8B875] transition-all hover:translate-x-1 duration-200 inline-block font-normal">
-                    Privacy Policy
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/terms-and-conditions" className="hover:text-[#D8B875] transition-all hover:translate-x-1 duration-200 inline-block font-normal">
-                    Terms & Conditions
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/contact" className="hover:text-[#D8B875] transition-all hover:translate-x-1 duration-200 inline-block font-normal">
-                    Contact Front Desk
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          {/* Right Column: Connect With Us (Span 2) */}
-          <div className="lg:col-span-2 space-y-4">
-            <span className="text-xs sm:text-[13px] font-mono tracking-[0.2em] text-[#C5A880] uppercase font-bold block mb-4">
-              Connect With Us
-            </span>
-            <div className="flex items-center space-x-4 text-white">
-              {/* Facebook */}
-              <a
-                href="https://www.facebook.com/share/1N5dD3DvRk/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-[#D8B875] transition-colors p-2 bg-white/5 rounded-full hover:bg-white/10"
-                aria-label="Facebook"
-              >
-                <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                </svg>
-              </a>
-              {/* Instagram */}
-              <a
-                href="https://www.instagram.com/hotelreliancebokaro?igsh=MWI3bGpoODVnNHRvdA=="
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-[#D8B875] transition-colors p-2 bg-white/5 rounded-full hover:bg-white/10"
-                aria-label="Instagram"
-              >
-                <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                </svg>
-              </a>
-              {/* YouTube */}
-              <a
-                href="https://youtube.com/@hotelreliancebokaro2683?si=1CpOpWNnGipC5R2A"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-[#D8B875] transition-colors p-2 bg-white/5 rounded-full hover:bg-white/10"
-                aria-label="YouTube"
-              >
-                <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-                </svg>
-              </a>
-            </div>
+                  {l.label}
+                </Link>
+              </React.Fragment>
+            ))}
           </div>
         </div>
-
-        {/* Collapsible Destinations / Local Bokaro Attractions Row */}
-        <div className="border-b border-[#2A231F] py-5">
-          <button
-            onClick={() => setDestinationsOpen(!destinationsOpen)}
-            className="w-full flex items-center justify-between text-left cursor-pointer group"
-          >
-            <span className="text-xs sm:text-[13px] font-mono tracking-[0.2em] text-[#C5A880] uppercase font-bold group-hover:text-white transition-colors">
-              Destinations & Bokaro Landmarks
-            </span>
-            <div className="text-[#C5A880] group-hover:text-white transition-colors">
-              {destinationsOpen ? (
-                <Minus className="w-4 h-4" />
-              ) : (
-                <Plus className="w-4 h-4" />
-              )}
-            </div>
-          </button>
-
-          {destinationsOpen && (
-            <div className="pt-4 pb-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 text-sm font-serif text-[#DFD7CF]">
-              <Link href="/places" className="hover:text-[#D8B875] transition-colors">
-                Bokaro Steel Plant (SAIL)
-              </Link>
-              <Link href="/places" className="hover:text-[#D8B875] transition-colors">
-                City Park & Lake
-              </Link>
-              <Link href="/places" className="hover:text-[#D8B875] transition-colors">
-                Jagannath Temple Bokaro
-              </Link>
-              <Link href="/places" className="hover:text-[#D8B875] transition-colors">
-                Garga Dam Reservoir
-              </Link>
-              <Link href="/places" className="hover:text-[#D8B875] transition-colors">
-                Biological Park & Zoo
-              </Link>
-            </div>
-          )}
-        </div>
-
-        {/* Bottom Bar: Hotel Reliance Bokaro Hospitality & Copyright */}
-        <div className="pt-8 flex flex-col md:flex-row items-center justify-between text-xs text-[#9E958C] gap-4 text-center md:text-left">
-          <div className="space-y-1">
-            <p className="font-serif tracking-[0.05em] text-[#DFD7CF]">
-              © {currentYear} {hotelSettings.hotelName}. All rights reserved.
-            </p>
-            <p className="text-[12px] text-[#8C847C]">
-              {hotelSettings.fullAddress}
-            </p>
-          </div>
-
-          {/* Designer Credit & Legal Links */}
-          <div className="flex flex-col md:items-end gap-2 text-center md:text-right">
-            <div className="flex flex-wrap items-center justify-center md:justify-end gap-3 text-xs font-mono uppercase tracking-wider text-[#B0A79E]">
-              <Link href="/policies" className="hover:text-[#D8B875] transition-colors">
-                Policies
-              </Link>
-              <span>•</span>
-              <Link href="/privacy-policy" className="hover:text-[#D8B875] transition-colors">
-                Privacy
-              </Link>
-              <span>•</span>
-              <Link href="/terms-and-conditions" className="hover:text-[#D8B875] transition-colors">
-                Terms
-              </Link>
-            </div>
-
-            <p className="text-[11px] font-sans tracking-wide text-[#8C847C]">
-              Designed by{" "}
-              <a
-                href="https://hypekimedia.myquro.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[#C5A880] hover:text-[#D8B875] font-medium transition-colors underline underline-offset-2"
-              >
-                hypekimedia.myquro.com
-              </a>{" "}
-              • <span className="text-[#DFD7CF] font-medium">Deepak Kumar Rai</span>
-            </p>
-          </div>
-        </div>
-      </Container>
+      </div>
     </footer>
   );
 }

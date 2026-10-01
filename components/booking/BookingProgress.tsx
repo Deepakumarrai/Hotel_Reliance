@@ -1,5 +1,5 @@
 import React from "react";
-import { Check } from "lucide-react";
+import { Check, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface BookingProgressProps {
@@ -7,56 +7,85 @@ interface BookingProgressProps {
 }
 
 const steps = [
-  { step: 1, name: "Select Room" },
-  { step: 2, name: "Guest Details" },
-  { step: 3, name: "Payment" },
-  { step: 4, name: "Confirmation" }
+  { step: 1, name: "Room & Dates", subtitle: "Select your stay" },
+  { step: 2, name: "Guest Details", subtitle: "Personalize request" },
+  { step: 3, name: "Payment & Review", subtitle: "Instant confirmation" },
 ];
 
 export function BookingProgress({ currentStep }: BookingProgressProps) {
   return (
-    <div className="w-full py-4 border-b border-border-custom bg-white shadow-sm mb-10 select-none">
-      <div className="max-w-4xl mx-auto px-4 flex items-center justify-between relative">
-        
-        {/* Progress bar background */}
-        <div className="absolute top-[35px] left-10 right-10 h-[2px] bg-border-custom -z-10 hidden sm:block" />
-        
-        {/* Active Progress bar indicator */}
-        <div
-          className="absolute top-[35px] left-10 h-[2px] bg-gold -z-10 transition-all duration-500 hidden sm:block"
-          style={{
-            width: `${((currentStep - 1) / (steps.length - 1)) * 80}%`
-          }}
-        />
+    <div className="w-full border-t border-white/10 bg-white/[0.04] backdrop-blur-md select-none py-4 sm:py-5">
+      <div className="max-w-4xl mx-auto px-4 sm:px-8">
+        <div className="flex items-center justify-between relative">
+          {/* Background connecting track */}
+          <div className="absolute top-1/2 left-8 right-8 -translate-y-1/2 h-[2px] bg-white/15 -z-0 hidden sm:block" />
 
-        {steps.map((s) => {
-          const isCompleted = currentStep > s.step;
-          const isActive = currentStep === s.step;
+          {/* Active progress fill */}
+          <div
+            className="absolute top-1/2 left-8 -translate-y-1/2 h-[2px] bg-gradient-to-r from-[#D8B875] to-[#BA8B32] -z-0 transition-all duration-500 ease-out hidden sm:block"
+            style={{
+              width: `${((currentStep - 1) / (steps.length - 1)) * 82}%`,
+            }}
+          />
 
-          return (
-            <div key={s.step} className="flex flex-col items-center flex-1 text-center relative">
+          {steps.map((s) => {
+            const isCompleted = currentStep > s.step;
+            const isActive = currentStep === s.step;
+
+            return (
               <div
-                className={cn(
-                  "w-10 h-10 rounded-full flex items-center justify-center border-2 text-xs font-bold transition-all duration-300",
-                  isCompleted && "bg-gold border-gold text-white",
-                  isActive && "bg-primary border-primary text-white scale-110 shadow-md",
-                  !isActive && !isCompleted && "bg-white border-border-custom text-muted"
-                )}
+                key={s.step}
+                className="flex items-center sm:flex-col sm:items-center relative z-10 gap-3 sm:gap-2"
               >
-                {isCompleted ? <Check className="w-4 h-4" /> : s.step}
+                {/* Step Circle Indicator */}
+                <div
+                  className={cn(
+                    "w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-xs font-sans font-bold transition-all duration-300 shadow-sm",
+                    isCompleted &&
+                      "bg-[#BA8B32] text-white ring-4 ring-[#BA8B32]/20 shadow-[0_0_15px_rgba(186,139,50,0.4)]",
+                    isActive &&
+                      "bg-white text-[#111E31] ring-4 ring-white/20 scale-105 shadow-[0_0_20px_rgba(255,255,255,0.3)]",
+                    !isActive &&
+                      !isCompleted &&
+                      "bg-white/10 text-white/50 border border-white/15 backdrop-blur-xs"
+                  )}
+                >
+                  {isCompleted ? (
+                    <Check className="w-4 h-4 stroke-[2.5]" />
+                  ) : (
+                    <span>0{s.step}</span>
+                  )}
+                </div>
+
+                {/* Step Label */}
+                <div className="text-left sm:text-center">
+                  <span
+                    className={cn(
+                      "text-[11px] sm:text-xs font-sans uppercase tracking-[0.16em] block transition-colors",
+                      isActive
+                        ? "text-white font-semibold"
+                        : isCompleted
+                        ? "text-[#D8B875] font-medium"
+                        : "text-white/40 font-normal"
+                    )}
+                  >
+                    {s.name}
+                  </span>
+                  <span
+                    className={cn(
+                      "text-[10px] font-sans font-light hidden sm:block mt-0.5",
+                      isActive ? "text-white/70" : "text-white/30"
+                    )}
+                  >
+                    {s.subtitle}
+                  </span>
+                </div>
               </div>
-              <span
-                className={cn(
-                  "text-[10px] sm:text-xs font-bold uppercase tracking-wider mt-2 hidden sm:block",
-                  isActive ? "text-primary font-extrabold" : "text-muted"
-                )}
-              >
-                {s.name}
-              </span>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
     </div>
   );
 }
+

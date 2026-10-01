@@ -4,12 +4,11 @@ import React, { useState, Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { User, Mail, Phone, Lock, Eye, EyeOff, AlertCircle, CheckCircle2, ArrowRight } from "lucide-react";
+import { User, Mail, Phone, Lock, Eye, EyeOff, AlertCircle, CheckCircle2, ArrowRight, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 import { HumanVerification } from "@/components/auth/HumanVerification";
 import { GoogleAuthButton } from "@/components/auth/GoogleAuthButton";
-import { Button } from "@/components/ui/Button";
 import { roomsData } from "@/data/rooms";
 
 function SignUpContent() {
@@ -42,22 +41,18 @@ function SignUpContent() {
       setError("Please fill in all required fields.");
       return;
     }
-
     if (password !== confirmPassword) {
       setError("Passwords do not match. Please re-check.");
       return;
     }
-
     if (password.length < 6) {
       setError("Password must be at least 6 characters.");
       return;
     }
-
     if (!isHumanVerified) {
       setError("Human verification is required before creating an account.");
       return;
     }
-
     if (!agreedTerms) {
       setError("Please accept the terms and guest policies.");
       return;
@@ -65,16 +60,7 @@ function SignUpContent() {
 
     setIsSubmitting(true);
     try {
-      const res = await signUp({
-        name,
-        email,
-        phone,
-        password,
-        confirmPassword,
-        agreedToTerms: agreedTerms,
-        isHumanVerified
-      });
-
+      const res = await signUp({ name, email, phone, password, confirmPassword, agreedToTerms: agreedTerms, isHumanVerified });
       if (res.success) {
         setSuccess("Your account has been created successfully! Logging you in...");
         setTimeout(() => {
@@ -85,7 +71,6 @@ function SignUpContent() {
             if (bookingIntent.checkOut) queryParams.set("checkOut", bookingIntent.checkOut);
             if (bookingIntent.adults) queryParams.set("adults", bookingIntent.adults.toString());
             if (bookingIntent.children) queryParams.set("children", bookingIntent.children.toString());
-
             router.push(`/booking?${queryParams.toString()}`);
             clearBookingIntent();
           } else {
@@ -103,236 +88,238 @@ function SignUpContent() {
   };
 
   return (
-    <div className="min-h-screen bg-cream flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl w-full bg-white border border-border-custom shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-12">
-        {/* Left Column: Visual Hotel Editorial */}
-        <div className="lg:col-span-5 relative bg-primary text-white p-8 lg:p-10 flex flex-col justify-between overflow-hidden min-h-[260px] lg:min-h-[640px]">
-          <div className="absolute inset-0 z-0">
-            <Image
-              src="/images/gallery/hotel-ext.jpg"
-              alt="Hotel Reliance"
-              fill
-              className="object-cover opacity-35"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/80 to-transparent" />
-          </div>
+    <div className="min-h-screen bg-[#0C1524] flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Ambient glow */}
+      <div className="absolute inset-0 z-0">
+        <div className="absolute top-[-15%] right-[-8%] w-[500px] h-[500px] rounded-full bg-[#BA8B32]/[0.07] blur-[110px]" />
+        <div className="absolute bottom-[-10%] left-[-5%] w-[450px] h-[450px] rounded-full bg-[#1E4080]/[0.14] blur-[90px]" />
+      </div>
 
-          <div className="relative z-10 space-y-2">
-            <span className="text-[10px] font-bold tracking-[0.3em] text-gold uppercase">
-              LUXURY HOSPITALITY
-            </span>
-            <h2 className="text-3xl font-serif font-light tracking-wide text-white">
-              Create Account
-            </h2>
-          </div>
+      <div className="relative z-10 w-full max-w-[960px]">
+        <div className="grid grid-cols-1 lg:grid-cols-12 rounded-3xl overflow-hidden shadow-[0_32px_80px_rgba(0,0,0,0.6)] border border-white/[0.08]">
 
-          <div className="relative z-10 space-y-4 pt-6">
-            <div className="w-12 h-[2px] bg-gold" />
-            <p className="text-xs text-cream/80 leading-relaxed font-light">
-              Join Hotel Reliance guest club for prioritized reservations, express check-in, and personalized accommodations in Bokaro Steel City.
-            </p>
-            <div className="text-[10px] text-gold tracking-widest uppercase font-semibold">
-              45+ Suites • Kwality Restaurant • Banquets
-            </div>
-          </div>
-        </div>
-
-        {/* Right Column: Sign Up Form */}
-        <div className="lg:col-span-7 p-6 sm:p-10 flex flex-col justify-center space-y-5">
-          <div>
-            <span className="text-[10px] uppercase font-bold tracking-[0.25em] text-gold block">
-              GUEST REGISTRATION
-            </span>
-            <h1 className="text-2xl sm:text-3xl font-serif text-dark mt-1">Register New Account</h1>
-            <p className="text-xs text-muted mt-1 font-light">
-              Create your account to proceed with bookings and manage your stays.
-            </p>
-          </div>
-
-          {targetRoom && (
-            <div className="bg-cream border border-gold/40 p-3 flex items-center justify-between text-xs">
-              <div>
-                <span className="text-[9px] uppercase tracking-wider text-gold font-bold block">
-                  Preserved Room
-                </span>
-                <span className="font-semibold text-dark">{targetRoom.name}</span>
-              </div>
-              <span className="text-[10px] text-primary font-bold px-2 py-0.5 bg-gold/10 border border-gold/20">
-                Auto-resuming after sign-up
-              </span>
-            </div>
-          )}
-
-          {error && (
-            <motion.div
-              initial={{ opacity: 0, y: -4 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="p-3 bg-red-50 border border-red-300 text-red-700 text-xs flex items-center space-x-2"
-            >
-              <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0" />
-              <span>{error}</span>
-            </motion.div>
-          )}
-
-          {success && (
-            <motion.div
-              initial={{ opacity: 0, y: -4 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="p-3 bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs flex items-center space-x-2"
-            >
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-              <span>{success}</span>
-            </motion.div>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-3.5">
-            <div className="space-y-1">
-              <label className="text-[10px] uppercase font-bold tracking-wider text-muted block">
-                Full Name
-              </label>
-              <div className="relative">
-                <User className="w-4 h-4 text-muted absolute left-3 top-3" />
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="e.g. Dr. Rajesh Sharma"
-                  required
-                  className="w-full bg-cream/40 border border-border-custom pl-9 pr-3 py-2 text-xs text-dark focus:border-gold focus:outline-none"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <label className="text-[10px] uppercase font-bold tracking-wider text-muted block">
-                  Email Address
-                </label>
-                <div className="relative">
-                  <Mail className="w-4 h-4 text-muted absolute left-3 top-3" />
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="guest@example.com"
-                    required
-                    className="w-full bg-cream/40 border border-border-custom pl-9 pr-3 py-2 text-xs text-dark focus:border-gold focus:outline-none"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-[10px] uppercase font-bold tracking-wider text-muted block">
-                  Phone Number
-                </label>
-                <div className="relative">
-                  <Phone className="w-4 h-4 text-muted absolute left-3 top-3" />
-                  <input
-                    type="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="+91 92629 97777"
-                    required
-                    className="w-full bg-cream/40 border border-border-custom pl-9 pr-3 py-2 text-xs text-dark focus:border-gold focus:outline-none"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <label className="text-[10px] uppercase font-bold tracking-wider text-muted block">
-                  Password
-                </label>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Min 6 chars"
-                  required
-                  className="w-full bg-cream/40 border border-border-custom px-3 py-2 text-xs text-dark focus:border-gold focus:outline-none"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-[10px] uppercase font-bold tracking-wider text-muted block">
-                  Confirm Password
-                </label>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Re-enter password"
-                  required
-                  className="w-full bg-cream/40 border border-border-custom px-3 py-2 text-xs text-dark focus:border-gold focus:outline-none"
-                />
-              </div>
-            </div>
-
-            {/* Human Verification */}
-            <HumanVerification
-              isVerified={isHumanVerified}
-              onVerify={setIsHumanVerified}
-            />
-
-            {/* Terms checkbox */}
-            <div className="flex items-start space-x-2 pt-1">
-              <input
-                type="checkbox"
-                id="signup-terms"
-                checked={agreedTerms}
-                onChange={(e) => setAgreedTerms(e.target.checked)}
-                className="mt-1 accent-gold cursor-pointer"
-                required
+          {/* ── Left panel ── */}
+          <div className="lg:col-span-4 relative overflow-hidden min-h-[180px] lg:min-h-[680px] flex flex-col justify-between p-8 lg:p-10">
+            <div className="absolute inset-0 z-0">
+              <Image
+                src="/images/gallery/hotel-ext.jpg"
+                alt="Hotel Reliance"
+                fill
+                className="object-cover"
+                priority
               />
-              <label htmlFor="signup-terms" className="text-[11px] text-muted leading-tight cursor-pointer">
-                I agree to the Hotel Reliance Terms of Service, Guest Registration Policies, and Privacy Policy.
-              </label>
+              <div className="absolute inset-0 bg-gradient-to-br from-[#0C1524]/92 via-[#111E31]/72 to-[#0C1524]/85" />
+              <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")" }} />
             </div>
 
-            <Button
-              type="submit"
-              variant="primary"
-              fullWidth
-              disabled={isSubmitting}
-              className="py-3 text-xs tracking-widest font-bold uppercase"
-            >
-              {isSubmitting ? "Registering..." : "Create Account & Continue"}
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
-          </form>
-
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-border-custom" />
+            <div className="relative z-10">
+              <div className="inline-flex items-center gap-2 bg-white/[0.08] backdrop-blur-md border border-white/[0.12] rounded-full px-3 py-1.5">
+                <Sparkles className="w-3 h-3 text-[#D8B875]" />
+                <span className="text-[10px] font-sans font-semibold tracking-[0.2em] uppercase text-[#D8B875]">
+                  Guest Registration
+                </span>
+              </div>
             </div>
-            <div className="relative flex justify-center text-[10px] uppercase">
-              <span className="bg-white px-2 text-muted font-bold tracking-widest">Or</span>
+
+            <div className="relative z-10 space-y-5">
+              <div className="w-10 h-[1.5px] bg-[#BA8B32]/60" />
+              <div>
+                <h2 className="text-3xl font-serif font-light text-white tracking-[-0.02em] leading-tight">
+                  Join the<br />
+                  <em className="italic text-[#D8B875]">Guest Club.</em>
+                </h2>
+                <p className="text-[13px] text-white/50 font-sans font-light leading-[1.75] mt-3 max-w-[220px]">
+                  Priority reservations, express check-in, and personalised accommodations in Bokaro.
+                </p>
+              </div>
+              <div className="space-y-2">
+                {["45+ Curated Suites", "Kwality Restaurant", "Banquet Lawns"].map((f) => (
+                  <div key={f} className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-[#BA8B32]" />
+                    <span className="text-[11px] text-white/60 font-sans">{f}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
-          <GoogleAuthButton
-            label="Sign up with Google"
-            onSuccess={() => {
-              setSuccess("Google sign-in verified. Redirecting...");
-              setTimeout(() => {
-                if (targetRoom) {
-                  router.push(`/booking?room=${targetRoom.slug}`);
-                } else {
-                  router.push("/profile");
-                }
-              }, 600);
-            }}
-          />
+          {/* ── Right panel: Form ── */}
+          <div className="lg:col-span-8 bg-[#FAFAF8] flex flex-col justify-center p-7 sm:p-10 space-y-5">
+            {/* Header */}
+            <div>
+              <span className="text-[10px] font-sans font-semibold tracking-[0.35em] uppercase text-[#BA8B32] block mb-2">
+                New Account
+              </span>
+              <h1 className="text-2xl sm:text-[28px] font-serif font-light text-[#111E31] tracking-[-0.02em]">
+                Register with{" "}
+                <em className="italic text-[#BA8B32]">Hotel Reliance.</em>
+              </h1>
+              <p className="text-[12px] text-stone-500 font-sans font-light mt-1.5 leading-[1.7]">
+                Create your account to book rooms and manage your stays.
+              </p>
+            </div>
 
-          <div className="text-center pt-2 border-t border-border-custom">
-            <span className="text-xs text-muted">Already have an account? </span>
-            <Link
-              href="/auth/sign-in"
-              className="text-xs font-bold text-primary hover:text-gold uppercase tracking-wider underline ml-1"
-            >
-              Sign In
-            </Link>
+            {/* Preserved room */}
+            {targetRoom && (
+              <div className="bg-[#BA8B32]/8 border border-[#BA8B32]/25 rounded-xl px-4 py-3 flex items-center justify-between">
+                <div>
+                  <span className="text-[9px] uppercase tracking-[0.2em] text-[#BA8B32] font-semibold block mb-0.5">Preserved Room</span>
+                  <span className="text-[13px] font-semibold text-[#111E31] font-sans">{targetRoom.name}</span>
+                </div>
+                <span className="text-[10px] font-sans font-bold text-[#BA8B32] bg-[#BA8B32]/10 border border-[#BA8B32]/20 rounded-full px-2.5 py-1">
+                  Auto-resuming after sign-up
+                </span>
+              </div>
+            )}
+
+            {/* Alerts */}
+            {error && (
+              <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }}
+                className="p-3.5 bg-red-50 border border-red-200 text-red-700 text-[12px] flex items-center gap-2.5 rounded-xl font-sans"
+              >
+                <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
+                <span>{error}</span>
+              </motion.div>
+            )}
+            {success && (
+              <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }}
+                className="p-3.5 bg-emerald-50 border border-emerald-200 text-emerald-800 text-[12px] flex items-center gap-2.5 rounded-xl font-sans"
+              >
+                <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                <span>{success}</span>
+              </motion.div>
+            )}
+
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Row 1: Name */}
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-sans font-semibold tracking-[0.1em] uppercase text-stone-500 block">Full Name</label>
+                <div className="relative">
+                  <User className="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text" value={name} onChange={(e) => setName(e.target.value)}
+                    placeholder="e.g. Dr. Rajesh Sharma" required
+                    className="w-full bg-white border border-stone-200 rounded-xl pl-10 pr-4 py-3 text-[13px] text-[#111E31] font-sans placeholder:text-stone-400 focus:border-[#BA8B32] focus:ring-2 focus:ring-[#BA8B32]/15 focus:outline-none transition-all"
+                  />
+                </div>
+              </div>
+
+              {/* Row 2: Email + Phone */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div className="space-y-1.5">
+                  <label className="text-[11px] font-sans font-semibold tracking-[0.1em] uppercase text-stone-500 block">Email</label>
+                  <div className="relative">
+                    <Mail className="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+                      placeholder="guest@example.com" required
+                      className="w-full bg-white border border-stone-200 rounded-xl pl-10 pr-3 py-3 text-[13px] text-[#111E31] font-sans placeholder:text-stone-400 focus:border-[#BA8B32] focus:ring-2 focus:ring-[#BA8B32]/15 focus:outline-none transition-all"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[11px] font-sans font-semibold tracking-[0.1em] uppercase text-stone-500 block">Phone</label>
+                  <div className="relative">
+                    <Phone className="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="tel" value={phone} onChange={(e) => setPhone(e.target.value)}
+                      placeholder="+91 92629 97777" required
+                      className="w-full bg-white border border-stone-200 rounded-xl pl-10 pr-3 py-3 text-[13px] text-[#111E31] font-sans placeholder:text-stone-400 focus:border-[#BA8B32] focus:ring-2 focus:ring-[#BA8B32]/15 focus:outline-none transition-all"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Row 3: Passwords */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div className="space-y-1.5">
+                  <label className="text-[11px] font-sans font-semibold tracking-[0.1em] uppercase text-stone-500 block">Password</label>
+                  <div className="relative">
+                    <Lock className="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Min 6 characters" required
+                      className="w-full bg-white border border-stone-200 rounded-xl pl-10 pr-10 py-3 text-[13px] text-[#111E31] font-sans placeholder:text-stone-400 focus:border-[#BA8B32] focus:ring-2 focus:ring-[#BA8B32]/15 focus:outline-none transition-all"
+                    />
+                    <button type="button" onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-[#111E31] transition-colors"
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[11px] font-sans font-semibold tracking-[0.1em] uppercase text-stone-500 block">Confirm Password</label>
+                  <input
+                    type={showPassword ? "text" : "password"} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Re-enter password" required
+                    className="w-full bg-white border border-stone-200 rounded-xl px-4 py-3 text-[13px] text-[#111E31] font-sans placeholder:text-stone-400 focus:border-[#BA8B32] focus:ring-2 focus:ring-[#BA8B32]/15 focus:outline-none transition-all"
+                  />
+                </div>
+              </div>
+
+              {/* Human verification */}
+              <HumanVerification isVerified={isHumanVerified} onVerify={setIsHumanVerified} />
+
+              {/* Terms */}
+              <label htmlFor="signup-terms" className="flex items-start gap-3 cursor-pointer group">
+                <div className="relative mt-0.5 flex-shrink-0">
+                  <input
+                    type="checkbox" id="signup-terms" checked={agreedTerms}
+                    onChange={(e) => setAgreedTerms(e.target.checked)} required
+                    className="sr-only peer"
+                  />
+                  <div className="w-4.5 h-4.5 w-[18px] h-[18px] border-2 border-stone-300 rounded-[5px] peer-checked:bg-[#BA8B32] peer-checked:border-[#BA8B32] transition-all flex items-center justify-center">
+                    {agreedTerms && <CheckCircle2 className="w-3 h-3 text-white" />}
+                  </div>
+                </div>
+                <span className="text-[11.5px] text-stone-500 font-sans leading-[1.6]">
+                  I agree to the Hotel Reliance{" "}
+                  <Link href="/terms-and-conditions" className="text-[#BA8B32] hover:underline font-medium">Terms of Service</Link>,{" "}
+                  <Link href="/policies" className="text-[#BA8B32] hover:underline font-medium">Guest Policies</Link>, and{" "}
+                  <Link href="/privacy-policy" className="text-[#BA8B32] hover:underline font-medium">Privacy Policy</Link>.
+                </span>
+              </label>
+
+              {/* Submit */}
+              <button
+                type="submit" disabled={isSubmitting}
+                className="w-full py-3.5 rounded-full bg-[#111E31] hover:bg-[#1a2e4a] text-white text-[12px] font-sans font-semibold tracking-[0.12em] uppercase transition-all shadow-[0_8px_30px_rgba(17,30,49,0.3)] hover:shadow-[0_12px_40px_rgba(17,30,49,0.4)] active:scale-[0.98] disabled:opacity-60 flex items-center justify-center gap-2"
+              >
+                {isSubmitting ? (
+                  <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Registering...</>
+                ) : (
+                  <>Create Account &amp; Continue <ArrowRight className="w-3.5 h-3.5" /></>
+                )}
+              </button>
+            </form>
+
+            {/* Divider */}
+            <div className="relative flex items-center gap-3">
+              <div className="flex-1 h-px bg-stone-200" />
+              <span className="text-[10px] font-sans font-semibold tracking-[0.2em] uppercase text-stone-400">Or</span>
+              <div className="flex-1 h-px bg-stone-200" />
+            </div>
+
+            <GoogleAuthButton
+              label="Sign up with Google"
+              onSuccess={() => {
+                setSuccess("Google sign-in verified. Redirecting...");
+                setTimeout(() => {
+                  if (targetRoom) { router.push(`/booking?room=${targetRoom.slug}`); }
+                  else { router.push("/profile"); }
+                }, 600);
+              }}
+            />
+
+            <div className="text-center pt-1 border-t border-stone-100">
+              <span className="text-[12px] text-stone-500 font-sans">Already have an account?{" "}</span>
+              <Link href="/auth/sign-in" className="text-[12px] font-semibold text-[#111E31] hover:text-[#BA8B32] transition-colors font-sans ml-1">
+                Sign In →
+              </Link>
+            </div>
           </div>
         </div>
       </div>
@@ -344,8 +331,8 @@ export default function SignUpPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-cream flex items-center justify-center">
-          <div className="w-8 h-8 border-2 border-gold border-t-transparent rounded-full animate-spin" />
+        <div className="min-h-screen bg-[#0C1524] flex items-center justify-center">
+          <div className="w-8 h-8 border-2 border-[#BA8B32] border-t-transparent rounded-full animate-spin" />
         </div>
       }
     >
