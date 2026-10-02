@@ -51,7 +51,7 @@ export function GalleryPreview() {
 
           {/* Right Subtitle Text */}
           <p className="text-[15.5px] sm:text-[17.5px] md:text-[19px] font-serif italic text-[#4A3E37] max-w-xl leading-[1.7] text-left md:text-right md:self-end font-normal">
-            Immerse yourself in authentic visual captures of Hotel Reliance, from our welcoming reception and guest rooms to banquets and Bokaro landmarks.
+            Immerse yourself in authentic visual captures of Bokaro landmarks, scenic lakes, sacred heritage, and natural attractions surrounding Hotel Reliance.
           </p>
         </FadeUp>
 

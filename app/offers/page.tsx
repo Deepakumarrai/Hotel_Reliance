@@ -88,6 +88,8 @@ export default function OffersPage() {
         image="/images/offers/image-copy.png"
         imageAlt="Hotel Reliance Offers & Promotions"
         height="md"
+        imagePosition="center top"
+        imageClassName="scale-110 translate-y-4 sm:translate-y-7"
       />
 
       {/* Offers Listing Section */}

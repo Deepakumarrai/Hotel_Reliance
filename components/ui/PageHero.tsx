@@ -12,6 +12,8 @@ interface PageHeroProps {
   imageAlt: string;
   label?: string;      // small top label e.g. "Our Story"
   height?: "md" | "lg"; // default lg
+  imagePosition?: string; // e.g. "center 20%", "center 25%"
+  imageClassName?: string;
 }
 
 export function PageHero({
@@ -22,6 +24,8 @@ export function PageHero({
   imageAlt,
   label,
   height = "lg",
+  imagePosition,
+  imageClassName,
 }: PageHeroProps) {
   return (
     <section
@@ -39,7 +43,8 @@ export function PageHero({
         priority
         unoptimized
         sizes="100vw"
-        className="object-cover object-center opacity-55"
+        className={`object-cover ${imagePosition ? "" : "object-center"} ${imageClassName || ""} opacity-55`}
+        style={imagePosition ? { objectPosition: imagePosition } : undefined}
       />
 
       {/* Layered gradients for cinematic depth */}

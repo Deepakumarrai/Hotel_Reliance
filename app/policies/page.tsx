@@ -133,6 +133,8 @@ export default function PoliciesPage() {
         image="/images/hotel/hospitality-experience.png"
         imageAlt="Hotel Reliance Luxury Lobby and Hospitality Standards"
         height="md"
+        imagePosition="center 20%"
+        imageClassName="scale-105 translate-y-2 sm:translate-y-3"
       />
 
       {/* Main Content Area */}

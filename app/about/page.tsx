@@ -47,6 +47,8 @@ export default function AboutPage() {
         subtitle="A premier hospitality destination in Bokaro Steel City, blending traditional Indian warmth with refined corporate comfort."
         image="/images/hotel/image copy 2.png"
         imageAlt="About Hotel Reliance Bokaro"
+        imagePosition="center 20%"
+        imageClassName="scale-105 translate-y-2 sm:translate-y-3"
       />
 
       {/* Story Section */}

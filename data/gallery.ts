@@ -2,164 +2,123 @@ import { GalleryImage } from "@/types/gallery";
 
 export const galleryData: GalleryImage[] = [
   {
-    id: "g-hotel-1",
-    url: "/images/gallery/hotel-ext.jpg",
-    alt: "Hotel Reliance Front Facade",
-    category: "hotel",
-    title: "Premium Front Facade"
+    id: "g-temple-1",
+    url: "/images/places/jagannath-temple.png",
+    alt: "Jagannath Temple Bokaro Grand Entrance",
+    category: "temple",
+    attraction: "Jagannath Temple",
+    title: "Jagannath Temple (Marble Sanctum)"
   },
   {
-    id: "g-hotel-2",
-    url: "/images/gallery/hotel-lobby.jpg",
-    alt: "Hotel Reliance Reception & Lobby",
-    category: "hotel",
-    title: "Elegantly Designed Lobby"
+    id: "g-citypark-1",
+    url: "/images/places/city-park-day.png",
+    alt: "Bokaro City Park Lakeside Promenade",
+    category: "city-park",
+    attraction: "City Park & Lake",
+    title: "City Park Promenade & Lake"
   },
   {
     id: "g-zoo-1",
     url: "/images/places/biological-park.png",
     alt: "Jawaharlal Nehru Biological Park Entrance Gate",
-    category: "places",
+    category: "zoo",
+    attraction: "Biological Park",
     title: "Bokaro Biological Park (Main Gate)"
-  },
-  {
-    id: "g-zoo-2",
-    url: "/images/places/biological-park-hover.png",
-    alt: "Bokaro Zoo Deer Safari Enclosure",
-    category: "places",
-    title: "Bokaro Zoo (Deer Safari Habitat)"
   },
   {
     id: "g-dam-1",
     url: "/images/places/garga-dam-day.png",
     alt: "Garga Dam Spillway Rapids",
-    category: "places",
+    category: "garga-dam",
+    attraction: "Garga Dam",
     title: "Garga Dam (Spillway View)"
-  },
-  {
-    id: "g-dam-2",
-    url: "/images/places/garga-dam-sunset.png",
-    alt: "Garga Dam Sunset Panorama",
-    category: "places",
-    title: "Garga Dam (Golden Sunset)"
-  },
-  {
-    id: "g-temple-1",
-    url: "/images/places/jagannath-temple.png",
-    alt: "Jagannath Temple Bokaro Grand Entrance",
-    category: "places",
-    title: "Jagannath Temple (Marble Sanctum)"
-  },
-  {
-    id: "g-temple-2",
-    url: "/images/places/jagannath-temple-hover.png",
-    alt: "Jagannath Temple Carved Courtyard",
-    category: "places",
-    title: "Jagannath Temple (Stone Courtyard)"
-  },
-  {
-    id: "g-temple-3",
-    url: "/images/places/jagannath-temple-spire.png",
-    alt: "Jagannath Temple Hilltop Spire",
-    category: "places",
-    title: "Jagannath Temple Hill Spire"
   },
   {
     id: "g-plant-1",
     url: "/images/places/steel-plant-night.png",
     alt: "Bokaro Steel Plant Night Skyline",
-    category: "places",
+    category: "steel-plant",
+    attraction: "Steel Plant (SAIL)",
     title: "Bokaro Steel Plant (Twilight View)"
+  },
+  {
+    id: "g-citypark-2",
+    url: "/images/places/city-park-sunset.png",
+    alt: "Bokaro City Park Sunset Over Lake",
+    category: "city-park",
+    attraction: "City Park & Lake",
+    title: "City Park Sunset Panorama"
+  },
+  {
+    id: "g-temple-2",
+    url: "/images/places/jagannath-temple-hover.png",
+    alt: "Jagannath Temple Carved Courtyard",
+    category: "temple",
+    attraction: "Jagannath Temple",
+    title: "Jagannath Temple (Stone Courtyard)"
+  },
+  {
+    id: "g-dam-2",
+    url: "/images/places/garga-dam-sunset.png",
+    alt: "Garga Dam Sunset Panorama",
+    category: "garga-dam",
+    attraction: "Garga Dam",
+    title: "Garga Dam (Golden Sunset)"
+  },
+  {
+    id: "g-zoo-2",
+    url: "/images/places/biological-park-hover.png",
+    alt: "Bokaro Zoo Deer Safari Enclosure",
+    category: "zoo",
+    attraction: "Biological Park",
+    title: "Bokaro Zoo (Deer Safari Habitat)"
   },
   {
     id: "g-plant-2",
     url: "/images/places/steel-plant-day.png",
     alt: "Bokaro Steel Plant Sunrise Panorama",
-    category: "places",
+    category: "steel-plant",
+    attraction: "Steel Plant (SAIL)",
     title: "Steel City Industrial Sunrise"
   },
   {
-    id: "g-rooms-1",
-    url: "/images/rooms/deluxe/main.jpg",
-    alt: "Deluxe Room Luxury Interior",
-    category: "rooms",
-    title: "Deluxe Room Luxury Comfort"
+    id: "g-temple-3",
+    url: "/images/places/jagannath-temple-spire.png",
+    alt: "Jagannath Temple Hilltop Spire",
+    category: "temple",
+    attraction: "Jagannath Temple",
+    title: "Jagannath Temple Hill Spire"
   },
   {
-    id: "g-rooms-2",
-    url: "/images/rooms/executive/main.jpg",
-    alt: "Executive Room Modern Elegance",
-    category: "rooms",
-    title: "Executive Room Executive Comfort"
-  },
-  {
-    id: "g-rooms-2-b",
-    url: "/images/rooms/executive/2.png",
-    alt: "Executive Room King Bed View",
-    category: "rooms",
-    title: "Executive Room Plush Bedding"
-  },
-  {
-    id: "g-rooms-2-c",
-    url: "/images/rooms/executive/3.png",
-    alt: "Executive Room Interior & Lighting",
-    category: "rooms",
-    title: "Executive Room Ambient Interior"
-  },
-  {
-    id: "g-rooms-3",
-    url: "/images/rooms/premium/main.jpg",
-    alt: "Premium Suite Luxury Accommodation",
-    category: "rooms",
-    title: "Premium Suite Multi-Bed Space"
-  },
-  {
-    id: "g-rooms-3-b",
-    url: "/images/rooms/premium/2.png",
-    alt: "Premium Suite Arrangement",
-    category: "rooms",
-    title: "Premium Suite Bed Arrangement"
-  },
-  {
-    id: "g-rooms-3-c",
-    url: "/images/rooms/family/main.jpg",
-    alt: "Family Suite Sanctuary",
-    category: "rooms",
-    title: "Family Suite Master Space"
-  },
-  {
-    id: "g-restaurant-1",
-    url: "/images/restaurant/dining-area.jpg",
-    alt: "Kwality Restaurant Dining Area",
-    category: "restaurant",
-    title: "Kwality Restaurant Dining Room"
-  },
-  {
-    id: "g-restaurant-2",
-    url: "/images/restaurant/buffet.jpg",
-    alt: "Kwality Restaurant Buffet Counter",
-    category: "restaurant",
-    title: "Premium Multi-Cuisine Buffet"
-  },
-  {
-    id: "g-banquet-1",
-    url: "/images/banquet/hall-main.jpg",
-    alt: "Hotel Reliance Banquet Hall Event Setup",
-    category: "banquet",
-    title: "Indoor Banquet Hall Setup"
-  },
-  {
-    id: "g-banquet-2",
-    url: "/images/banquet/lawn-main.jpg",
-    alt: "Hotel Reliance Outdoor Lawn Event Setup",
-    category: "banquet",
-    title: "Outdoor Celebration Lawn"
-  },
-  {
-    id: "g-places-1",
+    id: "g-citypark-3",
     url: "/images/places/city-park.jpg",
-    alt: "Bokaro City Park Lake View",
-    category: "places",
-    title: "Bokaro City Park Lake"
+    alt: "Bokaro City Park Japanese Bridges",
+    category: "city-park",
+    attraction: "City Park & Lake",
+    title: "City Park Japanese Footbridges"
+  },
+  {
+    id: "g-zoo-3",
+    url: "/images/places/biological-park.jpg",
+    alt: "Bokaro Zoo Wildlife Sanctuary",
+    category: "zoo",
+    attraction: "Biological Park",
+    title: "Biological Park Forest Trails"
+  },
+  {
+    id: "g-dam-3",
+    url: "/images/places/garga-dam.jpg",
+    alt: "Garga Dam Masonry Reservoir",
+    category: "garga-dam",
+    attraction: "Garga Dam",
+    title: "Garga Dam Lakeside Hills"
+  },
+  {
+    id: "g-plant-3",
+    url: "/images/places/steel-plant.jpg",
+    alt: "Bokaro Steel Plant Blast Furnace Complex",
+    category: "steel-plant",
+    attraction: "Steel Plant (SAIL)",
+    title: "SAIL Industrial Metropole"
   }
 ];

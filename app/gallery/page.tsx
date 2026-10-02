@@ -8,15 +8,15 @@ import { galleryData } from "@/data/gallery";
 import { Lightbox } from "@/components/gallery/Lightbox";
 import { HomeCTA } from "@/components/home/HomeCTA";
 
-type GalleryCategory = "all" | "hotel" | "rooms" | "restaurant" | "banquet" | "places";
+type GalleryCategory = "all" | "temple" | "city-park" | "zoo" | "garga-dam" | "steel-plant";
 
 const CATEGORIES: { id: GalleryCategory; label: string }[] = [
-  { id: "all", label: "All Photographs" },
-  { id: "hotel", label: "Hotel & Reception" },
-  { id: "rooms", label: "Rooms & Suites" },
-  { id: "restaurant", label: "Kwality Restaurant" },
-  { id: "banquet", label: "Banquets & Lawns" },
-  { id: "places", label: "Local Attractions" }
+  { id: "all", label: "All Attractions" },
+  { id: "temple", label: "Jagannath Temple" },
+  { id: "city-park", label: "City Park & Lake" },
+  { id: "zoo", label: "Biological Park (Zoo)" },
+  { id: "garga-dam", label: "Garga Dam" },
+  { id: "steel-plant", label: "Bokaro Steel Plant" }
 ];
 
 export default function GalleryPage() {
@@ -51,12 +51,13 @@ export default function GalleryPage() {
     <>
       <PageHero
         label="Visual Journey"
-        title="Photo Gallery"
-        titleAccent="& Moments."
-        subtitle="Authentic captures of Hotel Reliance — from our welcoming reception and luxury suites to celebratory banquet lawns and Bokaro landmarks."
-        image="/images/gallery/image copy 4.png"
-        imageAlt="Hotel Reliance Visual Photo Gallery"
+        title="Local Attractions"
+        titleAccent="Gallery."
+        subtitle="Explore the scenic landscapes, sacred heritage, wildlife reserves, and monumental landmarks of Bokaro Steel City and its surroundings."
+        image="/images/places/city-park-sunset.png"
+        imageAlt="Bokaro Local Attractions Photo Gallery"
         height="md"
+        imagePosition="center 35%"
       />
 
       {/* Main Gallery Section */}
@@ -65,11 +66,11 @@ export default function GalleryPage() {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 pb-6 border-b border-stone-100">
             <div>
               <span className="text-[10px] sm:text-[11px] font-sans font-semibold tracking-[0.35em] uppercase text-[#BA8B32] block mb-2">
-                Curated Collection
+                Curated Destination Visuals
               </span>
               <h2 className="text-2xl sm:text-4xl font-serif font-light text-[#111E31] tracking-[-0.02em]">
-                Moments of{" "}
-                <em className="italic text-[#BA8B32]">hospitality.</em>
+                Landmarks of{" "}
+                <em className="italic text-[#BA8B32]">Bokaro &amp; Beyond.</em>
               </h2>
             </div>
 
@@ -98,19 +99,6 @@ export default function GalleryPage() {
                 );
               })}
             </div>
-          </div>
-
-          {/* Panoramic Photo Gallery Showcase Banner without Image Cropping */}
-          <div className="relative w-full aspect-[2171/724] mb-12 sm:mb-16 overflow-hidden rounded-sm border border-[#C5A880]/40 shadow-xl bg-[#FAF7F2]">
-            <Image
-              src="/images/gallery/image copy 4.png"
-              alt="Hotel Reliance Photo Gallery Showcase"
-              fill
-              unoptimized
-              sizes="(max-w-1200px) 100vw, 1200px"
-              className="object-contain sm:object-cover w-full h-full"
-              priority
-            />
           </div>
 
           {/* Photo Count */}
@@ -144,9 +132,11 @@ export default function GalleryPage() {
                   />
                 </div>
 
-                {/* Category tag */}
-                <div className="absolute top-3 left-3 z-20 bg-[#111E31]/75 backdrop-blur-md rounded-full px-2.5 py-0.5">
-                  <span className="text-[9px] uppercase tracking-widest text-[#D8B875] font-semibold">{img.category}</span>
+                {/* Attraction tag */}
+                <div className="absolute top-3 left-3 z-20 bg-[#111E31]/80 backdrop-blur-md rounded-full px-2.5 py-0.5 border border-white/10">
+                  <span className="text-[9px] uppercase tracking-wider text-[#D8B875] font-semibold">
+                    {img.attraction || "Local Attraction"}
+                  </span>
                 </div>
 
                 {/* Hover overlay */}

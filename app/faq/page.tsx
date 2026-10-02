@@ -79,6 +79,8 @@ export default function FAQPage() {
         image="/images/amenities/image.png"
         imageAlt="Hotel Reliance Frequently Asked Questions"
         height="md"
+        imagePosition="center 20%"
+        imageClassName="scale-105 translate-y-2 sm:translate-y-3"
       />
 
       {/* Main FAQ Content Section */}
