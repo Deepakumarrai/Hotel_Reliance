@@ -11,7 +11,7 @@ import {
   Edit3,
   Users,
   Bed,
-  Maximize2,
+  Sparkles,
   Plus,
   Trash2,
 } from "lucide-react";
@@ -291,13 +291,13 @@ export default function RoomCategoriesManagerPage() {
                     </div>
 
                     <div className="flex items-center space-x-1.5 sm:space-x-2 border-l border-[#E8DFD2] pl-1.5 sm:pl-2.5 min-w-0">
-                      <Maximize2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#B8893E] flex-shrink-0" />
+                      <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#B8893E] flex-shrink-0" />
                       <div className="min-w-0 flex-1">
                         <span className="text-[8px] sm:text-[8.5px] uppercase font-bold tracking-wider text-[#8A8277] block truncate">
-                          ROOM AREA
+                          ROOM VIEW
                         </span>
                         <span className="text-[11px] sm:text-[11.5px] font-bold text-[#111923] leading-tight block mt-0.5 truncate">
-                          {cat.roomArea}
+                          {cat.view || "City View"}
                         </span>
                       </div>
                     </div>

@@ -23,6 +23,7 @@ import {
   getCoupons,
   createCoupon,
   updateCoupon,
+  deleteCoupon,
   getSecurityLogs,
   getHotelSettings,
   updateHotelSettings,
@@ -73,6 +74,8 @@ router.put("/restaurant/enquiries", updateRestaurantEnquiry);
 router.get("/offers", getCoupons);
 router.post("/offers", createCoupon);
 router.put("/offers", updateCoupon);
+router.delete("/offers/:id", deleteCoupon);
+router.delete("/offers", deleteCoupon);
 
 // 8. Security & Audit Logs
 router.get("/security", getSecurityLogs);

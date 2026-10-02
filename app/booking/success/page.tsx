@@ -160,7 +160,7 @@ export default function BookingSuccessPage() {
                   </p>
                 </div>
                 <span className="text-[11px] text-gold font-medium block">
-                  Room Size: {booking?.room?.size || "280 sq. ft."}
+                  Bedding: {booking?.room?.bedType || "King Bed"}
                 </span>
               </div>
 

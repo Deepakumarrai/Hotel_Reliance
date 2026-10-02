@@ -127,16 +127,41 @@ export class BookingsController {
       let appliedDiscountCode: string | null = null;
 
       if (discountCode) {
-        const offer = await prisma.offer.findUnique({
-          where: { discountCode: discountCode.trim().toUpperCase() }
+        const cleanPromo = discountCode.trim().toUpperCase();
+        const coupon = await prisma.coupon.findUnique({
+          where: { code: cleanPromo }
         });
 
-        if (offer && offer.isActive && new Date(offer.expiryDate) >= new Date()) {
-          appliedDiscountCode = offer.discountCode;
-          if (offer.discountPct) {
-            discountAmount = Math.round(stayTotal * (Number(offer.discountPct) / 100) * 100) / 100;
-          } else if (offer.discountFixed) {
-            discountAmount = Math.min(stayTotal, Number(offer.discountFixed));
+        const today = new Date(new Date().setHours(0, 0, 0, 0));
+        if (
+          coupon &&
+          coupon.isActive &&
+          new Date(coupon.endDate) >= today &&
+          new Date(coupon.startDate) <= new Date() &&
+          coupon.usedCount < coupon.usageLimit
+        ) {
+          const minSpend = Number(coupon.minBookingAmount) || 0;
+          if (stayTotal >= minSpend) {
+            appliedDiscountCode = coupon.code;
+            if (coupon.discountType === "PERCENTAGE") {
+              const val = Number(coupon.discountValue);
+              let disc = Math.round(stayTotal * (val / 100) * 100) / 100;
+              const maxCap = Number(coupon.maxDiscount);
+              if (maxCap > 0 && disc > maxCap) {
+                disc = maxCap;
+              }
+              discountAmount = disc;
+            } else if (coupon.discountType === "FLAT") {
+              discountAmount = Math.min(stayTotal, Number(coupon.discountValue));
+            }
+
+            // Increment coupon usage count asynchronously
+            await prisma.coupon
+              .update({
+                where: { id: coupon.id },
+                data: { usedCount: { increment: 1 } }
+              })
+              .catch((err) => console.error("Failed to increment coupon usedCount:", err));
           }
         }
       }

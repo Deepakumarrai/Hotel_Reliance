@@ -49,3 +49,20 @@ export async function PUT(request: Request) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
+
+export async function DELETE(request: Request) {
+  const cookieStore = await cookies();
+  const session = validateAdminSession(cookieStore.get("hr_admin_session")?.value);
+  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  try {
+    const body = await request.json();
+    const res = await forwardToBackend("/admin/offers", {
+      method: "DELETE",
+      body: JSON.stringify(body)
+    });
+    return NextResponse.json(res.data, { status: res.status });
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 500 });
+  }
+}

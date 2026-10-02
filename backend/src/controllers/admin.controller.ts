@@ -1391,6 +1391,40 @@ export async function updateCoupon(req: Request, res: Response): Promise<void> {
   }
 }
 
+export async function deleteCoupon(req: Request, res: Response): Promise<void> {
+  try {
+    const id = req.params.id || req.body?.id;
+    if (!id) {
+      res.status(400).json({ success: false, error: "Coupon ID is required" });
+      return;
+    }
+
+    const adminUser = (req as any).user?.name || "Admin";
+    const existing = await prisma.coupon.findUnique({ where: { id } });
+
+    await prisma.coupon.delete({
+      where: { id }
+    });
+
+    if (existing) {
+      await recordAuditLog(
+        adminUser,
+        "DELETE_COUPON",
+        "Coupon",
+        id,
+        undefined,
+        `Code: ${existing.code}`,
+        req.ip
+      ).catch(() => {});
+    }
+
+    res.json({ success: true, message: "Coupon deleted successfully" });
+  } catch (err: any) {
+    console.error("Delete coupon error:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+}
+
 // ----------------------------------------------------
 // 8. SECURITY & AUDIT LOGS
 // ----------------------------------------------------

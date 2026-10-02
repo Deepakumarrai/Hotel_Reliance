@@ -2,7 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
-import { X, Users, BedDouble, Maximize, CheckCircle2, Star, ExternalLink } from "lucide-react";
+import { X, Users, BedDouble, Wifi, CheckCircle2, Star, ExternalLink } from "lucide-react";
 
 interface RoomPreviewModalProps {
   room: {
@@ -93,9 +93,9 @@ export function RoomPreviewModal({ room, onClose }: RoomPreviewModalProps) {
                   <span className="font-bold text-[#2B2320]">{room.bedType}</span>
                 </div>
                 <div className="flex flex-col items-center justify-center space-y-1">
-                  <Maximize className="w-4 h-4 text-[#9E712E]" />
-                  <span className="text-[10px] uppercase text-[#7A6B61] font-medium">Room Size</span>
-                  <span className="font-bold text-[#2B2320]">{room.size}</span>
+                  <Wifi className="w-4 h-4 text-[#9E712E]" />
+                  <span className="text-[10px] uppercase text-[#7A6B61] font-medium">Internet</span>
+                  <span className="font-bold text-[#2B2320]">Free Wi-Fi</span>
                 </div>
               </div>
 

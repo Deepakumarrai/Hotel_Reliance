@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Users, Bed, Expand, ArrowRight, Wifi, Star } from "lucide-react";
+import { Users, Bed, ArrowRight, Wifi, Star } from "lucide-react";
 import { Room } from "@/types";
 import { formatPrice } from "@/lib/utils";
 import { useRoomPricing } from "@/hooks/useRoomPricing";
@@ -112,12 +112,10 @@ export function RoomCard({ room }: RoomCardProps) {
             <Bed className="w-3.5 h-3.5 text-[#BA8B32] flex-shrink-0" strokeWidth={1.8} />
             <span>{bedDisplay} Bed</span>
           </span>
-          {room.size && (
-            <span className="flex items-center space-x-1 text-[11px] text-stone-500 font-sans">
-              <Expand className="w-3.5 h-3.5 text-[#BA8B32] flex-shrink-0" strokeWidth={1.8} />
-              <span>{room.size}</span>
-            </span>
-          )}
+          <span className="flex items-center space-x-1 text-[11px] text-stone-500 font-sans">
+            <Wifi className="w-3.5 h-3.5 text-[#BA8B32] flex-shrink-0" strokeWidth={1.8} />
+            <span>Free Wi-Fi</span>
+          </span>
         </div>
 
         {/* Separator */}

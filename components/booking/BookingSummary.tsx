@@ -1,19 +1,22 @@
 "use client";
 
 import React from "react";
-import { Calendar, Users, Home, Moon, Wallet, ShieldCheck, Sparkles } from "lucide-react";
+import { Calendar, Users, Home, Moon, Wallet, ShieldCheck, Sparkles, AlertCircle } from "lucide-react";
 import { BookingState } from "@/types/booking";
 import { Room } from "@/types/room";
 import { formatDate, getNightsCount, formatPrice } from "@/lib/utils";
 import { useRoomPricing } from "@/hooks/useRoomPricing";
+import { ActiveCoupon, evaluateCoupon } from "@/lib/couponUtils";
 
 interface BookingSummaryProps {
   state: BookingState;
   selectedRoom: Room | null;
+  activeCoupons?: ActiveCoupon[];
 }
 
-export function BookingSummary({ state, selectedRoom }: BookingSummaryProps) {
+export function BookingSummary({ state, selectedRoom, activeCoupons = [] }: BookingSummaryProps) {
   const { calculateStayTotal } = useRoomPricing();
+
   const calculation = selectedRoom && state.checkIn && state.checkOut
     ? calculateStayTotal(selectedRoom.slug, state.checkIn, state.checkOut, state.adults, state.children, selectedRoom.price)
     : null;
@@ -98,7 +101,7 @@ export function BookingSummary({ state, selectedRoom }: BookingSummaryProps) {
             {selectedRoom ? (
               <div className="space-y-0.5">
                 <span className="font-serif text-[#111E31] font-medium text-sm block">{selectedRoom.name}</span>
-                <span className="text-[10px] text-stone-400 block font-sans">{selectedRoom.bedType} • {selectedRoom.size || "280 sq.ft"}</span>
+                <span className="text-[10px] text-stone-400 block font-sans">{selectedRoom.bedType} • Max {selectedRoom.occupancy} Guests</span>
               </div>
             ) : (
               <span className="text-stone-400 italic text-xs block">Room not selected</span>
@@ -116,13 +119,10 @@ export function BookingSummary({ state, selectedRoom }: BookingSummaryProps) {
 
         {calculation && nights > 0 ? (() => {
           const activePromo = (state.promoCode || state.guest?.promoCode || "").toUpperCase().trim();
-          let discountPercent = 0;
-          if (activePromo === "RELIANCE15" || activePromo === "LUXURY15") discountPercent = 15;
-          else if (activePromo === "WELCOME10" || activePromo === "KWALITY10" || activePromo === "CORPSTAY" || activePromo === "WEEKENDSPL") discountPercent = 10;
-          else if (activePromo === "LUXURY20") discountPercent = 20;
-
           const roomSubtotal = calculation.baseAmount;
-          const discountAmount = discountPercent > 0 ? Math.round((roomSubtotal * discountPercent) / 100 * 100) / 100 : 0;
+          const promoResult = evaluateCoupon(activePromo, activeCoupons, roomSubtotal);
+          const discountAmount = promoResult.discountAmount;
+
           const taxableSubtotal = Math.max(0, Math.round((roomSubtotal - discountAmount) * 100) / 100);
           const taxRate = 0.12; // 12% GST
           const taxAmount = Math.round(taxableSubtotal * taxRate * 100) / 100;
@@ -138,9 +138,20 @@ export function BookingSummary({ state, selectedRoom }: BookingSummaryProps) {
                 <div className="flex justify-between text-emerald-700 font-semibold bg-emerald-50/80 px-2.5 py-1.5 border border-emerald-200 rounded-xl text-[11.5px]">
                   <span className="flex items-center">
                     <Sparkles className="w-3.5 h-3.5 mr-1.5 text-emerald-600 flex-shrink-0" />
-                    Privilege Savings ({activePromo} - {discountPercent}%):
+                    Privilege Savings ({promoResult.discountLabel}):
                   </span>
                   <span>-{formatPrice(discountAmount)}</span>
+                </div>
+              )}
+              {activePromo && !promoResult.isValid && (
+                <div className="text-[11px] text-rose-600 bg-rose-50/80 px-2.5 py-1 rounded-lg border border-rose-200">
+                  Promo code &quot;{activePromo}&quot; is not an active coupon.
+                </div>
+              )}
+              {activePromo && promoResult.isValid && !promoResult.meetsMinSpend && (
+                <div className="text-[11px] text-amber-700 bg-amber-50/80 px-2.5 py-1 rounded-lg border border-amber-200 flex items-center">
+                  <AlertCircle className="w-3 h-3 mr-1 text-amber-600 flex-shrink-0" />
+                  {promoResult.message}
                 </div>
               )}
               {discountAmount > 0 && (

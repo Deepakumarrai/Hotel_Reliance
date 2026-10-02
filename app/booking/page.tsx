@@ -21,6 +21,7 @@ import { formatPrice } from "@/lib/utils";
 import { useRoomPricing } from "@/hooks/useRoomPricing";
 import { useRoomCategories } from "@/hooks/useRoomCategories";
 import { openRazorpayCheckout } from "@/lib/razorpay";
+import { ActiveCoupon, evaluateCoupon } from "@/lib/couponUtils";
 
 function BookingContent() {
   const router = useRouter();
@@ -57,6 +58,23 @@ function BookingContent() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [bookingError, setBookingError] = useState<string | null>(null);
+  const [activeCoupons, setActiveCoupons] = useState<ActiveCoupon[]>([]);
+
+  // Fetch live active coupons created in /admin/coupons
+  useEffect(() => {
+    let isMounted = true;
+    api.offers
+      .getAll()
+      .then((res) => {
+        if (isMounted && res && Array.isArray(res.offers)) {
+          setActiveCoupons(res.offers);
+        }
+      })
+      .catch((err) => console.error("Failed to load active coupons:", err));
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Sync logged-in user profile details into booking guest form
   useEffect(() => {
@@ -221,12 +239,8 @@ function BookingContent() {
       const rawSubtotal = Math.round(activeRoomPrice * nights * 100) / 100;
 
       const activePromo = (bookingState.promoCode || bookingState.guest?.promoCode || "").toUpperCase().trim();
-      let discountPercent = 0;
-      if (activePromo === "RELIANCE15" || activePromo === "LUXURY15") discountPercent = 15;
-      else if (activePromo === "WELCOME10" || activePromo === "KWALITY10" || activePromo === "CORPSTAY" || activePromo === "WEEKENDSPL") discountPercent = 10;
-      else if (activePromo === "LUXURY20") discountPercent = 20;
-
-      const discountAmount = discountPercent > 0 ? Math.round((rawSubtotal * discountPercent) / 100 * 100) / 100 : 0;
+      const promoEval = evaluateCoupon(activePromo, activeCoupons, rawSubtotal);
+      const discountAmount = promoEval.discountAmount;
       const taxableSubtotal = Math.max(0, Math.round((rawSubtotal - discountAmount) * 100) / 100);
       const taxRate = 0.12; // 12% GST for hotel accommodation
       const taxAmount = Math.round(taxableSubtotal * taxRate * 100) / 100;
@@ -485,6 +499,14 @@ function BookingContent() {
                         guest={bookingState.guest}
                         onChange={handleGuestDetailsChange}
                         errors={errors}
+                        activeCoupons={activeCoupons}
+                        roomSubtotal={
+                          Math.round(
+                            (getRoomPrice(selectedRoom?.slug || "", selectedRoom?.price) || selectedRoom?.price || 0) *
+                              nights *
+                              100
+                          ) / 100
+                        }
                       />
                     </div>
                   </div>
@@ -608,12 +630,9 @@ function BookingContent() {
                           const activeRoomPrice = getRoomPrice(selectedRoom.slug, selectedRoom.price) || selectedRoom.price || 0;
                           const rawSubtotal = Math.round(activeRoomPrice * nights * 100) / 100;
                           const activePromo = (bookingState.promoCode || bookingState.guest?.promoCode || "").toUpperCase().trim();
-                          let discountPercent = 0;
-                          if (activePromo === "RELIANCE15" || activePromo === "LUXURY15") discountPercent = 15;
-                          else if (activePromo === "WELCOME10" || activePromo === "KWALITY10" || activePromo === "CORPSTAY" || activePromo === "WEEKENDSPL") discountPercent = 10;
-                          else if (activePromo === "LUXURY20") discountPercent = 20;
+                          const promoEval = evaluateCoupon(activePromo, activeCoupons, rawSubtotal);
+                          const discountAmount = promoEval.discountAmount;
 
-                          const discountAmount = discountPercent > 0 ? Math.round((rawSubtotal * discountPercent) / 100 * 100) / 100 : 0;
                           const taxableSubtotal = Math.max(0, Math.round((rawSubtotal - discountAmount) * 100) / 100);
                           const taxRate = 0.12;
                           const taxAmount = Math.round(taxableSubtotal * taxRate * 100) / 100;
@@ -627,8 +646,19 @@ function BookingContent() {
                               </div>
                               {discountAmount > 0 && (
                                 <div className="flex justify-between text-emerald-700 font-semibold bg-emerald-50/80 p-3 border border-emerald-200 rounded-2xl">
-                                  <span>Privilege Discount ({activePromo} - {discountPercent}%):</span>
+                                  <span>Privilege Discount ({promoEval.discountLabel}):</span>
                                   <span>-{formatPrice(discountAmount)}</span>
+                                </div>
+                              )}
+                              {activePromo && !promoEval.isValid && (
+                                <div className="text-rose-600 bg-rose-50/80 p-2.5 rounded-xl border border-rose-200 text-[11px]">
+                                  Promo code &quot;{activePromo}&quot; is not an active coupon.
+                                </div>
+                              )}
+                              {activePromo && promoEval.isValid && !promoEval.meetsMinSpend && (
+                                <div className="text-amber-700 bg-amber-50/80 p-2.5 rounded-xl border border-amber-200 text-[11px] flex items-center">
+                                  <AlertCircle className="w-3.5 h-3.5 mr-1.5 text-amber-600 flex-shrink-0" />
+                                  {promoEval.message}
                                 </div>
                               )}
                               {discountAmount > 0 && (
@@ -688,7 +718,7 @@ function BookingContent() {
           {/* Sticky summary */}
           <div className="lg:col-span-4">
             <div className="sticky top-28">
-              <BookingSummary state={bookingState} selectedRoom={selectedRoom} />
+              <BookingSummary state={bookingState} selectedRoom={selectedRoom} activeCoupons={activeCoupons} />
             </div>
           </div>
         </div>

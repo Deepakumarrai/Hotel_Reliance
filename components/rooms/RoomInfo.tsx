@@ -1,5 +1,5 @@
 import React from "react";
-import { Users, Bed, Maximize2, Compass, Sparkles, ShieldCheck, Clock, Wifi } from "lucide-react";
+import { Users, Bed, Compass, Sparkles, ShieldCheck, Clock, Wifi } from "lucide-react";
 import { Room } from "@/types/room";
 
 interface RoomInfoProps {
@@ -21,10 +21,10 @@ export function RoomInfo({ room }: RoomInfoProps) {
       sub: "Luxury orthopedic comfort",
     },
     {
-      icon: Maximize2,
-      label: "Room Size",
-      value: room.size || "300 sq. ft.",
-      sub: "Spacious living area",
+      icon: Wifi,
+      label: "Connectivity",
+      value: "High-Speed Wi-Fi",
+      sub: "Complimentary access",
     },
     {
       icon: Compass,

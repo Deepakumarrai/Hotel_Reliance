@@ -6,7 +6,6 @@ import {
   Check,
   Users,
   Bed,
-  Expand,
   AlertCircle,
   Flame,
   CheckCircle2,
@@ -313,20 +312,16 @@ export function AvailableRooms({
                   </div>
 
                   {/* Room Specifications Chips */}
-                  <div className="grid grid-cols-3 gap-2 bg-stone-50/70 border border-stone-100 rounded-2xl p-2.5 text-[11px] font-sans text-stone-600 font-medium">
+                  <div className="grid grid-cols-2 gap-2 bg-stone-50/70 border border-stone-100 rounded-2xl p-2.5 text-[11px] font-sans text-stone-600 font-medium">
                     <span className="flex items-center justify-center gap-1.5">
                       <Users className="w-3.5 h-3.5 text-[#BA8B32] flex-shrink-0" />
                       <span className="truncate">
                         Max {room.capacityAdults ? `${room.capacityAdults} Adults` : room.occupancy}
                       </span>
                     </span>
-                    <span className="flex items-center justify-center gap-1.5 border-x border-stone-200/60 px-1">
+                    <span className="flex items-center justify-center gap-1.5 border-l border-stone-200/60 px-1">
                       <Bed className="w-3.5 h-3.5 text-[#BA8B32] flex-shrink-0" />
-                      <span className="truncate">{room.bedType?.split(" ")?.[0] || "King"}</span>
-                    </span>
-                    <span className="flex items-center justify-center gap-1.5">
-                      <Expand className="w-3.5 h-3.5 text-[#BA8B32] flex-shrink-0" />
-                      <span className="truncate">{room.size || `${room.roomSizeSqFt || 280} sq.ft`}</span>
+                      <span className="truncate">{room.bedType || "King Bed"}</span>
                     </span>
                   </div>
 

@@ -12,137 +12,184 @@ import { Booking } from "@/types/booking";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 
+function formatBookingObject(b: any, user: any): Booking {
+  return {
+    id: b.id,
+    bookingId: b.bookingId || b.id,
+    roomId: b.room?.id || b.roomId || "deluxe-room",
+    roomSlug: b.room?.slug || b.roomType || "deluxe",
+    roomName: b.room?.name || `${(b.roomType || "deluxe").toUpperCase()} Room`,
+    roomImage: b.room?.images?.[0] || "/images/rooms/deluxe.png",
+    room: b.room || {
+      id: b.room?.id || b.roomId || "deluxe-room",
+      name: b.room?.name || `${(b.roomType || "deluxe").toUpperCase()} Room`,
+      slug: b.room?.slug || b.roomType || "deluxe",
+      type: b.roomType || "deluxe",
+      price: b.baseAmount || b.totalAmount || 2499,
+      description: "Luxury hotel accommodation with modern amenities.",
+      shortDescription: "Luxury stay at Hotel Reliance.",
+      capacity: { adults: b.adults || 2, children: b.children || 0, maxTotal: 4 },
+      amenities: ["Free High-Speed Wi-Fi", "Air Conditioning", "HD TV", "Room Service"],
+      features: ["City View", "King Bed", "Ensuite Bathroom"],
+      images: [b.room?.images?.[0] || "/images/rooms/deluxe.png"],
+      heroImage: b.room?.images?.[0] || "/images/rooms/deluxe.png",
+      bedType: "King Bed",
+      view: "City View",
+      rating: 4.8,
+      reviewCount: 120,
+      isFeatured: false,
+      inventory: 10,
+    },
+    checkIn: b.checkInDate || b.checkIn,
+    checkOut: b.checkOutDate || b.checkOut,
+    adults: b.adults || 2,
+    children: b.children || 0,
+    nights: b.nights || 1,
+    basePrice: b.baseAmount || b.totalAmount,
+    discount: b.discountAmount || 0,
+    taxes: b.taxAmount || 0,
+    totalPrice: b.totalAmount || b.totalPrice,
+    estimatedTotal:
+      b.estimatedTotal ||
+      (b.totalAmount ? `₹${Number(b.totalAmount).toLocaleString("en-IN")}` : undefined),
+    status: (b.bookingStatus?.toLowerCase() || b.status?.toLowerCase() || "confirmed") as any,
+    paymentStatus: (b.paymentStatus?.toLowerCase() || "paid") as any,
+    paymentMethod: b.paymentMethod || "online",
+    roomNumber: b.roomNumber,
+    guest: {
+      name: b.guestName || b.guest?.name || user?.name || "Valued Guest",
+      email: b.guestEmail || b.guest?.email || user?.email || "",
+      phone: b.guestPhone || b.guest?.phone || user?.phone || "",
+      specialRequests: b.specialRequests || b.guest?.specialRequests,
+    },
+    createdAt: b.createdAt || new Date().toISOString(),
+  };
+}
+
+function formatBookingsList(rawList: any[], user: any): { upcoming: Booking[]; previous: Booking[] } {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const upcoming: Booking[] = [];
+  const previous: Booking[] = [];
+
+  rawList.forEach((b: any) => {
+    if (!b || (!b.id && !b.bookingId)) return;
+    const checkOutRaw = b.checkOutDate || b.checkOut;
+    const checkOut = checkOutRaw ? new Date(checkOutRaw) : new Date();
+    checkOut.setHours(23, 59, 59, 999);
+
+    const formatted = formatBookingObject(b, user);
+    const isCancelled = formatted.status === "cancelled";
+    const isCompleted = formatted.status === "completed";
+
+    if (checkOut >= today && !isCancelled && !isCompleted) {
+      upcoming.push(formatted);
+    } else {
+      previous.push(formatted);
+    }
+  });
+
+  return { upcoming, previous };
+}
+
+function getLocalAndSessionBookings(currentUser?: any): any[] {
+  if (typeof window === "undefined") return [];
+  const stored = getStoredBookings();
+  const sessionRaw = sessionStorage.getItem("confirmedBooking");
+  let sessionBooking: any = null;
+  if (sessionRaw) {
+    try {
+      sessionBooking = JSON.parse(sessionRaw);
+    } catch {}
+  }
+
+  const combined: any[] = [];
+  if (sessionBooking && sessionBooking.id) {
+    const matchesUser =
+      !currentUser ||
+      !sessionBooking.guest?.email ||
+      sessionBooking.guest.email.toLowerCase() === currentUser.email?.toLowerCase() ||
+      sessionBooking.userId === currentUser.id;
+    if (matchesUser) {
+      combined.push(sessionBooking);
+    }
+  }
+
+  for (const sb of stored) {
+    if (!sb || !sb.id) continue;
+    const matchesUser =
+      !currentUser ||
+      !sb.guest?.email ||
+      sb.guest.email.toLowerCase() === currentUser.email?.toLowerCase() ||
+      sb.userId === currentUser.id;
+    if (matchesUser && !combined.some((b) => b.id === sb.id || b.bookingId === sb.id)) {
+      combined.push(sb);
+    }
+  }
+
+  return combined;
+}
+
 function MyBookingsContent() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<"upcoming" | "previous">("upcoming");
-  const [bookings, setBookings] = useState<{ upcoming: Booking[]; previous: Booking[] }>({
-    upcoming: [],
-    previous: []
+
+  // Synchronous instant initialization from local cache (0ms latency, no flash of empty state)
+  const [bookings, setBookings] = useState<{ upcoming: Booking[]; previous: Booking[] }>(() => {
+    if (typeof window === "undefined") return { upcoming: [], previous: [] };
+    const local = getLocalAndSessionBookings(null);
+    return formatBookingsList(local, null);
+  });
+
+  // Only show loading if there are zero cached bookings locally
+  const [isLoading, setIsLoading] = useState<boolean>(() => {
+    if (typeof window === "undefined") return true;
+    const local = getLocalAndSessionBookings(null);
+    return local.length === 0;
   });
 
   const [cancelModalId, setCancelModalId] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<string | null>(null);
 
-  const refreshBookings = async () => {
-    if (!user) return;
+  const refreshBookings = async (overrideUser?: any) => {
+    const activeUser = overrideUser || user;
+
+    // Step 1: Immediately sync any cached bookings synchronously
+    const cachedList = getLocalAndSessionBookings(activeUser);
+    if (cachedList.length > 0) {
+      const cached = formatBookingsList(cachedList, activeUser);
+      setBookings(cached);
+      setIsLoading(false);
+    }
+
+    // Step 2: Fetch fresh data from backend
     try {
-      let rawList: any[] = [];
       const res = await api.bookings.getMyBookings();
-      if (res.status === "success" && Array.isArray(res.bookings)) {
+      let rawList: any[] = [];
+      if (res && res.status === "success" && Array.isArray(res.bookings)) {
         rawList = res.bookings;
       }
 
-      // Merge local storage and session storage so newly completed bookings show immediately
-      const stored = typeof window !== "undefined" ? getStoredBookings() : [];
-      const sessionRaw = typeof window !== "undefined" ? sessionStorage.getItem("confirmedBooking") : null;
-      let sessionBooking: any = null;
-      if (sessionRaw) {
-        try {
-          sessionBooking = JSON.parse(sessionRaw);
-        } catch {}
-      }
-
       const combined: any[] = [...rawList];
-
-      if (sessionBooking && sessionBooking.id) {
-        const matchesUser = !sessionBooking.guest?.email ||
-          sessionBooking.guest.email.toLowerCase() === user.email.toLowerCase() ||
-          sessionBooking.userId === user.id;
-        if (matchesUser && !combined.some((b) => b.id === sessionBooking.id || b.bookingId === sessionBooking.id)) {
-          combined.unshift(sessionBooking);
+      const freshLocal = getLocalAndSessionBookings(activeUser);
+      for (const item of freshLocal) {
+        if (!combined.some((b) => b.id === item.id || b.bookingId === item.id)) {
+          combined.push(item);
         }
       }
 
-      for (const sb of stored) {
-        if (!sb || !sb.id) continue;
-        const matchesUser = !sb.guest?.email ||
-          sb.guest.email.toLowerCase() === user.email.toLowerCase() ||
-          sb.userId === user.id;
-        if (matchesUser && !combined.some((b) => b.id === sb.id || b.bookingId === sb.id)) {
-          combined.unshift(sb);
-        }
-      }
-
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-
-      const upcoming: Booking[] = [];
-      const previous: Booking[] = [];
-
-      combined.forEach((b: any) => {
-        const checkOutRaw = b.checkOutDate || b.checkOut;
-        const checkOut = checkOutRaw ? new Date(checkOutRaw) : new Date();
-        checkOut.setHours(23, 59, 59, 999);
-
-        const formatted: Booking = {
-          id: b.id,
-          bookingId: b.bookingId || b.id,
-          roomId: b.room?.id || b.roomId || "deluxe-room",
-          roomSlug: b.room?.slug || b.roomType || "deluxe",
-          roomName: b.room?.name || `${(b.roomType || "deluxe").toUpperCase()} Room`,
-          roomImage: b.room?.images?.[0] || "/images/rooms/deluxe.png",
-          room: b.room || {
-            id: b.room?.id || b.roomId || "deluxe-room",
-            name: b.room?.name || `${(b.roomType || "deluxe").toUpperCase()} Room`,
-            slug: b.room?.slug || b.roomType || "deluxe",
-            type: b.roomType || "deluxe",
-            price: b.baseAmount || b.totalAmount || 2499,
-            description: "Luxury hotel accommodation with modern amenities.",
-            shortDescription: "Luxury stay at Hotel Reliance.",
-            capacity: { adults: b.adults || 2, children: b.children || 0, maxTotal: 4 },
-            amenities: ["Free High-Speed Wi-Fi", "Air Conditioning", "HD TV", "Room Service"],
-            features: ["City View", "King Bed", "Ensuite Bathroom"],
-            images: [b.room?.images?.[0] || "/images/rooms/deluxe.png"],
-            heroImage: b.room?.images?.[0] || "/images/rooms/deluxe.png",
-            bedType: "King Bed",
-            size: "350 sq.ft",
-            view: "City View",
-            rating: 4.8,
-            reviewCount: 120,
-            isFeatured: false,
-            inventory: 10
-          },
-          checkIn: b.checkInDate || b.checkIn,
-          checkOut: b.checkOutDate || b.checkOut,
-          adults: b.adults || 2,
-          children: b.children || 0,
-          nights: b.nights || 1,
-          basePrice: b.baseAmount || b.totalAmount,
-          discount: b.discountAmount || 0,
-          taxes: b.taxAmount || 0,
-          totalPrice: b.totalAmount || b.totalPrice,
-          estimatedTotal: b.estimatedTotal || (b.totalAmount ? `₹${Number(b.totalAmount).toLocaleString("en-IN")}` : undefined),
-          status: (b.bookingStatus?.toLowerCase() || b.status?.toLowerCase() || "confirmed") as any,
-          paymentStatus: (b.paymentStatus?.toLowerCase() || "paid") as any,
-          paymentMethod: b.paymentMethod || "online",
-          roomNumber: b.roomNumber,
-          guest: {
-            name: b.guestName || b.guest?.name || user.name,
-            email: b.guestEmail || b.guest?.email || user.email,
-            phone: b.guestPhone || b.guest?.phone || user.phone || "",
-            specialRequests: b.specialRequests || b.guest?.specialRequests,
-          },
-          createdAt: b.createdAt || new Date().toISOString(),
-        };
-
-        const isCancelled = formatted.status === "cancelled";
-        const isCompleted = formatted.status === "completed";
-
-        if (checkOut >= today && !isCancelled && !isCompleted) {
-          upcoming.push(formatted);
-        } else {
-          previous.push(formatted);
-        }
-      });
-
-      setBookings({ upcoming, previous });
+      const formatted = formatBookingsList(combined, activeUser);
+      setBookings(formatted);
     } catch (err) {
-      console.error("Failed to load user bookings:", err);
+      console.error("Failed to fetch fresh bookings from server:", err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    refreshBookings();
+    refreshBookings(user);
   }, [user]);
 
   const handleCancelBooking = async (bookingId: string) => {
@@ -151,7 +198,7 @@ function MyBookingsContent() {
       if (res.status === "success") {
         setFeedback(`Reservation ${bookingId} has been successfully cancelled.`);
         setCancelModalId(null);
-        refreshBookings();
+        refreshBookings(user);
         setTimeout(() => setFeedback(null), 4000);
       }
     } catch (err: any) {
@@ -218,18 +265,18 @@ function MyBookingsContent() {
         {/* Feedback alert */}
         {feedback && (
           <motion.div
-            initial={{ opacity: 0, y: -5 }}
+            initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-emerald-800 text-xs flex items-center space-x-2.5 font-sans"
+            className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-2xl text-xs font-sans flex items-center shadow-xs"
           >
-            <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 mr-2 flex-shrink-0" />
             <span>{feedback}</span>
           </motion.div>
         )}
 
-        {/* Segmented Pill Navigation Tabs */}
-        <div className="flex justify-start">
-          <div className="inline-flex bg-stone-200/70 p-1 rounded-full text-xs font-sans">
+        {/* Tabs Bar */}
+        <div className="flex items-center justify-between border-b border-stone-200/80 pb-4">
+          <div className="flex items-center space-x-2 bg-stone-200/50 p-1 rounded-full text-xs font-sans">
             <button
               onClick={() => setActiveTab("upcoming")}
               className={`px-5 sm:px-7 py-2 rounded-full font-medium transition-all cursor-pointer text-xs ${
@@ -254,7 +301,39 @@ function MyBookingsContent() {
         </div>
 
         {/* Bookings List */}
-        {currentList.length > 0 ? (
+        {isLoading ? (
+          /* Elegant skeleton cards while fetching for the first time */
+          <div className="space-y-6">
+            {[1, 2].map((idx) => (
+              <div
+                key={idx}
+                className="bg-white rounded-3xl border border-stone-100 shadow-[0_4px_30px_rgba(17,30,49,0.04)] overflow-hidden grid grid-cols-1 md:grid-cols-12 animate-pulse"
+              >
+                <div className="md:col-span-4 min-h-[220px] bg-stone-100" />
+                <div className="md:col-span-8 p-6 sm:p-7 flex flex-col justify-between space-y-6">
+                  <div className="space-y-3.5">
+                    <div className="flex justify-between items-center border-b border-stone-100 pb-4">
+                      <div className="space-y-2">
+                        <div className="h-3 w-32 bg-stone-200 rounded-full" />
+                        <div className="h-6 w-52 bg-stone-200 rounded-lg" />
+                      </div>
+                      <div className="h-7 w-24 bg-stone-200 rounded-lg" />
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2">
+                      <div className="h-10 bg-stone-100 rounded-xl" />
+                      <div className="h-10 bg-stone-100 rounded-xl" />
+                      <div className="h-10 bg-stone-100 rounded-xl" />
+                      <div className="h-10 bg-stone-100 rounded-xl" />
+                    </div>
+                  </div>
+                  <div className="flex justify-end pt-2">
+                    <div className="h-10 w-36 bg-stone-200 rounded-full" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : currentList.length > 0 ? (
           <div className="space-y-6">
             {currentList.map((booking) => (
               <motion.div
@@ -319,41 +398,47 @@ function MyBookingsContent() {
                         <span className="text-[10px] text-stone-400 block">Until 11:00 AM</span>
                       </div>
                       <div>
-                        <span className="text-[10px] text-stone-400 uppercase font-semibold block">Guests</span>
+                        <span className="text-[10px] text-stone-400 uppercase font-semibold block">Stay Duration</span>
                         <span className="font-semibold text-[#111E31] mt-0.5 block">
-                          {booking.adults} Adults {booking.children > 0 ? `, ${booking.children} Ch` : ""}
+                          {booking.nights} {booking.nights === 1 ? "Night" : "Nights"}
                         </span>
-                        <span className="text-[10px] text-stone-400 block">{booking.room.bedType}</span>
                       </div>
                       <div>
-                        <span className="text-[10px] text-stone-400 uppercase font-semibold block">Primary Guest</span>
-                        <span className="font-semibold text-[#111E31] mt-0.5 truncate block">{booking.guest.name}</span>
-                        <span className="text-[10px] text-stone-400 truncate block">{booking.guest.phone}</span>
+                        <span className="text-[10px] text-stone-400 uppercase font-semibold block">Guests</span>
+                        <span className="font-semibold text-[#111E31] mt-0.5 block">
+                          {booking.adults} Adults {booking.children > 0 && `, ${booking.children} Kids`}
+                        </span>
                       </div>
                     </div>
+
+                    {booking.guest?.specialRequests && (
+                      <div className="mt-4 p-3 bg-stone-50 border border-stone-200/60 rounded-xl text-xs font-sans text-stone-600">
+                        <span className="font-semibold text-[#111E31] block text-[11px] mb-0.5">Special Requests:</span>
+                        <p className="italic">{booking.guest.specialRequests}</p>
+                      </div>
+                    )}
                   </div>
 
-                  {/* Actions Bar */}
-                  <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-stone-100 font-sans">
-                    <div className="text-[11px] text-stone-400">
-                      Booked on: {new Date(booking.createdAt).toLocaleDateString("en-IN", { month: "short", day: "numeric", year: "numeric" })}
+                  {/* Actions Row */}
+                  <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-stone-100">
+                    <div className="flex items-center space-x-2 text-xs font-sans text-stone-500">
+                      <span className="capitalize">Payment: <strong>{booking.paymentMethod}</strong> ({booking.paymentStatus})</span>
                     </div>
 
-                    <div className="flex items-center space-x-3">
-                      {booking.status === "confirmed" && (
+                    <div className="flex items-center space-x-2.5">
+                      {booking.status !== "cancelled" && booking.status !== "completed" && (
                         <button
-                          type="button"
                           onClick={() => setCancelModalId(booking.id)}
-                          className="text-xs text-red-600 hover:text-red-700 font-semibold uppercase tracking-wider transition-colors cursor-pointer px-3 py-1.5"
+                          className="px-4 py-2 border border-red-200 text-red-600 hover:bg-red-50 text-xs font-sans font-semibold uppercase tracking-wider rounded-full transition-all cursor-pointer"
                         >
-                          Cancel Booking
+                          Cancel Stay
                         </button>
                       )}
 
                       <Link href={`/my-bookings/${booking.id}`}>
-                        <button className="min-h-[38px] px-5 bg-stone-100 hover:bg-stone-200 text-[#111E31] text-xs font-semibold uppercase tracking-wider rounded-full transition-all flex items-center cursor-pointer">
+                        <button className="px-5 py-2 bg-[#BA8B32] hover:bg-[#a37929] text-white text-xs font-sans font-semibold uppercase tracking-wider rounded-full shadow-xs flex items-center transition-all cursor-pointer active:scale-95">
                           <Eye className="w-3.5 h-3.5 mr-1.5" />
-                          View Voucher
+                          View Details & Voucher
                         </button>
                       </Link>
                     </div>
@@ -363,7 +448,7 @@ function MyBookingsContent() {
             ))}
           </div>
         ) : (
-          /* Empty State */
+          /* Empty State — only shown when loading is complete and no reservations exist */
           <div className="bg-white rounded-3xl border border-stone-100 p-12 sm:p-16 text-center space-y-6 shadow-[0_4px_30px_rgba(17,30,49,0.04)]">
             <div className="w-16 h-16 bg-stone-50 border border-stone-200 text-[#BA8B32] rounded-full flex items-center justify-center mx-auto shadow-sm">
               <Calendar className="w-7 h-7" />

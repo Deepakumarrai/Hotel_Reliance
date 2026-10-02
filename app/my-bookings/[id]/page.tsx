@@ -291,7 +291,7 @@ function BookingDetailContent({ params }: { params: Promise<{ id: string }> }) {
                     </div>
                     <p className="text-xs text-stone-500 line-clamp-2 leading-relaxed">{booking.room.description}</p>
                     <span className="text-[11px] text-[#BA8B32] font-medium block">
-                      Room Size: {booking.room.size || "280 sq. ft."}
+                      Bedding: {booking.room.bedType || "King Bed"}
                     </span>
                   </div>
                 </div>

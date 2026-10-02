@@ -6,7 +6,7 @@ import {
   ArrowLeft,
   Users,
   Bed,
-  Maximize2,
+  Wifi,
   Compass,
   Sparkles,
   ShieldCheck,
@@ -258,8 +258,8 @@ export default async function RoomDetailPage({ params }: RoomPageProps) {
                   <span>{room.bedType}</span>
                 </div>
                 <div className="inline-flex items-center space-x-1.5 bg-white border border-[#E8DFD2] px-3 py-1 rounded-full shadow-2xs">
-                  <Maximize2 className="w-3.5 h-3.5 text-[#BA8B32]" />
-                  <span>{room.size || "300 sq. ft."}</span>
+                  <Wifi className="w-3.5 h-3.5 text-[#BA8B32]" />
+                  <span>Free Wi-Fi</span>
                 </div>
                 <div className="inline-flex items-center space-x-1.5 bg-white border border-[#E8DFD2] px-3 py-1 rounded-full shadow-2xs">
                   <Compass className="w-3.5 h-3.5 text-[#BA8B32]" />

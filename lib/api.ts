@@ -593,55 +593,53 @@ export const api = {
   offers: {
     getAll: async () => {
       try {
-        return await request<{ status: string; offers: any[] }>("/offers", {
+        const res = await request<{ status: string; offers: any[] }>("/offers", {
           method: "GET"
         });
+        if (res && Array.isArray(res.offers)) {
+          return res;
+        }
       } catch (err: any) {
-        return {
-          status: "success",
-          offers: offersData
-        };
+        console.warn("[API] Failed to fetch live coupons from backend:", err.message);
       }
+      return {
+        status: "success",
+        offers: []
+      };
     },
 
     validate: async (code: string) => {
+      if (!code || !code.trim()) {
+        return {
+          status: "error",
+          valid: false,
+          message: "Please enter a promo code."
+        };
+      }
       try {
         return await request<{
           status: string;
           valid: boolean;
-          offer: {
+          offer?: {
             code: string;
             title: string;
             discountValue: string;
+            discountType?: string;
             discountPct?: number | null;
             discountFixed?: number | null;
+            minBookingAmount?: number;
+            maxDiscount?: number;
+            expiryDate?: string;
           };
-        }>(`/offers/validate/${encodeURIComponent(code)}`, {
+          message?: string;
+        }>(`/offers/validate/${encodeURIComponent(code.trim().toUpperCase())}`, {
           method: "GET"
         });
       } catch (err: any) {
-        const found = offersData.find((o) => o.discountCode.toUpperCase() === code.toUpperCase());
-        if (found) {
-          return {
-            status: "success",
-            valid: true,
-            offer: {
-              code: found.discountCode,
-              title: found.title,
-              discountValue: found.discountValue,
-              discountPct: found.discountCode === "RELIANCE15" ? 15 : null,
-              discountFixed: null
-            }
-          };
-        }
         return {
           status: "error",
           valid: false,
-          offer: {
-            code,
-            title: "",
-            discountValue: ""
-          }
+          message: err.message || "Promo code is invalid or inactive."
         };
       }
     }
