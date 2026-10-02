@@ -287,14 +287,14 @@ export function BanquetEnquiry({ defaultVenueId = "" }: BanquetEnquiryProps) {
               <div className="pt-2 space-y-2.5">
                 <a
                   href={`tel:${settings.primaryPhone.replace(/\s+/g, "")}`}
-                  className="w-full flex items-center justify-between gap-3 bg-[#BA8B32] hover:bg-[#A67B22] text-white p-3 sm:p-3.5 rounded-xl transition-all cursor-pointer shadow-sm group"
+                  className="w-full flex items-center justify-between gap-2 sm:gap-3 bg-[#BA8B32] hover:bg-[#A67B22] text-white p-2.5 sm:p-3.5 rounded-xl transition-all cursor-pointer shadow-sm group"
                 >
-                  <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
                     <div className="w-8 h-8 rounded-lg bg-black/20 flex items-center justify-center shrink-0">
                       <Phone className="w-4 h-4 text-white" />
                     </div>
                     <div className="text-left min-w-0">
-                      <span className="text-[10px] uppercase tracking-wider text-white/80 block font-sans">
+                      <span className="text-[9px] sm:text-[10px] uppercase tracking-wider text-white/80 block font-sans truncate">
                         Banquet Desk Hotline
                       </span>
                       <span className="font-mono text-xs sm:text-sm font-bold text-white tracking-wider whitespace-nowrap block">
@@ -302,7 +302,7 @@ export function BanquetEnquiry({ defaultVenueId = "" }: BanquetEnquiryProps) {
                       </span>
                     </div>
                   </div>
-                  <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider bg-white/20 px-3 py-1.5 rounded-lg shrink-0 group-hover:bg-white group-hover:text-[#111E31] transition-colors whitespace-nowrap">
+                  <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider bg-white/20 px-2.5 sm:px-3 py-1.5 rounded-lg shrink-0 group-hover:bg-white group-hover:text-[#111E31] transition-colors whitespace-nowrap">
                     Call Now
                   </span>
                 </a>
@@ -311,10 +311,10 @@ export function BanquetEnquiry({ defaultVenueId = "" }: BanquetEnquiryProps) {
                   href={settings.whatsappLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white border border-white/20 font-sans text-xs font-semibold uppercase tracking-wider py-3 px-4 rounded-xl transition-all cursor-pointer whitespace-nowrap"
+                  className="w-full flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white border border-white/20 font-sans text-xs font-semibold uppercase tracking-wider py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl transition-all cursor-pointer"
                 >
                   <MessageSquare className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                  <span className="whitespace-nowrap">Chat on WhatsApp (+{settings.whatsappNumber})</span>
+                  <span className="truncate">Chat on WhatsApp (+{settings.whatsappNumber})</span>
                 </a>
               </div>
             </div>

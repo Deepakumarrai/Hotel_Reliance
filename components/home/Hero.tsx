@@ -113,7 +113,7 @@ export function Hero() {
       <div className="absolute inset-0 z-10 bg-gradient-to-r from-black/25 via-transparent to-black/15 pointer-events-none" />
 
       {/* Main hero content */}
-      <div className="relative z-20 flex flex-col items-center justify-center text-center w-full h-full px-6">
+      <div className="relative z-20 flex flex-col items-center justify-center text-center w-full h-full px-4 sm:px-6">
         {/* Location pill */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -128,7 +128,7 @@ export function Hero() {
         </motion.div>
 
         {/* Animated headline */}
-        <div className="overflow-hidden relative min-h-[180px] sm:min-h-[240px] md:min-h-[280px] flex flex-col items-center justify-center">
+        <div className="overflow-hidden relative min-h-[180px] sm:min-h-[240px] md:min-h-[280px] flex flex-col items-center justify-center w-full">
           <AnimatePresence mode="wait">
             <motion.div
               key={slide.id}
@@ -136,20 +136,20 @@ export function Hero() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -30 }}
               transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-              className="flex flex-col items-center text-center"
+              className="flex flex-col items-center text-center w-full"
             >
               {/* Tagline */}
-              <p className="text-sm sm:text-base md:text-lg font-light tracking-[0.25em] sm:tracking-[0.3em] uppercase text-white/60 mb-2 sm:mb-3 font-sans">
+              <p className="text-xs sm:text-base md:text-lg font-light tracking-[0.2em] sm:tracking-[0.3em] uppercase text-white/60 mb-2 sm:mb-3 font-sans">
                 {slide.tagline}
               </p>
 
               {/* Main headline */}
-              <h1 className="text-[72px] sm:text-[100px] md:text-[130px] lg:text-[160px] font-serif font-bold leading-none tracking-[-0.02em] text-white">
+              <h1 className="text-5xl xs:text-6xl sm:text-[100px] md:text-[130px] lg:text-[160px] font-serif font-bold leading-none tracking-[-0.02em] text-white break-words">
                 {slide.headline}
               </h1>
 
               {/* Subtitle */}
-              <p className="text-xs sm:text-sm md:text-base text-white/55 tracking-[0.15em] uppercase mt-4 sm:mt-5 font-sans font-light max-w-md">
+              <p className="text-xs sm:text-sm md:text-base text-white/55 tracking-[0.12em] sm:tracking-[0.15em] uppercase mt-4 sm:mt-5 font-sans font-light max-w-md px-2">
                 {slide.sub}
               </p>
             </motion.div>
@@ -161,17 +161,17 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 mt-8 sm:mt-10"
+          className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 mt-8 sm:mt-10 w-full sm:w-auto px-4 sm:px-0"
         >
-          <Link href={slide.ctaLink}>
-            <button className="flex items-center space-x-2 bg-white text-[#111E31] hover:bg-[#D8B875] hover:text-white font-semibold text-[12px] tracking-[0.12em] uppercase px-7 py-3.5 rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_30px_rgba(216,184,117,0.4)] transition-all duration-400 cursor-pointer">
+          <Link href={slide.ctaLink} className="w-full sm:w-auto">
+            <button className="w-full sm:w-auto flex items-center justify-center space-x-2 bg-white text-[#111E31] hover:bg-[#D8B875] hover:text-white font-semibold text-[12px] tracking-[0.12em] uppercase px-7 py-3.5 rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_30px_rgba(216,184,117,0.4)] transition-all duration-400 cursor-pointer">
               <Calendar className="w-4 h-4" />
               <span>{slide.cta}</span>
             </button>
           </Link>
           <button
             onClick={scrollToContent}
-            className="flex items-center space-x-2 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white font-medium text-[12px] tracking-[0.12em] uppercase px-7 py-3.5 rounded-full border border-white/20 hover:border-white/40 transition-all duration-300 cursor-pointer"
+            className="w-full sm:w-auto flex items-center justify-center space-x-2 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white font-medium text-[12px] tracking-[0.12em] uppercase px-7 py-3.5 rounded-full border border-white/20 hover:border-white/40 transition-all duration-300 cursor-pointer"
           >
             <span>Discover Hotel</span>
           </button>

@@ -283,20 +283,20 @@ export function ExclusivelyForYou() {
           </div>
 
           {/* Mobile Navigation Controls */}
-          <div className="flex md:hidden items-center justify-between px-4 pt-4">
+          <div className="flex md:hidden items-center justify-between px-4 pt-4 gap-2">
             <button
               onClick={handlePrev}
-              className="w-10 h-10 rounded-full border border-white/40 bg-black/60 text-white hover:bg-[#BA8B32] hover:border-[#BA8B32] transition-all flex items-center justify-center active:scale-95 touch-manipulation"
+              className="w-10 h-10 rounded-full border border-white/40 bg-black/60 text-white hover:bg-[#BA8B32] hover:border-[#BA8B32] transition-all flex items-center justify-center active:scale-95 touch-manipulation flex-shrink-0"
               aria-label="Previous slide"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
-            <span className="text-xs font-serif italic text-white font-medium">
+            <span className="text-xs font-serif italic text-white font-medium truncate max-w-[180px] sm:max-w-none text-center">
               {currentItem.sideLabel}
             </span>
             <button
               onClick={handleNext}
-              className="w-10 h-10 rounded-full border border-white/40 bg-black/60 text-white hover:bg-[#BA8B32] hover:border-[#BA8B32] transition-all flex items-center justify-center active:scale-95 touch-manipulation"
+              className="w-10 h-10 rounded-full border border-white/40 bg-black/60 text-white hover:bg-[#BA8B32] hover:border-[#BA8B32] transition-all flex items-center justify-center active:scale-95 touch-manipulation flex-shrink-0"
               aria-label="Next slide"
             >
               <ChevronRight className="w-5 h-5" />

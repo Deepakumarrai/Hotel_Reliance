@@ -671,7 +671,7 @@ function BookingContent() {
                                 <span>Goods & Services Tax (GST @ 12%):</span>
                                 <span className="font-semibold text-[#111E31]">+{formatPrice(taxAmount)}</span>
                               </div>
-                              <div className="flex justify-between items-center text-sm sm:text-base font-bold text-[#111E31] border-t border-stone-200/80 pt-4 mt-2">
+                              <div className="flex flex-wrap justify-between items-center gap-1.5 text-sm sm:text-base font-bold text-[#111E31] border-t border-stone-200/80 pt-4 mt-2">
                                 <span>Total Payable ({paymentMethod === "ONLINE" ? "Instant Online" : "At Hotel Check-In"}):</span>
                                 <span className="font-serif text-[#111E31] text-2xl sm:text-3xl font-light">{formatPrice(grandTotal)}</span>
                               </div>

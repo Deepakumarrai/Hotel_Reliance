@@ -107,7 +107,7 @@ export default function ContactPage() {
           className="grayscale contrast-[1.05] hover:grayscale-0 transition-all duration-700 w-full h-full"
         />
         {/* Floating map info badge */}
-        <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-8 bg-white/95 backdrop-blur-md border border-[#E8E1D7] rounded-2xl p-4 shadow-[0_10px_30px_rgba(17,30,49,0.12)] max-w-xs pointer-events-auto">
+        <div className="absolute bottom-4 left-4 right-4 sm:right-auto sm:bottom-6 sm:left-8 bg-white/95 backdrop-blur-md border border-[#E8E1D7] rounded-2xl p-4 shadow-[0_10px_30px_rgba(17,30,49,0.12)] max-w-xs pointer-events-auto">
           <div className="flex items-start gap-3">
             <div className="w-8 h-8 rounded-lg bg-[#BA8B32] text-white flex items-center justify-center shrink-0 shadow-xs">
               <MapPin className="w-4 h-4" />

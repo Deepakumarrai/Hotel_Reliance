@@ -337,7 +337,7 @@ export function AvailableRooms({
                   )}
 
                   {/* Dynamic Pricing and Action Row */}
-                  <div className="pt-3 border-t border-stone-100 flex items-center justify-between gap-3">
+                  <div className="pt-3 border-t border-stone-100 flex flex-wrap sm:flex-nowrap items-center justify-between gap-3">
                     <div className="flex flex-col">
                       <span className="text-[10px] uppercase font-sans tracking-[0.16em] text-stone-400 font-semibold block">
                         {nights > 1 ? `Stay Total (${nights} Nights)` : "Per Night"}
@@ -357,7 +357,7 @@ export function AvailableRooms({
                       type="button"
                       disabled={!isSelectable}
                       className={cn(
-                        "min-h-[44px] px-6 py-2.5 text-xs font-sans font-semibold uppercase tracking-wider rounded-full transition-all duration-300 flex items-center justify-center cursor-pointer shadow-xs active:scale-[0.98]",
+                        "w-full sm:w-auto min-h-[44px] px-6 py-2.5 text-xs font-sans font-semibold uppercase tracking-wider rounded-full transition-all duration-300 flex items-center justify-center cursor-pointer shadow-xs active:scale-[0.98]",
                         isSelected
                           ? "bg-[#BA8B32] text-white shadow-[0_4px_20px_rgba(186,139,50,0.35)]"
                           : isSoldOut

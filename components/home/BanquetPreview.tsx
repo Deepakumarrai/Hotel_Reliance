@@ -50,10 +50,10 @@ export function BanquetPreview() {
               />
             </div>
             {/* Event badge tag */}
-            <div className="absolute bottom-6 left-6 bg-white border border-border-custom px-6 py-4 shadow-lg flex items-center space-x-3 z-20">
-              <Sparkles className="w-5 h-5 text-primary" />
+            <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 bg-white border border-border-custom px-4 py-3 sm:px-6 sm:py-4 shadow-lg flex items-center space-x-3 z-20">
+              <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-primary flex-shrink-0" />
               <div>
-                <span className="text-[10px] uppercase font-bold tracking-widest text-muted block">
+                <span className="text-[9px] sm:text-[10px] uppercase font-bold tracking-widest text-muted block">
                   Event Hosting
                 </span>
                 <span className="text-xs font-serif font-bold text-dark block mt-0.5">

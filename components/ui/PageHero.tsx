@@ -68,7 +68,7 @@ export function PageHero({
                 {label}
               </span>
             )}
-            <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-serif font-light text-white tracking-[-0.02em] leading-[1.02]">
+            <h1 className="text-3xl xs:text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-serif font-light text-white tracking-[-0.02em] leading-[1.02] break-words">
               {title}
               {titleAccent && (
                 <>

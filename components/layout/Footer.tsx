@@ -277,7 +277,7 @@ export function Footer() {
         </div>
 
         {/* ── Bottom bar ── */}
-        <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-0">
+        <div className="pt-6 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] sm:pb-0 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-0">
           <p className="text-[11px] font-sans text-white/25 text-center sm:text-left">
             © {currentYear} {hotelSettings.hotelName}. All rights reserved.
             {" · "}
@@ -292,7 +292,7 @@ export function Footer() {
             </a>
           </p>
 
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center justify-center sm:justify-end gap-x-3 gap-y-1.5">
             {links.legal.map((l, i) => (
               <React.Fragment key={l.href}>
                 {i > 0 && <span className="text-white/15 text-[10px]">·</span>}

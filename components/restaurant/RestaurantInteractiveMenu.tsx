@@ -308,7 +308,7 @@ export function RestaurantInteractiveMenu({ onOpenReserveModal }: { onOpenReserv
           </div>
 
           {/* Diet Toggle */}
-          <div className="flex items-center space-x-2">
+          <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={() => setDietFilter("all")}
               className={`px-2.5 py-1 text-[11px] font-bold uppercase rounded-xs border cursor-pointer ${

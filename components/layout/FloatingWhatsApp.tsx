@@ -23,7 +23,9 @@ export function FloatingWhatsApp() {
   return (
     <div
       className={`fixed ${
-        isRoomDetailPage ? "bottom-20 sm:bottom-6" : "bottom-5 sm:bottom-6"
+        isRoomDetailPage
+          ? "bottom-[calc(5.25rem+env(safe-area-inset-bottom,0px))] sm:bottom-6"
+          : "bottom-[calc(1.25rem+env(safe-area-inset-bottom,0px))] sm:bottom-6"
       } right-4 sm:right-6 z-40 flex items-center group transition-all duration-300`}
     >
       {/* Floating Tooltip positioned to the left of the icon on the right side */}

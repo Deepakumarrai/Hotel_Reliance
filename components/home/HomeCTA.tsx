@@ -32,28 +32,28 @@ export function HomeCTA() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="text-center text-white px-6 max-w-3xl"
+            className="text-center text-white px-4 sm:px-6 max-w-3xl w-full"
           >
-            <span className="text-[10px] sm:text-[11px] font-sans font-semibold tracking-[0.35em] uppercase text-[#BA8B32] block mb-4 sm:mb-5">
+            <span className="text-[10px] sm:text-[11px] font-sans font-semibold tracking-[0.35em] uppercase text-[#BA8B32] block mb-3 sm:mb-5">
               Book Your Stay
             </span>
-            <h2 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-light tracking-[-0.02em] leading-[1.05] mb-5 sm:mb-7">
+            <h2 className="text-2xl xs:text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-light tracking-[-0.02em] leading-[1.05] mb-4 sm:mb-7 break-words">
               Your perfect stay{" "}
               <em className="italic text-[#D8B875]">awaits.</em>
             </h2>
-            <p className="text-sm sm:text-base text-white/50 font-sans font-light leading-[1.8] max-w-lg mx-auto mb-8 sm:mb-10">
+            <p className="text-xs sm:text-base text-white/50 font-sans font-light leading-[1.8] max-w-lg mx-auto mb-6 sm:mb-10 px-2">
               Experience the warmth of Hotel Reliance. Premium rooms, fine dining, and grand event venues — all in the heart of Bokaro Steel City.
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
-              <Link href="/booking">
-                <button className="flex items-center space-x-2 bg-[#BA8B32] hover:bg-[#A67B22] text-white font-semibold text-[12px] tracking-[0.12em] uppercase px-7 py-3.5 rounded-full shadow-[0_8px_30px_rgba(186,139,50,0.4)] hover:shadow-[0_10px_36px_rgba(186,139,50,0.5)] transition-all duration-300 cursor-pointer">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full sm:w-auto">
+              <Link href="/booking" className="w-full sm:w-auto">
+                <button className="w-full sm:w-auto flex items-center justify-center space-x-2 bg-[#BA8B32] hover:bg-[#A67B22] text-white font-semibold text-[12px] tracking-[0.12em] uppercase px-7 py-3.5 rounded-full shadow-[0_8px_30px_rgba(186,139,50,0.4)] hover:shadow-[0_10px_36px_rgba(186,139,50,0.5)] transition-all duration-300 cursor-pointer">
                   <Calendar className="w-4 h-4" />
                   <span>Reserve a Room</span>
                 </button>
               </Link>
-              <a href="tel:+916543281177">
-                <button className="flex items-center space-x-2 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white font-semibold text-[12px] tracking-[0.12em] uppercase px-7 py-3.5 rounded-full border border-white/20 hover:border-white/40 transition-all duration-300 cursor-pointer">
+              <a href="tel:+916543281177" className="w-full sm:w-auto">
+                <button className="w-full sm:w-auto flex items-center justify-center space-x-2 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white font-semibold text-[12px] tracking-[0.12em] uppercase px-7 py-3.5 rounded-full border border-white/20 hover:border-white/40 transition-all duration-300 cursor-pointer">
                   <Phone className="w-4 h-4" />
                   <span>Call Us</span>
                 </button>

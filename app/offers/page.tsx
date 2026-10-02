@@ -292,15 +292,15 @@ export default function OffersPage() {
                         </button>
                       </div>
 
-                      <div className="flex items-center justify-between pt-1">
+                      <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
                         <span className="text-[11px] text-stone-500 flex items-center">
                           <Calendar className="w-3.5 h-3.5 mr-1 text-[#BA8B32]" />
                           Valid: {offer.expiryDate}
                         </span>
-                        <Link href={`/booking?offer=${offer.discountCode}`}>
+                        <Link href={`/booking?offer=${offer.discountCode}`} className="w-full sm:w-auto">
                           <button
                             type="button"
-                            className="min-h-[40px] px-5 bg-[#111E31] hover:bg-[#BA8B32] text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer flex items-center active:scale-95"
+                            className="w-full sm:w-auto min-h-[40px] px-4 sm:px-5 bg-[#111E31] hover:bg-[#BA8B32] text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer flex items-center justify-center active:scale-95"
                           >
                             <span>Apply & Book</span>
                             <ArrowRight className="w-3.5 h-3.5 ml-1.5" />

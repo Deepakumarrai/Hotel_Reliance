@@ -67,10 +67,10 @@ export function TableReservationModal({ isOpen, onClose }: TableReservationModal
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
-      <div className="bg-white border border-[#E8E1D7] shadow-2xl max-w-lg w-full overflow-hidden animate-fade-in relative">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-sm">
+      <div className="bg-white border border-[#E8E1D7] shadow-2xl max-w-lg w-full max-h-[92dvh] flex flex-col overflow-hidden animate-fade-in relative rounded-2xl sm:rounded-none">
         {/* Header */}
-        <div className="bg-[#1E1815] text-white p-6 flex items-center justify-between border-b border-white/10">
+        <div className="bg-[#1E1815] text-white p-5 sm:p-6 flex items-center justify-between border-b border-white/10 shrink-0">
           <div>
             <span className="text-[9px] uppercase font-bold tracking-[0.25em] text-[#D8B875] block">
               KWALITY RESTAURANT
@@ -88,7 +88,7 @@ export function TableReservationModal({ isOpen, onClose }: TableReservationModal
           </button>
         </div>
 
-        <div className="p-6 sm:p-8">
+        <div className="p-5 sm:p-8 overflow-y-auto">
           {isSuccess ? (
             <div className="text-center py-6 space-y-4">
               <CheckCircle2 className="w-14 h-14 text-emerald-600 mx-auto animate-bounce" />

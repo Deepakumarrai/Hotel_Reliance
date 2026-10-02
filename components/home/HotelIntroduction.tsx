@@ -21,7 +21,7 @@ export function HotelIntroduction() {
           <span className="text-[10px] sm:text-[11px] font-sans font-semibold tracking-[0.35em] uppercase text-[#BA8B32] mb-4">
             Our Story
           </span>
-          <h2 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-light text-[#111E31] tracking-[-0.02em] leading-[1.05] max-w-4xl text-center">
+          <h2 className="text-2xl xs:text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-light text-[#111E31] tracking-[-0.02em] leading-[1.05] max-w-4xl text-center break-words">
             Not just a hotel —{" "}
             <em className="italic text-[#BA8B32]">a home</em>{" "}
             you return to.
@@ -52,7 +52,7 @@ export function HotelIntroduction() {
               />
             </div>
             {/* Floating accent card */}
-            <div className="absolute -bottom-5 -right-4 sm:-right-8 bg-[#111E31] text-white rounded-2xl px-5 sm:px-7 py-4 sm:py-5 shadow-2xl">
+            <div className="absolute bottom-3 right-3 sm:-bottom-5 sm:-right-8 bg-[#111E31] text-white rounded-2xl px-5 sm:px-7 py-4 sm:py-5 shadow-2xl">
               <p className="text-3xl sm:text-4xl font-serif font-bold text-[#D8B875]">45+</p>
               <p className="text-[10px] sm:text-[11px] uppercase tracking-widest text-white/60 mt-0.5">Premium Rooms</p>
             </div>

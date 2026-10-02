@@ -312,11 +312,11 @@ export function BanquetCostEstimator({ onSelectEstimate }: { onSelectEstimate?: 
 
               {/* Grand Total */}
               <div className="border-t border-[#E8E1D7] pt-4 mt-4 space-y-1">
-                <div className="flex justify-between items-baseline">
-                  <span className="text-sm font-bold uppercase tracking-wider text-[#2B2320]">
+                <div className="flex flex-wrap justify-between items-baseline gap-1.5">
+                  <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#2B2320]">
                     Total Estimated Cost:
                   </span>
-                  <span className="text-2xl font-serif font-bold text-[#BA8B32]">
+                  <span className="text-xl sm:text-2xl font-serif font-bold text-[#BA8B32]">
                     {formatPrice(grandTotal)}
                   </span>
                 </div>

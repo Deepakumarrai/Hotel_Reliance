@@ -425,20 +425,20 @@ function MyBookingsContent() {
                       <span className="capitalize">Payment: <strong>{booking.paymentMethod}</strong> ({booking.paymentStatus})</span>
                     </div>
 
-                    <div className="flex items-center space-x-2.5">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 w-full sm:w-auto justify-end">
                       {booking.status !== "cancelled" && booking.status !== "completed" && (
                         <button
                           onClick={() => setCancelModalId(booking.id)}
-                          className="px-4 py-2 border border-red-200 text-red-600 hover:bg-red-50 text-xs font-sans font-semibold uppercase tracking-wider rounded-full transition-all cursor-pointer"
+                          className="flex-1 sm:flex-initial px-4 py-2 border border-red-200 text-red-600 hover:bg-red-50 text-xs font-sans font-semibold uppercase tracking-wider rounded-full transition-all cursor-pointer text-center justify-center"
                         >
                           Cancel Stay
                         </button>
                       )}
 
-                      <Link href={`/my-bookings/${booking.id}`}>
-                        <button className="px-5 py-2 bg-[#BA8B32] hover:bg-[#a37929] text-white text-xs font-sans font-semibold uppercase tracking-wider rounded-full shadow-xs flex items-center transition-all cursor-pointer active:scale-95">
-                          <Eye className="w-3.5 h-3.5 mr-1.5" />
-                          View Details & Voucher
+                      <Link href={`/my-bookings/${booking.id}`} className="flex-1 sm:flex-initial">
+                        <button className="w-full sm:w-auto px-5 py-2 bg-[#BA8B32] hover:bg-[#a37929] text-white text-xs font-sans font-semibold uppercase tracking-wider rounded-full shadow-xs flex items-center justify-center transition-all cursor-pointer active:scale-95">
+                          <Eye className="w-3.5 h-3.5 mr-1.5 flex-shrink-0" />
+                          <span>View Details & Voucher</span>
                         </button>
                       </Link>
                     </div>

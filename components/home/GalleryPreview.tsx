@@ -101,10 +101,10 @@ export function GalleryPreview() {
         </div>
 
         {/* Bottom Centered "View Complete Gallery" link */}
-        <div className="text-center pt-8 sm:pt-14">
+        <div className="text-center pt-8 sm:pt-14 px-2">
           <Link
             href="/gallery"
-            className="inline-flex items-center space-x-2 text-xs uppercase tracking-[0.2em] sm:tracking-[0.25em] font-serif font-bold text-[#2B2320] hover:text-[#9E712E] transition-colors border-b border-[#C5A880] pb-1"
+            className="inline-flex flex-wrap items-center justify-center space-x-1.5 sm:space-x-2 text-[11px] sm:text-xs uppercase tracking-[0.14em] sm:tracking-[0.22em] font-serif font-bold text-[#2B2320] hover:text-[#9E712E] transition-colors border-b border-[#C5A880] pb-1 text-center"
           >
             <span>Explore Complete Photo Gallery & Visual Tour</span>
             <span className="text-[#C5A880]">»</span>

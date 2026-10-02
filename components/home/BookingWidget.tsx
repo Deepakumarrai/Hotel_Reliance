@@ -33,8 +33,8 @@ export function BookingWidget() {
   };
 
   return (
-    <div className="relative z-30 -mt-10 sm:-mt-14 max-w-6xl mx-auto px-4 sm:px-6">
-      <div className="bg-[#FAF7F2] text-[#111E31] shadow-2xl rounded-xl sm:rounded-2xl border-2 border-[#C5A880]/70 p-5 sm:p-7 md:p-8 backdrop-blur-md">
+    <div className="relative z-30 -mt-10 sm:-mt-14 max-w-6xl mx-auto px-3 sm:px-6">
+      <div className="bg-[#FAF7F2] text-[#111E31] shadow-2xl rounded-xl sm:rounded-2xl border-2 border-[#C5A880]/70 p-4 sm:p-7 md:p-8 backdrop-blur-md">
         {/* Top Header Tagline */}
         <div className="flex flex-wrap items-center justify-between gap-2 pb-4 mb-4 border-b border-[#E5D7C5]">
           <div className="flex items-center space-x-2">
@@ -43,8 +43,8 @@ export function BookingWidget() {
               Direct Booking Privileges
             </span>
           </div>
-          <div className="flex items-center space-x-1.5 text-[10.5px] sm:text-xs text-[#6B5E54] font-serif">
-            <ShieldCheck className="w-3.5 h-3.5 text-[#BA8B32]" />
+          <div className="flex items-center space-x-1.5 text-[10px] sm:text-xs text-[#6B5E54] font-serif flex-wrap">
+            <ShieldCheck className="w-3.5 h-3.5 text-[#BA8B32] flex-shrink-0" />
             <span>Best Rate Guaranteed • No Booking Fees • Instant Confirmation</span>
           </div>
         </div>

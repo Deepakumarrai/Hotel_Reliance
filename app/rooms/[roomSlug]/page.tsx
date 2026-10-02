@@ -418,7 +418,7 @@ export default async function RoomDetailPage({ params }: RoomPageProps) {
 
       {/* ── Related Rooms Recommendations ── */}
       {relatedRooms.length > 0 && (
-        <section className="py-16 bg-white border-t border-[#E8DFD2]">
+        <section className="py-16 pb-28 lg:pb-16 bg-white border-t border-[#E8DFD2]">
           <Container>
             <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
               <div>
