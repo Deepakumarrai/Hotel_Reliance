@@ -27,7 +27,6 @@ import { RoomAmenities } from "@/components/rooms/RoomAmenities";
 import { RoomInfo } from "@/components/rooms/RoomInfo";
 import { RoomPrice } from "@/components/rooms/RoomPrice";
 import { RoomBookingCTA } from "@/components/rooms/RoomBookingCTA";
-import { VRViewerPlaceholder } from "@/components/rooms/VRViewerPlaceholder";
 import { formatPrice } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -359,9 +358,6 @@ export default async function RoomDetailPage({ params }: RoomPageProps) {
 
                 <RoomAmenities amenities={room.amenities} />
               </div>
-
-              {/* 360° Virtual Tour Feature */}
-              <VRViewerPlaceholder roomName={room.name} />
 
               {/* Hotel Policies & Stay Information */}
               <div className="bg-white border border-[#E8DFD2] rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-[0_4px_24px_rgba(20,20,20,0.04)] space-y-5">
