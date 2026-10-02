@@ -5,7 +5,6 @@ import { Clock, Phone, ArrowRight } from "lucide-react";
 import { PageHero } from "@/components/ui/PageHero";
 import { HomeCTA } from "@/components/home/HomeCTA";
 import { hotelData } from "@/data/hotel";
-import { RestaurantPageClient } from "@/components/restaurant/RestaurantPageClient";
 import { RestaurantIntroVideo } from "@/components/restaurant/RestaurantIntroVideo";
 
 export const metadata: Metadata = {
@@ -214,62 +213,6 @@ export default function RestaurantPage() {
         </div>
       </section>
 
-      {/* Chef Specialties */}
-      <section id="menu" className="bg-[#FAFAF8] py-20 sm:py-28">
-        <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-16">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 sm:mb-14">
-            <div>
-              <span className="text-[10px] sm:text-[11px] font-sans font-semibold tracking-[0.35em] uppercase text-[#BA8B32] block mb-3">
-                Menu Highlights
-              </span>
-              <h2 className="text-3xl sm:text-5xl font-serif font-light text-[#111E31] tracking-[-0.02em] leading-[1.05]">
-                Signature chef{" "}
-                <em className="italic text-[#BA8B32]">specialties.</em>
-              </h2>
-            </div>
-          </div>
-
-          {/* Mobile swipe */}
-          <div className="md:hidden flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 no-scrollbar -mx-4 px-4">
-            {chefSpecialties.map((spec, idx) => (
-              <div key={idx} className="w-[84vw] max-w-[330px] flex-shrink-0 snap-center bg-white rounded-2xl overflow-hidden border border-stone-100 shadow-sm flex flex-col">
-                <div className="relative aspect-[16/10] overflow-hidden bg-stone-100">
-                  <Image src={spec.image} alt={spec.name} fill unoptimized sizes="85vw" className="object-cover" />
-                  <div className="absolute top-3 left-3 bg-[#111E31]/80 backdrop-blur-sm rounded-full px-3 py-1 border border-white/10">
-                    <span className="text-[9px] uppercase tracking-widest text-[#D8B875] font-semibold">{spec.tag}</span>
-                  </div>
-                </div>
-                <div className="p-5 flex-grow">
-                  <h4 className="text-[15px] font-serif font-semibold text-[#111E31] mb-2">{spec.name}</h4>
-                  <p className="text-[12px] text-stone-500 font-sans font-light leading-relaxed line-clamp-3">{spec.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Desktop grid */}
-          <div className="hidden md:grid md:grid-cols-3 gap-6">
-            {chefSpecialties.map((spec, idx) => (
-              <div key={idx} className="group bg-white rounded-2xl sm:rounded-3xl overflow-hidden border border-stone-100 hover:border-[#BA8B32]/25 hover:shadow-[0_20px_60px_rgba(17,30,49,0.10)] transition-all duration-500 flex flex-col">
-                <div className="relative aspect-[16/10] overflow-hidden bg-stone-100">
-                  <Image src={spec.image} alt={spec.name} fill unoptimized sizes="33vw" className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out" />
-                  <div className="absolute top-3 left-3 bg-[#111E31]/80 backdrop-blur-md rounded-full px-3 py-1 border border-white/10">
-                    <span className="text-[9px] uppercase tracking-widest text-[#D8B875] font-semibold">{spec.tag}</span>
-                  </div>
-                </div>
-                <div className="p-5 sm:p-6 flex-grow">
-                  <h4 className="text-lg font-serif font-semibold text-[#111E31] group-hover:text-[#BA8B32] transition-colors duration-300 mb-2">{spec.name}</h4>
-                  <div className="w-6 h-px bg-[#BA8B32]/40 mb-3 group-hover:w-10 transition-all duration-400" />
-                  <p className="text-[13px] text-stone-500 font-sans font-light leading-relaxed">{spec.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Interactive Menu & Reservation */}
-      <RestaurantPageClient phone={hotelData.phones[0]} />
 
       {/* Dining enquiry CTA */}
       <section className="bg-[#FAFAF8] py-16 sm:py-20 text-center">
