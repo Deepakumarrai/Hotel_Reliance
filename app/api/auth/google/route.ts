@@ -42,34 +42,96 @@ function signJwt(payload: object, secret: string, expiresInSec: number = 7 * 24 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { credential, email, name, avatar, googleId } = body;
+    const { credential, accessToken, phone } = body;
 
-    let userEmail = email;
-    let userName = name;
-    let userAvatar = avatar;
-    let userGoogleId = googleId;
+    let userEmail: string | undefined;
+    let userName: string | undefined;
+    let userAvatar: string | undefined;
+    let userGoogleId: string | undefined;
 
-    // If Google ID token (JWT) is provided from Google Identity Services (GIS), decode payload
-    if (credential && typeof credential === "string" && credential.includes(".")) {
+    // 1. Verify Google ID token in real time against Google's public tokeninfo endpoint
+    if (credential && typeof credential === "string") {
       try {
-        const parts = credential.split(".");
-        if (parts.length >= 2) {
-          const decoded = JSON.parse(base64UrlDecode(parts[1]));
-          if (decoded && decoded.email) {
-            userEmail = decoded.email;
-            userName = decoded.name || decoded.given_name || userEmail.split("@")[0];
-            userAvatar = decoded.picture || userAvatar;
-            userGoogleId = decoded.sub || userGoogleId;
-          }
+        const googleRes = await fetch(
+          `https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(credential)}`,
+          { method: "GET" }
+        );
+
+        if (!googleRes.ok) {
+          const errData = await googleRes.json().catch(() => ({}));
+          return NextResponse.json(
+            {
+              status: "error",
+              message: errData.error_description || "Invalid or expired Google authentication token."
+            },
+            { status: 401 }
+          );
         }
-      } catch (e) {
-        console.warn("Failed to decode Google JWT token:", e);
+
+        const googlePayload = await googleRes.json();
+        if (!googlePayload.email) {
+          return NextResponse.json(
+            { status: "error", message: "Google token did not provide an email address." },
+            { status: 400 }
+          );
+        }
+
+        userEmail = googlePayload.email;
+        userName = googlePayload.name || googlePayload.given_name || userEmail?.split("@")[0];
+        userAvatar = googlePayload.picture;
+        userGoogleId = googlePayload.sub;
+      } catch (tokenErr: any) {
+        return NextResponse.json(
+          { status: "error", message: `Google token verification network error: ${tokenErr.message}` },
+          { status: 502 }
+        );
       }
+    } 
+    // 2. Or verify Google OAuth 2.0 access token in real time against Google's userinfo endpoint
+    else if (accessToken && typeof accessToken === "string") {
+      try {
+        const googleRes = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+          headers: { Authorization: `Bearer ${accessToken}` }
+        });
+
+        if (!googleRes.ok) {
+          return NextResponse.json(
+            { status: "error", message: "Invalid or expired Google OAuth access token." },
+            { status: 401 }
+          );
+        }
+
+        const googleUser = await googleRes.json();
+        if (!googleUser.email) {
+          return NextResponse.json(
+            { status: "error", message: "Google profile does not contain a verified email." },
+            { status: 400 }
+          );
+        }
+
+        userEmail = googleUser.email;
+        userName = googleUser.name || googleUser.given_name || userEmail?.split("@")[0];
+        userAvatar = googleUser.picture;
+        userGoogleId = googleUser.sub;
+      } catch (tokenErr: any) {
+        return NextResponse.json(
+          { status: "error", message: `Google userinfo network error: ${tokenErr.message}` },
+          { status: 502 }
+        );
+      }
+    } else {
+      return NextResponse.json(
+        {
+          status: "error",
+          message: "A valid real-time Google token (credential or accessToken) is required."
+        },
+        { status: 400 }
+      );
     }
 
     if (!userEmail) {
       return NextResponse.json(
-        { status: "error", message: "Valid Google account email is required." },
+        { status: "error", message: "Unable to retrieve verified Google email." },
         { status: 400 }
       );
     }
@@ -83,10 +145,13 @@ export async function POST(request: Request) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          credential,
+          accessToken,
           email: cleanEmail,
           name: cleanName,
           avatar: userAvatar,
-          phone: "+91 98765 43210"
+          googleId: userGoogleId,
+          phone: phone || ""
         })
       });
 
@@ -97,14 +162,14 @@ export async function POST(request: Request) {
         }
       }
     } catch (beErr) {
-      console.warn("Backend /auth/google unreachable, using local fallback token:", beErr);
+      console.warn("Backend /auth/google unreachable, generating local session token:", beErr);
     }
 
     const customerUser = {
-      id: `usr_g_${Buffer.from(cleanEmail).toString("hex").slice(0, 12)}`,
+      id: `usr_g_${userGoogleId ? userGoogleId.slice(-12) : Buffer.from(cleanEmail).toString("hex").slice(0, 12)}`,
       name: cleanName,
       email: cleanEmail,
-      phone: "+91 98765 43210",
+      phone: phone || "",
       avatar: userAvatar || undefined,
       role: "GUEST",
       googleId: userGoogleId,

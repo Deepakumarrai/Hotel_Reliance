@@ -389,16 +389,66 @@ export class AuthController {
   }
 
   public static async googleAuth(req: Request, res: Response): Promise<void> {
-    const { email, name, avatar, phone } = req.body;
+    const { credential, accessToken, email, name, avatar, phone, googleId } = req.body;
 
-    if (!email) {
-      res.status(400).json({ status: "error", message: "Email is required for Google authentication." });
-      return;
-    }
+    let verifiedEmail = email;
+    let verifiedName = name;
+    let verifiedAvatar = avatar;
+    let verifiedGoogleId = googleId;
 
     try {
-      const cleanEmail = email.toLowerCase().trim();
-      const cleanName = name || cleanEmail.split("@")[0] || "Guest User";
+      // 1. If Google ID token is provided, verify with Google tokeninfo endpoint
+      if (credential && typeof credential === "string") {
+        try {
+          const googleRes = await fetch(
+            `https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(credential)}`
+          );
+          if (googleRes.ok) {
+            const googleData: any = await googleRes.json();
+            if (googleData.email) {
+              verifiedEmail = googleData.email;
+              verifiedName = googleData.name || googleData.given_name || verifiedEmail.split("@")[0];
+              verifiedAvatar = googleData.picture || verifiedAvatar;
+              verifiedGoogleId = googleData.sub || verifiedGoogleId;
+            }
+          } else {
+            res.status(401).json({ status: "error", message: "Invalid or expired Google authentication token." });
+            return;
+          }
+        } catch (fetchErr: any) {
+          console.warn("Backend Google tokeninfo verification failed:", fetchErr);
+        }
+      }
+      // 2. If Google access token is provided, verify with Google userinfo endpoint
+      else if (accessToken && typeof accessToken === "string") {
+        try {
+          const googleRes = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+            headers: { Authorization: `Bearer ${accessToken}` }
+          });
+          if (googleRes.ok) {
+            const googleUser: any = await googleRes.json();
+            if (googleUser.email) {
+              verifiedEmail = googleUser.email;
+              verifiedName = googleUser.name || googleUser.given_name || verifiedEmail.split("@")[0];
+              verifiedAvatar = googleUser.picture || verifiedAvatar;
+              verifiedGoogleId = googleUser.sub || verifiedGoogleId;
+            }
+          } else {
+            res.status(401).json({ status: "error", message: "Invalid or expired Google OAuth access token." });
+            return;
+          }
+        } catch (fetchErr: any) {
+          console.warn("Backend Google userinfo verification failed:", fetchErr);
+        }
+      }
+
+      if (!verifiedEmail) {
+        res.status(400).json({ status: "error", message: "Verified email is required for Google authentication." });
+        return;
+      }
+
+      const cleanEmail = verifiedEmail.toLowerCase().trim();
+      const cleanName = verifiedName || cleanEmail.split("@")[0] || "Guest User";
 
       let user = await prisma.user.findUnique({
         where: { email: cleanEmail }
@@ -407,6 +457,7 @@ export class AuthController {
       if (!user) {
         let userPhone = phone;
         if (!userPhone) {
+          // Generate a guest account phone tag if schema requires a unique phone string
           userPhone = `+91 ${Date.now().toString().slice(-10)}`;
         }
         const existingPhone = await prisma.user.findUnique({
@@ -421,17 +472,17 @@ export class AuthController {
             name: cleanName,
             email: cleanEmail,
             phone: userPhone,
-            avatar: avatar || null,
+            avatar: verifiedAvatar || null,
             role: Role.GUEST,
             isVerified: true
           }
         });
-      } else if (avatar || (name && user.name === "Guest User")) {
+      } else if (verifiedAvatar || (cleanName && user.name === "Guest User")) {
         user = await prisma.user.update({
           where: { id: user.id },
           data: {
-            name: name || user.name,
-            avatar: avatar || user.avatar,
+            name: cleanName || user.name,
+            avatar: verifiedAvatar || user.avatar,
             isVerified: true
           }
         });

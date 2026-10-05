@@ -169,30 +169,23 @@ export const api = {
       }
     },
 
-    googleAuth: async (body: { credential?: string; email?: string; name?: string; avatar?: string; googleId?: string }) => {
-      try {
-        const res = await fetch("/api/auth/google", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body)
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message || "Google authentication failed");
-        return data as { status: string; token: string; user: any };
-      } catch (err: any) {
-        const fallbackEmail = body.email || "guest@hotelreliance.com";
-        const fakeUser = {
-          id: `usr_g_${Date.now()}`,
-          name: body.name || fallbackEmail.split("@")[0] || "Guest User",
-          email: fallbackEmail,
-          phone: "+91 98765 43210",
-          avatar: body.avatar,
-          role: "GUEST",
-          isVerified: true
-        };
-        const fakeToken = `hr_token_${Date.now()}`;
-        return { status: "success", token: fakeToken, user: fakeUser };
-      }
+    googleAuth: async (body: {
+      credential?: string;
+      accessToken?: string;
+      phone?: string;
+      email?: string;
+      name?: string;
+      avatar?: string;
+      googleId?: string;
+    }) => {
+      const res = await fetch("/api/auth/google", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Google authentication failed");
+      return data as { status: string; token: string; user: any };
     },
 
     sendOtp: async (phone: string) => {

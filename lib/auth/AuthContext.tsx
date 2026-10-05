@@ -19,9 +19,12 @@ interface AuthContextType {
   signOut: () => void;
   signInWithGoogle: (googleData?: {
     credential?: string;
+    accessToken?: string;
+    phone?: string;
     email?: string;
     name?: string;
     avatar?: string;
+    googleId?: string;
   }) => Promise<{ success: boolean; error?: string }>;
   updateProfile: (data: Partial<UserProfileUpdate>) => Promise<{ success: boolean; error?: string }>;
   bookingIntent: BookingIntent | null;
@@ -152,11 +155,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signInWithGoogle = async (
-    googleData?: { credential?: string; email?: string; name?: string; avatar?: string; googleId?: string }
+    googleData?: {
+      credential?: string;
+      accessToken?: string;
+      phone?: string;
+      email?: string;
+      name?: string;
+      avatar?: string;
+      googleId?: string;
+    }
   ): Promise<{ success: boolean; error?: string }> => {
     try {
-      if (!googleData || (!googleData.credential && !googleData.email)) {
-        return { success: false, error: "Please select or provide a valid Google account." };
+      if (!googleData || (!googleData.credential && !googleData.accessToken && !googleData.email)) {
+        return { success: false, error: "Please sign in with a valid Google account." };
       }
 
       const res = await api.auth.googleAuth(googleData);
