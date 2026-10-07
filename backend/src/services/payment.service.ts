@@ -22,46 +22,37 @@ function getRazorpayInstance(): Razorpay | null {
 
 export class PaymentService {
   /**
-   * Generates a live Razorpay order or fallback simulation if using test credentials
+   * Generates a live Razorpay order for the reservation
    */
   public static async createRazorpayOrder(amountInRupees: number, bookingId: string) {
     const amountInPaise = Math.round(amountInRupees * 100);
     const client = getRazorpayInstance();
 
-    if (client) {
-      try {
-        const order = await client.orders.create({
-          amount: amountInPaise,
-          currency: "INR",
-          receipt: bookingId,
-          notes: {
-            bookingId
-          }
-        });
-
-        return {
-          orderId: order.id,
-          amount: Number(order.amount),
-          currency: order.currency,
-          keyId: config.razorpay.keyId || "rzp_test_Tf21ejzYhAgvmt",
-          receipt: bookingId
-        };
-      } catch (err: any) {
-        console.error("[Razorpay Service] Order creation API failed:", err?.error || err);
-      }
+    if (!client) {
+      throw new Error("Razorpay payment gateway is not configured on the server.");
     }
 
-    // Fallback simulation mode for local dev when offline or test credentials
-    const orderId = `order_sim_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 7)}`;
-    return {
-      orderId,
-      amount: amountInPaise,
-      currency: "INR",
-      keyId: (config.razorpay.keyId && !config.razorpay.keyId.includes("placeholder"))
-        ? config.razorpay.keyId
-        : "rzp_test_Tf21ejzYhAgvmt",
-      receipt: bookingId
-    };
+    try {
+      const order = await client.orders.create({
+        amount: amountInPaise,
+        currency: "INR",
+        receipt: bookingId,
+        notes: {
+          bookingId
+        }
+      });
+
+      return {
+        orderId: order.id,
+        amount: Number(order.amount),
+        currency: order.currency,
+        keyId: config.razorpay.keyId,
+        receipt: bookingId
+      };
+    } catch (err: any) {
+      console.error("[Razorpay Service] Order creation API failed:", err?.error || err);
+      throw new Error(`Razorpay order creation failed: ${err?.error?.description || err.message || "Gateway error"}`);
+    }
   }
 
   /**

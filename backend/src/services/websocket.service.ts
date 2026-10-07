@@ -201,10 +201,16 @@ class WebSocketService {
         : String(booking.createdAt || new Date().toISOString())
     };
 
+    const isOnlinePending =
+      formattedBooking.bookingStatus === "PENDING" &&
+      (formattedBooking.paymentStatus === "IN_PROCESS" || formattedBooking.paymentStatus === "PENDING");
+
     const notification: LiveNotification = {
       id: `notif-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
-      title: "New Reservation Confirmed",
-      message: `${formattedBooking.guestName} booked ${roomName} (₹${formattedBooking.totalAmount.toLocaleString("en-IN")})`,
+      title: isOnlinePending ? "Online Checkout In Process" : "New Reservation Confirmed",
+      message: isOnlinePending
+        ? `${formattedBooking.guestName} initiated checkout for ${roomName} (Payment Modal Active)`
+        : `${formattedBooking.guestName} booked ${roomName} (₹${formattedBooking.totalAmount.toLocaleString("en-IN")})`,
       type: "NEW_BOOKING",
       timestamp: new Date().toISOString(),
       bookingId: formattedBooking.id,
@@ -255,10 +261,24 @@ class WebSocketService {
         : String(booking.createdAt || new Date().toISOString())
     };
 
+    let notifTitle = action ? `Booking Update: ${action}` : "Booking Record Updated";
+    let notifMsg = `Reservation #${formattedBooking.id} (${formattedBooking.guestName}) status is now ${formattedBooking.bookingStatus}`;
+
+    if (action === "PAYMENT_IN_PROCESS") {
+      notifTitle = "Payment In Process";
+      notifMsg = `${formattedBooking.guestName} is actively in payment checkout for #${formattedBooking.id}`;
+    } else if (action === "PAYMENT_CANCELLED") {
+      notifTitle = "Payment Declined / Cancelled";
+      notifMsg = `Payment failed for #${formattedBooking.id}. Room reservation cancelled & released.`;
+    } else if (action === "PAYMENT_CONFIRMED") {
+      notifTitle = "Payment Confirmed";
+      notifMsg = `Payment verified for #${formattedBooking.id}. Reservation officially confirmed!`;
+    }
+
     const notification: LiveNotification = {
       id: `notif-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
-      title: action ? `Booking Update: ${action}` : "Booking Record Updated",
-      message: `Reservation #${formattedBooking.id} (${formattedBooking.guestName}) status is now ${formattedBooking.bookingStatus}`,
+      title: notifTitle,
+      message: notifMsg,
       type: "BOOKING_UPDATED",
       timestamp: new Date().toISOString(),
       bookingId: formattedBooking.id,

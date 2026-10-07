@@ -300,7 +300,7 @@ export function AuthModal() {
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="e.g. demo@example.com"
+                      placeholder="you@example.com"
                       required
                       className="w-full bg-stone-50/80 hover:bg-stone-50 focus:bg-white border border-stone-200 focus:border-[#BA8B32] rounded-xl transition-all pl-10 pr-3.5 py-2.5 text-xs text-[#111E31] placeholder-stone-400 outline-none"
                     />
@@ -341,13 +341,6 @@ export function AuthModal() {
                     >
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
-                  </div>
-                </div>
-
-                <div className="text-[11px] text-stone-500 bg-stone-50 p-3 rounded-xl border border-stone-200 flex items-center justify-between">
-                  <div>
-                    <span className="font-semibold text-[#111E31]">Demo Account:</span>{" "}
-                    <span>demo@example.com / password123</span>
                   </div>
                 </div>
 
@@ -396,7 +389,7 @@ export function AuthModal() {
                       type="text"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      placeholder="Dr. Rajesh Sharma"
+                      placeholder="Enter your full name"
                       required
                       className="w-full bg-stone-50/80 hover:bg-stone-50 focus:bg-white border border-stone-200 focus:border-[#BA8B32] rounded-xl transition-all pl-10 pr-3.5 py-2.5 text-xs text-[#111E31] placeholder-stone-400 outline-none"
                     />

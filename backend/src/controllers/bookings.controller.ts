@@ -77,10 +77,6 @@ export class BookingsController {
       });
 
       if (!room) {
-        room = await prisma.room.findFirst({ where: { isActive: true } });
-      }
-
-      if (!room) {
         res.status(404).json({ status: "error", message: `Room category '${roomId}' not found.` });
         return;
       }
@@ -92,11 +88,20 @@ export class BookingsController {
       const pricePerNight = Number(room.pricePerNight);
       const stayTotal = pricePerNight * nights;
 
-      // 2. Check Live Category Availability
+      // 2. Check Live Category Availability (exclude stale online pending bookings > 15 mins)
+      const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
       const overlappingBookingsCount = await prisma.booking.count({
         where: {
           roomId: room.id,
           status: { notIn: [BookingStatus.CANCELLED] },
+          NOT: {
+            AND: [
+              { status: BookingStatus.PENDING },
+              { paymentStatus: { in: [PaymentStatus.PENDING, PaymentStatus.IN_PROCESS] } },
+              { paymentMethod: { not: "PAY_AT_HOTEL" } },
+              { createdAt: { lt: fifteenMinutesAgo } }
+            ]
+          },
           AND: [
             { checkInDate: { lt: end } },
             { checkOutDate: { gt: start } }
@@ -184,9 +189,15 @@ export class BookingsController {
         }
       }
 
-      // 4. Create Booking Record in PostgreSQL - directly CONFIRMED!
-      // NOTE: Specific physical room unit (e.g. 101, 102) is NOT allotted upon booking.
-      // Physical room allotment is performed by Admin / Front Desk upon guest check-in!
+      // 4. Create Booking Record in PostgreSQL
+      const isOnlinePayment =
+        paymentMethod === "RAZORPAY" ||
+        paymentMethod === "ONLINE_RAZORPAY" ||
+        paymentMethod === "ONLINE";
+
+      const initialStatus = isOnlinePayment ? BookingStatus.PENDING : BookingStatus.CONFIRMED;
+      const initialPaymentStatus = isOnlinePayment ? PaymentStatus.IN_PROCESS : PaymentStatus.PENDING;
+
       const booking = await prisma.booking.create({
         data: {
           id: bookingId,
@@ -207,26 +218,34 @@ export class BookingsController {
           taxAmount,
           discountCode: appliedDiscountCode,
           discountAmount,
-          status: BookingStatus.CONFIRMED,
-          paymentStatus: PaymentStatus.PENDING,
-          paymentMethod
+          status: initialStatus,
+          paymentStatus: initialPaymentStatus,
+          paymentMethod: isOnlinePayment ? "RAZORPAY" : (paymentMethod || "PAY_AT_HOTEL")
         },
         include: {
           room: true
         }
       });
 
-      // 5. Release temporary hold lock
-      lockService.releaseLock(room.id, checkIn);
+      // 5. Manage room inventory hold during payment
+      if (isOnlinePayment) {
+        // Hold room for 15 minutes while user completes Razorpay payment window
+        await lockService.acquireLock(room.id, checkIn, bookingId, 900);
+      } else {
+        // Pay at Hotel: Confirmed on submission
+        lockService.releaseLock(room.id, checkIn, bookingId);
+      }
 
-      // 6. Record Instant Confirmation in Audit Trail
+      // 6. Record Audit Trail
       await prisma.auditLog.create({
         data: {
-          adminUser: "INSTANT_CONFIRMATION_ENGINE",
-          action: "BOOKING_DIRECT_CONFIRMED",
+          adminUser: isOnlinePayment ? "ONLINE_CHECKOUT_GATEWAY" : "FRONT_DESK_RESERVATION",
+          action: isOnlinePayment ? "BOOKING_PENDING_ONLINE_PAYMENT" : "BOOKING_DIRECT_CONFIRMED",
           entity: "Booking",
           entityId: bookingId,
-          newValue: `Reservation ${bookingId} confirmed for ${guest.name} (${room.name}). Room allotment deferred to front desk check-in.`
+          newValue: isOnlinePayment
+            ? `Reservation ${bookingId} initiated for ${guest.name} (${room.name}). Payment in process via Razorpay modal. Room held temporarily.`
+            : `Reservation ${bookingId} confirmed for ${guest.name} (${room.name}). Payment scheduled at Front Desk on arrival.`
         }
       });
 
@@ -234,14 +253,30 @@ export class BookingsController {
       cacheInvalidate("admin:bookings");
       cacheInvalidate("admin:dashboard");
       cacheInvalidate("admin:rooms");
+      cacheInvalidate("rooms:availability");
 
       // 8. Broadcast live event to Admin Panel via WebSocket
       webSocketService.broadcastNewBooking(booking);
 
       // 9. Generate Razorpay Order if online payment
       let razorpayOrder = null;
-      if (paymentMethod === "RAZORPAY") {
+      if (isOnlinePayment) {
         razorpayOrder = await PaymentService.createRazorpayOrder(grandTotal, bookingId);
+        await prisma.payment.upsert({
+          where: { bookingId },
+          update: {
+            status: PaymentStatus.IN_PROCESS,
+            orderId: razorpayOrder.orderId,
+            amount: grandTotal
+          },
+          create: {
+            bookingId,
+            gateway: "RAZORPAY",
+            orderId: razorpayOrder.orderId,
+            amount: grandTotal,
+            status: PaymentStatus.IN_PROCESS
+          }
+        }).catch((err) => console.error("Failed to upsert initial payment record:", err));
       }
 
       res.status(201).json({

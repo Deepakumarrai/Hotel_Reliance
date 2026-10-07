@@ -70,6 +70,8 @@ export class RoomsController {
       const diffDays = Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
       const nights = Math.max(1, diffDays);
 
+      const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
+
       // Fetch all active rooms with maintenance units and active overlapping bookings
       const rooms = await prisma.room.findMany({
         where: { isActive: true },
@@ -84,6 +86,14 @@ export class RoomsController {
           bookings: {
             where: {
               status: { notIn: ["CANCELLED"] },
+              NOT: {
+                AND: [
+                  { status: "PENDING" },
+                  { paymentStatus: { in: ["PENDING", "IN_PROCESS"] } },
+                  { paymentMethod: { not: "PAY_AT_HOTEL" } },
+                  { createdAt: { lt: fifteenMinutesAgo } }
+                ]
+              },
               AND: [
                 { checkInDate: { lt: end } },
                 { checkOutDate: { gt: start } }

@@ -1,11 +1,9 @@
 /**
  * Hotel Reliance API Client
- * Centralized HTTP layer connecting the Next.js frontend with the Express + Prisma live backend,
- * with resilient offline/standalone fallback data providers.
+ * Centralized live HTTP layer connecting the Next.js frontend with the Express + Prisma live backend.
+ * Zero mock data, zero fallback users, zero dummy bookings.
  */
 
-import { roomsData } from "@/data/rooms";
-import { offersData } from "@/data/offers";
 import { getStoredCurrentUser, setStoredCurrentUser } from "@/lib/auth/storage";
 import { getBackendUrl } from "@/lib/backendConfig";
 
@@ -71,10 +69,9 @@ async function request<T = any>(
 
   const url = `${API_BASE_URL}${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`;
 
-  // Use longer timeout for write operations (POST/PUT/DELETE) since they involve
-  // multiple DB queries (booking creation runs ~6 queries). GET stays fast.
+  // 10s timeout for GET, 20s for transactional endpoints
   const method = (options.method || "GET").toUpperCase();
-  const timeoutMs = method === "GET" ? 8000 : 20000;
+  const timeoutMs = method === "GET" ? 10000 : 25000;
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
@@ -107,66 +104,33 @@ async function request<T = any>(
     }
 
     if (data === null && res.status !== 204) {
-      throw new Error(text || `Empty or invalid response from server (Status ${res.status})`);
+      throw new Error(text || `Empty response from server (Status ${res.status})`);
     }
 
     return data;
   } catch (err: any) {
     clearTimeout(timeoutId);
-    // Rethrow actual server errors (like 400 bad request / invalid credentials)
-    if (err.name !== "AbortError" && !err.message?.includes("Failed to fetch") && !err.message?.includes("NetworkError") && !err.message?.includes("aborted")) {
-      throw err;
+    if (err.name === "AbortError") {
+      throw new Error("Request timed out. Please check your network and try again.");
     }
-    // Network unreachable: log warning and let caller handle with fallback
-    console.warn(`[Hotel Reliance] Backend at ${API_BASE_URL} is offline. Using local client fallback.`);
-    throw new Error("BACKEND_OFFLINE");
+    throw err;
   }
 }
 
 export const api = {
   auth: {
     signup: async (body: { name: string; email: string; phone?: string; password: string }) => {
-      try {
-        return await request<{ status: string; token: string; user: any }>("/auth/signup", {
-          method: "POST",
-          body: JSON.stringify(body)
-        });
-      } catch (err: any) {
-        if (err.message === "BACKEND_OFFLINE") {
-          const fakeUser = {
-            id: `usr_${Date.now()}`,
-            name: body.name,
-            email: body.email,
-            phone: body.phone || "+91 98765 43210",
-            role: "GUEST"
-          };
-          const fakeToken = `hr_token_${Date.now()}`;
-          return { status: "success", token: fakeToken, user: fakeUser };
-        }
-        throw err;
-      }
+      return await request<{ status: string; token: string; user: any }>("/auth/signup", {
+        method: "POST",
+        body: JSON.stringify(body)
+      });
     },
 
     signin: async (body: { email: string; password: string }) => {
-      try {
-        return await request<{ status: string; token: string; refreshToken?: string; user: any }>("/auth/signin", {
-          method: "POST",
-          body: JSON.stringify(body)
-        });
-      } catch (err: any) {
-        if (err.message === "BACKEND_OFFLINE") {
-          const fakeUser = {
-            id: `usr_${Date.now()}`,
-            name: body.email.split("@")[0] || "Guest",
-            email: body.email,
-            phone: "+91 98765 43210",
-            role: "GUEST"
-          };
-          const fakeToken = `hr_token_${Date.now()}`;
-          return { status: "success", token: fakeToken, user: fakeUser };
-        }
-        throw err;
-      }
+      return await request<{ status: string; token: string; refreshToken?: string; user: any }>("/auth/signin", {
+        method: "POST",
+        body: JSON.stringify(body)
+      });
     },
 
     googleAuth: async (body: {
@@ -189,39 +153,17 @@ export const api = {
     },
 
     sendOtp: async (phone: string) => {
-      try {
-        return await request<{ status: string; message: string }>("/auth/send-otp", {
-          method: "POST",
-          body: JSON.stringify({ phone })
-        });
-      } catch (err: any) {
-        if (err.message === "BACKEND_OFFLINE") {
-          return { status: "success", message: "OTP sent successfully to " + phone };
-        }
-        throw err;
-      }
+      return await request<{ status: string; message: string }>("/auth/send-otp", {
+        method: "POST",
+        body: JSON.stringify({ phone })
+      });
     },
 
     verifyOtp: async (phone: string, otp: string) => {
-      try {
-        return await request<{ status: string; token: string; user: any }>("/auth/verify-otp", {
-          method: "POST",
-          body: JSON.stringify({ phone, otp })
-        });
-      } catch (err: any) {
-        if (err.message === "BACKEND_OFFLINE") {
-          const fakeUser = {
-            id: `usr_${Date.now()}`,
-            name: "Mobile Guest",
-            email: `guest_${phone.slice(-4)}@hotelreliance.com`,
-            phone,
-            role: "GUEST"
-          };
-          const fakeToken = `hr_token_${Date.now()}`;
-          return { status: "success", token: fakeToken, user: fakeUser };
-        }
-        throw err;
-      }
+      return await request<{ status: string; token: string; user: any }>("/auth/verify-otp", {
+        method: "POST",
+        body: JSON.stringify({ phone, otp })
+      });
     },
 
     getMe: async () => {
@@ -234,12 +176,7 @@ export const api = {
           method: "GET"
         });
       } catch (err: any) {
-        if (err.message === "BACKEND_OFFLINE") {
-          const stored = getStoredCurrentUser();
-          if (stored) return { status: "success", user: stored };
-          return { status: "unauthenticated", user: null };
-        }
-        // If token is invalid or expired (401/403), gracefully reset
+        // If token is invalid or expired, gracefully reset
         setAuthToken(null);
         setStoredCurrentUser(null);
         return { status: "unauthenticated", user: null };
@@ -247,150 +184,54 @@ export const api = {
     },
 
     updateProfile: async (body: { name?: string; phone?: string; avatar?: string }) => {
-      try {
-        return await request<{ status: string; user: any }>("/auth/profile", {
-          method: "PUT",
-          body: JSON.stringify(body)
-        });
-      } catch (err: any) {
-        if (err.message === "BACKEND_OFFLINE") {
-          const stored = getStoredCurrentUser() || {
-            id: "usr_fallback",
-            email: "guest@hotelreliance.com",
-            role: "GUEST"
-          };
-          const updated = { ...stored, ...body };
-          return { status: "success", user: updated };
-        }
-        throw err;
-      }
+      return await request<{ status: string; user: any }>("/auth/profile", {
+        method: "PUT",
+        body: JSON.stringify(body)
+      });
     },
 
     changePassword: async (body: { currentPassword: string; newPassword: string }) => {
-      try {
-        return await request<{ status: string; message: string }>("/auth/change-password", {
-          method: "POST",
-          body: JSON.stringify(body)
-        });
-      } catch (err: any) {
-        if (err.message === "BACKEND_OFFLINE") {
-          return { status: "success", message: "Password updated successfully." };
-        }
-        throw err;
-      }
+      return await request<{ status: string; message: string }>("/auth/change-password", {
+        method: "POST",
+        body: JSON.stringify(body)
+      });
     },
 
     forgotPassword: async (body: { email: string }) => {
-      try {
-        return await request<{ status: string; message: string }>("/auth/forgot-password", {
-          method: "POST",
-          body: JSON.stringify(body)
-        });
-      } catch (err: any) {
-        if (err.message === "BACKEND_OFFLINE") {
-          return { status: "success", message: "Password reset link sent to your email." };
-        }
-        throw err;
-      }
+      return await request<{ status: string; message: string }>("/auth/forgot-password", {
+        method: "POST",
+        body: JSON.stringify(body)
+      });
     }
   },
 
   rooms: {
     getAll: async () => {
-      try {
-        return await request<{ status: string; data: any[] }>("/rooms", {
-          method: "GET"
-        });
-      } catch (err: any) {
-        // Fallback to local rooms definition
-        return {
-          status: "success",
-          data: roomsData.map((r) => ({
-            id: r.id,
-            slug: r.slug,
-            name: r.name,
-            shortDesc: r.description,
-            description: r.longDescription,
-            pricePerNight: r.price,
-            images: r.images,
-            capacityAdults: r.occupancy,
-            bedType: r.bedType,
-            roomSizeSqFt: parseInt(r.size || "300") || 300,
-            amenities: r.amenities
-          }))
-        };
-      }
+      return await request<{ status: string; data: any[] }>("/rooms", {
+        method: "GET"
+      });
     },
 
     getBySlug: async (slug: string) => {
-      try {
-        return await request<{ status: string; data: any }>(`/rooms/${slug}`, {
-          method: "GET"
-        });
-      } catch (err: any) {
-        const norm = (slug || "").toLowerCase().trim();
-        const resolved = norm === "deluxe" || norm === "deluxe-room" || norm === "single-room" || norm === "single-occupancy" ? "single" :
-                         norm === "executive" || norm === "executive-room" || norm === "double-room" || norm === "double-occupancy" ? "double" :
-                         norm === "triple" || norm === "triple-room" || norm === "premium" || norm === "premium-room" || norm === "premium-suite" || norm === "family-suite" ? "family" : norm;
-        const found = roomsData.find((r) => r.slug === norm || r.id === norm || r.slug === resolved || r.id === `${resolved}-room` || r.id === `${resolved}-occupancy` || r.id === `${resolved}-suite`) || roomsData[0];
-        return {
-          status: "success",
-          data: {
-            id: found.id,
-            slug: found.slug,
-            name: found.name,
-            shortDesc: found.description,
-            description: found.longDescription,
-            pricePerNight: found.price,
-            images: found.images,
-            capacityAdults: found.occupancy,
-            bedType: found.bedType,
-            roomSizeSqFt: parseInt(found.size || "300") || 300,
-            amenities: found.amenities
-          }
-        };
-      }
+      return await request<{ status: string; data: any }>(`/rooms/${slug}`, {
+        method: "GET"
+      });
     },
 
     checkAvailability: async (body: { checkIn: string; checkOut: string; adults?: number; children?: number }) => {
-      try {
-        return await request<{ status: string; availableRooms: any[] }>("/rooms/check-availability", {
-          method: "POST",
-          body: JSON.stringify(body)
-        });
-      } catch (err: any) {
-        return {
-          status: "success",
-          availableRooms: roomsData.map((r) => ({
-            id: r.id,
-            slug: r.slug,
-            name: r.name,
-            price: r.price,
-            images: r.images,
-            amenities: r.amenities,
-            occupancy: r.occupancy,
-            bedType: r.bedType,
-            size: r.size
-          }))
-        };
-      }
+      return await request<{ status: string; availableRooms: any[] }>("/rooms/check-availability", {
+        method: "POST",
+        body: JSON.stringify(body)
+      });
     }
   },
 
   bookings: {
     lockRoom: async (body: { roomId: string; checkInDate: string; sessionId?: string }) => {
-      try {
-        return await request<{ status: string; message: string; sessionId: string }>("/bookings/lock-room", {
-          method: "POST",
-          body: JSON.stringify(body)
-        });
-      } catch (err: any) {
-        return {
-          status: "success",
-          message: "Room locked for booking",
-          sessionId: `sess_${Date.now()}`
-        };
-      }
+      return await request<{ status: string; message: string; sessionId: string }>("/bookings/lock-room", {
+        method: "POST",
+        body: JSON.stringify(body)
+      });
     },
 
     create: async (body: {
@@ -404,8 +245,6 @@ export const api = {
       promoCode?: string;
       paymentMethod?: string;
     }) => {
-      // No silent fallback — if the backend is unreachable, the error must
-      // surface to the user so they know the booking didn't go through.
       const res = await request<{ status: string; booking: any; razorpayOrder?: any }>("/bookings/create", {
         method: "POST",
         body: JSON.stringify(body)
@@ -418,122 +257,71 @@ export const api = {
     },
 
     getMyBookings: async () => {
-      try {
-        const res = await request<{ status: string; bookings: any[] }>("/bookings/my-bookings", {
-          method: "GET"
-        });
-        if (res.status === "success" && Array.isArray(res.bookings)) {
-          res.bookings.forEach((b) => saveStoredBooking(b));
-        }
-        return res;
-      } catch (err: any) {
-        const stored = getStoredBookings();
-        return {
-          status: "success",
-          bookings: stored
-        };
+      const res = await request<{ status: string; bookings: any[] }>("/bookings/my-bookings", {
+        method: "GET"
+      });
+      if (res.status === "success" && Array.isArray(res.bookings)) {
+        res.bookings.forEach((b) => saveStoredBooking(b));
       }
+      return res;
     },
 
     getById: async (bookingId: string) => {
-      try {
-        return await request<{ status: string; booking: any }>(`/bookings/${bookingId}`, {
-          method: "GET"
-        });
-      } catch (err: any) {
-        const stored = getStoredBookings();
-        const found = stored.find((b) => b.id === bookingId) || {
-          id: bookingId,
-          roomType: "Executive Room",
-          roomImage: "/images/rooms/executive/main.jpg",
-          checkIn: "2026-09-10",
-          checkOut: "2026-09-12",
-          adults: 2,
-          children: 0,
-          guestName: "Guest User",
-          guestEmail: "guest@hotelreliance.com",
-          guestPhone: "+91 98765 43210",
-          status: "CONFIRMED",
-          paymentStatus: "PAID",
-          totalAmount: 6718,
-          createdAt: new Date().toISOString()
-        };
-        return {
-          status: "success",
-          booking: found
-        };
-      }
+      return await request<{ status: string; booking: any }>(`/bookings/${bookingId}`, {
+        method: "GET"
+      });
     },
 
     cancel: async (bookingId: string) => {
-      try {
-        return await request<{ status: string; message: string; booking?: any }>(`/bookings/${bookingId}/cancel`, {
-          method: "POST"
-        });
-      } catch (err: any) {
-        const stored = getStoredBookings().map((b) =>
-          b.id === bookingId ? { ...b, status: "CANCELLED" } : b
-        );
-        if (typeof window !== "undefined") {
-          localStorage.setItem(BOOKINGS_STORAGE_KEY, JSON.stringify(stored));
-        }
-        return {
-          status: "success",
-          message: "Booking cancelled successfully"
-        };
-      }
+      return await request<{ status: string; message: string; booking?: any }>(`/bookings/${bookingId}/cancel`, {
+        method: "POST"
+      });
     }
   },
 
   payments: {
     createOrder: async (body: { amount: number; bookingId: string }) => {
-      try {
-        return await request<{ status: string; razorpayOrder: any }>("/payments/create-order", {
-          method: "POST",
-          body: JSON.stringify(body)
-        });
-      } catch (err: any) {
-        return {
-          status: "success",
-          razorpayOrder: {
-            id: `order_sim_${Date.now()}`,
-            amount: body.amount * 100,
-            currency: "INR"
-          }
-        };
-      }
+      return await request<{ status: string; razorpayOrder: any }>("/payments/create-order", {
+        method: "POST",
+        body: JSON.stringify(body)
+      });
+    },
+
+    inProcess: async (body: { bookingId: string; orderId?: string }) => {
+      return await request<{ status: string; message: string; booking?: any }>("/payments/in-process", {
+        method: "POST",
+        body: JSON.stringify(body)
+      });
     },
 
     verify: async (body: { orderId: string; paymentId: string; signature: string; bookingId: string }) => {
-      try {
-        return await request<{ status: string; message: string; booking: any }>("/payments/verify", {
-          method: "POST",
-          body: JSON.stringify(body)
-        });
-      } catch (err: any) {
-        return {
-          status: "success",
-          message: "Payment verified successfully",
-          booking: { id: body.bookingId, paymentStatus: "PAID" }
-        };
-      }
+      return await request<{ status: string; message: string; booking: any }>("/payments/verify", {
+        method: "POST",
+        body: JSON.stringify(body)
+      });
+    },
+
+    fail: async (body: { bookingId: string; orderId?: string; reason?: string; errorDetails?: any }) => {
+      return await request<{ status: string; message: string; booking?: any }>("/payments/fail", {
+        method: "POST",
+        body: JSON.stringify(body)
+      });
+    },
+
+    cancel: async (body: { bookingId: string; orderId?: string; reason?: string }) => {
+      return await request<{ status: string; message: string; booking?: any }>("/payments/cancel", {
+        method: "POST",
+        body: JSON.stringify(body)
+      });
     }
   },
 
   enquiries: {
     general: async (body: { name: string; email: string; phone?: string; message: string }) => {
-      try {
-        return await request<{ status: string; message: string; enquiryId: string }>("/enquiries/general", {
-          method: "POST",
-          body: JSON.stringify(body)
-        });
-      } catch (err: any) {
-        return {
-          status: "success",
-          message: "Thank you for contacting Hotel Reliance. Our team will reach out shortly.",
-          enquiryId: `ENQ-GEN-${Date.now()}`
-        };
-      }
+      return await request<{ status: string; message: string; enquiryId: string }>("/enquiries/general", {
+        method: "POST",
+        body: JSON.stringify(body)
+      });
     },
 
     banquet: async (body: {
@@ -545,18 +333,10 @@ export const api = {
       eventType?: string;
       message?: string;
     }) => {
-      try {
-        return await request<{ status: string; message: string; enquiryId: string }>("/enquiries/banquet", {
-          method: "POST",
-          body: JSON.stringify(body)
-        });
-      } catch (err: any) {
-        return {
-          status: "success",
-          message: "Your banquet enquiry has been registered. Our banquet manager will call you.",
-          enquiryId: `ENQ-BNQ-${Date.now()}`
-        };
-      }
+      return await request<{ status: string; message: string; enquiryId: string }>("/enquiries/banquet", {
+        method: "POST",
+        body: JSON.stringify(body)
+      });
     },
 
     restaurant: async (body: {
@@ -568,37 +348,18 @@ export const api = {
       guestCount?: number;
       specialNotes?: string;
     }) => {
-      try {
-        return await request<{ status: string; message: string; enquiryId: string }>("/enquiries/restaurant", {
-          method: "POST",
-          body: JSON.stringify(body)
-        });
-      } catch (err: any) {
-        return {
-          status: "success",
-          message: "Your table reservation request has been received. See you at Kwality Restaurant!",
-          enquiryId: `ENQ-RST-${Date.now()}`
-        };
-      }
+      return await request<{ status: string; message: string; enquiryId: string }>("/enquiries/restaurant", {
+        method: "POST",
+        body: JSON.stringify(body)
+      });
     }
   },
 
   offers: {
     getAll: async () => {
-      try {
-        const res = await request<{ status: string; offers: any[] }>("/offers", {
-          method: "GET"
-        });
-        if (res && Array.isArray(res.offers)) {
-          return res;
-        }
-      } catch (err: any) {
-        console.warn("[API] Failed to fetch live coupons from backend:", err.message);
-      }
-      return {
-        status: "success",
-        offers: []
-      };
+      return await request<{ status: string; offers: any[] }>("/offers", {
+        method: "GET"
+      });
     },
 
     validate: async (code: string) => {
@@ -609,32 +370,24 @@ export const api = {
           message: "Please enter a promo code."
         };
       }
-      try {
-        return await request<{
-          status: string;
-          valid: boolean;
-          offer?: {
-            code: string;
-            title: string;
-            discountValue: string;
-            discountType?: string;
-            discountPct?: number | null;
-            discountFixed?: number | null;
-            minBookingAmount?: number;
-            maxDiscount?: number;
-            expiryDate?: string;
-          };
-          message?: string;
-        }>(`/offers/validate/${encodeURIComponent(code.trim().toUpperCase())}`, {
-          method: "GET"
-        });
-      } catch (err: any) {
-        return {
-          status: "error",
-          valid: false,
-          message: err.message || "Promo code is invalid or inactive."
+      return await request<{
+        status: string;
+        valid: boolean;
+        offer?: {
+          code: string;
+          title: string;
+          discountValue: string;
+          discountType?: string;
+          discountPct?: number | null;
+          discountFixed?: number | null;
+          minBookingAmount?: number;
+          maxDiscount?: number;
+          expiryDate?: string;
         };
-      }
+        message?: string;
+      }>(`/offers/validate/${encodeURIComponent(code.trim().toUpperCase())}`, {
+        method: "GET"
+      });
     }
   }
 };

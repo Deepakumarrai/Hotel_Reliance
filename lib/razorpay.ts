@@ -60,9 +60,6 @@ const cleanKey = (k?: string): string | null => {
   return trimmed;
 };
 
-// Hotel Reliance active test key ID for local and staging development
-const FALLBACK_TEST_KEY = "rzp_test_Tf21ejzYhAgvmt";
-
 /**
  * Initializes and triggers the Razorpay modal dialog
  */
@@ -74,8 +71,11 @@ export const openRazorpayCheckout = async (options: RazorpayOrderOptions): Promi
 
   const razorpayKey =
     cleanKey(options.keyId) ||
-    cleanKey(process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID) ||
-    FALLBACK_TEST_KEY;
+    cleanKey(process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID);
+
+  if (!razorpayKey) {
+    throw new Error("Razorpay Key ID is not configured. Please set NEXT_PUBLIC_RAZORPAY_KEY_ID in your environment.");
+  }
 
   const checkoutOptions: any = {
     key: razorpayKey,

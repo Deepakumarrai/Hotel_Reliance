@@ -201,7 +201,7 @@ function SignInContent() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="demo@example.com"
+                    placeholder="you@example.com"
                     required
                     className="w-full bg-white border border-stone-200 rounded-xl pl-10 pr-4 py-3 text-[13px] text-[#111E31] font-sans placeholder:text-stone-400 focus:border-[#BA8B32] focus:ring-2 focus:ring-[#BA8B32]/15 focus:outline-none transition-all"
                   />
@@ -237,12 +237,6 @@ function SignInContent() {
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
-              </div>
-
-              {/* Demo credentials hint */}
-              <div className="px-3.5 py-2.5 bg-stone-50 border border-stone-100 rounded-xl text-[11px] text-stone-500 font-sans">
-                <span className="font-semibold text-[#111E31]">Demo:</span>{" "}
-                demo@example.com&nbsp;/&nbsp;password123
               </div>
 
               {/* Submit */}

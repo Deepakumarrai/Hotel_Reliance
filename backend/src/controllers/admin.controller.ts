@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { prisma } from "../services/prisma";
 import { cacheGet, cacheInvalidate } from "../services/cache";
 import { webSocketService } from "../services/websocket.service";
+import { BookingStatus, PaymentStatus } from "@prisma/client";
 
 // Helper to log administrative actions to PostgreSQL
 async function recordAuditLog(
@@ -507,6 +508,25 @@ export async function getDashboardStats(req: Request, res: Response): Promise<vo
 export async function getBookings(req: Request, res: Response): Promise<void> {
   try {
     const { status, roomType, search } = req.query;
+
+    // Auto-expire abandoned online reservations older than 15 minutes
+    const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
+    await prisma.booking
+      .updateMany({
+        where: {
+          status: BookingStatus.PENDING,
+          paymentStatus: { in: [PaymentStatus.PENDING, PaymentStatus.IN_PROCESS] },
+          paymentMethod: { not: "PAY_AT_HOTEL" },
+          createdAt: { lt: fifteenMinutesAgo }
+        },
+        data: {
+          status: BookingStatus.CANCELLED,
+          paymentStatus: PaymentStatus.FAILED,
+          cancellationReason: "Online payment timed out (abandoned)"
+        }
+      })
+      .catch(() => null);
+
     const cacheKey = `admin:bookings:${status || "all"}:${roomType || "all"}:${search || "none"}`;
 
     const data = await cacheGet(cacheKey, async () => {

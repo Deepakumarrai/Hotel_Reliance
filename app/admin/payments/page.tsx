@@ -25,7 +25,7 @@ interface TransactionRecord {
   guestPhone: string;
   method: string;
   amount: number;
-  status: "SUCCESS" | "PENDING" | "REFUNDED";
+  status: "SUCCESS" | "PENDING" | "REFUNDED" | "IN_PROCESS" | "FAILED";
   gatewayRefId: string;
 }
 
@@ -47,7 +47,9 @@ export default function AdminPaymentsPage() {
   const transactions: TransactionRecord[] = useMemo(() => {
     return bookings.map((b) => {
       const isPaid = b.paymentStatus === "SUCCESS" || b.paymentStatus === "PAID";
-      const isRefunded = b.bookingStatus === "CANCELLED" || b.paymentStatus === "REFUNDED" || b.paymentStatus === "PARTIALLY_REFUNDED";
+      const isRefunded = b.bookingStatus === "CANCELLED" && b.paymentStatus === "REFUNDED";
+      const isInProcess = b.paymentStatus === "IN_PROCESS" || b.paymentStatus === "ONGOING";
+      const isFailed = b.paymentStatus === "FAILED" || (b.bookingStatus === "CANCELLED" && !isPaid);
       return {
         id: b.id,
         date: b.createdAt ? b.createdAt.split("T")[0] : b.checkInDate,
@@ -55,7 +57,7 @@ export default function AdminPaymentsPage() {
         guestPhone: b.guestPhone || "+91 98000 00000",
         method: (b.paymentMethod || "RAZORPAY").toUpperCase(),
         amount: b.totalAmount || b.paidAmount || 0,
-        status: isRefunded ? "REFUNDED" : isPaid ? "SUCCESS" : "PENDING",
+        status: isRefunded ? "REFUNDED" : isPaid ? "SUCCESS" : isInProcess ? "IN_PROCESS" : isFailed ? "FAILED" : "PENDING",
         gatewayRefId: (b as any).razorpayPaymentId || b.transactionId || `PAY_${b.id.replace(/[^A-Z0-9]/gi, "").slice(-8)}`,
       };
     });
@@ -185,8 +187,23 @@ export default function AdminPaymentsPage() {
                     <span className="font-mono font-bold text-sm text-[#D8B77A]">{trx.id}</span>
                     <span className="text-[10px] text-[#94A3B8]">{trx.date}</span>
                   </div>
-                  <span className="px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wider text-[#10B981] bg-[#064E3B]/40 border border-[#047857]/50 inline-block">
-                    ✓ {trx.status}
+                  <span
+                    className={`px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wider inline-flex items-center gap-1.5 ${
+                      trx.status === "SUCCESS"
+                        ? "text-[#10B981] bg-[#064E3B]/40 border border-[#047857]/50"
+                        : trx.status === "REFUNDED"
+                        ? "text-[#C084FC] bg-[#581C87]/40 border border-[#7E22CE]/50"
+                        : trx.status === "IN_PROCESS"
+                        ? "text-[#38BDF8] bg-[#0369A1]/40 border border-[#0284C7]/50"
+                        : trx.status === "FAILED"
+                        ? "text-[#F87171] bg-[#7F1D1D]/40 border border-[#991B1B]/50"
+                        : "text-[#FBBF24] bg-[#78350F]/40 border border-[#B45309]/50"
+                    }`}
+                  >
+                    {trx.status === "IN_PROCESS" && (
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#38BDF8] animate-pulse" />
+                    )}
+                    {trx.status === "SUCCESS" ? `✓ ${trx.status}` : trx.status === "IN_PROCESS" ? "IN PROCESS" : trx.status}
                   </span>
                 </div>
 
@@ -277,8 +294,23 @@ export default function AdminPaymentsPage() {
 
                     {/* Status Badge */}
                     <td className="py-4.5 px-4 text-center whitespace-nowrap">
-                      <span className="px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wider text-[#10B981] bg-[#064E3B]/40 border border-[#047857]/50 inline-block">
-                        {trx.status}
+                      <span
+                        className={`px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wider inline-flex items-center gap-1.5 ${
+                          trx.status === "SUCCESS"
+                            ? "text-[#10B981] bg-[#064E3B]/40 border border-[#047857]/50"
+                            : trx.status === "REFUNDED"
+                            ? "text-[#C084FC] bg-[#581C87]/40 border border-[#7E22CE]/50"
+                            : trx.status === "IN_PROCESS"
+                            ? "text-[#38BDF8] bg-[#0369A1]/40 border border-[#0284C7]/50"
+                            : trx.status === "FAILED"
+                            ? "text-[#F87171] bg-[#7F1D1D]/40 border border-[#991B1B]/50"
+                            : "text-[#FBBF24] bg-[#78350F]/40 border border-[#B45309]/50"
+                        }`}
+                      >
+                        {trx.status === "IN_PROCESS" && (
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#38BDF8] animate-pulse" />
+                        )}
+                        {trx.status === "SUCCESS" ? `✓ ${trx.status}` : trx.status === "IN_PROCESS" ? "IN PROCESS" : trx.status}
                       </span>
                     </td>
 

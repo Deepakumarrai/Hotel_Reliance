@@ -177,6 +177,7 @@ function BookingsContent() {
     { id: "ALL", label: "All Stays" },
     { id: "ARRIVALS", label: "Today's Arrivals" },
     { id: "DEPARTURES", label: "Today's Departures" },
+    { id: "PENDING", label: "Pending Payment" },
     { id: "CONFIRMED", label: "Confirmed" },
     { id: "CHECKED_IN", label: "Checked In" },
     { id: "CHECKED_OUT", label: "Checked Out" },
@@ -362,28 +363,37 @@ function BookingsContent() {
 
                     <div className="flex items-center space-x-1.5">
                       <span
-                        className={`px-2 py-0.5 rounded text-[9.5px] uppercase font-bold tracking-wider ${
-                          b.paymentStatus === "SUCCESS"
+                        className={`px-2 py-0.5 rounded text-[9.5px] uppercase font-bold tracking-wider inline-flex items-center gap-1 ${
+                          b.paymentStatus === "SUCCESS" || b.paymentStatus === "PAID"
                             ? "bg-[#DCFCE7] text-[#15803D]"
                             : b.paymentStatus === "REFUNDED"
                             ? "bg-[#F3E8FF] text-[#7E22CE]"
+                            : b.paymentStatus === "FAILED"
+                            ? "bg-[#FEE2E2] text-[#991B1B]"
+                            : b.paymentStatus === "IN_PROCESS" || b.paymentStatus === "ONGOING"
+                            ? "bg-[#E0F2FE] text-[#0284C7] border border-[#BAE6FD]"
                             : "bg-[#FEF3C7] text-[#B45309]"
                         }`}
                       >
-                        {b.paymentStatus}
+                        {(b.paymentStatus === "IN_PROCESS" || b.paymentStatus === "ONGOING") && (
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#0284C7] animate-pulse inline-block" />
+                        )}
+                        {b.paymentStatus === "IN_PROCESS" || b.paymentStatus === "ONGOING" ? "IN PROCESS" : b.paymentStatus}
                       </span>
                       <span
                         className={`px-2 py-0.5 rounded text-[9.5px] uppercase font-bold tracking-wider ${
                           b.bookingStatus === "CHECKED_IN"
                             ? "bg-[#DCFCE7] text-[#15803D]"
                             : b.bookingStatus === "CONFIRMED"
-                            ? "bg-[#FEF3C7] text-[#B45309]"
+                            ? "bg-[#DCFCE7] text-[#15803D]"
                             : b.bookingStatus === "CHECKED_OUT"
                             ? "bg-[#DBEAFE] text-[#1D4ED8]"
+                            : b.bookingStatus === "PENDING"
+                            ? "bg-[#FEF9C3] text-[#A16207]"
                             : "bg-[#FFE4E6] text-[#E11D48]"
                         }`}
                       >
-                        {b.bookingStatus}
+                        {b.bookingStatus === "PENDING" ? "PAYMENT PENDING" : b.bookingStatus}
                       </span>
                     </div>
                   </div>
@@ -543,15 +553,22 @@ function BookingsContent() {
                       {/* Payment Badge */}
                       <td className="py-4 px-4 whitespace-nowrap">
                         <span
-                          className={`px-2.5 py-1 rounded-md text-[10px] uppercase font-bold tracking-wider ${
-                            b.paymentStatus === "SUCCESS"
+                          className={`px-2.5 py-1 rounded-md text-[10px] uppercase font-bold tracking-wider inline-flex items-center gap-1.5 ${
+                            b.paymentStatus === "SUCCESS" || b.paymentStatus === "PAID"
                               ? "bg-[#DCFCE7] text-[#15803D] border border-[#86EFAC]"
                               : b.paymentStatus === "REFUNDED"
                               ? "bg-[#F3E8FF] text-[#7E22CE] border border-[#D8B4FE]"
+                              : b.paymentStatus === "FAILED"
+                              ? "bg-[#FEE2E2] text-[#991B1B] border border-[#FCA5A5]"
+                              : b.paymentStatus === "IN_PROCESS" || b.paymentStatus === "ONGOING"
+                              ? "bg-[#E0F2FE] text-[#0284C7] border border-[#BAE6FD]"
                               : "bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A]"
                           }`}
                         >
-                          {b.paymentStatus}
+                          {(b.paymentStatus === "IN_PROCESS" || b.paymentStatus === "ONGOING") && (
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#0284C7] animate-pulse" />
+                          )}
+                          {b.paymentStatus === "IN_PROCESS" || b.paymentStatus === "ONGOING" ? "IN PROCESS" : b.paymentStatus}
                         </span>
                       </td>
 
@@ -562,13 +579,15 @@ function BookingsContent() {
                             b.bookingStatus === "CHECKED_IN"
                               ? "bg-[#DCFCE7] text-[#15803D] border border-[#86EFAC]"
                               : b.bookingStatus === "CONFIRMED"
-                              ? "bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A]"
+                              ? "bg-[#DCFCE7] text-[#15803D] border border-[#86EFAC]"
                               : b.bookingStatus === "CHECKED_OUT"
                               ? "bg-[#DBEAFE] text-[#1D4ED8] border border-[#BFDBFE]"
+                              : b.bookingStatus === "PENDING"
+                              ? "bg-[#FEF9C3] text-[#A16207] border border-[#FDE047]"
                               : "bg-[#FFE4E6] text-[#E11D48] border border-[#FECDD3]"
                           }`}
                         >
-                          {b.bookingStatus}
+                          {b.bookingStatus === "PENDING" ? "PAYMENT PENDING" : b.bookingStatus}
                         </span>
                       </td>
 

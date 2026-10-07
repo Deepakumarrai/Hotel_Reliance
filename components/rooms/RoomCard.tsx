@@ -138,7 +138,10 @@ export function RoomCard({ room }: RoomCardProps) {
               </span>
             ))}
             {room.amenities.length > 3 && (
-              <span className="inline-flex items-center text-[10px] font-sans font-medium text-[#BA8B32] bg-[#BA8B32]/8 border border-[#BA8B32]/20 rounded-full px-2.5 py-0.5">
+              <span
+                suppressHydrationWarning
+                className="inline-flex items-center text-[10px] font-sans font-medium text-[#BA8B32] bg-[#BA8B32]/8 border border-[#BA8B32]/20 rounded-full px-2.5 py-0.5"
+              >
                 +{room.amenities.length - 3} more
               </span>
             )}

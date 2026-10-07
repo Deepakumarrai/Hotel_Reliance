@@ -450,7 +450,9 @@ export default function AdminDashboardPage() {
                                 : booking.bookingStatus === "CANCELLED"
                                 ? "bg-[#FEF2F2] text-[#DC2626] border border-[#FECACA]"
                                 : booking.bookingStatus === "PENDING"
-                                ? "bg-[#FFFBEB] text-[#D97706] border border-[#FDE68A]"
+                                ? booking.paymentStatus === "IN_PROCESS" || booking.paymentStatus === "ONGOING"
+                                  ? "bg-[#E0F2FE] text-[#0284C7] border border-[#BAE6FD]"
+                                  : "bg-[#FFFBEB] text-[#D97706] border border-[#FDE68A]"
                                 : "bg-[#ECFDF5] text-[#059669] border border-[#A7F3D0]"
                             }`}
                           >
@@ -463,7 +465,9 @@ export default function AdminDashboardPage() {
                                   : booking.bookingStatus === "CANCELLED"
                                   ? "bg-[#DC2626]"
                                   : booking.bookingStatus === "PENDING"
-                                  ? "bg-[#F59E0B]"
+                                  ? booking.paymentStatus === "IN_PROCESS" || booking.paymentStatus === "ONGOING"
+                                    ? "bg-[#0284C7] animate-pulse"
+                                    : "bg-[#F59E0B]"
                                   : "bg-[#10B981]"
                               }`}
                             />
@@ -475,7 +479,9 @@ export default function AdminDashboardPage() {
                                 : booking.bookingStatus === "CANCELLED"
                                 ? "Cancelled"
                                 : booking.bookingStatus === "PENDING"
-                                ? "Pending"
+                                ? booking.paymentStatus === "IN_PROCESS" || booking.paymentStatus === "ONGOING"
+                                  ? "Payment In Process"
+                                  : "Payment Pending"
                                 : "Confirmed"}
                             </span>
                           </span>
@@ -544,7 +550,9 @@ export default function AdminDashboardPage() {
                           : booking.bookingStatus === "CHECKED_OUT"
                           ? "bg-[#F3F4F6] text-[#4B5563] border border-[#E5E7EB]"
                           : booking.bookingStatus === "PENDING"
-                          ? "bg-[#FFFBEB] text-[#D97706] border border-[#FDE68A]"
+                          ? booking.paymentStatus === "IN_PROCESS" || booking.paymentStatus === "ONGOING"
+                            ? "bg-[#E0F2FE] text-[#0284C7] border border-[#BAE6FD]"
+                            : "bg-[#FFFBEB] text-[#D97706] border border-[#FDE68A]"
                           : "bg-[#ECFDF5] text-[#059669] border border-[#A7F3D0]"
                       }`}
                     >
@@ -553,7 +561,9 @@ export default function AdminDashboardPage() {
                         : booking.bookingStatus === "CHECKED_OUT"
                         ? "Checked Out"
                         : booking.bookingStatus === "PENDING"
-                        ? "Pending"
+                        ? booking.paymentStatus === "IN_PROCESS" || booking.paymentStatus === "ONGOING"
+                          ? "In Process"
+                          : "Pending"
                         : "Confirmed"}
                     </span>
                   </div>

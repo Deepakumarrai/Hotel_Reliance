@@ -36,8 +36,8 @@ export const config = {
   databaseUrl: cleanEnv(process.env.DATABASE_URL) || "",
   redisUrl: cleanEnv(process.env.REDIS_URL) || "redis://localhost:6379",
   razorpay: {
-    keyId: getNonPlaceholder(process.env.RAZORPAY_KEY_ID || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID, "rzp_test_Tf21ejzYhAgvmt"),
-    keySecret: getNonPlaceholder(process.env.RAZORPAY_KEY_SECRET, "5PFSUrarUt2d8D1rhtc1U9tJ"),
-    webhookSecret: getNonPlaceholder(process.env.RAZORPAY_WEBHOOK_SECRET, "whsec_reliance_secret_2026")
+    keyId: cleanEnv(process.env.RAZORPAY_KEY_ID || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID) || "",
+    keySecret: cleanEnv(process.env.RAZORPAY_KEY_SECRET) || "",
+    webhookSecret: cleanEnv(process.env.RAZORPAY_WEBHOOK_SECRET) || ""
   }
 };

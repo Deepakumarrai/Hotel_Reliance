@@ -33,7 +33,7 @@ export interface AdminBooking {
   discountCode?: string;
   totalAmount: number;
   paidAmount: number;
-  paymentStatus: "SUCCESS" | "PENDING" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED" | "PAID";
+  paymentStatus: "SUCCESS" | "PENDING" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED" | "PAID" | "IN_PROCESS" | "ONGOING";
   bookingStatus: "CONFIRMED" | "CHECKED_IN" | "CHECKED_OUT" | "CANCELLED" | "PENDING" | "NO_SHOW";
   paymentMethod: "RAZORPAY" | "UPI" | "CREDIT_CARD" | "PAY_AT_HOTEL";
   transactionId?: string;

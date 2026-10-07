@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, ArrowRight, Check, AlertCircle, Calendar, ShieldCheck, CreditCard, Hotel, Sparkles, Building2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, AlertCircle, Calendar, ShieldCheck, CreditCard, Hotel, Sparkles, Building2, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
@@ -59,6 +59,9 @@ function BookingContent() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [bookingError, setBookingError] = useState<string | null>(null);
   const [activeCoupons, setActiveCoupons] = useState<ActiveCoupon[]>([]);
+  const [activeBookingId, setActiveBookingId] = useState<string | null>(null);
+  const [activeOrderId, setActiveOrderId] = useState<string | null>(null);
+  const [activeGrandTotal, setActiveGrandTotal] = useState<number | null>(null);
 
   // Fetch live active coupons created in /admin/coupons
   useEffect(() => {
@@ -336,6 +339,20 @@ function BookingContent() {
         const rzpOrderId = orderObj?.orderId || orderObj?.id;
         const rzpAmount = orderObj?.amount || Math.round(finalGrandTotal * 100);
 
+        setActiveBookingId(bookingId);
+        setActiveOrderId(rzpOrderId);
+        setActiveGrandTotal(finalGrandTotal);
+
+        // Mark payment as IN_PROCESS immediately as the modal is launched
+        try {
+          await api.payments.inProcess({
+            bookingId,
+            orderId: rzpOrderId
+          });
+        } catch (ipErr) {
+          console.warn("Failed to notify server of in-process payment:", ipErr);
+        }
+
         await openRazorpayCheckout({
           orderId: rzpOrderId,
           amount: rzpAmount,
@@ -362,12 +379,38 @@ function BookingContent() {
               setIsSubmitting(false);
             }
           },
-          onFailure: (err) => {
-            setBookingError(err.description || "Payment failed or cancelled.");
+          onFailure: async (err) => {
+            const errDescription =
+              err?.description ||
+              err?.message ||
+              "Payment was declined or failed at the payment gateway.";
+            setBookingError(`${errDescription} The room reservation is released. Click Retry Payment to try again.`);
             setIsSubmitting(false);
+
+            try {
+              await api.payments.fail({
+                bookingId,
+                orderId: rzpOrderId,
+                reason: errDescription,
+                errorDetails: err
+              });
+            } catch (failErr) {
+              console.warn("Failed to notify server of payment failure:", failErr);
+            }
           },
-          onDismiss: () => {
+          onDismiss: async () => {
+            setBookingError("Payment checkout was closed. Click Retry Payment to pay again or choose Pay at Check-In.");
             setIsSubmitting(false);
+
+            try {
+              await api.payments.cancel({
+                bookingId,
+                orderId: rzpOrderId,
+                reason: "Payment checkout modal closed by user"
+              });
+            } catch (cancelErr) {
+              console.warn("Failed to notify server of payment dismissal:", cancelErr);
+            }
           }
         });
       } else {
@@ -377,6 +420,160 @@ function BookingContent() {
     } catch (err: any) {
       console.error("Booking error:", err);
       setBookingError(err.message || "Something went wrong while processing your booking. Please try again.");
+      setIsSubmitting(false);
+    }
+  };
+
+  // Re-attempt payment after rejection or cancellation
+  const handleRetryPayment = async () => {
+    if (!activeBookingId || paymentMethod !== "ONLINE" || !selectedRoom) {
+      handleSubmit();
+      return;
+    }
+
+    setIsSubmitting(true);
+    setBookingError(null);
+
+    try {
+      const activeRoomPrice = getRoomPrice(selectedRoom.slug, selectedRoom.price) || selectedRoom.price || 0;
+      const rawSubtotal = Math.round(activeRoomPrice * nights * 100) / 100;
+      const activePromo = (bookingState.promoCode || bookingState.guest?.promoCode || "").toUpperCase().trim();
+      const promoEval = evaluateCoupon(activePromo, activeCoupons, rawSubtotal);
+      const discountAmount = promoEval.discountAmount;
+      const taxableSubtotal = Math.max(0, Math.round((rawSubtotal - discountAmount) * 100) / 100);
+      const taxRate = 0.12;
+      const taxAmount = Math.round(taxableSubtotal * taxRate * 100) / 100;
+      const grandTotal = activeGrandTotal || Math.round((taxableSubtotal + taxAmount) * 100) / 100;
+
+      // 1. Immediately mark IN_PROCESS in DB and broadcast via WebSocket to Admin
+      // This switches Payments from FAILED/PENDING to "IN PROCESS" and re-holds room for 15 mins!
+      await api.payments.inProcess({
+        bookingId: activeBookingId,
+        orderId: activeOrderId || undefined
+      });
+
+      // 2. Refresh or create new Razorpay order
+      const orderRes = await api.payments.createOrder({
+        amount: grandTotal,
+        bookingId: activeBookingId
+      });
+      const orderObj = orderRes.razorpayOrder;
+      const rzpOrderId = orderObj?.orderId || orderObj?.id;
+      const rzpAmount = orderObj?.amount || Math.round(grandTotal * 100);
+      setActiveOrderId(rzpOrderId);
+
+      // Re-affirm IN_PROCESS with the active order ID
+      await api.payments.inProcess({
+        bookingId: activeBookingId,
+        orderId: rzpOrderId
+      });
+
+      const finalizeAndRedirect = (pmLabel: string, txId?: string) => {
+        const newBooking: Booking = {
+          id: activeBookingId,
+          userId: user?.id,
+          checkIn: bookingState.checkIn,
+          checkOut: bookingState.checkOut,
+          nights,
+          adults: bookingState.adults,
+          children: bookingState.children,
+          room: {
+            ...selectedRoom,
+            price: activeRoomPrice
+          },
+          roomNumber: undefined,
+          guest: {
+            name: bookingState.guest?.name || user?.name || "Guest",
+            email: bookingState.guest?.email || user?.email || "",
+            phone: bookingState.guest?.phone || user?.phone || "",
+            specialRequests: bookingState.guest?.specialRequests || "",
+            promoCode: activePromo || undefined
+          },
+          basePrice: rawSubtotal,
+          baseAmount: rawSubtotal,
+          discount: discountAmount,
+          discountAmount,
+          discountCode: activePromo || undefined,
+          taxes: taxAmount,
+          taxAmount,
+          totalPrice: grandTotal,
+          grandTotal: grandTotal,
+          estimatedTotal: formatPrice(grandTotal),
+          status: "confirmed",
+          createdAt: new Date().toISOString(),
+          paymentMethod: pmLabel,
+          transactionId: txId
+        };
+
+        saveStoredBooking(newBooking);
+        sessionStorage.setItem("confirmedBooking", JSON.stringify(newBooking));
+        router.push("/booking/success");
+      };
+
+      // 3. Re-open Razorpay modal
+      await openRazorpayCheckout({
+        orderId: rzpOrderId,
+        amount: rzpAmount,
+        currency: orderObj?.currency || "INR",
+        keyId: (orderObj?.keyId && !orderObj.keyId.includes("placeholder")) ? orderObj.keyId : undefined,
+        name: "Hotel Reliance",
+        description: `Stay Reservation (${selectedRoom.name})`,
+        prefill: {
+          name: bookingState.guest?.name || user?.name || "",
+          email: bookingState.guest?.email || user?.email || "",
+          contact: bookingState.guest?.phone || user?.phone || ""
+        },
+        onSuccess: async (response) => {
+          try {
+            await api.payments.verify({
+              orderId: response.razorpay_order_id || rzpOrderId,
+              paymentId: response.razorpay_payment_id,
+              signature: response.razorpay_signature,
+              bookingId: activeBookingId
+            });
+            finalizeAndRedirect("Razorpay Online Payment (Paid)", response.razorpay_payment_id);
+          } catch (err: any) {
+            setBookingError(err.message || "Payment verification failed.");
+            setIsSubmitting(false);
+          }
+        },
+        onFailure: async (err) => {
+          const errDescription =
+            err?.description ||
+            err?.message ||
+            "Payment was declined or failed at the payment gateway.";
+          setBookingError(`${errDescription} Click Retry Payment to try again.`);
+          setIsSubmitting(false);
+
+          try {
+            await api.payments.fail({
+              bookingId: activeBookingId,
+              orderId: rzpOrderId,
+              reason: errDescription,
+              errorDetails: err
+            });
+          } catch (failErr) {
+            console.warn("Failed to notify server of payment failure:", failErr);
+          }
+        },
+        onDismiss: async () => {
+          setBookingError("Payment checkout was closed. Click Retry Payment to pay again or choose Pay at Check-In.");
+          setIsSubmitting(false);
+
+          try {
+            await api.payments.cancel({
+              bookingId: activeBookingId,
+              orderId: rzpOrderId,
+              reason: "Payment checkout modal closed by user"
+            });
+          } catch (cancelErr) {
+            console.warn("Failed to notify server of payment dismissal:", cancelErr);
+          }
+        }
+      });
+    } catch (err: any) {
+      console.error("Retry payment error:", err);
+      setBookingError(err.message || "Failed to restart payment checkout. Please try again.");
       setIsSubmitting(false);
     }
   };
@@ -417,10 +614,18 @@ function BookingContent() {
               <span>{bookingError}</span>
             </div>
             <button
-              onClick={handleSubmit}
-              className="px-5 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold text-[11px] tracking-wider uppercase rounded-full cursor-pointer transition-colors self-start sm:self-auto shadow-xs"
+              onClick={handleRetryPayment}
+              disabled={isSubmitting}
+              className="px-5 py-2.5 bg-[#BA8B32] hover:bg-[#A37827] text-white font-semibold text-[11px] tracking-wider uppercase rounded-full cursor-pointer transition-all self-start sm:self-auto shadow-xs flex items-center gap-2 disabled:opacity-50"
             >
-              Try Again
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span>Opening Payment...</span>
+                </>
+              ) : (
+                <span>Retry Payment</span>
+              )}
             </button>
           </motion.div>
         )}

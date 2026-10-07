@@ -24,8 +24,11 @@ enum BookingStatus {
 
 enum PaymentStatus {
   PENDING
+  IN_PROCESS
+  ONGOING
   PAID
   FAILED
+  CANCELLED
   REFUNDED
 }
 

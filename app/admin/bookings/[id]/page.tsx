@@ -129,10 +129,18 @@ export default function SingleBookingDetailPage() {
                       ? "bg-[#DBEAFE] text-[#1D4ED8] border border-[#BFDBFE]"
                       : booking.bookingStatus === "CANCELLED"
                       ? "bg-[#FFE4E6] text-[#E11D48] border border-[#FECDD3]"
-                      : "bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A]"
+                      : booking.bookingStatus === "PENDING"
+                      ? booking.paymentStatus === "IN_PROCESS" || booking.paymentStatus === "ONGOING"
+                        ? "bg-[#E0F2FE] text-[#0284C7] border border-[#BAE6FD]"
+                        : "bg-[#FEF9C3] text-[#A16207] border border-[#FDE047]"
+                      : "bg-[#DCFCE7] text-[#15803D] border border-[#86EFAC]"
                   }`}
                 >
-                  {booking.bookingStatus}
+                  {booking.bookingStatus === "PENDING"
+                    ? booking.paymentStatus === "IN_PROCESS" || booking.paymentStatus === "ONGOING"
+                      ? "PAYMENT IN PROCESS"
+                      : "PAYMENT PENDING"
+                    : booking.bookingStatus}
                 </span>
               </div>
             </div>
