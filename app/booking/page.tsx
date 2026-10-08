@@ -323,7 +323,7 @@ function BookingContent() {
 
         saveStoredBooking(newBooking);
         sessionStorage.setItem("confirmedBooking", JSON.stringify(newBooking));
-        router.push("/booking/success");
+        router.push(`/booking/success?bookingId=${bookingId}`);
       };
 
       if (paymentMethod === "ONLINE") {
@@ -507,7 +507,7 @@ function BookingContent() {
 
         saveStoredBooking(newBooking);
         sessionStorage.setItem("confirmedBooking", JSON.stringify(newBooking));
-        router.push("/booking/success");
+        router.push(`/booking/success?bookingId=${newBooking.id}`);
       };
 
       // 3. Re-open Razorpay modal

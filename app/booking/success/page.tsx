@@ -52,16 +52,26 @@ function SuccessContent() {
     const loadBookingData = async () => {
       setIsLoading(true);
 
-      // 1. First check sessionStorage for the real booking created during checkout
+      const paramId = searchParams.get("bookingId") || searchParams.get("id");
+
+      // 1. If sessionStorage has the booking matching paramId (or if no paramId was specified)
       if (typeof window !== "undefined") {
         const raw = sessionStorage.getItem("confirmedBooking");
         if (raw) {
           try {
             const parsed = JSON.parse(raw);
             if (parsed && parsed.id) {
-              setBooking(parsed);
-              setIsLoading(false);
-              return;
+              if (!paramId || parsed.id === paramId) {
+                setBooking(parsed);
+                // Synchronize address bar URL with bookingId if not already present
+                if (!paramId && typeof window !== "undefined") {
+                  const url = new URL(window.location.href);
+                  url.searchParams.set("bookingId", parsed.id);
+                  window.history.replaceState(null, "", url.toString());
+                }
+                setIsLoading(false);
+                return;
+              }
             }
           } catch (err) {
             console.error("Failed to parse booking from sessionStorage", err);
@@ -70,7 +80,6 @@ function SuccessContent() {
       }
 
       // 2. Otherwise check query parameter for booking reference and fetch live from backend
-      const paramId = searchParams.get("bookingId") || searchParams.get("id");
       if (paramId) {
         try {
           const res = await api.bookings.getById(paramId);
@@ -78,6 +87,7 @@ function SuccessContent() {
             const b = res.booking;
             const formatted: Booking = {
               id: b.id,
+              bookingId: b.id,
               checkIn: b.checkInDate ? new Date(b.checkInDate).toISOString().split("T")[0] : b.checkIn,
               checkOut: b.checkOutDate ? new Date(b.checkOutDate).toISOString().split("T")[0] : b.checkOut,
               nights: b.nights || 1,
@@ -92,14 +102,14 @@ function SuccessContent() {
                 amenities: b.room?.amenities || ["High-Speed Wi-Fi", "Air Conditioning", "Room Service"],
                 occupancy: b.adults || 2,
                 bedType: b.room?.bedType || "King Size Bed",
-                price: b.room?.pricePerNight || b.baseAmount || 0
+                price: Number(b.room?.pricePerNight || b.baseAmount || 0)
               },
-              baseAmount: b.baseAmount,
-              basePrice: b.baseAmount,
-              discountAmount: b.discountAmount || 0,
-              taxAmount: b.taxAmount || 0,
-              totalPrice: b.totalAmount || b.totalPrice,
-              grandTotal: b.totalAmount || b.grandTotal,
+              baseAmount: Number(b.baseAmount || 0),
+              basePrice: Number(b.baseAmount || 0),
+              discountAmount: Number(b.discountAmount || 0),
+              taxAmount: Number(b.taxAmount || 0),
+              totalPrice: Number(b.totalAmount || b.totalPrice || 0),
+              grandTotal: Number(b.totalAmount || b.grandTotal || 0),
               status: (b.status?.toLowerCase() || "confirmed") as any,
               paymentStatus: (b.paymentStatus?.toLowerCase() || "paid") as any,
               paymentMethod: b.paymentMethod || "Online Payment",
@@ -207,10 +217,15 @@ function SuccessContent() {
   };
 
   const handleShare = async () => {
+    if (!booking) return;
+    const bookingUrl = typeof window !== "undefined"
+      ? `${window.location.origin}/booking/success?bookingId=${booking.id}`
+      : `/booking/success?bookingId=${booking.id}`;
+
     const shareData = {
       title: `Hotel Reliance Reservation #${booking.id}`,
       text: `Confirmed booking for ${booking.room?.name || "Suite"} at Hotel Reliance, Bokaro. Check-in: ${formatDate(booking.checkIn)}`,
-      url: window.location.href
+      url: bookingUrl
     };
     if (navigator.share) {
       try {

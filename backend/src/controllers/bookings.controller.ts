@@ -354,6 +354,7 @@ export class BookingsController {
 
   public static async getBookingById(req: AuthRequest, res: Response): Promise<void> {
     const { bookingId } = req.params;
+    const { email: queryEmail, phone: queryPhone } = req.query;
 
     try {
       const booking = await prisma.booking.findUnique({
@@ -369,6 +370,53 @@ export class BookingsController {
 
       if (!booking) {
         res.status(404).json({ status: "error", message: `Booking ${bookingId} not found.` });
+        return;
+      }
+
+      // 1. Verify if requester is authenticated owner or administrator
+      const isOwner = Boolean(
+        req.user &&
+          (req.user.role === "ADMIN" ||
+            (booking.userId && req.user.id === booking.userId) ||
+            (req.user.email && req.user.email.toLowerCase() === booking.guestEmail.toLowerCase()))
+      );
+
+      // 2. Or verified via query credentials (e.g. email or phone verification in lookup query)
+      const isVerifiedGuest = Boolean(
+        (queryEmail && String(queryEmail).toLowerCase().trim() === booking.guestEmail.toLowerCase().trim()) ||
+        (queryPhone && String(queryPhone).trim().replace(/\D/g, "").slice(-10) === booking.guestPhone.trim().replace(/\D/g, "").slice(-10))
+      );
+
+      // If viewing publicly without owner credentials, mask PII to prevent IDOR scraping
+      if (!isOwner && !isVerifiedGuest) {
+        const maskEmail = (emailStr: string) => {
+          if (!emailStr || !emailStr.includes("@")) return "***";
+          const [namePart, domain] = emailStr.split("@");
+          const visible = namePart.length > 2 ? namePart.slice(0, 2) : namePart.slice(0, 1);
+          return `${visible}***@${domain}`;
+        };
+
+        const maskPhone = (phoneStr: string) => {
+          if (!phoneStr) return "***";
+          const clean = phoneStr.trim();
+          return clean.length >= 4 ? `******${clean.slice(-4)}` : "***";
+        };
+
+        const sanitizedBooking = {
+          ...booking,
+          guestEmail: maskEmail(booking.guestEmail),
+          guestPhone: maskPhone(booking.guestPhone),
+          user: null,
+          payment: booking.payment
+            ? {
+                status: booking.payment.status,
+                amount: booking.payment.amount,
+                gateway: booking.payment.gateway
+              }
+            : null
+        };
+
+        res.status(200).json({ status: "success", booking: sanitizedBooking, isMaskedView: true });
         return;
       }
 
@@ -388,6 +436,19 @@ export class BookingsController {
 
       if (!booking) {
         res.status(404).json({ status: "error", message: `Booking ${bookingId} not found.` });
+        return;
+      }
+
+      // Ensure caller is the owner or an admin
+      const isAuthorized = Boolean(
+        req.user &&
+          (req.user.role === "ADMIN" ||
+            (booking.userId && req.user.id === booking.userId) ||
+            (req.user.email && req.user.email.toLowerCase() === booking.guestEmail.toLowerCase()))
+      );
+
+      if (!isAuthorized) {
+        res.status(403).json({ status: "error", message: "You are not authorized to cancel this booking." });
         return;
       }
 
