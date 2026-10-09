@@ -13,33 +13,47 @@ import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 
 function formatBookingObject(b: any, user: any): Booking {
+  const roomImages =
+    Array.isArray(b.room?.images) && b.room.images.length > 0
+      ? b.room.images
+      : Array.isArray(b.images) && b.images.length > 0
+      ? b.images
+      : [b.roomImage || b.room?.heroImage || "/images/rooms/deluxe.png"];
+
+  const safeRoom = {
+    ...(b.room || {}),
+    id: b.room?.id || b.roomId || "deluxe-room",
+    name: b.room?.name || b.roomName || `${(b.roomType || "deluxe").toUpperCase()} Room`,
+    slug: b.room?.slug || b.roomSlug || b.roomType || "deluxe",
+    type: b.room?.type || b.roomType || "deluxe",
+    price: Number(b.room?.price || b.room?.pricePerNight || b.baseAmount || b.totalAmount || 2499),
+    description: b.room?.description || "Luxury hotel accommodation with modern amenities.",
+    shortDescription: b.room?.shortDescription || "Luxury stay at Hotel Reliance.",
+    capacity: b.room?.capacity || { adults: b.adults || 2, children: b.children || 0, maxTotal: 4 },
+    amenities: Array.isArray(b.room?.amenities)
+      ? b.room.amenities
+      : ["Free High-Speed Wi-Fi", "Air Conditioning", "HD TV", "Room Service"],
+    features: Array.isArray(b.room?.features)
+      ? b.room.features
+      : ["City View", "King Bed", "Ensuite Bathroom"],
+    images: roomImages,
+    heroImage: roomImages[0] || "/images/rooms/deluxe.png",
+    bedType: b.room?.bedType || "King Bed",
+    view: b.room?.view || "City View",
+    rating: b.room?.rating || 4.8,
+    reviewCount: b.room?.reviewCount || 120,
+    isFeatured: Boolean(b.room?.isFeatured),
+    inventory: b.room?.inventory || 10,
+  };
+
   return {
     id: b.id,
     bookingId: b.bookingId || b.id,
-    roomId: b.room?.id || b.roomId || "deluxe-room",
-    roomSlug: b.room?.slug || b.roomType || "deluxe",
-    roomName: b.room?.name || `${(b.roomType || "deluxe").toUpperCase()} Room`,
-    roomImage: b.room?.images?.[0] || "/images/rooms/deluxe.png",
-    room: b.room || {
-      id: b.room?.id || b.roomId || "deluxe-room",
-      name: b.room?.name || `${(b.roomType || "deluxe").toUpperCase()} Room`,
-      slug: b.room?.slug || b.roomType || "deluxe",
-      type: b.roomType || "deluxe",
-      price: b.baseAmount || b.totalAmount || 2499,
-      description: "Luxury hotel accommodation with modern amenities.",
-      shortDescription: "Luxury stay at Hotel Reliance.",
-      capacity: { adults: b.adults || 2, children: b.children || 0, maxTotal: 4 },
-      amenities: ["Free High-Speed Wi-Fi", "Air Conditioning", "HD TV", "Room Service"],
-      features: ["City View", "King Bed", "Ensuite Bathroom"],
-      images: [b.room?.images?.[0] || "/images/rooms/deluxe.png"],
-      heroImage: b.room?.images?.[0] || "/images/rooms/deluxe.png",
-      bedType: "King Bed",
-      view: "City View",
-      rating: 4.8,
-      reviewCount: 120,
-      isFeatured: false,
-      inventory: 10,
-    },
+    roomId: safeRoom.id,
+    roomSlug: safeRoom.slug,
+    roomName: safeRoom.name,
+    roomImage: safeRoom.images[0],
+    room: safeRoom,
     checkIn: b.checkInDate || b.checkIn,
     checkOut: b.checkOutDate || b.checkOut,
     adults: b.adults || 2,
@@ -345,8 +359,8 @@ function MyBookingsContent() {
                 {/* Room Thumbnail */}
                 <div className="md:col-span-4 relative min-h-[200px] md:min-h-full">
                   <Image
-                    src={booking.room.images[0] || "/images/rooms/deluxe/main.jpg"}
-                    alt={booking.room.name}
+                    src={booking.room?.images?.[0] || booking.roomImage || "/images/rooms/deluxe/main.jpg"}
+                    alt={booking.room?.name || booking.roomName || "Reserved Suite"}
                     fill
                     className="object-cover"
                   />
@@ -365,7 +379,7 @@ function MyBookingsContent() {
                         </span>
                         <div className="flex flex-wrap items-center gap-2.5 mt-1">
                           <h2 className="text-xl sm:text-2xl font-serif font-light text-[#111E31]">
-                            {booking.room.name}
+                            {booking.room?.name || booking.roomName || "Reserved Suite"}
                           </h2>
                           {booking.roomNumber ? (
                             <span className="inline-flex items-center px-2.5 py-0.5 bg-[#BA8B32]/10 text-[#BA8B32] border border-[#BA8B32]/25 rounded-full text-[11px] font-semibold font-sans">

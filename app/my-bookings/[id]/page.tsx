@@ -31,34 +31,48 @@ function BookingDetailContent({ params }: { params: Promise<{ id: string }> }) {
         const res = await api.bookings.getById(bookingId);
         if (res.status === "success" && res.booking) {
           const b = res.booking;
+          const roomImages =
+            Array.isArray(b.room?.images) && b.room.images.length > 0
+              ? b.room.images
+              : Array.isArray(b.images) && b.images.length > 0
+              ? b.images
+              : [b.roomImage || b.room?.heroImage || "/images/rooms/deluxe.png"];
+
+          const safeRoom = {
+            ...(b.room || {}),
+            id: b.room?.id || b.roomId || "deluxe-room",
+            name: b.room?.name || b.roomName || `${(b.roomType || "deluxe").toUpperCase()} Room`,
+            slug: b.room?.slug || b.roomType || "deluxe",
+            type: b.roomType || "deluxe",
+            price: Number(b.baseAmount || b.totalAmount || 2499),
+            description: b.room?.description || "Luxury hotel accommodation with modern amenities.",
+            shortDescription: b.room?.shortDescription || "Luxury stay at Hotel Reliance.",
+            capacity: b.room?.capacity || { adults: b.adults || 2, children: b.children || 0, maxTotal: 4 },
+            amenities: Array.isArray(b.room?.amenities)
+              ? b.room.amenities
+              : ["Free High-Speed Wi-Fi", "Air Conditioning", "HD TV", "Room Service"],
+            features: Array.isArray(b.room?.features)
+              ? b.room.features
+              : ["City View", "King Bed", "Ensuite Bathroom"],
+            images: roomImages,
+            heroImage: roomImages[0] || "/images/rooms/deluxe.png",
+            bedType: b.room?.bedType || "King Bed",
+            size: b.room?.size || "350 sq.ft",
+            view: b.room?.view || "City View",
+            rating: b.room?.rating || 4.8,
+            reviewCount: b.room?.reviewCount || 120,
+            isFeatured: false,
+            inventory: 10
+          };
+
           const formatted: Booking = {
             id: b.id,
             bookingId: b.bookingId || b.id,
-            roomId: b.room?.id || b.roomId || "deluxe-room",
-            roomSlug: b.room?.slug || b.roomType || "deluxe",
-            roomName: b.room?.name || `${(b.roomType || "deluxe").toUpperCase()} Room`,
-            roomImage: b.room?.images?.[0] || "/images/rooms/deluxe.png",
-            room: b.room || {
-              id: b.room?.id || b.roomId || "deluxe-room",
-              name: b.room?.name || `${(b.roomType || "deluxe").toUpperCase()} Room`,
-              slug: b.room?.slug || b.roomType || "deluxe",
-              type: b.roomType || "deluxe",
-              price: b.baseAmount || b.totalAmount || 2499,
-              description: "Luxury hotel accommodation with modern amenities.",
-              shortDescription: "Luxury stay at Hotel Reliance.",
-              capacity: { adults: b.adults || 2, children: b.children || 0, maxTotal: 4 },
-              amenities: ["Free High-Speed Wi-Fi", "Air Conditioning", "HD TV", "Room Service"],
-              features: ["City View", "King Bed", "Ensuite Bathroom"],
-              images: [b.room?.images?.[0] || "/images/rooms/deluxe.png"],
-              heroImage: b.room?.images?.[0] || "/images/rooms/deluxe.png",
-              bedType: "King Bed",
-              size: "350 sq.ft",
-              view: "City View",
-              rating: 4.8,
-              reviewCount: 120,
-              isFeatured: false,
-              inventory: 10
-            },
+            roomId: safeRoom.id,
+            roomSlug: safeRoom.slug,
+            roomName: safeRoom.name,
+            roomImage: safeRoom.images[0],
+            room: safeRoom,
             checkIn: b.checkInDate || b.checkIn,
             checkOut: b.checkOutDate || b.checkOut,
             adults: b.adults || 2,
@@ -257,7 +271,7 @@ function BookingDetailContent({ params }: { params: Promise<{ id: string }> }) {
                 <span className="text-lg font-serif font-light text-[#111E31] block">
                   {booking.adults} Adults {booking.children > 0 ? `, ${booking.children} Child` : ""}
                 </span>
-                <span className="text-xs text-stone-500">{booking.room.bedType}</span>
+                <span className="text-xs text-stone-500">{booking.room?.bedType || "King Bed"}</span>
               </div>
             </div>
 
@@ -272,8 +286,8 @@ function BookingDetailContent({ params }: { params: Promise<{ id: string }> }) {
                 <div className="flex space-x-4">
                   <div className="w-24 h-24 relative flex-shrink-0 rounded-2xl overflow-hidden border border-stone-200">
                     <Image
-                      src={booking.room.images[0] || "/images/rooms/deluxe/main.jpg"}
-                      alt={booking.room.name}
+                      src={booking.room?.images?.[0] || booking.roomImage || "/images/rooms/deluxe/main.jpg"}
+                      alt={booking.room?.name || "Room"}
                       fill
                       className="object-cover"
                     />
@@ -281,7 +295,7 @@ function BookingDetailContent({ params }: { params: Promise<{ id: string }> }) {
                   <div className="space-y-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <h4 className="text-lg font-serif font-light text-[#111E31]">
-                        {booking.room.name}
+                        {booking.room?.name || "Accommodations"}
                       </h4>
                       {booking.roomNumber && (
                         <span className="inline-flex items-center px-2 py-0.5 bg-[#BA8B32]/10 text-[#BA8B32] text-xs font-semibold rounded-full">
@@ -289,9 +303,9 @@ function BookingDetailContent({ params }: { params: Promise<{ id: string }> }) {
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-stone-500 line-clamp-2 leading-relaxed">{booking.room.description}</p>
+                    <p className="text-xs text-stone-500 line-clamp-2 leading-relaxed">{booking.room?.description || ""}</p>
                     <span className="text-[11px] text-[#BA8B32] font-medium block">
-                      Bedding: {booking.room.bedType || "King Bed"}
+                      Bedding: {booking.room?.bedType || "King Bed"}
                     </span>
                   </div>
                 </div>
@@ -299,7 +313,7 @@ function BookingDetailContent({ params }: { params: Promise<{ id: string }> }) {
                 <div className="pt-2">
                   <h5 className="text-[10px] uppercase font-semibold text-stone-400 mb-2">Key Amenities Included:</h5>
                   <div className="grid grid-cols-2 gap-2 text-xs text-[#111E31]">
-                    {booking.room.amenities.slice(0, 6).map((am, i) => (
+                    {(booking.room?.amenities || []).slice(0, 6).map((am, i) => (
                       <span key={i} className="flex items-center text-[11px] text-stone-500">
                         • {am}
                       </span>
@@ -317,15 +331,15 @@ function BookingDetailContent({ params }: { params: Promise<{ id: string }> }) {
                 <div className="space-y-2.5 text-xs">
                   <div className="flex justify-between py-1.5 border-b border-stone-100">
                     <span className="text-stone-500">Primary Guest:</span>
-                    <span className="font-semibold text-[#111E31]">{booking.guest.name}</span>
+                    <span className="font-semibold text-[#111E31]">{booking.guest?.name || "Guest"}</span>
                   </div>
                   <div className="flex justify-between py-1.5 border-b border-stone-100">
                     <span className="text-stone-500">Email:</span>
-                    <span className="font-semibold text-[#111E31]">{booking.guest.email}</span>
+                    <span className="font-semibold text-[#111E31]">{booking.guest?.email || "N/A"}</span>
                   </div>
                   <div className="flex justify-between py-1.5 border-b border-stone-100">
                     <span className="text-stone-500">Phone:</span>
-                    <span className="font-semibold text-[#111E31]">{booking.guest.phone}</span>
+                    <span className="font-semibold text-[#111E31]">{booking.guest?.phone || "N/A"}</span>
                   </div>
                   <div className="flex justify-between py-1.5 border-b border-stone-100">
                     <span className="text-stone-500">Payment Option:</span>

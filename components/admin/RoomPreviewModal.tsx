@@ -46,8 +46,8 @@ export function RoomPreviewModal({ room, onClose }: RoomPreviewModalProps) {
             {/* Main Cover Image */}
             <div className="relative aspect-[16/10] w-full bg-[#111E31]">
               <Image
-                src={room.images[0] || "/images/hero/hero-bg.jpg"}
-                alt={room.name}
+                src={room.images?.[0] || "/images/hero/hero-bg.jpg"}
+                alt={room.name || "Room"}
                 fill
                 className="object-cover"
               />
