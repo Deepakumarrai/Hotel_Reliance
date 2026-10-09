@@ -25,19 +25,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Container } from "@/components/ui/Container";
 import { Booking } from "@/types/booking";
 import { useHotelSettings } from "@/hooks/useHotelSettings";
-import { formatPrice, formatDate, getNightsCount } from "@/lib/utils";
+import { formatPrice, formatDate, formatFullDate, getNightsCount } from "@/lib/utils";
 import { api } from "@/lib/api";
 
 function formatFullDateWithDay(dateString: string): string {
-  if (!dateString) return "";
-  const d = new Date(dateString);
-  if (isNaN(d.getTime())) return dateString;
-  return d.toLocaleDateString("en-IN", {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-    year: "numeric"
-  });
+  return formatFullDate(dateString);
 }
 
 function SuccessContent() {

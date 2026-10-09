@@ -11,6 +11,7 @@ import { api, getStoredBookings } from "@/lib/api";
 import { Booking } from "@/types/booking";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
+import { formatDate, normalizeDateString } from "@/lib/utils";
 
 function formatBookingObject(b: any, user: any): Booking {
   const roomImages =
@@ -54,8 +55,8 @@ function formatBookingObject(b: any, user: any): Booking {
     roomName: safeRoom.name,
     roomImage: safeRoom.images[0],
     room: safeRoom,
-    checkIn: b.checkInDate || b.checkIn,
-    checkOut: b.checkOutDate || b.checkOut,
+    checkIn: normalizeDateString(b.checkInDate || b.checkIn),
+    checkOut: normalizeDateString(b.checkOutDate || b.checkOut),
     adults: b.adults || 2,
     children: b.children || 0,
     nights: b.nights || 1,
@@ -403,12 +404,12 @@ function MyBookingsContent() {
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 text-xs font-sans">
                       <div>
                         <span className="text-[10px] text-stone-400 uppercase font-semibold block">Check-In</span>
-                        <span className="font-semibold text-[#111E31] mt-0.5 block">{booking.checkIn}</span>
+                        <span className="font-semibold text-[#111E31] mt-0.5 block">{formatDate(booking.checkIn)}</span>
                         <span className="text-[10px] text-stone-400 block">From 12:00 PM</span>
                       </div>
                       <div>
                         <span className="text-[10px] text-stone-400 uppercase font-semibold block">Check-Out</span>
-                        <span className="font-semibold text-[#111E31] mt-0.5 block">{booking.checkOut}</span>
+                        <span className="font-semibold text-[#111E31] mt-0.5 block">{formatDate(booking.checkOut)}</span>
                         <span className="text-[10px] text-stone-400 block">Until 11:00 AM</span>
                       </div>
                       <div>

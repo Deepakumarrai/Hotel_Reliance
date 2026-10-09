@@ -12,6 +12,7 @@ import { Booking } from "@/types/booking";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { HOTEL_INFO } from "@/lib/constants";
+import { formatDate, formatFullDate, normalizeDateString } from "@/lib/utils";
 
 interface BookingDetailPageProps {
   params: Promise<{ id: string }>;
@@ -73,8 +74,8 @@ function BookingDetailContent({ params }: { params: Promise<{ id: string }> }) {
             roomName: safeRoom.name,
             roomImage: safeRoom.images[0],
             room: safeRoom,
-            checkIn: b.checkInDate || b.checkIn,
-            checkOut: b.checkOutDate || b.checkOut,
+            checkIn: normalizeDateString(b.checkInDate || b.checkIn),
+            checkOut: normalizeDateString(b.checkOutDate || b.checkOut),
             adults: b.adults || 2,
             children: b.children || 0,
             nights: b.nights || 1,
@@ -214,6 +215,11 @@ function BookingDetailContent({ params }: { params: Promise<{ id: string }> }) {
               <span className="text-lg font-mono font-semibold text-white tracking-wider block mt-0.5">
                 {booking.id}
               </span>
+              {booking.createdAt && (
+                <span className="text-[10px] text-stone-300 font-sans block mt-1">
+                  Booked on {formatDate(booking.createdAt)}
+                </span>
+              )}
               <div className="flex flex-col sm:items-end gap-1.5 mt-2">
                 <span
                   className={`inline-block px-3 py-0.5 text-[10px] uppercase font-semibold tracking-wider rounded-full ${
@@ -243,7 +249,7 @@ function BookingDetailContent({ params }: { params: Promise<{ id: string }> }) {
                   Check-In
                 </span>
                 <span className="text-lg font-serif font-light text-[#111E31] block">
-                  {booking.checkIn}
+                  {formatFullDate(booking.checkIn)}
                 </span>
                 <span className="text-xs text-stone-500 flex items-center">
                   <Clock className="w-3.5 h-3.5 mr-1.5 text-[#BA8B32]" />
@@ -256,7 +262,7 @@ function BookingDetailContent({ params }: { params: Promise<{ id: string }> }) {
                   Check-Out
                 </span>
                 <span className="text-lg font-serif font-light text-[#111E31] block">
-                  {booking.checkOut}
+                  {formatFullDate(booking.checkOut)}
                 </span>
                 <span className="text-xs text-stone-500 flex items-center">
                   <Clock className="w-3.5 h-3.5 mr-1.5 text-[#BA8B32]" />
