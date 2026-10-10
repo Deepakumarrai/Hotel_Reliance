@@ -69,9 +69,9 @@ async function request<T = any>(
 
   const url = `${API_BASE_URL}${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`;
 
-  // 10s timeout for GET, 20s for transactional endpoints
+  // 30s timeout for GET (allows Render/Neon serverless cold-start), 45s for transactional endpoints
   const method = (options.method || "GET").toUpperCase();
-  const timeoutMs = method === "GET" ? 10000 : 25000;
+  const timeoutMs = method === "GET" ? 30000 : 45000;
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
@@ -257,13 +257,31 @@ export const api = {
     },
 
     getMyBookings: async () => {
-      const res = await request<{ status: string; bookings: any[] }>("/bookings/my-bookings", {
-        method: "GET"
-      });
-      if (res.status === "success" && Array.isArray(res.bookings)) {
-        res.bookings.forEach((b) => saveStoredBooking(b));
+      const token = getAuthToken();
+      if (!token) {
+        return { status: "success", bookings: [] };
       }
-      return res;
+
+      try {
+        const res = await request<{ status: string; bookings: any[] }>("/bookings/my-bookings", {
+          method: "GET"
+        });
+        if (res.status === "success" && Array.isArray(res.bookings)) {
+          if (typeof window !== "undefined") {
+            try {
+              localStorage.setItem(BOOKINGS_STORAGE_KEY, JSON.stringify(res.bookings));
+            } catch {}
+          }
+        }
+        return res;
+      } catch (err: any) {
+        console.warn("[API] Server bookings fetch delayed or timed out, serving cached reservations:", err?.message || err);
+        return {
+          status: "success",
+          bookings: getStoredBookings(),
+          isCachedFallback: true
+        };
+      }
     },
 
     getById: async (bookingId: string) => {

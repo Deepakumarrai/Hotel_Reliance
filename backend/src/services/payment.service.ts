@@ -90,4 +90,56 @@ export class PaymentService {
 
     return expectedSignature === signature;
   }
+
+  /**
+   * Issues an instant refund via Razorpay Refund API
+   * @param paymentId Razorpay transaction ID (e.g. "pay_XXXX")
+   * @param amountInRupees Refund amount in INR
+   * @param bookingId Booking identifier for reference and reconciliation
+   * @param reason Description/reason for refund
+   */
+  public static async processRefund(
+    paymentId: string,
+    amountInRupees: number,
+    bookingId: string,
+    reason: string = "Customer cancellation"
+  ): Promise<{ refundId: string; amount: number; status: string; simulated?: boolean }> {
+    const client = getRazorpayInstance();
+    const amountInPaise = Math.round(amountInRupees * 100);
+
+    // In development or placeholder credentials mode, simulate successful refund
+    if (!client || !config.razorpay.keySecret || config.razorpay.keySecret.includes("placeholder")) {
+      console.warn(`[Razorpay Service] Simulating gateway refund in test mode for payment ${paymentId}, amount: ₹${amountInRupees}`);
+      return {
+        refundId: `rfnd_sim_${Date.now()}`,
+        amount: amountInRupees,
+        status: "processed",
+        simulated: true
+      };
+    }
+
+    try {
+      console.log(`[Razorpay Service] 🔄 Calling Razorpay Gateway API to refund payment ${paymentId} (Amount: ₹${amountInRupees})...`);
+      const refund = await client.payments.refund(paymentId, {
+        amount: amountInPaise,
+        speed: "normal",
+        notes: {
+          bookingId,
+          reason
+        }
+      });
+
+      console.log(`[Razorpay Service] ✅ Gateway refund processed successfully! Refund ID: ${(refund as any).id}, Status: ${(refund as any).status || "processed"}`);
+
+      return {
+        refundId: (refund as any).id,
+        amount: Number((refund as any).amount) / 100,
+        status: (refund as any).status || "processed",
+        simulated: false
+      };
+    } catch (err: any) {
+      console.error(`[Razorpay Service] Refund API failed for payment ${paymentId}:`, err?.error || err);
+      throw new Error(`Razorpay refund failed: ${err?.error?.description || err.message || "Gateway refund error"}`);
+    }
+  }
 }

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, ArrowRight, Check, AlertCircle, Calendar, ShieldCheck, CreditCard, Hotel, Sparkles, Building2, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, AlertCircle, Calendar, ShieldCheck, CreditCard, Hotel, Sparkles, Building2, Loader2, LogIn, User } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
@@ -26,16 +26,19 @@ import { ActiveCoupon, evaluateCoupon } from "@/lib/couponUtils";
 function BookingContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user } = useAuth();
+  const { user, isLoading, openAuthModal } = useAuth();
   const { getRoomPrice } = useRoomPricing();
   const { categories } = useRoomCategories();
   const availableRooms = categories && categories.length > 0 ? categories : roomsData;
 
-  // Initialize dates
+  // Initialize dates in local time string YYYY-MM-DD
   const getTodayString = (daysOffset = 0) => {
     const d = new Date();
     d.setDate(d.getDate() + daysOffset);
-    return d.toISOString().split("T")[0];
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
   };
 
   // Steps: 1: Select Room & Dates, 2: Guest Details & Special Requests, 3: Payment & Confirmation
@@ -62,6 +65,8 @@ function BookingContent() {
   const [activeBookingId, setActiveBookingId] = useState<string | null>(null);
   const [activeOrderId, setActiveOrderId] = useState<string | null>(null);
   const [activeGrandTotal, setActiveGrandTotal] = useState<number | null>(null);
+
+
 
   // Fetch live active coupons created in /admin/coupons
   useEffect(() => {
@@ -137,11 +142,14 @@ function BookingContent() {
     });
   }, [searchParams, availableRooms]);
 
-  // Compute nights
+  // Compute nights safely using local day difference
   const nights = useMemo(() => {
     if (!bookingState.checkIn || !bookingState.checkOut) return 1;
-    const start = new Date(bookingState.checkIn);
-    const end = new Date(bookingState.checkOut);
+    const [ciY, ciM, ciD] = bookingState.checkIn.split("-").map(Number);
+    const [coY, coM, coD] = bookingState.checkOut.split("-").map(Number);
+    if (!ciY || !coY) return 1;
+    const start = new Date(ciY, ciM - 1, ciD);
+    const end = new Date(coY, coM - 1, coD);
     const diffDays = Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
     return Math.max(1, diffDays);
   }, [bookingState.checkIn, bookingState.checkOut]);
@@ -156,10 +164,56 @@ function BookingContent() {
     );
   }, [availableRooms, bookingState.selectedRoomId]);
 
-  // Handles state changes
+  // Automatically open the login modal if user is unauthenticated
+  const hasAutoOpenedModal = React.useRef(false);
+  useEffect(() => {
+    if (!isLoading && !user && !hasAutoOpenedModal.current) {
+      hasAutoOpenedModal.current = true;
+      openAuthModal("signin", {
+        roomSlug: selectedRoom?.slug || selectedRoom?.id,
+        checkIn: bookingState.checkIn,
+        checkOut: bookingState.checkOut,
+        adults: bookingState.adults,
+        children: bookingState.children
+      });
+    }
+  }, [isLoading, user, openAuthModal, selectedRoom, bookingState.checkIn, bookingState.checkOut, bookingState.adults, bookingState.children]);
+
+  // Never allow advancing beyond Step 1 without authentication
+  useEffect(() => {
+    if (!isLoading && !user && step > 1) {
+      setStep(1);
+      openAuthModal("signin", {
+        roomSlug: selectedRoom?.slug || selectedRoom?.id,
+        checkIn: bookingState.checkIn,
+        checkOut: bookingState.checkOut,
+        adults: bookingState.adults,
+        children: bookingState.children
+      });
+    }
+  }, [isLoading, user, step, openAuthModal, selectedRoom, bookingState.checkIn, bookingState.checkOut, bookingState.adults, bookingState.children]);
+
+  // Handles state changes with safety auto-adjustment
   const handleDateChange = (field: "checkIn" | "checkOut", value: string) => {
-    setBookingState((prev) => ({ ...prev, [field]: value }));
+    setBookingState((prev) => {
+      const updated = { ...prev, [field]: value };
+      if (field === "checkIn") {
+        // Automatically ensure checkOut is at least 1 day after checkIn
+        if (new Date(value) >= new Date(updated.checkOut)) {
+          const parts = value.split("-").map(Number);
+          if (parts.length === 3) {
+            const nextDay = new Date(parts[0], parts[1] - 1, parts[2] + 1);
+            const y = nextDay.getFullYear();
+            const m = String(nextDay.getMonth() + 1).padStart(2, "0");
+            const day = String(nextDay.getDate()).padStart(2, "0");
+            updated.checkOut = `${y}-${m}-${day}`;
+          }
+        }
+      }
+      return updated;
+    });
     clearError(field);
+    setBookingError(null);
   };
 
   const handleGuestCountChange = (field: "adults" | "children", value: number) => {
@@ -195,6 +249,7 @@ function BookingContent() {
 
   // Step Navigations
   const handleNext = () => {
+    // 1. Safety validation for current step
     const stepErrors = validateBooking(bookingState, step);
     if (Object.keys(stepErrors).length > 0) {
       setErrors(stepErrors);
@@ -202,7 +257,29 @@ function BookingContent() {
       return;
     }
 
+    // 2. Safety check: Check-out date must be strictly greater than check-in date
+    const checkInTime = new Date(bookingState.checkIn).getTime();
+    const checkOutTime = new Date(bookingState.checkOut).getTime();
+    if (checkOutTime <= checkInTime) {
+      setErrors({ checkOut: "Check-out date must be greater than check-in date (minimum 1 night stay)" });
+      window.scrollTo({ top: 150, behavior: "smooth" });
+      return;
+    }
+
+    // 3. Mandatory Authentication check: Open login modal immediately and do not continue!
+    if (!user) {
+      openAuthModal("signin", {
+        roomSlug: selectedRoom?.slug || selectedRoom?.id,
+        checkIn: bookingState.checkIn,
+        checkOut: bookingState.checkOut,
+        adults: bookingState.adults,
+        children: bookingState.children
+      });
+      return; // DO NOT CONTINUE until user is authenticated!
+    }
+
     setErrors({});
+    setBookingError(null);
     setStep((prev) => Math.min(3, prev + 1));
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -215,10 +292,30 @@ function BookingContent() {
 
   // Submit Final booking
   const handleSubmit = async () => {
+    // Safety check 1: Mandatory authentication - open login modal immediately and do not continue!
+    if (!user) {
+      openAuthModal("signin", {
+        roomSlug: selectedRoom?.slug || selectedRoom?.id,
+        checkIn: bookingState.checkIn,
+        checkOut: bookingState.checkOut,
+        adults: bookingState.adults,
+        children: bookingState.children
+      });
+      return; // DO NOT CONTINUE until user is authenticated!
+    }
+
+    // Safety check 2: Validate Step 2 details
     const finalErrors = validateBooking(bookingState, 2);
     if (Object.keys(finalErrors).length > 0) {
       setErrors(finalErrors);
       setStep(2);
+      return;
+    }
+
+    // Safety check 3: Validate stay dates
+    if (new Date(bookingState.checkOut).getTime() <= new Date(bookingState.checkIn).getTime()) {
+      setBookingError("Check-out date must be greater than check-in date (minimum 1 night stay).");
+      setStep(1);
       return;
     }
 
@@ -426,6 +523,18 @@ function BookingContent() {
 
   // Re-attempt payment after rejection or cancellation
   const handleRetryPayment = async () => {
+    if (!user) {
+      setBookingError("Please login before continuing to book.");
+      openAuthModal("signin", {
+        roomSlug: selectedRoom?.slug || selectedRoom?.id,
+        checkIn: bookingState.checkIn,
+        checkOut: bookingState.checkOut,
+        adults: bookingState.adults,
+        children: bookingState.children
+      });
+      return;
+    }
+
     if (!activeBookingId || paymentMethod !== "ONLINE" || !selectedRoom) {
       handleSubmit();
       return;
@@ -613,20 +722,39 @@ function BookingContent() {
               <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
               <span>{bookingError}</span>
             </div>
-            <button
-              onClick={handleRetryPayment}
-              disabled={isSubmitting}
-              className="px-5 py-2.5 bg-[#BA8B32] hover:bg-[#A37827] text-white font-semibold text-[11px] tracking-wider uppercase rounded-full cursor-pointer transition-all self-start sm:self-auto shadow-xs flex items-center gap-2 disabled:opacity-50"
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  <span>Opening Payment...</span>
-                </>
-              ) : (
-                <span>Retry Payment</span>
-              )}
-            </button>
+            {!user ? (
+              <button
+                type="button"
+                onClick={() =>
+                  openAuthModal("signin", {
+                    roomSlug: selectedRoom?.slug || selectedRoom?.id,
+                    checkIn: bookingState.checkIn,
+                    checkOut: bookingState.checkOut,
+                    adults: bookingState.adults,
+                    children: bookingState.children
+                  })
+                }
+                className="px-5 py-2.5 bg-[#111E31] hover:bg-[#1E3048] text-white font-semibold text-[11px] tracking-wider uppercase rounded-full cursor-pointer transition-all self-start sm:self-auto shadow-xs flex items-center gap-2"
+              >
+                <LogIn className="w-3.5 h-3.5" />
+                <span>Log In / Sign Up</span>
+              </button>
+            ) : (
+              <button
+                onClick={handleRetryPayment}
+                disabled={isSubmitting}
+                className="px-5 py-2.5 bg-[#BA8B32] hover:bg-[#A37827] text-white font-semibold text-[11px] tracking-wider uppercase rounded-full cursor-pointer transition-all self-start sm:self-auto shadow-xs flex items-center gap-2 disabled:opacity-50"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <span>Opening Payment...</span>
+                  </>
+                ) : (
+                  <span>Retry Payment</span>
+                )}
+              </button>
+            )}
           </motion.div>
         )}
 
@@ -645,6 +773,22 @@ function BookingContent() {
                 {/* STEP 1: SELECT ROOM & DATES */}
                 {step === 1 && (
                   <div className="space-y-8">
+                    {user && (
+                      <div className="bg-emerald-50/80 border border-emerald-200/80 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-sans shadow-2xs">
+                        <div className="flex items-center gap-2.5 text-emerald-900 font-medium">
+                          <div className="w-7 h-7 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0 text-emerald-700">
+                            <Check className="w-4 h-4 stroke-[2.5]" />
+                          </div>
+                          <span>
+                            Logged in as <strong className="font-semibold text-emerald-950">{user.name || user.email}</strong> ({user.email})
+                          </span>
+                        </div>
+                        <span className="text-[10.5px] text-emerald-800 bg-emerald-100/70 px-3 py-1 rounded-full font-semibold border border-emerald-200 self-start sm:self-auto">
+                          ✓ Verified Guest Account
+                        </span>
+                      </div>
+                    )}
+
                     {/* Stay Dates & Occupancy Selector Header */}
                     <div className="bg-white rounded-3xl border border-stone-200/90 p-6 sm:p-8 shadow-[0_4px_30px_rgba(17,30,49,0.05)] space-y-6">
                       <div className="border-b border-stone-100 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
@@ -906,7 +1050,7 @@ function BookingContent() {
                 <button type="button" onClick={handleNext}
                   className="min-h-[48px] px-8 text-[12px] font-sans font-semibold uppercase tracking-wider bg-[#111E31] hover:bg-[#1a2e4a] text-white rounded-full cursor-pointer flex items-center justify-center shadow-[0_8px_30px_rgba(17,30,49,0.22)] hover:shadow-[0_12px_40px_rgba(17,30,49,0.32)] transition-all active:scale-[0.98]"
                 >
-                  <span>{step === 1 ? "Continue to Guest Details" : "Continue to Payment"}</span>
+                  <span>{step === 1 ? (!user ? "Sign In to Continue" : "Continue to Guest Details") : "Continue to Payment"}</span>
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </button>
               ) : (

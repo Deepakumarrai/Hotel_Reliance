@@ -1,3 +1,4 @@
+import { PaymentService } from "../services/payment.service";
 import { Request, Response } from "express";
 import { prisma } from "../services/prisma";
 import { cacheGet, cacheInvalidate } from "../services/cache";
@@ -710,7 +711,7 @@ export async function updateAdminBooking(req: Request, res: Response): Promise<v
 
     const booking = await prisma.booking.findUnique({
       where: { id },
-      include: { room: true }
+      include: { room: true, payment: true }
     });
 
     if (!booking) {
@@ -795,16 +796,45 @@ export async function updateAdminBooking(req: Request, res: Response): Promise<v
         });
         return result;
       } else if (action === "CANCEL") {
+        const refAmtNum = refundAmount ? Number(refundAmount) : 0;
+        let refundResult: any = null;
+
+        // If refund amount is specified and paymentId exists, trigger instant Razorpay gateway refund
+        const paymentId = booking.paymentId || (booking as any).payment?.paymentId;
+        console.log(`[Admin Cancellation] Booking: ${booking.id}, Refund Amount: ₹${refAmtNum}, Payment ID: ${paymentId || "None"}`);
+        if (refAmtNum > 0 && paymentId) {
+          try {
+            console.log(`[Admin Cancellation] 💸 Requesting ₹${refAmtNum} refund via Razorpay for payment ${paymentId}...`);
+            refundResult = await PaymentService.processRefund(
+              paymentId,
+              refAmtNum,
+              booking.id,
+              reason || "Admin cancelled reservation"
+            );
+            console.log(`[Admin Cancellation] ✅ Razorpay Refund ID: ${refundResult?.refundId}`);
+          } catch (rfErr: any) {
+            console.error(`[Admin Razorpay Refund Error] ❌ Booking ${booking.id}:`, rfErr);
+          }
+        }
+
+        const isRefunded = refAmtNum > 0;
         const result = await tx.booking.update({
           where: { id },
           data: {
             status: "CANCELLED",
-            cancellationReason: reason || "Guest requested cancellation",
-            refundAmount: refundAmount ? Number(refundAmount) : undefined,
-            paymentStatus: refundAmount ? "REFUNDED" : booking.paymentStatus
+            cancellationReason: reason || "Admin cancelled reservation",
+            refundAmount: refAmtNum > 0 ? refAmtNum : undefined,
+            paymentStatus: isRefunded ? "REFUNDED" : booking.paymentStatus
           },
           include: { room: true }
         });
+
+        if (isRefunded) {
+          await tx.payment.updateMany({
+            where: { bookingId: id },
+            data: { status: PaymentStatus.REFUNDED }
+          });
+        }
 
         if (booking.roomNumber) {
           await tx.roomUnit.updateMany({

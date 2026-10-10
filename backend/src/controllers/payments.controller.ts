@@ -194,6 +194,7 @@ export class PaymentsController {
         data: {
           status: BookingStatus.CONFIRMED,
           paymentStatus: PaymentStatus.PAID,
+          paidAmount: booking.totalAmount,
           paymentId
         },
         include: { room: true }
@@ -404,7 +405,12 @@ export class PaymentsController {
             });
             const updatedBooking = await prisma.booking.update({
               where: { id: payment.bookingId },
-              data: { status: BookingStatus.CONFIRMED, paymentStatus: PaymentStatus.PAID, paymentId },
+              data: {
+                status: BookingStatus.CONFIRMED,
+                paymentStatus: PaymentStatus.PAID,
+                paidAmount: payment.amount,
+                paymentId
+              },
               include: { room: true }
             });
 

@@ -16,6 +16,21 @@ export class BookingsController {
       return;
     }
 
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRegex.test(String(checkInDate))) {
+      res.status(400).json({ status: "error", message: "Invalid date format. Expected YYYY-MM-DD." });
+      return;
+    }
+
+    const [ciY, ciM, ciD] = String(checkInDate).split("-").map(Number);
+    const lockStart = new Date(ciY, ciM - 1, ciD);
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    if (lockStart < today) {
+      res.status(400).json({ status: "error", message: "Check-in date cannot be in the past." });
+      return;
+    }
+
     const tempId = sessionId || req.user?.id || `sess_${Date.now()}`;
     const acquired = await lockService.acquireLock(roomId, checkInDate, tempId, 600);
 
@@ -36,6 +51,15 @@ export class BookingsController {
   }
 
   public static async createBooking(req: AuthRequest, res: Response): Promise<void> {
+    // Safety check 1: Mandatory Authentication
+    if (!req.user) {
+      res.status(401).json({
+        status: "error",
+        message: "Please login before continuing to book."
+      });
+      return;
+    }
+
     const {
       roomId,
       checkIn,
@@ -49,6 +73,101 @@ export class BookingsController {
 
     if (!roomId || !checkIn || !checkOut || !guest?.name || !guest?.email || !guest?.phone) {
       res.status(400).json({ status: "error", message: "Missing required reservation fields." });
+      return;
+    }
+
+    // Safety check 2: Date format and chronological safety checks
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRegex.test(String(checkIn)) || !dateRegex.test(String(checkOut))) {
+      res.status(400).json({
+        status: "error",
+        message: "Invalid date format. Expected YYYY-MM-DD."
+      });
+      return;
+    }
+
+    const [ciY, ciM, ciD] = String(checkIn).split("-").map(Number);
+    const [coY, coM, coD] = String(checkOut).split("-").map(Number);
+    const start = new Date(ciY, ciM - 1, ciD);
+    const end = new Date(coY, coM - 1, coD);
+
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+      res.status(400).json({ status: "error", message: "Invalid check-in or check-out date." });
+      return;
+    }
+
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    if (start < today) {
+      res.status(400).json({
+        status: "error",
+        message: "Check-in date cannot be in the past."
+      });
+      return;
+    }
+
+    // Safety check 3: Check-out must be strictly greater than check-in date
+    if (end <= start) {
+      res.status(400).json({
+        status: "error",
+        message: "Check-out date must be greater than check-in date (minimum 1 night stay)."
+      });
+      return;
+    }
+
+    const nights = Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+    if (nights > 30) {
+      res.status(400).json({
+        status: "error",
+        message: "Online reservations are limited to a maximum of 30 nights."
+      });
+      return;
+    }
+
+    // Safety check 4: Occupancy Limits
+    const numAdults = Number(adults);
+    const numChildren = Number(children);
+
+    if (isNaN(numAdults) || numAdults < 1) {
+      res.status(400).json({ status: "error", message: "At least 1 adult guest is required." });
+      return;
+    }
+
+    if (numAdults > 10) {
+      res.status(400).json({ status: "error", message: "Maximum 10 adults allowed per reservation." });
+      return;
+    }
+
+    if (isNaN(numChildren) || numChildren < 0) {
+      res.status(400).json({ status: "error", message: "Children count cannot be negative." });
+      return;
+    }
+
+    if (numChildren > 6) {
+      res.status(400).json({ status: "error", message: "Maximum 6 children allowed per room." });
+      return;
+    }
+
+    // Safety check 5: Guest contact validation
+    const cleanName = String(guest.name).trim();
+    const cleanEmail = String(guest.email).trim().toLowerCase();
+    const cleanPhone = String(guest.phone).replace(/[\s\-()]+/g, "").replace(/^\+91/, "").replace(/^0/, "");
+
+    if (cleanName.length < 2) {
+      res.status(400).json({ status: "error", message: "Guest full name must be at least 2 characters." });
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(cleanEmail)) {
+      res.status(400).json({ status: "error", message: "Please provide a valid email address." });
+      return;
+    }
+
+    const phoneRegex = /^[6-9]\d{9}$/;
+    if (!phoneRegex.test(cleanPhone)) {
+      res.status(400).json({ status: "error", message: "Please provide a valid 10-digit mobile number." });
       return;
     }
 
@@ -81,9 +200,7 @@ export class BookingsController {
         return;
       }
 
-      const start = new Date(checkIn);
-      const end = new Date(checkOut);
-      const nights = Math.max(1, Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)));
+// Dates (start, end, nights) validated above
 
       const pricePerNight = Number(room.pricePerNight);
       const stayTotal = pricePerNight * nights;
@@ -323,8 +440,8 @@ export class BookingsController {
           guestEmail: { equals: userEmail, mode: "insensitive" }
         });
 
-        // Automatically link any previously unlinked bookings matching this email to this user account
-        await prisma.booking.updateMany({
+        // Automatically link any previously unlinked bookings matching this email in background without blocking
+        prisma.booking.updateMany({
           where: {
             guestEmail: { equals: userEmail, mode: "insensitive" },
             userId: null
@@ -346,7 +463,13 @@ export class BookingsController {
         orderBy: { createdAt: "desc" }
       });
 
-      res.status(200).json({ status: "success", bookings });
+      const formattedBookings = bookings.map((b) => ({
+        ...b,
+        checkInDate: b.checkInDate instanceof Date ? b.checkInDate.toISOString().split("T")[0] : b.checkInDate,
+        checkOutDate: b.checkOutDate instanceof Date ? b.checkOutDate.toISOString().split("T")[0] : b.checkOutDate
+      }));
+
+      res.status(200).json({ status: "success", bookings: formattedBookings });
     } catch (err: any) {
       res.status(500).json({ status: "error", message: err.message });
     }
@@ -431,11 +554,17 @@ export class BookingsController {
 
     try {
       const booking = await prisma.booking.findUnique({
-        where: { id: bookingId }
+        where: { id: bookingId },
+        include: { payment: true, room: true }
       });
 
       if (!booking) {
         res.status(404).json({ status: "error", message: `Booking ${bookingId} not found.` });
+        return;
+      }
+
+      if (booking.status === BookingStatus.CANCELLED) {
+        res.status(400).json({ status: "error", message: `Booking ${bookingId} is already cancelled.` });
         return;
       }
 
@@ -452,10 +581,99 @@ export class BookingsController {
         return;
       }
 
+      // Check-in calculation:
+      // Standard hotel check-in is 12:00 PM IST on checkInDate
+      const checkInIso = booking.checkInDate instanceof Date
+        ? booking.checkInDate.toISOString().split("T")[0]
+        : String(booking.checkInDate).split("T")[0];
+      const checkInTimeMs = new Date(`${checkInIso}T12:00:00+05:30`).getTime();
+      const nowMs = Date.now();
+      const hoursUntilCheckIn = (checkInTimeMs - nowMs) / (1000 * 60 * 60);
+      const isBefore24Hours = hoursUntilCheckIn >= 24;
+
+      const rawPaid = Number(booking.paidAmount || 0);
+      const rawPaymentAmt = Number(booking.payment?.amount || 0);
+      const rawTotal = Number(booking.totalAmount || 0);
+
+      const paidAmount =
+        rawPaid > 0
+          ? rawPaid
+          : rawPaymentAmt > 0
+          ? rawPaymentAmt
+          : booking.paymentStatus === PaymentStatus.PAID
+          ? rawTotal
+          : 0;
+
+      const isPaid = booking.paymentStatus === PaymentStatus.PAID || paidAmount > 0;
+      const paymentId = booking.paymentId || booking.payment?.paymentId;
+
+      let refundAmount = 0;
+      let policyNote = "";
+      let refundResult: { refundId: string; amount: number; status: string; simulated?: boolean } | null = null;
+      let refundError: string | null = null;
+
+      console.log(`\n======================================================`);
+      console.log(`🛎️  [CANCELLATION REQUEST] Booking ID: ${bookingId}`);
+      console.log(`📅  Hours before check-in: ${hoursUntilCheckIn.toFixed(2)}h (${isBefore24Hours ? "Eligible for 100% refund" : "Within 24h retention window"})`);
+      console.log(`💰  Paid: ₹${paidAmount} | Status: ${booking.paymentStatus} | Payment ID: ${paymentId || "None"}`);
+
+      if (isPaid && paymentId) {
+        if (isBefore24Hours) {
+          // 100% full refund before 24 hours of check-in
+          refundAmount = paidAmount;
+          policyNote = `100% full refund (Cancelled ${hoursUntilCheckIn.toFixed(1)} hrs prior to check-in)`;
+        } else {
+          // Within 24 hours of check-in: 1 night room tariff retained as cancellation fee
+          const perNightTariff = Number(booking.baseAmount) / Math.max(1, booking.nights);
+          refundAmount = Math.max(0, paidAmount - perNightTariff);
+          policyNote = `1 night tariff retention fee (₹${perNightTariff.toFixed(2)}) applied (Cancelled within 24 hrs). Refund: ₹${refundAmount.toFixed(2)}`;
+        }
+
+        // Trigger Instant Razorpay Gateway Refund
+        if (refundAmount > 0) {
+          console.log(`💸  [REFUND INITIATION] Requesting ₹${refundAmount} refund via Razorpay for ${booking.id}...`);
+          try {
+            refundResult = await PaymentService.processRefund(
+              paymentId,
+              refundAmount,
+              booking.id,
+              policyNote
+            );
+            console.log(`✅  [REFUND SUCCESS] Razorpay Refund ID: ${refundResult.refundId} (Simulated: ${refundResult.simulated || false})`);
+          } catch (rfErr: any) {
+            console.error(`❌  [REFUND ERROR] Booking ${booking.id}:`, rfErr);
+            refundError = rfErr.message || "Razorpay gateway refund error";
+          }
+        }
+      } else {
+        policyNote = isBefore24Hours
+          ? "Cancelled > 24 hrs prior to check-in (Pay-at-hotel / Unpaid reservation)"
+          : "Cancelled < 24 hrs prior to check-in (Pay-at-hotel / Unpaid reservation)";
+        console.log(`ℹ️   [NO REFUND] ${policyNote}`);
+      }
+      console.log(`======================================================\n`);
+
+      const isRefundSuccessful = Boolean(refundResult && refundResult.refundId);
+      const newPaymentStatus = isRefundSuccessful
+        ? PaymentStatus.REFUNDED
+        : booking.paymentStatus;
+
       const updated = await prisma.booking.update({
         where: { id: bookingId },
-        data: { status: BookingStatus.CANCELLED }
+        data: {
+          status: BookingStatus.CANCELLED,
+          paymentStatus: newPaymentStatus,
+          refundAmount: refundAmount > 0 ? refundAmount : undefined,
+          cancellationReason: policyNote
+        }
       });
+
+      if (isRefundSuccessful) {
+        await prisma.payment.updateMany({
+          where: { bookingId },
+          data: { status: PaymentStatus.REFUNDED }
+        });
+      }
 
       // Free allocated room unit if held by this booking
       if (booking.roomNumber) {
@@ -472,23 +690,51 @@ export class BookingsController {
         });
       }
 
+      // Release any locks if held
+      lockService.releaseLock(booking.roomId, checkInIso, bookingId);
+
       await prisma.auditLog.create({
         data: {
           adminUser: req.user?.email || "GUEST",
           action: "BOOKING_CANCELLED",
           entity: "Booking",
           entityId: bookingId,
-          newValue: `Booking ${bookingId} cancelled. Room ${booking.roomNumber || "N/A"} released.`
+          newValue: `Booking ${bookingId} cancelled. ${policyNote}. ${
+            refundResult ? `Razorpay Refund ID: ${refundResult.refundId} (₹${refundAmount.toFixed(2)})` : ""
+          } ${refundError ? `[Refund Warning: ${refundError}]` : ""}`.trim()
         }
       });
 
       cacheInvalidate("admin:");
+      cacheInvalidate("admin:bookings");
+      cacheInvalidate("rooms:availability");
       webSocketService.broadcastBookingUpdated(updated, "CANCELLED");
+
+      let message = `Booking ${bookingId} has been successfully cancelled.`;
+      if (refundAmount > 0) {
+        if (isRefundSuccessful) {
+          message = `Booking ${bookingId} cancelled. Instant 100% refund of ₹${refundAmount.toLocaleString("en-IN", { minimumFractionDigits: 2 })} initiated via Razorpay (Refund ID: ${refundResult?.refundId}). Funds will credit to your original payment source in 5–7 banking days.`;
+        } else if (refundError) {
+          message = `Booking ${bookingId} cancelled. Eligible refund of ₹${refundAmount.toLocaleString("en-IN", { minimumFractionDigits: 2 })} has been recorded in the accounts ledger and will be processed manually.`;
+        }
+      }
 
       res.status(200).json({
         status: "success",
-        message: `Booking ${bookingId} has been successfully cancelled.`,
-        booking: updated
+        message,
+        booking: {
+          ...updated,
+          checkInDate: checkInIso,
+          checkOutDate: booking.checkOutDate instanceof Date ? booking.checkOutDate.toISOString().split("T")[0] : booking.checkOutDate
+        },
+        refund: refundAmount > 0 ? {
+          amount: refundAmount,
+          refundId: refundResult?.refundId,
+          status: refundResult?.status || "PENDING",
+          simulated: refundResult?.simulated || false,
+          isBefore24Hours,
+          policyNote
+        } : null
       });
     } catch (err: any) {
       res.status(500).json({ status: "error", message: err.message });

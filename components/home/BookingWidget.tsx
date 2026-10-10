@@ -2,26 +2,78 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Calendar, Users, ArrowRight, ShieldCheck, Sparkles } from "lucide-react";
-import { Button } from "@/components/ui/Button";
+import { Calendar, Users, ArrowRight, ShieldCheck, Sparkles, AlertCircle } from "lucide-react";
 
 export function BookingWidget() {
   const router = useRouter();
 
-  // Initialize dates: Check-in (today), Check-out (tomorrow)
+  // Returns local date string in YYYY-MM-DD
   const getTodayString = (daysOffset = 0) => {
     const d = new Date();
     d.setDate(d.getDate() + daysOffset);
-    return d.toISOString().split("T")[0];
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  };
+
+  const getMinCheckOutDate = (checkInStr: string) => {
+    if (!checkInStr) return getTodayString(1);
+    const parts = checkInStr.split("-").map(Number);
+    if (parts.length === 3 && !isNaN(parts[0]) && !isNaN(parts[1]) && !isNaN(parts[2])) {
+      const d = new Date(parts[0], parts[1] - 1, parts[2] + 1);
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${y}-${m}-${day}`;
+    }
+    return getTodayString(1);
   };
 
   const [checkIn, setCheckIn] = useState(getTodayString(0));
   const [checkOut, setCheckOut] = useState(getTodayString(1));
   const [adults, setAdults] = useState(2);
   const [children, setChildren] = useState(0);
+  const [dateError, setDateError] = useState<string | null>(null);
+
+  const handleCheckInChange = (newCheckIn: string) => {
+    setCheckIn(newCheckIn);
+    setDateError(null);
+    // Auto-advance check-out if check-in is same or after current check-out
+    if (new Date(newCheckIn) >= new Date(checkOut)) {
+      const parts = newCheckIn.split("-").map(Number);
+      if (parts.length === 3) {
+        const nextDay = new Date(parts[0], parts[1] - 1, parts[2] + 1);
+        const y = nextDay.getFullYear();
+        const m = String(nextDay.getMonth() + 1).padStart(2, "0");
+        const day = String(nextDay.getDate()).padStart(2, "0");
+        setCheckOut(`${y}-${m}-${day}`);
+      }
+    }
+  };
+
+  const handleCheckOutChange = (newCheckOut: string) => {
+    setCheckOut(newCheckOut);
+    setDateError(null);
+    if (new Date(newCheckOut) <= new Date(checkIn)) {
+      setDateError("Check-out date must be after check-in date.");
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Safety checks
+    if (!checkIn || !checkOut) {
+      setDateError("Please select both check-in and check-out dates.");
+      return;
+    }
+
+    if (new Date(checkOut) <= new Date(checkIn)) {
+      setDateError("Check-out date must be greater than check-in date (minimum 1 night stay).");
+      return;
+    }
+
     const query = new URLSearchParams({
       checkIn,
       checkOut,
@@ -49,6 +101,13 @@ export function BookingWidget() {
           </div>
         </div>
 
+        {dateError && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
+            <span>{dateError}</span>
+          </div>
+        )}
+
         <form
           onSubmit={handleSubmit}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6 items-end"
@@ -63,14 +122,7 @@ export function BookingWidget() {
               type="date"
               value={checkIn}
               min={getTodayString(0)}
-              onChange={(e) => {
-                setCheckIn(e.target.value);
-                if (new Date(e.target.value) >= new Date(checkOut)) {
-                  const nextDay = new Date(e.target.value);
-                  nextDay.setDate(nextDay.getDate() + 1);
-                  setCheckOut(nextDay.toISOString().split("T")[0]);
-                }
-              }}
+              onChange={(e) => handleCheckInChange(e.target.value)}
               className="w-full bg-white border border-[#D9C6AF] rounded-lg p-3 text-sm text-[#111E31] font-medium focus:border-[#BA8B32] focus:ring-1 focus:ring-[#BA8B32] focus:outline-none transition-all shadow-sm"
               required
             />
@@ -85,8 +137,8 @@ export function BookingWidget() {
             <input
               type="date"
               value={checkOut}
-              min={checkIn ? getTodayString(1) : getTodayString(1)}
-              onChange={(e) => setCheckOut(e.target.value)}
+              min={getMinCheckOutDate(checkIn)}
+              onChange={(e) => handleCheckOutChange(e.target.value)}
               className="w-full bg-white border border-[#D9C6AF] rounded-lg p-3 text-sm text-[#111E31] font-medium focus:border-[#BA8B32] focus:ring-1 focus:ring-[#BA8B32] focus:outline-none transition-all shadow-sm"
               required
             />
@@ -145,4 +197,3 @@ export function BookingWidget() {
     </div>
   );
 }
-

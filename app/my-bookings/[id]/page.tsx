@@ -94,6 +94,8 @@ function BookingDetailContent({ params }: { params: Promise<{ id: string }> }) {
               specialRequests: b.specialRequests,
             },
             createdAt: b.createdAt || new Date().toISOString(),
+            refundAmount: b.refundAmount ? Number(b.refundAmount) : undefined,
+            cancellationReason: b.cancellationReason || undefined,
           };
           setBooking(formatted);
         } else {
@@ -146,12 +148,25 @@ function BookingDetailContent({ params }: { params: Promise<{ id: string }> }) {
   const handleCancel = async () => {
     if (confirm(`Are you sure you want to cancel booking ${booking.id}?`)) {
       try {
+        console.log(`[Cancellation] 🔄 Submitting cancellation for booking #${booking.id}...`);
         const res = await api.bookings.cancel(booking.id);
+        console.log(`[Cancellation] 📥 Server response:`, res);
         if (res.status === "success") {
-          setBooking({ ...booking, status: "cancelled" });
-          setFeedback("Your reservation has been cancelled.");
+          if ((res as any).refund) {
+            console.log(`%c[Razorpay Refund] ✅ Refund Initiated:`, "color: #10B981; font-weight: bold;", (res as any).refund);
+          } else {
+            console.log(`[Cancellation] ℹ️ Reservation cancelled without gateway refund.`);
+          }
+          setBooking({
+            ...booking,
+            status: "cancelled",
+            paymentStatus: (res as any).refund ? "refunded" : booking.paymentStatus,
+            refundAmount: (res as any).refund?.amount || booking.refundAmount
+          });
+          setFeedback(res.message || "Your reservation has been cancelled.");
         }
       } catch (err: any) {
+        console.error(`[Cancellation] ❌ Failed to cancel booking:`, err);
         alert(err.message || "Failed to cancel booking");
       }
     }

@@ -2,9 +2,10 @@
 
 import React, { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Calendar, Users, ArrowRight, ShieldCheck, PhoneCall, MessageCircle, Clock, Sparkles } from "lucide-react";
+import { Calendar, Users, ArrowRight, ShieldCheck, PhoneCall, MessageCircle, Clock, Sparkles, AlertCircle } from "lucide-react";
 import { useRoomPricing } from "@/hooks/useRoomPricing";
 import { formatPrice } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
 
 interface RoomBookingCTAProps {
   roomId: string;
@@ -14,20 +15,38 @@ interface RoomBookingCTAProps {
 
 export function RoomBookingCTA({ roomId, roomSlug, price }: RoomBookingCTAProps) {
   const router = useRouter();
+  const { user, openAuthModal } = useAuth();
   const { getRoomPrice } = useRoomPricing();
   const activePrice = getRoomPrice(roomSlug, price);
 
   const getTodayString = (daysOffset = 0) => {
     const d = new Date();
     d.setDate(d.getDate() + daysOffset);
-    return d.toISOString().split("T")[0];
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  };
+
+  const getMinCheckOutDate = (checkInStr: string) => {
+    if (!checkInStr) return getTodayString(1);
+    const parts = checkInStr.split("-").map(Number);
+    if (parts.length === 3 && !isNaN(parts[0]) && !isNaN(parts[1]) && !isNaN(parts[2])) {
+      const d = new Date(parts[0], parts[1] - 1, parts[2] + 1);
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${y}-${m}-${day}`;
+    }
+    return getTodayString(1);
   };
 
   const [checkIn, setCheckIn] = useState(getTodayString(0));
   const [checkOut, setCheckOut] = useState(getTodayString(1));
   const [adults, setAdults] = useState(2);
+  const [dateError, setDateError] = useState<string | null>(null);
 
-  // Calculate nights
+  // Calculate nights safely
   const nights = useMemo(() => {
     if (!checkIn || !checkOut) return 1;
     const start = new Date(checkIn);
@@ -42,8 +61,54 @@ export function RoomBookingCTA({ roomId, roomSlug, price }: RoomBookingCTAProps)
     return activePrice * nights;
   }, [activePrice, nights]);
 
+  const handleCheckInChange = (newCheckIn: string) => {
+    setCheckIn(newCheckIn);
+    setDateError(null);
+    if (new Date(newCheckIn) >= new Date(checkOut)) {
+      const parts = newCheckIn.split("-").map(Number);
+      if (parts.length === 3) {
+        const nextDay = new Date(parts[0], parts[1] - 1, parts[2] + 1);
+        const y = nextDay.getFullYear();
+        const m = String(nextDay.getMonth() + 1).padStart(2, "0");
+        const day = String(nextDay.getDate()).padStart(2, "0");
+        setCheckOut(`${y}-${m}-${day}`);
+      }
+    }
+  };
+
+  const handleCheckOutChange = (newCheckOut: string) => {
+    setCheckOut(newCheckOut);
+    setDateError(null);
+    if (new Date(newCheckOut) <= new Date(checkIn)) {
+      setDateError("Check-out date must be after check-in date.");
+    }
+  };
+
   const handleBooking = (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!checkIn || !checkOut) {
+      setDateError("Please select check-in and check-out dates.");
+      return;
+    }
+
+    if (new Date(checkOut) <= new Date(checkIn)) {
+      setDateError("Check-out date must be greater than check-in date (minimum 1 night stay).");
+      return;
+    }
+
+    // Safety check: Open login modal immediately if unauthenticated, do not continue until authenticated!
+    if (!user) {
+      openAuthModal("signin", {
+        roomSlug,
+        checkIn,
+        checkOut,
+        adults,
+        children: 0,
+      });
+      return;
+    }
+
     const query = new URLSearchParams({
       room: roomSlug,
       checkIn,
@@ -71,6 +136,13 @@ export function RoomBookingCTA({ roomId, roomSlug, price }: RoomBookingCTAProps)
         </span>
       </div>
 
+      {dateError && (
+        <div className="p-2.5 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl flex items-center gap-2">
+          <AlertCircle className="w-3.5 h-3.5 text-red-500 flex-shrink-0" />
+          <span>{dateError}</span>
+        </div>
+      )}
+
       <form onSubmit={handleBooking} className="space-y-3">
         {/* Date Inputs Grid */}
         <div className="grid grid-cols-2 gap-3">
@@ -84,15 +156,8 @@ export function RoomBookingCTA({ roomId, roomSlug, price }: RoomBookingCTAProps)
               type="date"
               value={checkIn}
               min={getTodayString(0)}
-              onChange={(e) => {
-                setCheckIn(e.target.value);
-                if (new Date(e.target.value) >= new Date(checkOut)) {
-                  const nextDay = new Date(e.target.value);
-                  nextDay.setDate(nextDay.getDate() + 1);
-                  setCheckOut(nextDay.toISOString().split("T")[0]);
-                }
-              }}
-              className="w-full bg-[#FAF8F5] border border-[#E8DFD2] focus:border-[#BA8B32] focus:ring-2 focus:ring-[#BA8B32]/20 rounded-xl px-3 py-2.5 text-xs text-[#2B2320] font-medium outline-none transition-all"
+              onChange={(e) => handleCheckInChange(e.target.value)}
+              className="w-full bg-[#FAF8F5] border border-[#E8DFD2] focus:border-[#BA8B32] focus:ring-2 focus:ring-[#BA8B32]/20 rounded-xl px-3 py-2.5 text-xs text-[#2B2320] font-medium outline-none transition-all cursor-pointer"
               required
             />
           </div>
@@ -106,9 +171,9 @@ export function RoomBookingCTA({ roomId, roomSlug, price }: RoomBookingCTAProps)
             <input
               type="date"
               value={checkOut}
-              min={checkIn || getTodayString(1)}
-              onChange={(e) => setCheckOut(e.target.value)}
-              className="w-full bg-[#FAF8F5] border border-[#E8DFD2] focus:border-[#BA8B32] focus:ring-2 focus:ring-[#BA8B32]/20 rounded-xl px-3 py-2.5 text-xs text-[#2B2320] font-medium outline-none transition-all"
+              min={getMinCheckOutDate(checkIn)}
+              onChange={(e) => handleCheckOutChange(e.target.value)}
+              className="w-full bg-[#FAF8F5] border border-[#E8DFD2] focus:border-[#BA8B32] focus:ring-2 focus:ring-[#BA8B32]/20 rounded-xl px-3 py-2.5 text-xs text-[#2B2320] font-medium outline-none transition-all cursor-pointer"
               required
             />
           </div>

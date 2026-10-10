@@ -78,6 +78,8 @@ function formatBookingObject(b: any, user: any): Booking {
       specialRequests: b.specialRequests || b.guest?.specialRequests,
     },
     createdAt: b.createdAt || new Date().toISOString(),
+    refundAmount: b.refundAmount ? Number(b.refundAmount) : undefined,
+    cancellationReason: b.cancellationReason || undefined,
   };
 }
 
@@ -150,54 +152,36 @@ function MyBookingsContent() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<"upcoming" | "previous">("upcoming");
 
-  // Synchronous instant initialization from local cache (0ms latency, no flash of empty state)
-  const [bookings, setBookings] = useState<{ upcoming: Booking[]; previous: Booking[] }>(() => {
-    if (typeof window === "undefined") return { upcoming: [], previous: [] };
-    const local = getLocalAndSessionBookings(null);
-    return formatBookingsList(local, null);
+  // Initialize with clean state: live server data is the single source of truth
+  const [bookings, setBookings] = useState<{ upcoming: Booking[]; previous: Booking[] }>({
+    upcoming: [],
+    previous: []
   });
 
-  // Only show loading if there are zero cached bookings locally
-  const [isLoading, setIsLoading] = useState<boolean>(() => {
-    if (typeof window === "undefined") return true;
-    const local = getLocalAndSessionBookings(null);
-    return local.length === 0;
-  });
+  // Display skeleton while live server bookings are loading
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const [cancelModalId, setCancelModalId] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<string | null>(null);
 
   const refreshBookings = async (overrideUser?: any) => {
     const activeUser = overrideUser || user;
+    setIsLoading(true);
 
-    // Step 1: Immediately sync any cached bookings synchronously
-    const cachedList = getLocalAndSessionBookings(activeUser);
-    if (cachedList.length > 0) {
-      const cached = formatBookingsList(cachedList, activeUser);
-      setBookings(cached);
-      setIsLoading(false);
-    }
-
-    // Step 2: Fetch fresh data from backend
     try {
       const res = await api.bookings.getMyBookings();
-      let rawList: any[] = [];
       if (res && res.status === "success" && Array.isArray(res.bookings)) {
-        rawList = res.bookings;
+        // Authoritative live server reservations
+        setBookings(formatBookingsList(res.bookings, activeUser));
+      } else {
+        // Offline / empty fallback
+        const fallbackLocal = getLocalAndSessionBookings(activeUser);
+        setBookings(formatBookingsList(fallbackLocal, activeUser));
       }
-
-      const combined: any[] = [...rawList];
-      const freshLocal = getLocalAndSessionBookings(activeUser);
-      for (const item of freshLocal) {
-        if (!combined.some((b) => b.id === item.id || b.bookingId === item.id)) {
-          combined.push(item);
-        }
-      }
-
-      const formatted = formatBookingsList(combined, activeUser);
-      setBookings(formatted);
-    } catch (err) {
-      console.error("Failed to fetch fresh bookings from server:", err);
+    } catch (err: any) {
+      console.warn("Could not sync fresh server reservations (using local cache):", err?.message || err);
+      const fallbackLocal = getLocalAndSessionBookings(activeUser);
+      setBookings(formatBookingsList(fallbackLocal, activeUser));
     } finally {
       setIsLoading(false);
     }
@@ -209,14 +193,22 @@ function MyBookingsContent() {
 
   const handleCancelBooking = async (bookingId: string) => {
     try {
+      console.log(`[Cancellation] 🔄 Submitting cancellation for booking #${bookingId}...`);
       const res = await api.bookings.cancel(bookingId);
+      console.log(`[Cancellation] 📥 Server response:`, res);
       if (res.status === "success") {
-        setFeedback(`Reservation ${bookingId} has been successfully cancelled.`);
+        if ((res as any).refund) {
+          console.log(`%c[Razorpay Refund] ✅ Refund Initiated:`, "color: #10B981; font-weight: bold;", (res as any).refund);
+        } else {
+          console.log(`[Cancellation] ℹ️ Reservation cancelled without gateway refund.`);
+        }
+        setFeedback(res.message || `Reservation ${bookingId} has been successfully cancelled.`);
         setCancelModalId(null);
         refreshBookings(user);
-        setTimeout(() => setFeedback(null), 4000);
+        setTimeout(() => setFeedback(null), 8000);
       }
     } catch (err: any) {
+      console.error(`[Cancellation] ❌ Failed to cancel booking:`, err);
       setFeedback(err.message || "Failed to cancel booking");
     }
   };

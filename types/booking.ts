@@ -49,4 +49,6 @@ export interface Booking {
   createdAt: string;
   paymentMethod?: string;
   transactionId?: string;
+  refundAmount?: number;
+  cancellationReason?: string;
 }
